@@ -1,0 +1,45 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm fixed-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+      <img src="{% static 'img/logo.png' %}" alt="ViveMedellín" width="32" height="32" class="d-inline-block align-text-top">
+      ViveMedellín
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'home' %}">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'mapa' %}">Mapa</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="comunasDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Comunas
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="comunasDropdown">
+            {% for comuna in comunas %}
+              <li><a class="dropdown-item" href="{% url 'comuna_detail' comuna.osm_id %}">{{ comuna.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'contacto' %}">Contacto</a>
+        </li>
+      </ul>
+      <form class="d-flex me-3" method="get" action="{% url 'buscar' %}">
+        <input class="form-control me-2" type="search" placeholder="Buscar lugares..." aria-label="Buscar" name="q">
+        <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
+      </form>
+      {% if user.is_authenticated %}
+        <span class="navbar-text me-2">Hola, {{ user.username }}</span>
+        <a class="btn btn-outline-danger btn-sm" href="{% url 'logout' %}">Salir</a>
+      {% else %}
+        <a class="btn btn-outline-primary btn-sm me-2" href="{% url 'login' %}">Ingresar</a>
+        <a class="btn btn-primary btn-sm" href="{% url 'signup' %}">Registrarse</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>

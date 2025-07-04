@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="text-center my-3">Zonas Cubiertas</h2>
+<div id="mapa" style="height: 600px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);"></div>
+
+<!-- Leaflet CDN -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  const map = L.map('mapa').setView([6.2442, -75.5812], 13);  // Vista inicial en Medellín
+
+  // Capa base
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  // Cargar las zonas desde el endpoint GeoJSON
+  fetch("/zonas-geojson/")
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("No se pudo cargar el GeoJSON");
+      }
+      return response.json();
+    })
+    .then(data => {
+      const geojsonLayer = L.geoJSON(data, {
+        style: {
+          color: 'blue',
+          weight: 2,
+          fillOpacity: 0.3
+        },
+        onEachFeature: function (feature, layer) {
+          if (feature.properties && feature.properties.nombre) {
+            layer.bindPopup(`<strong>${feature.properties.nombre}</strong>`);
+          }
+        }
+      }).addTo(map);
+
+      // Ajustar el mapa a los polígonos
+      map.fitBounds(geojsonLayer.getBounds());
+    })
+    .catch(error => {
+      console.error("Error al cargar las zonas:", error);
+    });
+</script>
+{% endblock %}

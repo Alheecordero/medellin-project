@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Reseñas de {{ lugar.nombre }} | Poblado Explorer{% endblock %}
+
+{% block meta_description %}
+  Opiniones sobre {{ lugar.nombre }} en Medellín. Lee reseñas de visitantes y descubre su calificación general antes de visitarlo.
+{% endblock %}
+
+{% block meta_keywords %}
+  reseñas de {{ lugar.nombre }}, opiniones {{ lugar.nombre }}, calificación {{ lugar.nombre }}, comentarios lugar Medellín
+{% endblock %}
+
+{% block og_title %}Reseñas de {{ lugar.nombre }} | Medellín Explorer{% endblock %}
+
+{% block og_description %}
+  Explora las opiniones y calificaciones de otros usuarios sobre {{ lugar.nombre }}. Descubre qué dicen antes de tu próxima salida.
+{% endblock %}
+
+{% block og_image %}
+  {% if lugar.fotos.exists %}
+    {{ request.build_absolute_uri }}{{ lugar.fotos.first.imagen.url }}
+  {% elif lugar.imagen %}
+    {{ request.build_absolute_uri }}{{ lugar.imagen.url }}
+  {% else %}
+    {{ request.build_absolute_uri }}static/img/og-image.jpg
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h2 class="fw-bold text-dark">{{ lugar.nombre }}</h2>
+    <p class="text-muted">
+      {{ lugar.total_reviews }} opiniones &nbsp;·&nbsp; ⭐ <strong>{{ lugar.rating|default:"?" }}</strong> / 5
+    </p>
+    <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-outline-primary btn-sm rounded-pill">
+      ← Volver al lugar
+    </a>
+  </div>
+
+  {% if reviews %}
+    <div class="row g-4">
+      {% for review in reviews %}
+        <div class="col-md-6">
+          <div class="card shadow-sm border-0 h-100 rounded-4">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0 fw-semibold text-dark">
+                  {{ review.author_name|default:"Usuario anónimo" }}
+                </h6>
+                <div class="text-warning small" style="letter-spacing: 1px;">
+                  {% for i in "12345"|slice:":review.rating"|make_list %}
+                    <i class="bi bi-star-fill"></i>
+                  {% endfor %}
+                  {% for i in "12345"|slice:"review.rating:"|make_list %}
+                    <i class="bi bi-star"></i>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="text-muted small mb-2">
+                {{ review.relative_time_description|default:"Reciente" }}
+              </div>
+
+              <p class="mb-0 fs-6 text-dark" style="white-space: pre-line;">
+                {% if review.text %}
+                  {{ review.text|striptags|linebreaksbr }}
+                {% else %}
+                  <em class="text-muted">Sin comentario escrito.</em>
+                {% endif %}
+              </p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center my-5">
+      <p class="text-muted">Este lugar aún no tiene reseñas disponibles.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

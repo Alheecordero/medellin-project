@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio | Medellín Explorer{% endblock %}
+
+{% block meta_description %}
+  Bienvenido a Medellín Explorer: descubre los mejores bares, discotecas, rooftops y restaurantes de Medellín, organizados por comunas. ¡Explora como un local!
+{% endblock %}
+
+{% block meta_keywords %}
+  Medellín Explorer, bares Medellín, discotecas Medellín, restaurantes Medellín, comunas Medellín, vida nocturna Medellín
+{% endblock %}
+
+{% block og_title %}
+  Medellín Explorer | Descubre los mejores lugares por comuna
+{% endblock %}
+
+{% block og_description %}
+  Navega los mejores sitios para salir en Medellín. Desde El Poblado hasta Laureles, descubre lugares únicos en cada comuna.
+{% endblock %}
+
+{% block og_image %}
+  {{ request.build_absolute_uri }}static/img/og-image.jpg
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="text-center mb-5 fw-bold"> Explora Medellín por Comunas</h1>
+
+  {% for item in comuna_con_lugares %}
+    <section class="mb-5">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h2 class="h4 text-capitalize fw-semibold mb-1">{{ item.nombre }}</h2>
+          <p class="text-muted small">{{ item.ref }}</p>
+        </div>
+        {% if item.comuna.slug %}
+          <a href="{% url 'explorer:lugares_por_comuna' item.comuna.slug %}" class="btn btn-sm btn-outline-primary">
+            Ver todos los lugares →
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="row g-4">
+        {% for lugar in item.lugares %}
+          <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+              {% if lugar.imagen %}
+                <img src="{{ lugar.imagen }}" class="card-img-top" alt="Imagen de {{ lugar.nombre }}" style="height: 200px; object-fit: cover;" loading="lazy">+
+              {% else %}
+                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                  <span class="fw-bold">Sin imagen</span>
+                </div>
+              {% endif %}
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-semibold">{{ lugar.nombre }}</h5>
+                <p class="card-text text-muted small mb-3">
+                  {{ lugar.tipo|title }}
+                  {% if lugar.rating and lugar.rating >= 4.5 %}
+                    <span class="badge bg-success ms-2">⭐ Top Valorado</span>
+                  {% endif %}
+                </p>
+                <p class="small text-muted">
+                  {% if lugar.rating %}
+                    Calificación: ⭐ {{ lugar.rating }} / 5
+                  {% endif %}
+                </p>
+
+                {% if lugar.slug %}
+                  <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-outline-primary mt-auto w-100">
+                    Ver detalles →
+                  </a>
+                {% else %}
+                  <span class="btn btn-secondary disabled mt-auto w-100">Sin detalles</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endfor %}
+</div>
+{% endblock %}

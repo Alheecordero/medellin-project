@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lugar.nombre }} | Vive  Medellín{% endblock %}
+
+{% block meta_description %}
+  {{ lugar.nombre }} en Medellín. Descubre este {{ lugar.tipo }} con puntuación de {{ lugar.rating|default:"-" }} estrellas. Dirección: {{ lugar.direccion|default:"no disponible" }}.
+{% endblock %}
+
+{% block meta_keywords %}
+  {{ lugar.nombre }}, {{ lugar.tipo }}, lugares Medellín, {{ lugar.tipo }} Medellín, mejores lugares en Medellín
+{% endblock %}
+
+{% block og_title %}{{ lugar.nombre }} | Medellín Explorer{% endblock %}
+{% block og_description %}
+  Conoce {{ lugar.nombre }}, un destacado {{ lugar.tipo }} en Medellín con rating de {{ lugar.rating|default:"-" }} y más de {{ lugar.total_reviews|default:"0" }} reseñas.
+{% endblock %}
+
+{% block og_image %}
+  {% if lugar.fotos.exists %}
+    {{ request.build_absolute_uri }}{{ lugar.fotos.first.imagen.url }}
+  {% elif lugar.imagen %}
+    {{ request.build_absolute_uri }}{{ lugar.imagen.url }}
+  {% else %}
+    {{ request.build_absolute_uri }}static/img/og-image.jpg
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="card shadow-lg mx-auto mb-5 rounded-4" style="max-width: 900px;">
+
+    {% if lugar.fotos.all %}
+      <div id="carouselFotos" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          {% for foto in lugar.fotos.all %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <img src="{{ foto.imagen.url }}"
+                   class="d-block w-100 rounded-top cursor-pointer"
+                   alt="{{ foto.descripcion|default:"Foto de "|add:lugar.nombre }}"
+                   style="height: 300px; object-fit: cover;"
+                   data-bs-toggle="modal"
+                   data-bs-target="#imagenModal"
+                   data-img-src="{{ foto.imagen.url }}">
+            </div>
+          {% endfor %}
+        </div>
+        {% if lugar.fotos.count > 1 %}
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselFotos" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselFotos" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+          </button>
+        {% endif %}
+      </div>
+    {% elif lugar.imagen %}
+      <img src="{{ lugar.imagen.url }}" class="card-img-top rounded-top" alt="Imagen de {{ lugar.nombre }}" style="height:300px; object-fit:cover;">
+    {% endif %}
+
+    <div class="card-body px-4 py-4 text-center">
+      <h2 class="card-title fw-bold mb-3">{{ lugar.nombre }}</h2>
+
+      {% if not user.is_authenticated %}
+        <p>
+          <a href="{% url 'usuarios_app:login' %}?next={{ request.path }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+            Inicia sesión para guardar este lugar
+          </a>
+        </p>
+      {% endif %}
+
+      <ul class="list-unstyled text-start mb-4 fs-5">
+        {% if lugar.direccion %}
+          <li class="mb-2"><i class="bi bi-geo-alt-fill text-primary me-2"></i><strong>Dirección:</strong> {{ lugar.direccion }}</li>
+        {% endif %}
+        {% if lugar.telefono %}
+          <li class="mb-2"><i class="bi bi-telephone-fill text-success me-2"></i><strong>Teléfono:</strong> {{ lugar.telefono }}</li>
+        {% endif %}
+        {% if lugar.sitio_web %}
+          <li class="mb-2"><i class="bi bi-globe2 text-dark me-2"></i><strong>Sitio Web:</strong> <a href="{{ lugar.sitio_web }}" target="_blank">{{ lugar.sitio_web }}</a></li>
+        {% endif %}
+        {% if lugar.rating %}
+          <li class="mb-2"><i class="bi bi-star-fill text-warning me-2"></i><strong>Rating:</strong> ⭐ {{ lugar.rating }} ({{ lugar.total_reviews|default:"0" }} reseñas)</li>
+        {% endif %}
+        {% if lugar.precio %}
+          <li class="mb-2"><i class="bi bi-cash-coin text-info me-2"></i><strong>Precio:</strong> 
+            {% if lugar.precio == '$' or lugar.precio == 'PRICE_LEVEL_INEXPENSIVE' %}
+              Económico
+            {% elif lugar.precio == '$$' or lugar.precio == 'PRICE_LEVEL_MODERATE' %}
+              Moderado
+            {% elif lugar.precio == '$$$' or lugar.precio == 'PRICE_LEVEL_EXPENSIVE' %}
+              Costoso
+            {% elif lugar.precio == '$$$$' or lugar.precio == 'PRICE_LEVEL_VERY_EXPENSIVE' %}
+              Muy costoso
+            {% else %}
+              {{ lugar.precio }}
+            {% endif %}
+          </li>
+        {% endif %}
+        {% if lugar.abierto_ahora is not None %}
+          <li class="mb-2"><i class="bi bi-clock-fill me-2"></i>
+            <strong>Estado:</strong>
+            {% if lugar.abierto_ahora %}
+              <span class="badge bg-success">Abierto ahora</span>
+            {% else %}
+              <span class="badge bg-danger">Cerrado</span>
+            {% endif %}
+          </li>
+        {% endif %}
+       {% if lugar.horario_texto %}
+  <li class="mb-2 small text-muted">
+    <i class="bi bi-calendar-week me-2"></i>
+    <span class="fw-semibold text-dark">Horario:</span>
+    <div class="table-responsive mt-1">
+      <table class="table table-sm table-borderless align-middle text-muted">
+        <tbody>
+          {% for linea in lugar.horario_texto.splitlines %}
+            <tr>
+              <td style="width: 100px;" class="text-capitalize fw-semibold text-nowrap">{{ linea|slice:":13" }}</td>
+              <td>{{ linea|slice:"14:" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </li>
+{% endif %}
+      </ul>
+
+      {% if lugar.reviews %}
+        <a href="{% url 'explorer:reseñas_lugar' lugar.slug %}" class="btn btn-outline-primary btn-sm rounded-pill mb-4">
+          Ver todas las reseñas →
+        </a>
+      {% endif %}
+
+      <div id="mapa" class="my-4 shadow-sm rounded" style="height:300px;"></div>
+
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="https://wa.me/?text={{ lugar.nombre|urlencode }}%0AExplóralo aquí: {{ request.build_absolute_uri }}"
+           target="_blank"
+           class="btn btn-success btn-sm rounded-pill"
+           title="Compartir por WhatsApp">
+          <i class="bi bi-whatsapp me-1"></i> Compartir
+        </a>
+
+        {% if user.is_authenticated %}
+          {% if es_favorito %}
+            <button type="button" class="btn btn-danger btn-sm rounded-pill">
+              ❤️ Ya en favoritos
+            </button>
+          {% else %}
+            <form method="post" action="{% url 'explorer:guardar_favorito' lugar.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">
+                ❤️ Guardar en favoritos
+              </button>
+            </form>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Modal de imagen ampliada con navegación -->
+<div class="modal fade" id="imagenModal" tabindex="-1" aria-labelledby="imagenModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content bg-black border-0">
+      <div class="modal-body position-relative p-0">
+        <img id="imagenModalContent" src="" class="w-100" style="object-fit: contain; max-height: 90vh;" alt="Imagen ampliada">
+        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <button id="modalPrev" class="position-absolute top-50 start-0 translate-middle-y btn btn-dark btn-lg rounded-circle opacity-75" style="z-index: 1050;">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button id="modalNext" class="position-absolute top-50 end-0 translate-middle-y btn btn-dark btn-lg rounded-circle opacity-75" style="z-index: 1050;">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  const lat = {{ lugar.ubicacion.y }};
+  const lng = {{ lugar.ubicacion.x }};
+  const map = L.map("mapa").setView([lat, lng], 16);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  L.marker([lat, lng])
+    .addTo(map)
+    .bindPopup("<strong>{{ lugar.nombre }}</strong>")
+    .openPopup();
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const modal = new bootstrap.Modal(document.getElementById('imagenModal'));
+    const modalImg = document.getElementById("imagenModalContent");
+    const imagenes = Array.from(document.querySelectorAll("[data-img-src]"));
+    let currentIndex = 0;
+
+    function updateModalImage(index) {
+      if (imagenes[index]) {
+        modalImg.src = imagenes[index].getAttribute("data-img-src");
+        currentIndex = index;
+      }
+    }
+
+    imagenes.forEach((img, index) => {
+      img.addEventListener("click", () => {
+        updateModalImage(index);
+        modal.show();
+      });
+    });
+
+    document.getElementById("modalPrev").addEventListener("click", () => {
+      const newIndex = (currentIndex - 1 + imagenes.length) % imagenes.length;
+      updateModalImage(newIndex);
+    });
+
+    document.getElementById("modalNext").addEventListener("click", () => {
+      const newIndex = (currentIndex + 1) % imagenes.length;
+      updateModalImage(newIndex);
+    });
+  });
+</script>
+
+<style>
+  .cursor-pointer {
+    cursor: zoom-in;
+  }
+</style>
+{% endblock %}

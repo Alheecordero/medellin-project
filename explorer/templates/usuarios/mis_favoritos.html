@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Favoritos | Medellín Explorer{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h2 class="mb-4 text-center text-danger fw-bold">❤️ Mis lugares guardados</h2>
+
+  {% if favoritos %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+      {% for favorito in favoritos %}
+        {% with lugar=favorito.lugar %}
+        <div class="col">
+          <div class="card h-100 shadow-sm border-0">
+            {% if lugar.fotos.exists %}
+              <img src="{{ lugar.fotos.first.imagen.url }}" class="card-img-top rounded-top" alt="Imagen de {{ lugar.nombre }}" style="height: 200px; object-fit: cover;">
+            {% elif lugar.imagen %}
+              <img src="{{ lugar.imagen.url }}" class="card-img-top rounded-top" alt="Imagen de {{ lugar.nombre }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+              <div class="bg-light text-muted d-flex align-items-center justify-content-center" style="height: 200px;">
+                <span class="fw-bold">Sin imagen</span>
+              </div>
+            {% endif %}
+
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title text-dark">{{ lugar.nombre }}</h5>
+              {% if lugar.tipo %}
+                <p class="text-muted small mb-2">{{ lugar.tipo|title }}</p>
+              {% endif %}
+
+              <div class="mt-auto d-grid gap-2">
+                {% if lugar.slug %}
+                  <a href="{% url 'explorer:lugares_detail' slug=lugar.slug %}" class="btn btn-primary">
+                    Ver detalles →
+                  </a>
+                {% else %}
+                  <span class="text-muted small">Sin detalles disponibles</span>
+                {% endif %}
+
+                <!-- ✅ Botón para eliminar de favoritos -->
+                <form action="{% url 'explorer:eliminar_favorito' pk=favorito.pk %}" method="post" class="mt-2">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-danger btn-sm">
+                    Quitar de favoritos ❤️
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endwith %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center mt-5" role="alert">
+      <h5 class="mb-2">No has guardado ningún lugar todavía.</h5>
+      <p class="mb-0">Explora la ciudad y guarda tus favoritos para tenerlos siempre a mano.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

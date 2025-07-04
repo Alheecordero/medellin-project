@@ -1,0 +1,35 @@
+<!-- templates/lugares/buscar_autocompletar.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar lugar</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+</head>
+<body>
+
+<h2>Buscar lugar</h2>
+
+<form id="form-busqueda" method="get" action="">
+  <input type="text" id="buscar-lugar" placeholder="Escribe un lugar...">
+</form>
+
+<script>
+$(function() {
+  $("#buscar-lugar").autocomplete({
+    source: "/ajax/autocomplete-places/",
+    minLength: 2,
+    select: function(event, ui) {
+      const slug = ui.item.slug;
+      if (slug) {
+        window.location.href = `/lugar/${slug}/`; // Ajusta si tu URL cambia
+      }
+    }
+  });
+});
+</script>
+
+</body>
+</html>

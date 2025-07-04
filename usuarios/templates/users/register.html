@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Registro | Poblado Explorer{% endblock %}
+
+{% block content %}
+<section class="d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+        <div class="card shadow-lg border-0 rounded-4">
+          <div class="card-body p-5 bg-white rounded-4">
+            <h3 class="text-center fw-bold mb-4 text-dark">
+              <i class="bi bi-person-plus-fill me-2 text-accent"></i> Registro de usuario
+            </h3>
+
+            {% if form.errors %}
+              <div class="alert alert-danger text-center" role="alert">
+                Por favor corrige los errores del formulario.
+              </div>
+            {% endif %}
+
+            <form method="post" novalidate>
+              {% csrf_token %}
+
+              <div class="form-floating mb-3">
+                {{ form.email }}
+                <label for="id_email">Correo electrónico</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                {{ form.full_name }}
+                <label for="id_full_name">Nombre completo</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                {{ form.date_birth }}
+                <label for="id_date_birth">Fecha de nacimiento</label>
+              </div>
+
+              <div class="mb-3">
+                <label for="id_ocupation" class="form-label">Ocupación</label>
+                {{ form.ocupation }}
+              </div>
+
+              <div class="mb-3">
+                <label for="id_genero" class="form-label">Género</label>
+                {{ form.genero }}
+              </div>
+
+              <div class="form-floating mb-3">
+                {{ form.password1 }}
+                <label for="id_password1">Contraseña</label>
+              </div>
+
+              <div class="form-floating mb-4">
+                {{ form.password2 }}
+                <label for="id_password2">Confirmar contraseña</label>
+              </div>
+
+              <button type="submit" class="btn btn-accent w-100 py-2 rounded-pill">
+                <i class="bi bi-person-check-fill me-1"></i> Registrarse
+              </button>
+            </form>
+
+            <div class="text-center mt-4 text-muted">
+              ¿Ya tienes una cuenta?
+              <a href="{% url 'usuarios_app:login' %}" class="text-accent fw-semibold">Inicia sesión</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mismos estilos que login -->
+<style>
+  body {
+    background: linear-gradient(to bottom right,rgb(100, 101, 104), #111827);
+  }
+
+  .btn-accent {
+    background-color: rgb(32, 125, 201);
+    color: #fff;
+    border: none;
+  }
+
+  .btn-accent:hover {
+    background-color: rgb(29, 153, 153);
+  }
+
+  .text-accent {
+    color: rgb(32, 153, 201) !important;
+  }
+
+  .form-control {
+    border-radius: 0.75rem;
+    padding: 1rem;
+  }
+
+  .form-label {
+    color: #343a40;
+    font-weight: 500;
+  }
+
+  select {
+    border-radius: 0.75rem !important;
+    padding: 0.75rem !important;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('input:not([type="checkbox"])').forEach(el => {
+      el.classList.add('form-control');
+    });
+    document.querySelectorAll('select').forEach(el => {
+      el.classList.add('form-select');
+    });
+  });
+</script>
+{% endblock %}

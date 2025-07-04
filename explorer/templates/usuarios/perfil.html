@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Mi perfil | Poblado Explorer{% endblock %}
+
+{% block content %}
+<div class="container my-5" style="max-width: 800px;">
+  <div class="card shadow border-0">
+    <div class="card-body p-4">
+      <h2 class="card-title mb-4 text-primary">
+        <i class="bi bi-person-circle me-2"></i> Mi perfil
+      </h2>
+
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <p><strong>Nombre de usuario:</strong> {{ user.username }}</p>
+          <p><strong>Email:</strong> {{ user.email|default:"No especificado" }}</p>
+          <p><strong>Fecha de registro:</strong> {{ user.date_joined|date:"d/m/Y" }}</p>
+        </div>
+        <div class="col-md-6 text-end">
+          <a href="{% url 'poblado_list' %}" class="btn btn-outline-primary">Ir al inicio</a>
+          <form method="post" action="{% url 'logout' %}" class="d-inline-block ms-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger">Cerrar sesión</button>
+          </form>
+        </div>
+      </div>
+
+      <hr>
+
+      <h4 class="mb-3">Lugares guardados</h4>
+
+      {% if favoritos %}
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+          {% for favorito in favoritos %}
+            <div class="col">
+              <div class="card h-100 shadow-sm">
+                {% if favorito.lugar.imagen %}
+                  <img src="{{ favorito.lugar.imagen.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                  <h5 class="card-title">{{ favorito.lugar.nombre }}</h5>
+                  <a href="{% url 'poblado_detail' favorito.lugar.pk %}" class="btn btn-sm btn-outline-primary">Ver detalle</a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted">Aún no tienes lugares guardados.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

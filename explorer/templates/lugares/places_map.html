@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Mapa de Medellín | Poblado Explorer{% endblock %}
+
+{% block meta_description %}
+  Explora bares, discotecas y restaurantes en Medellín por comuna con nuestro mapa interactivo. Descubre los 3 mejores lugares según puntuación.
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="text-center mb-4">
+    <h1 class="display-6 fw-bold text-dark">
+      <i class="bi bi-geo-alt-fill"></i> Explora Medellín en el mapa
+    </h1>
+    <p class="lead text-muted">
+      Haz clic en una comuna para mostrar los lugares y sus 3 mejores sitios.
+    </p>
+  </div>
+
+  <div class="card shadow border-0">
+    <div class="card-body p-0">
+      <div id="mapa" style="height: 600px; width: 100%; border-radius: 0 0 .5rem .5rem;"></div>
+    </div>
+  </div>
+
+  <div class="container mt-5" id="mejores-lugares" style="display: none;">
+    <h2 class="mb-4 text-center">Mejores lugares en <span id="nombre-comuna"></span></h2>
+    <div class="row g-4" id="mejores-lugares-lista"></div>
+    <div class="text-center mt-4" id="ver-todos-boton"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const comunas = {{ comunas_json|safe }};
+  const lugaresTodos = {{ lugares_json|safe }};
+  const map = L.map('mapa');
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  const comunaLayers = {};
+  const comunaStyles = {
+    default: { color: '#007bff', weight: 2, fillOpacity: 0.1 },
+    highlight: { color: '#ff6600', weight: 3, fillOpacity: 0.4 }
+  };
+
+  let markerGroup = L.layerGroup().addTo(map);
+  const bounds = [];
+
+  function normalizarUrlImagen(imagen) {
+    if (!imagen) return "/static/img/placeholder.jpg";
+    if (imagen.startsWith("http") || imagen.startsWith("/media/")) return imagen;
+    return "/static/img/placeholder.jpg";
+  }
+
+  function crearPopup(lugar) {
+    const imagen = normalizarUrlImagen(lugar.imagen);
+    const detalleUrl = `/lugar/${lugar.slug}/`;
+    return `
+      <div style="max-width: 220px; font-size: 14px;">
+        <img src="${imagen}" alt="Imagen de ${lugar.nombre}" style="width:100%; height:120px; object-fit:cover; border-radius:4px;">
+        <strong class="d-block mt-2">${lugar.nombre}</strong>
+        <div class="text-muted small">${lugar.tipo || ''}</div>
+        <div class="mt-2">
+          <a href="${detalleUrl}" class="btn btn-sm btn-outline-primary w-100">
+            Ver detalles <i class="bi bi-arrow-right-circle ms-1"></i>
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
+  function slugify(text) {
+    return text.toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9 ]/g, "")
+      .replace(/\s+/g, "-");
+  }
+
+  function mostrarTopLugares(lugares, nombreComuna) {
+    const contenedor = document.getElementById('mejores-lugares');
+    const titulo = document.getElementById('nombre-comuna');
+    const lista = document.getElementById('mejores-lugares-lista');
+    const botonContainer = document.getElementById('ver-todos-boton');
+
+    lista.innerHTML = "";
+    botonContainer.innerHTML = "";
+
+    const topLugares = lugares
+      .filter(l => l.rating !== null && l.rating !== undefined)
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, 3);
+
+    if (topLugares.length > 0) {
+      contenedor.style.display = "block";
+      titulo.textContent = nombreComuna;
+
+      topLugares.forEach(lugar => {
+        const imagen = normalizarUrlImagen(lugar.imagen);
+        const badge = lugar.rating >= 4.5
+          ? `<span class="badge bg-success ms-2">⭐ Top valorado</span>`
+          : '';
+
+        const card = `
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+              <img src="${imagen}" class="card-img-top" alt="Imagen de ${lugar.nombre}" style="height:200px; object-fit:cover;">
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-semibold">${lugar.nombre}</h5>
+                <p class="text-muted small mb-2">${lugar.tipo || ''}${badge}</p>
+                <p class="text-muted small">
+                  ${lugar.rating ? `⭐ ${lugar.rating.toFixed(1)} / 5` : 'Sin calificación'}
+                </p>
+                <a href="/lugar/${lugar.slug}/" class="btn btn-outline-primary mt-auto w-100">
+                  Ver detalles <i class="bi bi-arrow-right-circle ms-1"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+        lista.insertAdjacentHTML("beforeend", card);
+      });
+
+      const comunaSlug = slugify(nombreComuna);
+      botonContainer.innerHTML = `
+        <a href="/comuna/${comunaSlug}/" class="btn btn-primary btn-lg mt-3 rounded-pill shadow-sm px-4">
+          Ver todos los lugares en ${nombreComuna}
+        </a>
+      `;
+    } else {
+      contenedor.style.display = "none";
+    }
+  }
+
+  comunas.forEach(comuna => {
+    const layer = L.geoJSON(comuna.geometry, {
+      style: comunaStyles.default,
+      onEachFeature: (feature, layer) => {
+        layer.bindPopup(`<strong>${comuna.name}</strong>`);
+
+        layer.on('click', () => {
+          Object.values(comunaLayers).forEach(l => l.setStyle(comunaStyles.default));
+          layer.setStyle(comunaStyles.highlight);
+
+          markerGroup.clearLayers();
+          const lugaresDeComuna = lugaresTodos.filter(l => l.comuna_id == comuna.id);
+
+          lugaresDeComuna.forEach(lugar => {
+            const marker = L.marker([lugar.lat, lugar.lng]).bindPopup(crearPopup(lugar));
+            markerGroup.addLayer(marker);
+          });
+
+          mostrarTopLugares(lugaresDeComuna, comuna.name);
+          map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+        });
+      }
+    }).addTo(map);
+
+    comunaLayers[comuna.id] = layer;
+    bounds.push(layer.getBounds());
+  });
+
+  if (bounds.length > 0) {
+    const allBounds = bounds.reduce((acc, b) => acc.extend ? acc.extend(b) : b, bounds[0]);
+    map.fitBounds(allBounds, { padding: [30, 30] });
+  } else {
+    map.setView([6.2442, -75.5812], 13);
+  }
+});
+</script>
+
+<style>
+.card-img-top {
+  transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.03);
+}
+
+.card-title {
+  font-size: 1.1rem;
+}
+
+.badge {
+  vertical-align: middle;
+}
+</style>
+{% endblock %}
