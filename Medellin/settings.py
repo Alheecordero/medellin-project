@@ -166,7 +166,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
-MEDIA_URL = 'https://storage.googleapis.com/medellin-bucket/'
 DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
 
