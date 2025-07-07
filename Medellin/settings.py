@@ -12,25 +12,34 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import environ
 
 from google.oauth2 import service_account
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
+# Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-q@qywt1rxm6f-a%da8rfi5(np=#!o0ty#c_i_c9_wv$2xu3ju#')
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # En producción, asegúrate de que la variable de entorno DEBUG esté establecida en 'False'
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = env('DEBUG')
 
 # Añade la IP de tu servidor y tu dominio a esta lista
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "5.161.85.163", "www.carta365.es", "carta365.es"]
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 
 # Application definition
@@ -47,12 +56,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'explorer',
     'storages',
-    'debug_toolbar',
-    
 ]
 
 MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -61,6 +67,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if DEBUG:
+    INSTALLED_APPS += ['debug_toolbar']
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+    INTERNAL_IPS = [
+        '127.0.0.1',
+    ]
 
 ROOT_URLCONF = 'Medellin.urls'
 
@@ -87,21 +100,26 @@ WSGI_APPLICATION = 'Medellin.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.environ.get('DB_NAME', 'colombia'),
-        'USER': os.environ.get('DB_USER', 'alhee'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'jose1997'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+if 'DATABASE_URL' in os.environ:
+    DATABASES = {
+        'default': env.db()
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': env('DB_NAME'),
+            'USER': env('DB_USER'),
+            'PASSWORD': env('DB_PASSWORD'),
+            'HOST': env('DB_HOST', default='localhost'),
+            'PORT': env('DB_PORT', default='5432'),
+        }
+    }
 
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",  
+        "LOCATION": env('REDIS_URL'),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -131,7 +149,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-GOOGLE_API_KEY=os.environ.get('GOOGLE_API_KEY', 'AIzaSyCg4AlIc8-IvEfL3qORW8cemWSQXR2RjVI')
+GOOGLE_API_KEY=env('GOOGLE_API_KEY')
 
 LANGUAGE_CODE = 'en-us'
 
@@ -167,14 +185,14 @@ LOGIN_URL = '/usuarios/login/'
 
 #storage
 # Ruta a tu archivo de clave JSON
+gs_credentials_path: str = env('GS_CREDENTIALS_PATH')  # type: ignore
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, 'friend-storage-access.json')
+    os.path.join(BASE_DIR, gs_credentials_path)
 )
 
 # Nombre del bucket
-GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', 'medellin-bucket')
+GS_BUCKET_NAME = env('GS_BUCKET_NAME')
 
-DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 
 # URL opcional si usas dominio público
@@ -182,12 +200,9 @@ GS_DEFAULT_ACL = 'publicRead'
 MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
 
 
-
-INTERNAL_IPS = [
-'127.0.0.1',
-]
-
 if DEBUG:
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
     STATIC_URL = '/static/'
     STATIC_ROOT = BASE_DIR / 'staticfiles'
+else:
+    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
