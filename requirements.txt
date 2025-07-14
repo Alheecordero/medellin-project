@@ -14,3 +14,4 @@ python-dotenv==1.1.1
 rsa==4.9.1
 sqlparse==0.5.3
 django-redis==5.4.0
+requests==2.32.3

@@ -25,7 +25,7 @@ class Places(models.Model):
 
     # Campo para guardar la referencia a la foto de Google Places
     photo_reference = models.CharField(max_length=1000, blank=True, null=True)
-    imagen = models.ImageField(upload_to="portadas_lugares/", null=True, blank=True, max_length=500)
+    imagen = models.ImageField(upload_to="portadas_lugares/", null=True, blank=True, max_length=1024)
     # Campo para guardar las reseñas de Google Places
     reviews = models.JSONField(null=True, blank=True)
     slug = models.SlugField(max_length=150, null=True, blank=True)

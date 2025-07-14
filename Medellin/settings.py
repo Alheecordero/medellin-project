@@ -71,7 +71,7 @@ SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # En producción, asegúrate de que la variable de entorno DEBUG esté establecida en 'False'
-DEBUG = env('DEBUG')
+DEBUG = env.bool('DEBUG')
 
 # Añade la IP de tu servidor y tu dominio a esta lista
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
@@ -199,6 +199,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "explorer" / "static",
+    BASE_DIR / "Medellin" / "static",
+]
 
 
 
