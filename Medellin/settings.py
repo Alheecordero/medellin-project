@@ -12,20 +12,55 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-import environ
+# import environ  # Comentado - usando settings_local.py
 
-from google.oauth2 import service_account
+# from google.oauth2 import service_account  # Comentado - usando settings_local.py
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False)
-)
+# env = environ.Env(
+#     # set casting, default value
+#     DEBUG=(bool, False)
+# )
 
-# Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+# # Take environment variables from .env file
+# environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# Valores por defecto para desarrollo local
+class EnvMock:
+    def __init__(self):
+        self._env_vars = {}
+        # Leer el archivo .env
+        env_file = os.path.join(BASE_DIR, '.env')
+        if os.path.exists(env_file):
+            with open(env_file, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        key, value = line.split('=', 1)
+                        key = key.strip()
+                        value = value.strip().strip("'\"")
+                        self._env_vars[key] = value
+    
+    def __call__(self, key, default=None):
+        # Primero buscar en el archivo .env, luego en os.environ
+        return self._env_vars.get(key, os.environ.get(key, default))
+    
+    def bool(self, key, default=False):
+        val = self._env_vars.get(key, os.environ.get(key, str(default)))
+        return str(val).lower() in ('true', '1', 'yes')
+    
+    def db(self):
+        return {}
+    
+    def list(self, key, default=None):
+        val = self._env_vars.get(key, os.environ.get(key, default))
+        if isinstance(val, str):
+            return val.split(',')
+        return val if val else []
+
+env = EnvMock()
 
 
 # Quick-start development settings - unsuitable for production
@@ -88,7 +123,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'explorer.context_processors.comunas_context',
+                'explorer.context_processors.comunas_context_optimized',
             ],
         },
     },
@@ -166,7 +201,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
-DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+
 
 
 # Default primary key field type
@@ -184,24 +219,68 @@ LOGIN_URL = '/usuarios/login/'
 
 #storage
 # Ruta a tu archivo de clave JSON
-gs_credentials_path: str = env('GS_CREDENTIALS_PATH')  # type: ignore
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    os.path.join(BASE_DIR, gs_credentials_path)
-)
+GS_CREDENTIALS_PATH = env('GS_CREDENTIALS_PATH', 'vivemedellin-fdc8cbb3b441.json')
+# Cargar credenciales de GCS
+from google.oauth2 import service_account
+if GS_CREDENTIALS_PATH:
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        os.path.join(BASE_DIR, GS_CREDENTIALS_PATH)
+    )
 
 # Nombre del bucket
 GS_BUCKET_NAME = env('GS_BUCKET_NAME')
 
-STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+# Configuración de almacenamiento de archivos
+USE_GCS = not DEBUG or env.bool('USE_GCS_IN_DEBUG', False)
 
-# URL opcional si usas dominio público
-GS_DEFAULT_ACL = 'publicRead'
-MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
-
-
-if DEBUG:
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-    STATIC_URL = '/static/'
-    STATIC_ROOT = BASE_DIR / 'staticfiles'
-else:
+if USE_GCS:
+    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    GS_DEFAULT_ACL = 'publicRead'
+    MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
+else:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# La configuración de STATICFILES_STORAGE ya está manejada arriba basada en USE_GCS
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Optimización de respuestas
+MIDDLEWARE.insert(1, 'django.middleware.gzip.GZipMiddleware')  # Comprimir respuestas
+
+# Configuración de caché para archivos estáticos
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
+# Headers de caché para archivos estáticos (1 año)
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Tiempo de caché del navegador para archivos estáticos
+from django.core.cache import cache
+CACHES['staticfiles'] = {
+    'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+    'LOCATION': '/tmp/django_static_cache',
+    'TIMEOUT': 31536000,  # 1 año
+    'OPTIONS': {
+        'MAX_ENTRIES': 10000
+    }
+}
+
+# Optimización de sesiones
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+SESSION_CACHE_ALIAS = 'default'
+
+# Importar configuraciones locales si existen
+try:
+    from .settings_local import *
+except ImportError:
+    pass
+
+# Al final del archivo, agregar configuración de Debug Toolbar
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG and env.bool('SHOW_DEBUG_TOOLBAR', True),
+    'SHOW_COLLAPSED': True,
+}

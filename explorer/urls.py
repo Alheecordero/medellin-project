@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from .views import *
+from .views import home_modern_view
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import LogoutView
 from django.urls import reverse_lazy
@@ -10,6 +11,7 @@ from django.views.generic import TemplateView
 app_name = "explorer"
 
 urlpatterns = [
+    path("", home_view, name="home"),  # Página principal
     path("lugar/<slug:slug>/reseñas/", LugarReviewsView.as_view(), name="reseñas_lugar"),  # lugar 
 
     path("mapa-lugares-medellin/", mapa_explorar, name="mapa_explorar_medellin"), #/mapa-lugares-medellin/ 
@@ -31,8 +33,4 @@ urlpatterns = [
     path('mapa-zonas/', mapa_zonas, name='mapa_zonas'),
     path('ajax/autocomplete-places/', views.autocomplete_places_view, name='autocomplete_places'),
     
-    
-
-
-
 ]

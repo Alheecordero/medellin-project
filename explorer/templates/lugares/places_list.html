@@ -1,91 +1,346 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Lugares en Poblado Explorer{% endblock %}
-
-{% block meta_description %}
-  Descubre los mejores lugares de Medellín: bares, discotecas, restaurantes y rooftops. Explora todos los sitios disponibles en Poblado Explorer.
-{% endblock %}
-
-{% block meta_keywords %}
-  lugares Medellín, bares Medellín, discotecas Medellín, rooftops Medellín, sitios para salir en Medellín
-{% endblock %}
-
-{% block og_title %}
-  Todos los lugares en Medellín | Medellín Explorer
-{% endblock %}
-
-{% block og_description %}
-  Explora nuestra lista completa de lugares en Medellín. Encuentra bares, discotecas, restaurantes y más con calificaciones reales.
-{% endblock %}
-
-{% block og_image %}
-  {{ request.build_absolute_uri }}static/img/og-image.jpg
-{% endblock %}
+{% block title %}Lugares de Medellín - ViveMedellín{% endblock %}
 
 {% block content %}
-
-  {% if lugares %}
-    <div class="row g-4">
-      {% for lugar in lugares %}
-        <div class="col-md-4">
-          <div class="card shadow-sm h-100">
-            {% if lugar.fotos.all %}
-              <img src="{{ lugar.fotos.first.imagen.url }}" class="card-img-top" alt="Imagen de {{ lugar.nombre }}" style="height: 200px; object-fit: cover;">
-            {% elif lugar.imagen %}
-              <img src="{{ lugar.imagen.url }}" class="card-img-top" alt="Imagen de {{ lugar.nombre }}" style="height: 200px; object-fit: cover;">
-            {% else %}
-              <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-                <span class="fw-bold">Sin imagen</span>
-              </div>
-            {% endif %}
-
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{ lugar.nombre }}</h5>
-              <p class="card-text mb-4">
-                {% if lugar.rating %}
-                  ⭐ {{ lugar.rating }} / 5<br>
-                {% endif %}
-                <span class="text-muted small">{{ lugar.tipo|title }}</span>
-              </p>
-
-              {% if lugar.slug %}
-                <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-outline-primary mt-auto w-100">
-                  Ver detalles →
-                </a>
-              {% else %}
-                <span class="btn btn-secondary mt-auto w-100 disabled">Sin detalles</span>
-              {% endif %}
-            </div>
-          </div>
-        </div>
-      {% endfor %}
+<!-- Hero Section Simplificado -->
+<section class="hero-simple py-5 bg-gradient-primary text-white">
+    <div class="container-custom">
+        <h1 class="display-4 fw-bold mb-3">Lugares en Medellín</h1>
+        <p class="lead">Descubre los mejores sitios de la ciudad</p>
     </div>
+</section>
 
-    <!-- Paginación -->
-    {% if is_paginated %}
-      <nav class="mt-5 d-flex justify-content-center">
-        <ul class="pagination">
-          {% if page_obj.has_previous %}
-            <li class="page-item">
-              <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
-            </li>
-          {% endif %}
+<!-- Main Content -->
+<div class="container-custom my-5">
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <!-- Header con búsqueda y filtros -->
+            <div class="lugares-header">
+                <h1 class="text-center mb-4">
+                    <i class="fas fa-map-marked-alt"></i> Explora Medellín
+                </h1>
+                
+                <!-- Barra de búsqueda mejorada -->
+                <div class="row justify-content-center mb-4">
+                    <div class="col-md-8">
+                        <form method="get" action="{% url 'explorer:lugares_list' %}" class="search-form">
+                            <div class="input-group input-group-lg shadow-sm">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" 
+                                       name="q" 
+                                       class="form-control border-start-0" 
+                                       placeholder="Buscar lugares por nombre o dirección..." 
+                                       value="{{ request.GET.q }}"
+                                       autocomplete="off">
+                                <button class="btn btn-primary" type="submit">
+                                    Buscar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-          <li class="page-item disabled">
-            <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
-          </li>
+                <!-- Filtros rápidos -->
+                <div class="filters-section mb-4">
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <button class="btn btn-filter active" data-filter="all">
+                            <i class="fas fa-th"></i> Todos
+                        </button>
+                        <button class="btn btn-filter" data-filter="bar">
+                            <i class="fas fa-cocktail"></i> Bares
+                        </button>
+                        <button class="btn btn-filter" data-filter="restaurant">
+                            <i class="fas fa-utensils"></i> Restaurantes
+                        </button>
+                        <button class="btn btn-filter" data-filter="cafe">
+                            <i class="fas fa-coffee"></i> Cafés
+                        </button>
+                        <button class="btn btn-filter" data-filter="night_club">
+                            <i class="fas fa-music"></i> Discotecas
+                        </button>
+                        <button class="btn btn-filter" data-filter="tourist_attraction">
+                            <i class="fas fa-camera"></i> Turístico
+                        </button>
+                    </div>
+                </div>
 
-          {% if page_obj.has_next %}
-            <li class="page-item">
-              <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
-            </li>
-          {% endif %}
-        </ul>
-      </nav>
-    {% endif %}
+                <!-- Opciones de vista y ordenamiento -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="results-count">
+                        <span class="text-muted">
+                            {% if lugares %}
+                                Mostrando {{ page_obj.start_index }}-{{ page_obj.end_index }} de {{ page_obj.paginator.count }} lugares
+                            {% else %}
+                                No se encontraron resultados
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="view-options">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-outline-secondary active" id="gridView">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" id="listView">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                        
+                        <select class="form-select form-select-sm ms-2" id="sortBy" style="width: auto;">
+                            <option value="recent">Más recientes</option>
+                            <option value="rating">Mejor calificados</option>
+                            <option value="name">Nombre A-Z</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  {% else %}
-    <p class="text-center text-muted">No hay lugares disponibles en este momento.</p>
-  {% endif %}
+        <!-- Lista de lugares con diseño mejorado -->
+        <div class="col-lg-9">
+            <div class="row g-4" id="lugaresGrid">
+                {% for lugar in lugares %}
+                <div class="col-md-6 col-lg-4 lugar-item" data-tipo="{{ lugar.tipo }}">
+                    <div class="card lugar-card h-100 shadow-sm">
+                        <div class="position-relative">
+                            {% if lugar.imagen %}
+                                <img data-src="{{ lugar.imagen.url }}" 
+                                     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f0f0f0'/%3E%3C/svg%3E"
+                                     class="card-img-top lugar-img lazy" 
+                                     alt="{{ lugar.nombre }}"
+                                     loading="lazy">
+                            {% elif lugar.fotos.exists %}
+                                <img data-src="{{ lugar.fotos.first.imagen.url }}"
+                                     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f0f0f0'/%3E%3C/svg%3E"
+                                     class="card-img-top lugar-img lazy" 
+                                     alt="{{ lugar.nombre }}"
+                                     loading="lazy">
+                            {% else %}
+                                <img src="{% static 'img/placeholder.jpg' %}" 
+                                     class="card-img-top lugar-img" 
+                                     alt="Sin imagen">
+                            {% endif %}
+                            
+                            <!-- Badge de tipo -->
+                            <span class="badge bg-primary position-absolute top-0 start-0 m-2">
+                                {{ lugar.get_tipo_display|default:lugar.tipo }}
+                            </span>
+                            
+                            <!-- Favorito -->
+                            {% if user.is_authenticated %}
+                            <button class="btn btn-favorite position-absolute top-0 end-0 m-2" 
+                                    data-lugar-id="{{ lugar.id }}">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title mb-2">
+                                <a href="{% url 'explorer:lugares_detail' slug=lugar.slug %}" 
+                                   class="text-decoration-none text-dark stretched-link">
+                                    {{ lugar.nombre|truncatechars:40 }}
+                                </a>
+                            </h5>
+                            
+                            <!-- Rating -->
+                            {% if lugar.rating %}
+                            <div class="rating mb-2">
+                                <div class="stars">
+                                    {% for i in "12345" %}
+                                        {% if i|add:0 <= lugar.rating %}
+                                            <i class="fas fa-star text-warning"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-warning"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="text-muted small">({{ lugar.rating }}/5)</span>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Dirección -->
+                            {% if lugar.direccion %}
+                            <p class="card-text text-muted small mb-2">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                {{ lugar.direccion|truncatechars:60 }}
+                            </p>
+                            {% endif %}
+                            
+                            <!-- Tags/Características -->
+                            <div class="lugar-tags mt-auto">
+                                {% if lugar.precio %}
+                                <span class="badge bg-light text-dark">{{ lugar.precio }}</span>
+                                {% endif %}
+                                {% if lugar.abierto_ahora %}
+                                <span class="badge bg-success">Abierto ahora</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{% url 'explorer:lugares_detail' slug=lugar.slug %}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-info-circle me-1"></i> Ver detalles
+                                </a>
+                                <button class="btn btn-sm btn-outline-secondary share-btn" 
+                                        data-url="{{ request.build_absolute_uri }}{{ lugar.get_absolute_url }}">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="empty-state text-center py-5">
+                        <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                        <h3>No se encontraron lugares</h3>
+                        <p class="text-muted">
+                            {% if request.GET.q %}
+                                No hay resultados para "{{ request.GET.q }}"
+                            {% else %}
+                                No hay lugares disponibles en este momento
+                            {% endif %}
+                        </p>
+                        <a href="{% url 'explorer:lugares_list' %}" class="btn btn-primary mt-3">
+                            <i class="fas fa-redo me-2"></i> Ver todos los lugares
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Paginación mejorada -->
+            {% if is_paginated %}
+            <nav aria-label="Navegación de páginas" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                                {{ num }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filtros de tipo
+    const filterButtons = document.querySelectorAll('.btn-filter');
+    const lugarItems = document.querySelectorAll('.lugar-item');
+    
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            
+            lugarItems.forEach(item => {
+                if (filter === 'all' || item.dataset.tipo === filter) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Vista grid/lista
+    const gridView = document.getElementById('gridView');
+    const listView = document.getElementById('listView');
+    const lugaresGrid = document.getElementById('lugaresGrid');
+    
+    listView?.addEventListener('click', function() {
+        gridView.classList.remove('active');
+        this.classList.add('active');
+        lugaresGrid.classList.add('list-view');
+    });
+    
+    gridView?.addEventListener('click', function() {
+        listView.classList.remove('active');
+        this.classList.add('active');
+        lugaresGrid.classList.remove('list-view');
+    });
+    
+    // Favoritos (AJAX)
+    const favoriteButtons = document.querySelectorAll('.btn-favorite');
+    favoriteButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const lugarId = this.dataset.lugarId;
+            // Implementar lógica AJAX para favoritos
+            this.querySelector('i').classList.toggle('far');
+            this.querySelector('i').classList.toggle('fas');
+        });
+    });
+    
+    // Compartir
+    const shareButtons = document.querySelectorAll('.share-btn');
+    shareButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const url = this.dataset.url;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Mira este lugar en ViveMedellín',
+                    url: url
+                });
+            } else {
+                // Copiar al portapapeles
+                navigator.clipboard.writeText(url);
+                alert('Enlace copiado al portapapeles');
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

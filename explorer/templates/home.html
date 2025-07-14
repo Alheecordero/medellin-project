@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Inicio | Medellín Explorer{% endblock %}
+{% block title %}Inicio | ViveMedellín - Tu Guía de la Ciudad{% endblock %}
 
 {% block meta_description %}
-  Bienvenido a Medellín Explorer: descubre los mejores bares, discotecas, rooftops y restaurantes de Medellín, organizados por comunas. ¡Explora como un local!
+  Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín. Explora la ciudad por comunas con nuestra guía interactiva.
 {% endblock %}
 
 {% block meta_keywords %}
@@ -23,61 +24,336 @@
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-  <h1 class="text-center mb-5 fw-bold"> Explora Medellín por Comunas</h1>
 
-  {% for item in comuna_con_lugares %}
-    <section class="mb-5">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-          <h2 class="h4 text-capitalize fw-semibold mb-1">{{ item.nombre }}</h2>
-          <p class="text-muted small">{{ item.ref }}</p>
-        </div>
-        {% if item.comuna.slug %}
-          <a href="{% url 'explorer:lugares_por_comuna' item.comuna.slug %}" class="btn btn-sm btn-outline-primary">
-            Ver todos los lugares →
-          </a>
-        {% endif %}
-      </div>
-
-      <div class="row g-4">
-        {% for lugar in item.lugares %}
-          <div class="col-md-4">
-            <div class="card h-100 shadow-sm border-0">
-              {% if lugar.imagen %}
-                <img src="{{ lugar.imagen }}" class="card-img-top" alt="Imagen de {{ lugar.nombre }}" style="height: 200px; object-fit: cover;" loading="lazy">+
-              {% else %}
-                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-                  <span class="fw-bold">Sin imagen</span>
+<!-- Hero Section -->
+<section class="hero-section position-relative overflow-hidden">
+    <div class="hero-background">
+        <img src="{% static 'img/medellin.jpg' %}" alt="Medellín" class="w-100 h-100 object-fit-cover position-absolute">
+    </div>
+    
+    <div class="container-custom position-relative">
+        <div class="row min-vh-100 align-items-center">
+            <div class="col-lg-7">
+                <div class="hero-content">
+                    <h1 class="hero-title display-1 mb-4">
+                        Descubre <span class="text-gradient">Medellín</span><br>
+                        Como Nunca Antes
+                    </h1>
+                    <p class="hero-subtitle mb-4">
+                        Explora los mejores bares, restaurantes, discotecas y lugares turísticos 
+                        de la ciudad de la eterna primavera.
+                    </p>
+                    
+                    <!-- Search Bar -->
+                    <div class="search-modern mb-4" data-aos="fade-up" data-aos-delay="300">
+                        <input type="text" id="search-places" placeholder="Busca bares, restaurantes, lugares...">
+                        <button type="button" class="btn">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="d-flex gap-3 flex-wrap" data-aos="fade-up" data-aos-delay="400">
+                        <a href="{% url 'explorer:mapa_explorar_medellin' %}" class="btn btn-gradient btn-modern">
+                            <i class="bi bi-map me-2"></i> Explorar Mapa
+                        </a>
+                        <a href="{% url 'explorer:lugares_list' %}" class="btn btn-outline-modern">
+                            Ver Todos los Lugares
+                        </a>
+                    </div>
+                    
+                    <!-- Quick Stats -->
+                    <div class="row mt-5 g-4" data-aos="fade-up" data-aos-delay="500">
+                        <div class="col-auto">
+                            <h3 class="mb-0 text-white">{{ comuna_con_lugares|length }}</h3>
+                            <p class="mb-0 opacity-75">Comunas</p>
+                        </div>
+                        <div class="col-auto">
+                            <h3 class="mb-0 text-white">500+</h3>
+                            <p class="mb-0 opacity-75">Lugares</p>
+                        </div>
+                        <div class="col-auto">
+                            <h3 class="mb-0 text-white">24/7</h3>
+                            <p class="mb-0 opacity-75">Disponible</p>
+                        </div>
+                    </div>
                 </div>
-              {% endif %}
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title fw-semibold">{{ lugar.nombre }}</h5>
-                <p class="card-text text-muted small mb-3">
-                  {{ lugar.tipo|title }}
-                  {% if lugar.rating and lugar.rating >= 4.5 %}
-                    <span class="badge bg-success ms-2">⭐ Top Valorado</span>
-                  {% endif %}
-                </p>
-                <p class="small text-muted">
-                  {% if lugar.rating %}
-                    Calificación: ⭐ {{ lugar.rating }} / 5
-                  {% endif %}
-                </p>
-
-                {% if lugar.slug %}
-                  <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-outline-primary mt-auto w-100">
-                    Ver detalles →
-                  </a>
-                {% else %}
-                  <span class="btn btn-secondary disabled mt-auto w-100">Sin detalles</span>
-                {% endif %}
-              </div>
             </div>
-          </div>
+        </div>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="position-absolute bottom-0 start-50 translate-middle-x mb-4 animate-float">
+        <a href="#features" class="text-white text-decoration-none">
+            <i class="bi bi-chevron-double-down fs-2"></i>
+        </a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5 bg-light">
+    <div class="container-custom">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold">¿Por qué <span class="text-gradient">ViveMedellín</span>?</h2>
+            <p class="lead text-muted">Todo lo que necesitas para explorar la ciudad</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-map"></i>
+                    </div>
+                    <h4>Mapa Interactivo</h4>
+                    <p class="text-muted">Explora todos los lugares en un mapa interactivo con filtros por tipo y comuna</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-star"></i>
+                    </div>
+                    <h4>Reseñas Reales</h4>
+                    <p class="text-muted">Lee opiniones verificadas de otros usuarios y comparte tu experiencia</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-heart"></i>
+                    </div>
+                    <h4>Guarda Favoritos</h4>
+                    <p class="text-muted">Crea tu lista personalizada de lugares favoritos para visitar después</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Comunas Section -->
+<section class="py-5">
+    <div class="container-custom">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-4 fw-bold">Explora por <span class="text-gradient">Comunas</span></h2>
+            <p class="lead text-muted">Descubre lo mejor de cada zona de Medellín</p>
+        </div>
+
+        {% for item in comuna_con_lugares %}
+            <div class="mb-5" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'00' }}">
+                <!-- Comuna Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 class="h4 mb-1 fw-bold">
+                            <i class="bi bi-geo-alt-fill text-gradient me-2"></i>
+                            {{ item.nombre }}
+                        </h3>
+                        <p class="text-muted mb-0">{{ item.ref }}</p>
+                    </div>
+                    {% if item.comuna.slug %}
+                        <a href="{% url 'explorer:lugares_por_comuna' item.comuna.slug %}" class="btn btn-outline-modern btn-sm">
+                            Ver todos <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Lugares Cards -->
+                <div class="row g-4">
+                    {% for lugar in item.lugares %}
+                        <div class="col-md-4">
+                            <div class="card-modern">
+                                <div class="card-img-wrapper">
+                                    {% if lugar.imagen %}
+                                        <img src="{{ lugar.imagen }}" class="card-img-top" alt="{{ lugar.nombre }}" loading="lazy">
+                                    {% else %}
+                                        <div class="bg-gradient-secondary d-flex align-items-center justify-content-center h-100">
+                                            <i class="bi bi-image text-white fs-1"></i>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <!-- Category Badge -->
+                                    {% if lugar.tipo %}
+                                        <span class="badge-category">{{ lugar.tipo|title }}</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold mb-2">{{ lugar.nombre }}</h5>
+                                    
+                                    {% if lugar.rating %}
+                                        <div class="rating mb-3">
+                                            <i class="bi bi-star-fill me-1"></i>
+                                            {{ lugar.rating|floatformat:1 }}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% if lugar.slug %}
+                                        <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient w-100">
+                                            Ver Detalles
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12">
+                            <p class="text-muted text-center">No hay lugares destacados en esta comuna aún.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         {% endfor %}
-      </div>
-    </section>
-  {% endfor %}
-</div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-gradient-primary text-white">
+    <div class="container-custom text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8" data-aos="zoom-in">
+                <h2 class="display-4 fw-bold mb-4">¿Listo para Explorar?</h2>
+                <p class="lead mb-4">
+                    Únete a miles de personas que ya están descubriendo 
+                    los mejores lugares de Medellín
+                </p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{% url 'usuarios:registro' %}" class="btn btn-light btn-modern">
+                        <i class="bi bi-person-plus me-2"></i> Crear Cuenta Gratis
+                    </a>
+                    <a href="{% url 'explorer:mapa_explorar_medellin' %}" class="btn btn-outline-light btn-modern">
+                        <i class="bi bi-compass me-2"></i> Explorar Ahora
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Hero Background Overlay */
+.hero-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.7) 100%);
+    z-index: 1;
+}
+
+/* Object Fit for Images */
+.object-fit-cover {
+    object-fit: cover;
+}
+
+/* Smooth Scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Comuna Section Divider */
+.comuna-section + .comuna-section {
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding-top: 3rem;
+}
+
+/* Card Hover Effects */
+.card-modern {
+    cursor: pointer;
+}
+
+.card-modern:hover .card-title {
+    color: #667eea;
+}
+
+/* Search Autocomplete Styling */
+.ui-autocomplete {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: white;
+    border: none;
+    box-shadow: var(--shadow-lg);
+    border-radius: 0.75rem;
+    padding: 0.5rem;
+}
+
+.ui-menu-item-wrapper {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ui-menu-item-wrapper:hover {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .search-modern {
+        margin-bottom: 2rem;
+    }
+    
+    .feature-card {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize search with autocomplete
+$(document).ready(function() {
+    $("#search-places").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: "{% url 'explorer:autocomplete_places' %}",
+                dataType: "json",
+                data: { term: request.term },
+                success: function(data) {
+                    response($.map(data, function(item) {
+                        return {
+                            label: item.label,
+                            value: item.label,
+                            slug: item.slug
+                        };
+                    }));
+                }
+            });
+        },
+        minLength: 2,
+        select: function(event, ui) {
+            if (ui.item.slug) {
+                window.location.href = "/lugar/" + ui.item.slug + "/";
+            }
+        }
+    });
+    
+    // Smooth scroll for anchor links
+    $('a[href^="#"]').on('click', function(e) {
+        e.preventDefault();
+        const target = $(this.getAttribute('href'));
+        if(target.length) {
+            $('html, body').animate({
+                scrollTop: target.offset().top - 80
+            }, 800);
+        }
+    });
+});
+</script>
 {% endblock %}

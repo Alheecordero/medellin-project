@@ -8,7 +8,8 @@ from django.utils.text import slugify
 from django.core.cache import cache
 from django.contrib.gis.db.models.functions import Transform
 from django.core.paginator import Paginator
-from .models import Places, Favorito, RegionOSM
+from django.db.models import Prefetch, Q, Avg
+from .models import Places, Favorito, RegionOSM, Foto
 import json
 from django.urls import reverse
 from django.views.decorators.http import require_GET
@@ -18,32 +19,67 @@ from django.http import JsonResponse
 from django.core.serializers import serialize
 from .models import ZonaCubierta
 # ======================================================
-# LIST VIEW CON CACHE SOLO DEL QUERYSET
+# LIST VIEW CON CACHE Y PREFETCH OPTIMIZADO
 # ======================================================
 
 class LugaresListView(ListView):
     model = Places
     template_name = 'lugares/places_list.html'
     context_object_name = 'lugares'
-    ordering = ['-fecha_creacion']
-    paginate_by = 9
+    paginate_by = 12
 
     def get_queryset(self):
-        query = self.request.GET.get('q') or ''
-        cache_key = f"lugares_list_{query}"
+        query = self.request.GET.get('q', '').strip()
+        tipo = self.request.GET.get('tipo', '')
+        sort = self.request.GET.get('sort', '')
+        
+        cache_key = f"lugares_list_modern_{query}_{tipo}_{sort}"
+        
+        # Intentar obtener del caché
+        cached_result = cache.get(cache_key)
+        if cached_result is not None:
+            return cached_result
 
-        queryset = cache.get(cache_key)
-        if queryset is None:
-            queryset = super().get_queryset()
-            if query:
-                queryset = queryset.filter(
-                    nombre__icontains=query
-                ) | queryset.filter(
-                    direccion__icontains=query
-                )
-            cache.set(cache_key, list(queryset), 300)  # Cacheamos la lista para que sea serializable
-
-        return queryset
+        # Si no está en caché, hacer la consulta optimizada
+        queryset = super().get_queryset().prefetch_related('fotos')
+        
+        if query:
+            queryset = queryset.filter(
+                Q(nombre__icontains=query) | 
+                Q(direccion__icontains=query) |
+                Q(descripcion__icontains=query)
+            )
+        
+        if tipo:
+            queryset = queryset.filter(tipo=tipo)
+        
+        # Ordenamiento
+        if sort == 'rating':
+            queryset = queryset.order_by('-rating', '-fecha_creacion')
+        elif sort == 'recent':
+            queryset = queryset.order_by('-fecha_creacion')
+        elif sort == 'name':
+            queryset = queryset.order_by('nombre')
+        else:
+            queryset = queryset.order_by('-fecha_creacion')
+        
+        # Cachear el resultado
+        result = list(queryset)
+        cache.set(cache_key, result, 300)  # 5 minutos
+        
+        return result
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Agregar favoritos del usuario si está autenticado
+        if self.request.user.is_authenticated:
+            user_favorites = Favorito.objects.filter(
+                usuario=self.request.user
+            ).values_list('lugar_id', flat=True)
+            context['user_favorites'] = list(user_favorites)
+        
+        return context
 
 
 class LugaresDetailView(DetailView):
@@ -66,27 +102,21 @@ class LugaresDetailView(DetailView):
 
 class LugarReviewsView(DetailView):
     model = Places
-    template_name = "lugares/reviews_lugar.html"
-    context_object_name = "lugar"
-    slug_url_kwarg = "slug"
+    template_name = 'lugares/reviews_lugar.html'
+    context_object_name = 'lugar'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         lugar = self.get_object()
-
-        # Limpia los textos de las reseñas si existen
-        cleaned_reviews = []
-        for r in lugar.reviews:
-            text = r.get("text", "")
-            cleaned = text.lstrip() if text else ""
-            r["text"] = cleaned
-            cleaned_reviews.append(r)
-
-        context["reviews"] = cleaned_reviews
+        context['reviews'] = lugar.reviews if lugar.reviews else []
         return context
 
+
+
 # ======================================================
-# VISTAS PERSONALIZADAS
+# VISTAS PERSONALIZADAS OPTIMIZADAS
 # ======================================================
 
 OSM_IDS_MEDELLIN = [
@@ -97,43 +127,73 @@ OSM_IDS_MEDELLIN = [
 ]
 
 def mapa_explorar(request):
+    # Caché de 1 hora para el mapa
+    cache_key = "mapa_explorar_data_v2"
+    cached_data = cache.get(cache_key)
+    
+    if cached_data:
+        return render(request, 'lugares/places_map.html', cached_data)
+
+    # Obtener comunas
     comunas = RegionOSM.objects.filter(osm_id__in=OSM_IDS_MEDELLIN)
 
-    datos_lugares = []
-    for comuna in comunas:
-        lugares_de_comuna = Places.objects.filter(
-            ubicacion__coveredby=comuna.geom.simplify(50),
-            slug__isnull=False
-        ).exclude(slug="")
+    # OPTIMIZACIÓN: Cargar todos los lugares con sus fotos de una vez
+    todos_lugares = Places.objects.filter(
+        slug__isnull=False,
+        ubicacion__isnull=False
+    ).exclude(
+        slug=""
+    ).prefetch_related(
+        'fotos'
+    ).select_related()  # Si hay FKs adicionales
 
-        for lugar in lugares_de_comuna:
-            # Prioridad: lugar.imagen > lugar.fotos.first
-            imagen_url = ""
-            if lugar.imagen and hasattr(lugar.imagen, "url"):
-                try:
-                    imagen_url = request.build_absolute_uri(lugar.imagen.url)
-                except:
-                    pass
-            elif lugar.fotos.exists():
-                primera_foto = lugar.fotos.first()
-                if primera_foto.imagen and hasattr(primera_foto.imagen, "url"):
+    # Mapear lugares a comunas
+    datos_lugares = []
+    lugares_procesados = set()
+
+    for comuna in comunas:
+        # Obtener IDs de lugares de esta comuna (cacheado)
+        cache_key_comuna = f"lugares_comuna_{comuna.osm_id}"
+        lugar_ids = cache.get(cache_key_comuna)
+        
+        if lugar_ids is None:
+            lugar_ids = list(Places.objects.filter(
+                ubicacion__coveredby=comuna.geom.simplify(50)
+            ).values_list('id', flat=True))
+            cache.set(cache_key_comuna, lugar_ids, 3600)
+
+        # Procesar lugares
+        for lugar in todos_lugares:
+            if lugar.id in lugar_ids and lugar.id not in lugares_procesados:
+                lugares_procesados.add(lugar.id)
+                
+                imagen_url = ""
+                if lugar.imagen and hasattr(lugar.imagen, "url"):
                     try:
-                        imagen_url = request.build_absolute_uri(primera_foto.imagen.url)
+                        imagen_url = request.build_absolute_uri(lugar.imagen.url)
                     except:
                         pass
+                elif lugar.fotos.exists():
+                    primera_foto = lugar.fotos.first()
+                    if primera_foto and primera_foto.imagen and hasattr(primera_foto.imagen, "url"):
+                        try:
+                            imagen_url = request.build_absolute_uri(primera_foto.imagen.url)
+                        except:
+                            pass
 
-            datos_lugares.append({
-                'slug': lugar.slug,
-                'nombre': lugar.nombre,
-                'lat': lugar.ubicacion.y,
-                'lng': lugar.ubicacion.x,
-                'tipo': lugar.tipo,
-                'rating': lugar.rating,
-                'imagen': imagen_url,
-                'comuna_id': comuna.osm_id,
-                'comuna_nombre': comuna.name
-            })
+                datos_lugares.append({
+                    'slug': lugar.slug,
+                    'nombre': lugar.nombre,
+                    'lat': lugar.ubicacion.y,
+                    'lng': lugar.ubicacion.x,
+                    'tipo': lugar.tipo,
+                    'rating': lugar.rating,
+                    'imagen': imagen_url,
+                    'comuna_id': comuna.osm_id,
+                    'comuna_nombre': comuna.name
+                })
 
+    # Preparar datos de comunas
     datos_comunas = [
         {
             'id': comuna.osm_id,
@@ -143,35 +203,59 @@ def mapa_explorar(request):
         for comuna in comunas if comuna.geom
     ]
 
-    return render(request, 'lugares/places_map.html', {
+    result_data = {
         'lugares_json': json.dumps(datos_lugares),
         'comunas_json': json.dumps(datos_comunas),
         'comunas_list': comunas,
+    }
+    
+    # Cachear resultado
+    cache.set(cache_key, result_data, 3600)  # 1 hora
+    
+    return render(request, 'lugares/places_map.html', result_data)
+
+
+
+
+@login_required
+def guardar_favorito(request, pk):
+    if request.method == 'POST':
+        lugar = get_object_or_404(Places, pk=pk)
+        favorito, created = Favorito.objects.get_or_create(
+            usuario=request.user,
+            lugar=lugar
+        )
+        if not created:
+            favorito.delete()
+            return JsonResponse({'status': 'removed'})
+        return JsonResponse({'status': 'added'})
+    return JsonResponse({'status': 'error'})
+
+@login_required
+def mis_favoritos(request):
+    # Optimizado con select_related y prefetch_related
+    favoritos = Favorito.objects.filter(
+        usuario=request.user
+    ).select_related('lugar').prefetch_related('lugar__fotos')
+    
+    return render(request, 'usuarios/mis_favoritos.html', {
+        'favoritos': favoritos
     })
 
 
+def perfil_usuario(request):
+    return render(request, 'usuarios/perfil.html')
 
 def registro_usuario(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('login')
+            return redirect('explorer:login')  
     else:
         form = UserCreationForm()
-    return render(request, 'usuarios/registro.html', {'form': form})
-
-@login_required
-def guardar_favorito(request, pk):
-    lugar = get_object_or_404(Places, pk=pk)
-    Favorito.objects.get_or_create(usuario=request.user, lugar=lugar)
-    return redirect('explorer:lugares_detail', slug=lugar.slug)
-
-
-@login_required
-def mis_favoritos(request):
-    favoritos = Favorito.objects.filter(usuario=request.user)
-    return render(request, 'usuarios/mis_favoritos.html', {'favoritos': favoritos})
+    
+    return render(request, 'usuarios/register.html', {'form': form})
 
 @login_required
 def eliminar_favorito(request, pk):
@@ -179,10 +263,9 @@ def eliminar_favorito(request, pk):
     favorito.delete()
     return redirect('explorer:mis_favoritos')
 
-@login_required
-def perfil_usuario(request):
-    favoritos = Favorito.objects.filter(usuario=request.user).select_related('lugar')
-    return render(request, 'usuarios/perfil.html', {'favoritos': favoritos})
+
+def mapa_zonas(request):
+    return render(request, 'lugares/zonas_mapa.html')
 
 
 def acerca_de_view(request):
@@ -208,14 +291,6 @@ def acerca_de_view(request):
 # COMUNAS
 # ======================================================
 
-OSM_IDS_MEDELLIN = [
-    -7680678, -7680807, -7680859, -11937925,
-    -7676068, -7676069, -7680798, -7680904, -7680903,
-    -7673972, -7673973, -7680403, -7673971, -7677386,
-    -7680799, -7680490
-]
-
-
 def lugares_por_comuna_view(request, slug):
     cache_key_comuna = f"comuna_{slug}"
     cache_key_lugares = f"lugares_comuna_{slug}"
@@ -233,7 +308,9 @@ def lugares_por_comuna_view(request, slug):
     if lugares_queryset is None:
         lugares_queryset = Places.objects.filter(
             ubicacion__coveredby=comuna.geom.simplify(50)
-        ).filter(slug__isnull=False).exclude(slug="").order_by("nombre")
+        ).prefetch_related('fotos').filter(
+            slug__isnull=False
+        ).exclude(slug="").order_by("nombre")
         cache.set(cache_key_lugares, list(lugares_queryset), 300)
 
     paginator = Paginator(lugares_queryset, 6)
@@ -272,12 +349,30 @@ def lugares_por_comuna_view(request, slug):
     })
 
 def home_view(request):
-    comuna_con_lugares = cache.get("comunas_y_lugares")
+    # Caché de 30 minutos para la página home completa
+    cache_key = "home_view_data_v2"
+    comuna_con_lugares = cache.get(cache_key)
 
     if not comuna_con_lugares:
+        # Obtener todas las comunas de una vez
         comunas = RegionOSM.objects.filter(
-            osm_id__in=OSM_IDS_MEDELLIN, name__isnull=False
+            osm_id__in=OSM_IDS_MEDELLIN, 
+            name__isnull=False
         ).order_by("name")
+
+        # OPTIMIZACIÓN CLAVE: Obtener TODOS los lugares de Medellín de una vez
+        # y filtrarlos en Python en lugar de hacer queries geográficas múltiples
+        todos_lugares = list(Places.objects.filter(
+            slug__isnull=False,
+            ubicacion__isnull=False
+        ).exclude(
+            slug=""
+        ).prefetch_related(
+            Prefetch('fotos', queryset=Foto.objects.only('imagen'))
+        ).values(
+            'id', 'nombre', 'slug', 'tipo', 'rating', 
+            'imagen', 'ubicacion', 'fotos__imagen'
+        ))
 
         comuna_con_lugares = []
 
@@ -288,44 +383,69 @@ def home_view(request):
                 ref = "Comuna"
                 nombre = comuna.name
 
-            # Solo lugares válidos con slug e imagen
-            lugares_qs = (
-                Places.objects.filter(
+            # Solo hacer la query geográfica una vez por comuna y cachearla
+            cache_key_comuna = f"lugares_comuna_{comuna.osm_id}"
+            lugar_ids = cache.get(cache_key_comuna)
+            
+            if lugar_ids is None:
+                # Esta es la query costosa - la cacheamos por 1 hora
+                lugar_ids = list(Places.objects.filter(
                     ubicacion__coveredby=comuna.geom.simplify(50),
                     slug__isnull=False
-                )
-                .exclude(slug="")
-                .order_by("-rating")[:3]
-            )
-
+                ).exclude(slug="").values_list('id', flat=True))
+                cache.set(cache_key_comuna, lugar_ids, 3600)
+            
+            # Filtrar los lugares ya cargados
             lugares_json = []
-            for lugar in lugares_qs:
-                imagen_url = None
-                if hasattr(lugar, "fotos") and lugar.fotos.exists():
-                    imagen_url = lugar.fotos.first().imagen.url
-                elif lugar.imagen and hasattr(lugar.imagen, "url"):
-                    imagen_url = lugar.imagen.url
+            for lugar_data in todos_lugares:
+                if lugar_data['id'] in lugar_ids:
+                    imagen_url = None
+                    if lugar_data.get('imagen'):
+                        imagen_url = lugar_data['imagen']
+                    elif lugar_data.get('fotos__imagen'):
+                        imagen_url = lugar_data['fotos__imagen']
 
-                lugares_json.append({
-                    "nombre": lugar.nombre,
-                    "slug": lugar.slug,
-                    "tipo": lugar.tipo,
-                    "rating": lugar.rating,
-                    "imagen": imagen_url,
-                })
+                    lugares_json.append({
+                        "nombre": lugar_data['nombre'],
+                        "slug": lugar_data['slug'],
+                        "tipo": lugar_data['tipo'],
+                        "rating": lugar_data['rating'],
+                        "imagen": imagen_url,
+                    })
+                    
+                    if len(lugares_json) >= 3:  # Solo mostrar top 3
+                        break
 
             comuna_con_lugares.append({
                 "comuna": comuna,
                 "nombre": nombre,
                 "ref": ref,
-                "lugares": lugares_json,
+                "lugares": sorted(lugares_json, key=lambda x: x.get('rating') or 0, reverse=True)[:3],
             })
 
-        cache.set("comunas_y_lugares", comuna_con_lugares, 600)
+        # Cachear por 30 minutos
+        cache.set(cache_key, comuna_con_lugares, 1800)
 
     return render(request, "home.html", {
         "comuna_con_lugares": comuna_con_lugares
     })
+
+
+def home_modern_view(request):
+    """Vista optimizada para el diseño moderno sin consultas de comunas"""
+    # Caché simple para estadísticas
+    cache_key = "home_stats"
+    stats = cache.get(cache_key)
+    
+    if not stats:
+        stats = {
+            'total_lugares': Places.objects.count(),
+            'total_comunas': 16,  # Fijo, sabemos que son 16
+            'promedio_rating': Places.objects.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 4.8
+        }
+        cache.set(cache_key, stats, 3600)  # 1 hora
+    
+    return render(request, "home_modern.html", stats)
 
 
 
@@ -333,8 +453,6 @@ def zonas_geojson(request):
     data = serialize('geojson', ZonaCubierta.objects.all(), geometry_field='poligono', fields=('nombre',))
     return HttpResponse(data, content_type='application/json')
 
-def mapa_zonas(request):
-    return render(request, "lugares/zonas_mapa.html")
 
 
 

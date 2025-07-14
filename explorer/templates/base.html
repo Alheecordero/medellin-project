@@ -1,196 +1,219 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}ViveMedellín{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- ✅ SEO -->
-    <meta name="description" content="{% block meta_description %}Explora bares, discotecas y restaurantes en Medellín con nuestro mapa interactivo y listado por comunas.{% endblock %}">
-    <meta name="keywords" content="{% block meta_keywords %}bares Medellín, discotecas Medellín, restaurantes Medellín, lugares turísticos Medellín, comunas de Medellín{% endblock %}">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
-    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
-
-    <!-- ✅ Open Graph -->
-    <meta property="og:title" content="{% block og_title %}Medellín Explorer{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Descubre los mejores bares, discotecas y restaurantes de Medellín por comuna.{% endblock %}">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ request.build_absolute_uri }}">
-    <meta property="og:image" content="{% block og_image %}{{ request.build_absolute_uri }}static/img/og-image.jpg{% endblock %}">
-
-    <!-- Bootstrap & Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- jQuery UI -->
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-
+    <title>{% block title %}ViveMedellín - Explora la Ciudad de la Eterna Primavera{% endblock %}</title>
+    
+    <!-- Preload recursos críticos -->
+    <link rel="preload" href="{% static 'css/style.css' %}" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
+    
+    <!-- Preconnect a dominios externos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    
+    <!-- CSS crítico inline para evitar FOUC -->
     <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            background-color: #f5f5f5;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            padding-top: 80px;
-        }
-
-        main {
-            flex: 1;
-        }
-
-        footer {
-            background-color: #f8f9fa;
-            border-top: 1px solid #ddd;
-            padding: 20px 0;
-        }
-
-        .navbar {
-            padding: 1rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-            font-size: 1.8rem;
-            letter-spacing: 0.5px;
-            color: #f8f9fa !important;
-        }
-
-        .nav-link {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #f1f1f1 !important;
-            transition: color 0.3s ease;
-        }
-
-        .nav-link:hover {
-            color: #ffffff !important;
-            text-decoration: underline;
-        }
-
-        .search-form input {
-            border-radius: 0.375rem;
-        }
-
-        .btn-link.nav-link {
-            font-size: 1.1rem;
-        }
-
-        .navbar-nav .nav-item + .nav-item {
-            margin-left: 0.75rem;
-        }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        .navbar { background: #1a1a2e; transition: all 0.3s ease; }
+        .hero { min-height: 400px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
     </style>
-
+    
+    <!-- CSS principal -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
     {% block extra_css %}{% endblock %}
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7T6TJ7020J"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-7T6TJ7020J');
-    </script>
 </head>
 <body>
-
-<!-- ✅ Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-    <div class="container">
-        <a class="navbar-brand" href="{% url 'home' %}">Vive Medellín</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <form method="get" action="{% url 'explorer:lugares_list' %}" class="d-flex me-3">
-                <input id="autocomplete-lugar" class="form-control me-2" type="search" name="q" placeholder="Buscar un lugar">
-                <button class="btn btn-outline-light" type="submit">Buscar</button>
-            </form>
-
-            <ul class="navbar-nav align-items-center">
-                <li class="nav-item"><a class="nav-link" href="{% url 'explorer:mapa_explorar_medellin' %}">Mapa</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'explorer:acerca' %}">Acerca de</a></li>
-                <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
-
-                {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'explorer:mis_favoritos' %}">Mis Favoritos</a></li>
-                    <li class="nav-item d-flex align-items-center">
-                        <form method="post" action="{% url 'usuarios_app:logout' %}" class="m-0">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-link nav-link text-white px-2 py-0">Cerrar sesión</button>
-                        </form>
+    <!-- Navbar mejorado -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'explorer:home' %}">
+                <i class="fas fa-mountain-sun me-2"></i>
+                <span class="fw-bold">ViveMedellín</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'explorer:home' %}">
+                            <i class="fas fa-home me-1"></i> Inicio
+                        </a>
                     </li>
-                {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'usuarios_app:login' %}">Iniciar sesión</a></li>
-                {% endif %}
-            </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'explorer:lugares_list' %}">
+                            <i class="fas fa-map-marker-alt me-1"></i> Lugares
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'explorer:mapa_explorar_medellin' %}">
+                            <i class="fas fa-map me-1"></i> Mapa
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="comunasDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-city me-1"></i> Comunas
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="comunasDropdown">
+                            {% for comuna in comunas %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'explorer:lugares_por_comuna' slug=comuna.slug %}">
+                                        {{ comuna.name }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'explorer:acerca' %}">
+                            <i class="fas fa-info-circle me-1"></i> Acerca
+                        </a>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown ms-3">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <div class="user-avatar me-2">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <span>{{ user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'explorer:perfil_usuario' %}">
+                                        <i class="fas fa-user-circle me-2"></i> Mi Perfil
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'explorer:mis_favoritos' %}">
+                                        <i class="fas fa-heart me-2"></i> Mis Favoritos
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'usuarios:logout' %}">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item ms-3">
+                            <a class="btn btn-primary" href="{% url 'usuarios:login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i> Iniciar Sesión
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<!-- ✅ Contenido principal -->
-<main class="container py-4">
-    {% block content %}{% endblock %}
-</main>
+    <!-- Contenido principal -->
+    <main style="margin-top: 76px;">
+        {% block content %}
+        {% endblock %}
+    </main>
 
-<!-- ✅ Footer -->
-<footer class="text-center">
-    <div class="container">
-        <hr>
-        <p class="mb-0">&copy; {% now "Y" %} Vive Medellín. Todos los derechos reservados.</p>
-    </div>
-</footer>
+    <!-- Footer mejorado -->
+    <footer class="footer mt-5">
+        <div class="container-custom">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="mb-3">
+                        <i class="fas fa-mountain-sun me-2"></i>ViveMedellín
+                    </h5>
+                    <p class="text-muted">
+                        Descubre los mejores lugares de Medellín, la ciudad de la eterna primavera.
+                    </p>
+                    <div class="social-links mt-3">
+                        <a href="#" class="me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <h6 class="mb-3">Enlaces Rápidos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="{% url 'explorer:lugares_list' %}">Explorar Lugares</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{% url 'explorer:mapa_explorar_medellin' %}">Mapa Interactivo</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{% url 'explorer:acerca' %}">Acerca de</a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <h6 class="mb-3">Newsletter</h6>
+                    <p class="text-muted mb-3">Recibe las últimas novedades sobre Medellín</p>
+                    <form class="newsletter-form">
+                        <div class="input-group">
+                            <input type="email" class="form-control" placeholder="Tu email" required>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            
+            <div class="text-center">
+                <p class="mb-0">&copy; 2024 ViveMedellín. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
 
-<!-- ✅ Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <!-- Botón scroll to top -->
+    <button id="scrollToTop" class="scroll-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
-<!-- ✅ Autocompletado de lugares -->
-<script>
-  $(function() {
-    $("#autocomplete-lugar").autocomplete({
-      source: function(request, response) {
-        $.ajax({
-          url: "{% url 'explorer:autocomplete_places' %}",
-          dataType: "json",
-          data: {
-            term: request.term
-          },
-          success: function(data) {
-            response($.map(data, function(item) {
-              return {
-                label: item.label,
-                value: item.label,
-                slug: item.slug
-              };
-            }));
-          }
+    <!-- Scripts con defer/async para mejor rendimiento -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    
+    <!-- Script de optimizaciones -->
+    <script src="{% static 'js/optimizations.js' %}" defer></script>
+    
+    <!-- Script inline para funcionalidad crítica -->
+    <script>
+        // Scroll to top button
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrollBtn = document.getElementById('scrollToTop');
+            
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    scrollBtn.style.display = 'block';
+                } else {
+                    scrollBtn.style.display = 'none';
+                }
+            });
+            
+            scrollBtn.addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
         });
-      },
-      minLength: 2,
-      select: function(event, ui) {
-        if (ui.item.slug) {
-          window.location.href = "/lugar/" + ui.item.slug + "/";
-        }
-      }
-    });
-  });
-</script>
-
-{% block extra_js %}{% endblock %}
-
+    </script>
+    
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
