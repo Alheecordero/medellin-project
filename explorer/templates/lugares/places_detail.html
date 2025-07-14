@@ -36,7 +36,7 @@
                 <div class="carousel-inner">
                     {% if lugar.imagen %}
                     <div class="carousel-item active">
-                        <img src="{{ lugar.imagen.url }}" 
+                        <img src="{{ lugar.imagen }}" 
                              class="d-block w-100" 
                              alt="{{ lugar.nombre }}"
                              data-critical>
@@ -44,7 +44,7 @@
                     {% endif %}
                     {% for foto in lugar.fotos.all %}
                     <div class="carousel-item {% if not lugar.imagen and forloop.first %}active{% endif %}">
-                        <img data-src="{{ foto.imagen.url }}" 
+                        <img data-src="{{ foto.image_url }}" 
                              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600'%3E%3Crect width='1200' height='600' fill='%23f0f0f0'/%3E%3C/svg%3E"
                              class="d-block w-100 lazy" 
                              alt="{{ foto.descripcion|default:lugar.nombre }}"
