@@ -168,16 +168,12 @@ def mapa_explorar(request):
                 lugares_procesados.add(lugar.id)
                 
                 imagen_url = ""
-                if lugar.imagen and hasattr(lugar.imagen, "url"):
-                    try:
-                        imagen_url = request.build_absolute_uri(lugar.imagen.url)
-                    except:
-                        pass
-                elif lugar.fotos.exists():
+                if lugar.fotos.exists():
                     primera_foto = lugar.fotos.first()
-                    if primera_foto and primera_foto.imagen and hasattr(primera_foto.imagen, "url"):
+                    if primera_foto and primera_foto.imagen:
                         try:
-                            imagen_url = request.build_absolute_uri(primera_foto.imagen.url)
+                            # Asumimos que la imagen ya es una URL completa
+                            imagen_url = primera_foto.imagen
                         except:
                             pass
 
@@ -321,10 +317,15 @@ def lugares_por_comuna_view(request, slug):
     for lugar in page_obj:
         if lugar.slug and lugar.ubicacion:
             # Construir imagen absoluta
-            if lugar.imagen and hasattr(lugar.imagen, "url"):
-                imagen_url = request.build_absolute_uri(lugar.imagen.url)
-            elif lugar.fotos.exists() and lugar.fotos.first().imagen and hasattr(lugar.fotos.first().imagen, "url"):
-                imagen_url = request.build_absolute_uri(lugar.fotos.first().imagen.url)
+            imagen_url = ""
+            if lugar.fotos.exists():
+                primera_foto = lugar.fotos.first()
+                if primera_foto and primera_foto.imagen:
+                    try:
+                        # Asumimos que la imagen ya es una URL completa
+                        imagen_url = primera_foto.imagen
+                    except:
+                        pass
             else:
                 imagen_url = ""
 
@@ -371,7 +372,7 @@ def home_view(request):
             Prefetch('fotos', queryset=Foto.objects.only('imagen'))
         ).values(
             'id', 'nombre', 'slug', 'tipo', 'rating', 
-            'imagen', 'ubicacion', 'fotos__imagen'
+            'ubicacion', 'fotos__imagen'
         ))
 
         comuna_con_lugares = []
@@ -399,11 +400,8 @@ def home_view(request):
             lugares_json = []
             for lugar_data in todos_lugares:
                 if lugar_data['id'] in lugar_ids:
-                    imagen_url = None
-                    if lugar_data.get('imagen'):
-                        imagen_url = lugar_data['imagen']
-                    elif lugar_data.get('fotos__imagen'):
-                        imagen_url = lugar_data['fotos__imagen']
+                    # La imagen ahora viene directamente de la relación con Foto
+                    imagen_url = lugar_data.get('fotos__imagen')
 
                     lugares_json.append({
                         "nombre": lugar_data['nombre'],

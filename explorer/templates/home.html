@@ -164,9 +164,9 @@
                             <div class="card-modern">
                                 <div class="card-img-wrapper">
                                     {% if lugar.imagen %}
-                                        <img src="{{ lugar.imagen }}" class="card-img-top" alt="{{ lugar.nombre }}" loading="lazy">
+                                        <img src="{{ lugar.imagen }}" class="card-img-top" alt="{{ lugar.nombre }}" loading="lazy" style="height: 200px; object-fit: cover;">
                                     {% else %}
-                                        <div class="bg-gradient-secondary d-flex align-items-center justify-content-center h-100">
+                                        <div class="bg-gradient-secondary d-flex align-items-center justify-content-center h-100" style="height: 200px;">
                                             <i class="bi bi-image text-white fs-1"></i>
                                         </div>
                                     {% endif %}

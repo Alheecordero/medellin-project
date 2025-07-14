@@ -235,12 +235,13 @@ if GS_CREDENTIALS_PATH:
 GS_BUCKET_NAME = env('GS_BUCKET_NAME')
 
 # Configuración de almacenamiento de archivos
-USE_GCS = not DEBUG or env.bool('USE_GCS_IN_DEBUG', False)
+# Forzamos el uso de GCS para que las imágenes funcionen en el entorno de desarrollo local.
+USE_GCS = True 
 
 if USE_GCS:
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-    GS_DEFAULT_ACL = 'publicRead'
+    GS_DEFAULT_ACL = None # Cambiado de 'publicRead' a None
     MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'

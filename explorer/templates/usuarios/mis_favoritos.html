@@ -13,9 +13,7 @@
         <div class="col">
           <div class="card h-100 shadow-sm border-0">
             {% if lugar.fotos.exists %}
-              <img src="{{ lugar.fotos.first.imagen.url }}" class="card-img-top rounded-top" alt="Imagen de {{ lugar.nombre }}" style="height: 200px; object-fit: cover;">
-            {% elif lugar.imagen %}
-              <img src="{{ lugar.imagen.url }}" class="card-img-top rounded-top" alt="Imagen de {{ lugar.nombre }}" style="height: 200px; object-fit: cover;">
+              <img src="{{ lugar.fotos.first.imagen }}" class="card-img-top rounded-top" alt="Imagen de {{ lugar.nombre }}" style="height: 200px; object-fit: cover;">
             {% else %}
               <div class="bg-light text-muted d-flex align-items-center justify-content-center" style="height: 200px;">
                 <span class="fw-bold">Sin imagen</span>

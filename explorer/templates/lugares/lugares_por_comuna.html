@@ -35,10 +35,8 @@
     {% for lugar in lugares %}
       <div class="col-md-4">
         <div class="card h-100 shadow-sm">
-          {% if lugar.fotos.all %}
-            <img src="{{ lugar.fotos.first.imagen.url }}" class="card-img-top" alt="{{ lugar.nombre }}" style="height:200px; object-fit:cover;">
-          {% elif lugar.imagen %}
-            <img src="{{ lugar.imagen.url }}" class="card-img-top" alt="{{ lugar.nombre }}" style="height:200px; object-fit:cover;">
+          {% if lugar.fotos.exists %}
+            <img src="{{ lugar.fotos.first.imagen }}" class="card-img-top" alt="{{ lugar.nombre }}" style="height:200px; object-fit:cover;">
           {% else %}
             <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height:200px;">
               <span class="fw-bold">Sin imagen</span>

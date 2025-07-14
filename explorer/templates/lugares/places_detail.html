@@ -18,9 +18,7 @@
 
 {% block og_image %}
   {% if lugar.fotos.exists %}
-    {{ request.build_absolute_uri }}{{ lugar.fotos.first.imagen.url }}
-  {% elif lugar.imagen %}
-    {{ request.build_absolute_uri }}{{ lugar.imagen.url }}
+    {{ lugar.fotos.first.imagen }}
   {% else %}
     {{ request.build_absolute_uri }}static/img/og-image.jpg
   {% endif %}
@@ -30,29 +28,21 @@
 <div class="lugar-detail-page">
     <!-- Hero Section con imagen -->
     <section class="lugar-hero position-relative">
-        {% if lugar.imagen or lugar.fotos.exists %}
+        {% if lugar.fotos.exists %}
         <div class="hero-carousel">
             <div id="carouselLugar" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
-                    {% if lugar.imagen %}
-                    <div class="carousel-item active">
-                        <img src="{{ lugar.imagen }}" 
-                             class="d-block w-100" 
-                             alt="{{ lugar.nombre }}"
-                             data-critical>
-                    </div>
-                    {% endif %}
                     {% for foto in lugar.fotos.all %}
-                    <div class="carousel-item {% if not lugar.imagen and forloop.first %}active{% endif %}">
-                        <img data-src="{{ foto.image_url }}" 
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img data-src="{{ foto.imagen }}"
                              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600'%3E%3Crect width='1200' height='600' fill='%23f0f0f0'/%3E%3C/svg%3E"
-                             class="d-block w-100 lazy" 
-                             alt="{{ foto.descripcion|default:lugar.nombre }}"
+                             class="d-block w-100 lazy"
+                             alt="Foto de {{ lugar.nombre }}"
                              loading="lazy">
                     </div>
                     {% endfor %}
                 </div>
-                {% if lugar.fotos.count > 1 or lugar.imagen and lugar.fotos.exists %}
+                {% if lugar.fotos.count > 1 %}
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselLugar" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon"></span>
                 </button>
@@ -60,13 +50,10 @@
                     <span class="carousel-control-next-icon"></span>
                 </button>
                 <div class="carousel-indicators">
-                    {% if lugar.imagen %}
-                    <button type="button" data-bs-target="#carouselLugar" data-bs-slide-to="0" class="active"></button>
-                    {% endif %}
                     {% for foto in lugar.fotos.all %}
-                    <button type="button" data-bs-target="#carouselLugar" 
-                            data-bs-slide-to="{% if lugar.imagen %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}"
-                            {% if not lugar.imagen and forloop.first %}class="active"{% endif %}></button>
+                    <button type="button" data-bs-target="#carouselLugar"
+                            data-bs-slide-to="{{ forloop.counter0 }}"
+                            {% if forloop.first %}class="active"{% endif %}></button>
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -77,7 +64,7 @@
             <i class="fas fa-camera fa-4x text-muted"></i>
         </div>
         {% endif %}
-        
+
         <!-- Overlay con información básica -->
         <div class="hero-overlay">
             <div class="container">
@@ -113,7 +100,7 @@
                     <div class="card shadow-sm mb-4">
                         <div class="card-body">
                             <h2 class="h4 mb-4">Información del lugar</h2>
-                            
+
                             <div class="info-grid">
                                 {% if lugar.direccion %}
                                 <div class="info-item">
@@ -124,7 +111,7 @@
                                     </div>
                                 </div>
                                 {% endif %}
-                                
+
                                 {% if lugar.telefono %}
                                 <div class="info-item">
                                     <i class="fas fa-phone text-success"></i>
@@ -138,7 +125,7 @@
                                     </div>
                                 </div>
                                 {% endif %}
-                                
+
                                 {% if lugar.sitio_web %}
                                 <div class="info-item">
                                     <i class="fas fa-globe text-info"></i>
@@ -152,7 +139,7 @@
                                     </div>
                                 </div>
                                 {% endif %}
-                                
+
                                 {% if lugar.precio %}
                                 <div class="info-item">
                                     <i class="fas fa-dollar-sign text-warning"></i>
@@ -174,7 +161,7 @@
                                     </div>
                                 </div>
                                 {% endif %}
-                                
+
                                 {% if lugar.abierto_ahora is not None %}
                                 <div class="info-item">
                                     <i class="fas fa-clock {% if lugar.abierto_ahora %}text-success{% else %}text-danger{% endif %}"></i>
@@ -191,7 +178,7 @@
                                 </div>
                                 {% endif %}
                             </div>
-                            
+
                             {% if lugar.horario_texto %}
                             <div class="horario-section mt-4">
                                 <h3 class="h5 mb-3">
@@ -218,8 +205,8 @@
                             </h3>
                             <div id="mapa" class="rounded" style="height: 400px;"></div>
                             <div class="mt-3">
-                                <a href="https://www.google.com/maps/search/?api=1&query={{ lugar.ubicacion.y }},{{ lugar.ubicacion.x }}" 
-                                   target="_blank" 
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ lugar.ubicacion.y }},{{ lugar.ubicacion.x }}"
+                                   target="_blank"
                                    class="btn btn-outline-primary btn-sm">
                                     <i class="fas fa-directions me-1"></i> Cómo llegar
                                 </a>
@@ -239,7 +226,7 @@
                                     Ver todas →
                                 </a>
                             </div>
-                            
+
                             <div class="reviews-preview">
                                 {% for review in lugar.reviews|slice:":3" %}
                                 <div class="review-item">
@@ -285,21 +272,21 @@
                                     </form>
                                     {% endif %}
                                 {% else %}
-                                <a href="{% url 'usuarios:login' %}?next={{ request.path }}" 
+                                <a href="{% url 'usuarios:login' %}?next={{ request.path }}"
                                    class="btn btn-outline-secondary">
                                     <i class="fas fa-sign-in-alt me-2"></i>Inicia sesión para guardar
                                 </a>
                                 {% endif %}
-                                
+
                                 <button class="btn btn-success" onclick="compartirWhatsApp()">
                                     <i class="fab fa-whatsapp me-2"></i>Compartir
                                 </button>
-                                
+
                                 <button class="btn btn-outline-primary" onclick="copiarEnlace()">
                                     <i class="fas fa-link me-2"></i>Copiar enlace
                                 </button>
                             </div>
-                            
+
                             <!-- Lugares similares -->
                             <hr class="my-4">
                             <h5 class="mb-3">Lugares similares</h5>
@@ -435,7 +422,7 @@
         height: 40vh;
         min-height: 300px;
     }
-    
+
     .hero-content h1 {
         font-size: 2rem;
     }
@@ -477,7 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const carouselImages = document.querySelectorAll('.carousel-item img');
     const modal = new bootstrap.Modal(document.getElementById('imagenModal'));
     const modalImage = document.getElementById('modalImage');
-    
+
     carouselImages.forEach(img => {
         img.style.cursor = 'zoom-in';
         img.addEventListener('click', function() {
