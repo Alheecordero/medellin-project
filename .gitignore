@@ -125,4 +125,15 @@ data/
 friend-storage-access.json
 vivemedellin-*.json
 settings_production.py
-test_gcs_config.py 
+test_gcs_config.py
+
+# Database dumps
+*.dump
+*.sql
+backupmedellin/
+medellin_final.dump
+
+# Environment files
+.env
+.env.*
+!.env.example 
