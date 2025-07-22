@@ -4,216 +4,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}ViveMedellín - Explora la Ciudad de la Eterna Primavera{% endblock %}</title>
+    <title>{% block title %}ViveMedellín{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Descubre los mejores lugares de Medellín{% endblock %}">
     
-    <!-- Preload recursos críticos -->
-    <link rel="preload" href="{% static 'css/style.css' %}" as="style">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
-    
-    <!-- Preconnect a dominios externos -->
+    <!-- Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     
-    <!-- CSS crítico inline para evitar FOUC -->
-    <style>
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-        .navbar { background: #1a1a2e; transition: all 0.3s ease; }
-        .hero { min-height: 400px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    </style>
-    
-    <!-- CSS principal -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS Base -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Custom -->
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            color: white;
+        }
+    </style>
     
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Navbar mejorado -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'explorer:home' %}">
-                <i class="fas fa-mountain-sun me-2"></i>
-                <span class="fw-bold">ViveMedellín</span>
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+                ViveMedellín
             </a>
-            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'explorer:home' %}">
-                            <i class="fas fa-home me-1"></i> Inicio
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'explorer:lugares_list' %}">
-                            <i class="fas fa-map-marker-alt me-1"></i> Lugares
+                        <a class="nav-link" href="/mapa/">
+                            <i class="bi bi-map me-1"></i> Mapa
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'explorer:mapa_explorar_medellin' %}">
-                            <i class="fas fa-map me-1"></i> Mapa
+                        <a class="nav-link" href="/lugares/">
+                            <i class="bi bi-search me-1"></i> Explorar
                         </a>
                     </li>
-                    
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="comunasDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-city me-1"></i> Comunas
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="comunasDropdown">
-                            {% for comuna in comunas %}
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'explorer:lugares_por_comuna' slug=comuna.slug %}">
-                                        {{ comuna.name }}
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                    
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'explorer:acerca' %}">
-                            <i class="fas fa-info-circle me-1"></i> Acerca
+                        <a class="nav-link" href="/acerca-de/">
+                            <i class="bi bi-info-circle me-1"></i> Acerca de
                         </a>
                     </li>
-                    
-                    {% if user.is_authenticated %}
-                        <li class="nav-item dropdown ms-3">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <div class="user-avatar me-2">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <span>{{ user.username }}</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'explorer:perfil_usuario' %}">
-                                        <i class="fas fa-user-circle me-2"></i> Mi Perfil
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'explorer:mis_favoritos' %}">
-                                        <i class="fas fa-heart me-2"></i> Mis Favoritos
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'usuarios:logout' %}">
-                                        <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item ms-3">
-                            <a class="btn btn-primary" href="{% url 'usuarios:login' %}">
-                                <i class="fas fa-sign-in-alt me-1"></i> Iniciar Sesión
-                            </a>
-                        </li>
-                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Contenido principal -->
-    <main style="margin-top: 76px;">
-        {% block content %}
-        {% endblock %}
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer mejorado -->
-    <footer class="footer mt-5">
-        <div class="container-custom">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <h5 class="mb-3">
-                        <i class="fas fa-mountain-sun me-2"></i>ViveMedellín
-                    </h5>
-                    <p class="text-muted">
-                        Descubre los mejores lugares de Medellín, la ciudad de la eterna primavera.
-                    </p>
-                    <div class="social-links mt-3">
-                        <a href="#" class="me-3"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="me-3"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="me-3"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 mb-4">
-                    <h6 class="mb-3">Enlaces Rápidos</h6>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <a href="{% url 'explorer:lugares_list' %}">Explorar Lugares</a>
-                        </li>
-                        <li class="mb-2">
-                            <a href="{% url 'explorer:mapa_explorar_medellin' %}">Mapa Interactivo</a>
-                        </li>
-                        <li class="mb-2">
-                            <a href="{% url 'explorer:acerca' %}">Acerca de</a>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-4 mb-4">
-                    <h6 class="mb-3">Newsletter</h6>
-                    <p class="text-muted mb-3">Recibe las últimas novedades sobre Medellín</p>
-                    <form class="newsletter-form">
-                        <div class="input-group">
-                            <input type="email" class="form-control" placeholder="Tu email" required>
-                            <button class="btn btn-primary" type="submit">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
-            <hr class="my-4">
-            
-            <div class="text-center">
-                <p class="mb-0">&copy; 2024 ViveMedellín. Todos los derechos reservados.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Botón scroll to top -->
-    <button id="scrollToTop" class="scroll-to-top">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-
-    <!-- Scripts con defer/async para mejor rendimiento -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
-    
-    <!-- Script de optimizaciones -->
-    <script src="{% static 'js/optimizations.js' %}" defer></script>
-    
-    <!-- Script inline para funcionalidad crítica -->
-    <script>
-        // Scroll to top button
-        document.addEventListener('DOMContentLoaded', function() {
-            const scrollBtn = document.getElementById('scrollToTop');
-            
-            window.addEventListener('scroll', function() {
-                if (window.pageYOffset > 300) {
-                    scrollBtn.style.display = 'block';
-                } else {
-                    scrollBtn.style.display = 'none';
-                }
-            });
-            
-            scrollBtn.addEventListener('click', function() {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-        });
-    </script>
-    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
