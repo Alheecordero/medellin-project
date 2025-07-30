@@ -1,10 +1,10 @@
-{% extends "base.html" %}
-{% load static %}
 
-{% block title %}Inicio | ViveMedellín - Tu Guía de la Ciudad{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Inicio | Medellín Explorer{% endblock %}
 
 {% block meta_description %}
-  Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín. Explora la ciudad por comunas con nuestra guía interactiva.
+  Bienvenido a Medellín Explorer: descubre los mejores bares, discotecas, rooftops y restaurantes de Medellín, organizados por comunas. ¡Explora como un local!
 {% endblock %}
 
 {% block meta_keywords %}
@@ -26,105 +26,191 @@
 {% block content %}
 
 <!-- Hero Section -->
-<section class="hero-section position-relative overflow-hidden">
-    <div class="hero-background">
-        <img src="{% static 'img/medellin.jpg' %}" alt="Medellín" class="w-100 h-100 object-fit-cover position-absolute">
-    </div>
-    
-    <div class="container-custom position-relative">
-        <div class="row min-vh-100 align-items-center">
-            <div class="col-lg-7">
+<section class="hero-section-clean position-relative overflow-hidden">
+    <div class="container py-5">
+        <div class="row min-vh-100 align-items-center justify-content-center">
+            <div class="col-lg-8 text-center">
                 <div class="hero-content">
-                    <h1 class="hero-title display-1 mb-4">
-                        Descubre <span class="text-gradient">Medellín</span><br>
+                    <h1 class="hero-title display-2 mb-4 text-white fw-bold">
+                        Descubre <span class="text-white">Medellín</span><br>
                         Como Nunca Antes
                     </h1>
-                    <p class="hero-subtitle mb-4">
-                        Explora los mejores bares, restaurantes, discotecas y lugares turísticos 
-                        de la ciudad de la eterna primavera.
-                    </p>
                     
                     <!-- Search Bar -->
-                    <div class="search-modern mb-4" data-aos="fade-up" data-aos-delay="300">
-                        <input type="text" id="search-places" placeholder="Busca bares, restaurantes, lugares...">
-                        <button type="button" class="btn">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="d-flex gap-3 flex-wrap" data-aos="fade-up" data-aos-delay="400">
-                        <a href="{% url 'explorer:mapa_explorar_medellin' %}" class="btn btn-gradient btn-modern">
-                            <i class="bi bi-map me-2"></i> Explorar Mapa
-                        </a>
-                        <a href="{% url 'explorer:lugares_list' %}" class="btn btn-outline-modern">
-                            Ver Todos los Lugares
-                        </a>
-                    </div>
-                    
-                    <!-- Quick Stats -->
-                    <div class="row mt-5 g-4" data-aos="fade-up" data-aos-delay="500">
-                        <div class="col-auto">
-                            <h3 class="mb-0 text-white">{{ comuna_con_lugares|length }}</h3>
-                            <p class="mb-0 opacity-75">Comunas</p>
-                        </div>
-                        <div class="col-auto">
-                            <h3 class="mb-0 text-white">500+</h3>
-                            <p class="mb-0 opacity-75">Lugares</p>
-                        </div>
-                        <div class="col-auto">
-                            <h3 class="mb-0 text-white">24/7</h3>
-                            <p class="mb-0 opacity-75">Disponible</p>
+                    <div class="search-modern-clean mb-4">
+                        <div class="input-group input-group-lg shadow-lg">
+                            <input type="text" 
+                                   id="search-places" 
+                                   class="form-control form-control-lg rounded-start-pill border-0"
+                                   placeholder="Busca bares, restaurantes, lugares...">
+                            <button class="btn btn-light rounded-end-pill px-4" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Scroll Indicator -->
-    <div class="position-absolute bottom-0 start-50 translate-middle-x mb-4 animate-float">
-        <a href="#features" class="text-white text-decoration-none">
-            <i class="bi bi-chevron-double-down fs-2"></i>
-        </a>
-    </div>
-</section>
 
-<!-- Features Section -->
-<section id="features" class="py-5 bg-light">
-    <div class="container-custom">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <h2 class="display-4 fw-bold">¿Por qué <span class="text-gradient">ViveMedellín</span>?</h2>
-            <p class="lead text-muted">Todo lo que necesitas para explorar la ciudad</p>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="bi bi-map"></i>
+                    <!-- Filtros Dropdown -->
+                    <div class="filtros-home mb-5">
+                        <div class="row g-3 justify-content-center">
+                            
+                            <!-- 1. ÁREAS -->
+                            <div class="col-lg-4 col-md-6">
+                                <div class="dropdown" style="position: relative; z-index: 1000;">
+                                    <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button" id="areasDropdown" data-bs-toggle="dropdown" data-bs-placement="bottom" data-bs-auto-close="true" aria-expanded="false">
+                                        <i class="bi bi-geo-alt me-2"></i>
+                                        <span id="area-selected-text">Seleccionar Área</span>
+                                        <span id="area-check" class="ms-2" style="display: none;">✓</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="areasDropdown">
+                                        {% for area in regiones_areas %}
+                                        <li>
+                                            <a class="dropdown-item dropdown-item-filtro area-option" 
+                                               href="javascript:void(0)" 
+                                               data-area-id="{{ area.osm_id }}" 
+                                               data-area-name="{{ area.name }}"
+                                               data-area-slug="{{ area.slug }}">
+                                                <i class="bi bi-map me-2 text-primary"></i>
+                                                <div>
+                                                    <div class="fw-semibold">{{ area.name }}</div>
+                                                    <small class="text-muted">Explorar esta zona</small>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- 2. CATEGORÍAS REALES -->
+                            <div class="col-lg-4 col-md-6">
+                                <div class="dropdown" style="position: relative; z-index: 999;">
+                                    <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button" id="categoriasDropdown" data-bs-toggle="dropdown" data-bs-placement="bottom" data-bs-auto-close="true" aria-expanded="false">
+                                        <i class="bi bi-grid-3x3-gap me-2"></i>
+                                        <span id="categoria-selected-text">Seleccionar Tipo</span>
+                                        <span id="categoria-check" class="ms-2" style="display: none;">✓</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="categoriasDropdown">
+                                        {% for categoria in categorias_reales %}
+                                        <li class="dropdown-header">
+                                            <i class="{{ categoria.icon }} me-2 text-{{ categoria.color }}"></i>{{ categoria.name }}
+                                        </li>
+                                        {% for subcategoria in categoria.subcategorias %}
+                                        <li>
+                                            <a class="dropdown-item dropdown-item-filtro categoria-option" 
+                                               href="javascript:void(0)"
+                                               data-categoria-id="{{ subcategoria.value }}" 
+                                               data-categoria-name="{{ subcategoria.name }}">
+                                                <i class="bi bi-arrow-right me-2 text-muted"></i>
+                                                <div>
+                                                    <div class="fw-semibold">{{ subcategoria.name }}</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                        {% if not forloop.last %}<li><hr class="dropdown-divider"></li>{% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- 3. ETIQUETAS ESPECIALES -->
+                            <div class="col-lg-4 col-md-6">
+                                <div class="dropdown" style="position: relative; z-index: 998;">
+                                    <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button" id="etiquetasDropdown" data-bs-toggle="dropdown" data-bs-placement="bottom" data-bs-auto-close="true" aria-expanded="false">
+                                        <i class="bi bi-stars me-2"></i>
+                                        <span id="caracteristica-selected-text">Características</span>
+                                        <span id="caracteristica-check" class="ms-2" style="display: none;">✓</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="etiquetasDropdown">
+                                        <!-- Opción para no seleccionar característica -->
+                                        <li>
+                                            <a class="dropdown-item dropdown-item-filtro caracteristica-option" 
+                                               href="javascript:void(0)"
+                                               data-caracteristica-id="none" 
+                                               data-caracteristica-name="Sin característica especial">
+                                                <i class="bi bi-x-circle me-2 text-muted"></i>
+                                                <div>
+                                                    <div class="fw-semibold">Sin característica especial</div>
+                                                    <small class="text-muted">Buscar sin filtros adicionales</small>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        {% for grupo in etiquetas_especiales %}
+                                        <li class="dropdown-header">
+                                            <i class="{{ grupo.icon }} me-2 text-warning"></i>{{ grupo.name }}
+                                        </li>
+                                        {% for opcion in grupo.opciones %}
+                                        <li>
+                                            <a class="dropdown-item dropdown-item-filtro caracteristica-option" 
+                                               href="javascript:void(0)"
+                                               data-caracteristica-id="{{ opcion.field }}" 
+                                               data-caracteristica-name="{{ opcion.name }}">
+                                                <i class="{{ opcion.icon }} me-2 text-success"></i>
+                                                <div>
+                                                    <div class="fw-semibold">{{ opcion.name }}</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                        {% if not forloop.last %}<li><hr class="dropdown-divider"></li>{% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                        
+                        <!-- Botón Cerca de Mí -->
+                        <div class="row justify-content-center mt-4" style="position: relative; z-index: 1;">
+                            <div class="col-lg-4 col-md-6">
+                                <button id="cerca-de-mi-btn" class="btn btn-filtro-dropdown w-100" type="button">
+                                    <i class="bi bi-geo-fill me-2"></i>
+                                    <span id="ubicacion-text">Cerca de Mí</span>
+                                    <span id="ubicacion-loading" class="ms-2" style="display: none;">
+                                        <div class="spinner-border spinner-border-sm" role="status">
+                                            <span class="visually-hidden">Cargando...</span>
+                                        </div>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Estado de Filtros y Botón de Búsqueda -->
+                        <div class="text-center mt-4">
+                            <div id="filtros-estado" class="mb-3" style="display: none;">
+                                <div class="alert alert-info d-inline-block">
+                                    <i class="bi bi-funnel me-2"></i>
+                                    <span id="filtros-count">0/2 obligatorios</span> + característica opcional
+                                    <div class="small mt-1" id="filtros-resumen"></div>
+                                </div>
+                            </div>
+                            
+                            <button id="buscar-btn" class="btn btn-success btn-lg rounded-pill px-4 me-3" style="display: none;" disabled>
+                                <i class="bi bi-search me-2"></i>Buscar Lugares
+                            </button>
+                            
+                            <a href="{% url 'explorer:lugares_list' %}" class="btn btn-gradient-green btn-lg rounded-pill px-4">
+                                <i class="bi bi-compass me-2"></i>Ver Todos los Lugares
+                            </a>
+                        </div>
                     </div>
-                    <h4>Mapa Interactivo</h4>
-                    <p class="text-muted">Explora todos los lugares en un mapa interactivo con filtros por tipo y comuna</p>
-                </div>
-            </div>
-            
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="bi bi-star"></i>
+                    
+                    <!-- Loading y Resultados AJAX -->
+                    <div id="ajax-loading" class="text-center py-5" style="display: none; position: relative; z-index: 1;">
+                        <div class="spinner-border text-light" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <div class="text-white mt-3">
+                            <h5>Buscando lugares...</h5>
+                            <p>Esto puede tardar unos segundos</p>
+                        </div>
                     </div>
-                    <h4>Reseñas Reales</h4>
-                    <p class="text-muted">Lee opiniones verificadas de otros usuarios y comparte tu experiencia</p>
-                </div>
-            </div>
-            
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="bi bi-heart"></i>
+                    
+                    <div id="ajax-results" style="display: none; position: relative; z-index: 1;">
+                        <!-- Los resultados se cargarán aquí -->
                     </div>
-                    <h4>Guarda Favoritos</h4>
-                    <p class="text-muted">Crea tu lista personalizada de lugares favoritos para visitar después</p>
                 </div>
             </div>
         </div>
@@ -132,142 +218,354 @@
 </section>
 
 <!-- Comunas Section -->
-<section class="py-5">
-    <div class="container-custom">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <h2 class="display-4 fw-bold">Explora por <span class="text-gradient">Comunas</span></h2>
-            <p class="lead text-muted">Descubre lo mejor de cada zona de Medellín</p>
+{% if comuna_con_lugares %}
+<div class="container py-4">
+  <h1 class="text-center mb-5 fw-bold">Explora Medellín por Comunas</h1>
+
+  {% for item in comuna_con_lugares %}
+    <section class="mb-5">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h2 class="h4 text-capitalize fw-semibold mb-1">
+            <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+            {{ item.nombre }}
+          </h2>
+          <p class="text-muted small">{{ item.ref }}</p>
         </div>
+        {% if item.osm_id %}
+          <a href="{% url 'explorer:lugares_por_comuna' item.slug %}" class="btn btn-sm btn-gradient-green">
+            Ver todos los lugares →
+          </a>
+        {% endif %}
+      </div>
 
-        {% for item in comuna_con_lugares %}
-            <div class="mb-5" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'00' }}">
-                <!-- Comuna Header -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h3 class="h4 mb-1 fw-bold">
-                            <i class="bi bi-geo-alt-fill text-gradient me-2"></i>
-                            {{ item.nombre }}
-                        </h3>
-                        <p class="text-muted mb-0">{{ item.ref }}</p>
-                    </div>
-                    {% if item.comuna.slug %}
-                        <a href="{% url 'explorer:lugares_por_comuna' item.comuna.slug %}" class="btn btn-outline-modern btn-sm">
-                            Ver todos <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
-                    {% endif %}
+      <div class="row g-4">
+        {% for lugar in item.lugares|slice:":3" %}
+          <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 rounded-4">
+              {% if lugar.imagen %}
+                <img src="{{ lugar.imagen }}" class="card-img-top rounded-top-4" alt="Imagen de {{ lugar.nombre }}" style="height: 200px; object-fit: cover;" loading="lazy">
+              {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center rounded-top-4" style="height: 200px;">
+                  <i class="bi bi-image text-muted fs-2"></i>
+                </div>
+              {% endif %}
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-semibold mb-2">{{ lugar.nombre }}</h5>
+                
+                <!-- Tipo de lugar -->
+                <div class="mb-2">
+                  <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill">
+                    <i class="bi bi-geo-alt me-1"></i>{{ lugar.tipo|title }}
+                  </span>
                 </div>
 
-                <!-- Lugares Cards -->
-                <div class="row g-4">
-                    {% for lugar in item.lugares %}
-                        <div class="col-md-4">
-                            <div class="card-modern">
-                                <div class="card-img-wrapper">
-                                    {% if lugar.imagen %}
-                                        <img src="{{ lugar.imagen }}" class="card-img-top" alt="{{ lugar.nombre }}" loading="lazy" style="height: 200px; object-fit: cover;">
-                                    {% else %}
-                                        <div class="bg-gradient-secondary d-flex align-items-center justify-content-center h-100" style="height: 200px;">
-                                            <i class="bi bi-image text-white fs-1"></i>
-                                        </div>
-                                    {% endif %}
-                                    
-                                    <!-- Category Badge -->
-                                    {% if lugar.tipo %}
-                                        <span class="badge-category">{{ lugar.tipo|title }}</span>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="card-body">
-                                    <h5 class="card-title fw-bold mb-2">{{ lugar.nombre }}</h5>
-                                    
-                                    {% if lugar.rating %}
-                                        <div class="rating mb-3">
-                                            <i class="bi bi-star-fill me-1"></i>
-                                            {{ lugar.rating|floatformat:1 }}
-                                        </div>
-                                    {% endif %}
-                                    
-                                    {% if lugar.slug %}
-                                        <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient w-100">
-                                            Ver Detalles
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div class="col-12">
-                            <p class="text-muted text-center">No hay lugares destacados en esta comuna aún.</p>
-                        </div>
-                    {% endfor %}
+                <!-- Badges de estado -->
+                <div class="mb-3">
+                  {% if lugar.es_destacado %}
+                    <span class="badge bg-warning text-dark me-1">
+                      <i class="bi bi-star-fill me-1"></i>Destacado
+                    </span>
+                  {% endif %}
+                  {% if lugar.es_exclusivo %}
+                    <span class="badge bg-success me-1">
+                      <i class="bi bi-gem me-1"></i>Exclusivo
+                    </span>
+                  {% endif %}
+                  {% if lugar.rating and lugar.rating >= 4.5 %}
+                    <span class="badge bg-info text-dark">
+                      <i class="bi bi-award me-1"></i>Top Valorado
+                    </span>
+                  {% endif %}
                 </div>
+
+                <!-- Rating -->
+                {% if lugar.rating %}
+                <div class="small text-muted mb-3">
+                  <i class="bi bi-star-fill text-warning me-1"></i>
+                  <span class="fw-semibold">{{ lugar.rating|floatformat:1 }}</span> / 5
+                  {% if lugar.total_reviews %}
+                    <span class="ms-1">({{ lugar.total_reviews }} reseñas)</span>
+                  {% endif %}
+                </div>
+                {% endif %}
+
+                {% if lugar.slug %}
+                  <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-purple mt-auto w-100 rounded-pill">
+                    <i class="bi bi-eye me-1"></i>Ver detalles
+                  </a>
+                {% else %}
+                  <span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">Sin detalles</span>
+                {% endif %}
+              </div>
             </div>
+          </div>
         {% endfor %}
-    </div>
-</section>
-
-<!-- CTA Section -->
-<section class="py-5 bg-gradient-primary text-white">
-    <div class="container-custom text-center">
-        <div class="row justify-content-center">
-            <div class="col-lg-8" data-aos="zoom-in">
-                <h2 class="display-4 fw-bold mb-4">¿Listo para Explorar?</h2>
-                <p class="lead mb-4">
-                    Únete a miles de personas que ya están descubriendo 
-                    los mejores lugares de Medellín
-                </p>
-                <div class="d-flex gap-3 justify-content-center flex-wrap">
-                    <a href="{% url 'usuarios:registro' %}" class="btn btn-light btn-modern">
-                        <i class="bi bi-person-plus me-2"></i> Crear Cuenta Gratis
-                    </a>
-                    <a href="{% url 'explorer:mapa_explorar_medellin' %}" class="btn btn-outline-light btn-modern">
-                        <i class="bi bi-compass me-2"></i> Explorar Ahora
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+      </div>
+    </section>
+  {% endfor %}
+  
+  <div class="text-center">
+    <a href="{% url 'explorer:lugares_list' %}" class="btn btn-primary btn-lg rounded-pill px-4">
+      Ver Todos los Lugares
+    </a>
+  </div>
+</div>
+{% endif %}
 
 {% endblock %}
 
 {% block extra_css %}
 <style>
-/* Hero Background Overlay */
-.hero-background::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(52, 152, 219, 0.7) 100%);
-    z-index: 1;
+/* Hero Section with Clean Gradient */
+.hero-section-clean {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
 }
 
-/* Object Fit for Images */
-.object-fit-cover {
-    object-fit: cover;
+/* Search Input Styling */
+.search-modern-clean .form-control {
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
 }
 
-/* Smooth Scroll */
-html {
-    scroll-behavior: smooth;
+.search-modern-clean .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+    border-color: #667eea;
 }
 
-/* Comuna Section Divider */
-.comuna-section + .comuna-section {
-    border-top: 1px solid rgba(0,0,0,0.1);
-    padding-top: 3rem;
+/* Button Styling */
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-weight: 500;
 }
 
 /* Card Hover Effects */
-.card-modern {
-    cursor: pointer;
+.card:hover {
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
 }
 
-.card-modern:hover .card-title {
+/* Filtros del Home */
+.filtros-home {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Botones Dropdown de Filtros */
+.btn-filtro-dropdown {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white !important;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-filtro-dropdown:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    color: white !important;
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-filtro-dropdown:focus {
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+    color: white !important;
+}
+
+/* Dropdown Menus de Filtros */
+.dropdown-menu-filtros {
+    border-radius: 15px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    min-width: 320px;
+    max-width: 400px;
+    background: white;
+    border: none;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+    max-height: 350px;
+    overflow-y: auto;
+    
+    /* Forzar dirección hacia abajo y z-index alto */
+    position: absolute !important;
+    top: 100% !important;
+    bottom: auto !important;
+    left: 0 !important;
+    right: auto !important;
+    transform: none !important;
+    will-change: auto !important;
+    inset: auto !important;
+    z-index: 9999 !important;
+}
+
+/* Dropdown específico para características (más alto por tener más contenido) */
+#etiquetasDropdown + .dropdown-menu-filtros {
+    max-height: 280px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Scrollbar personalizada para dropdowns */
+.dropdown-menu-filtros::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dropdown-menu-filtros::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+}
+
+.dropdown-menu-filtros::-webkit-scrollbar-thumb {
+    background: rgba(102, 126, 234, 0.3);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.dropdown-menu-filtros::-webkit-scrollbar-thumb:hover {
+    background: rgba(102, 126, 234, 0.6);
+}
+
+/* Prevenir colapso automático de dropdowns en mobile */
+@media (max-width: 768px) {
+    .dropdown-menu-filtros {
+        min-width: 280px;
+        max-width: 90vw;
+        max-height: 300px;
+    }
+    
+    #etiquetasDropdown + .dropdown-menu-filtros {
+        max-height: 250px;
+    }
+}
+
+.dropdown-item-filtro {
+    padding: 0.75rem;
+    border-radius: 10px;
+    border: none;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.dropdown-item-filtro:hover {
+    background-color: rgba(102, 126, 234, 0.1);
+    transform: translateX(3px);
     color: #667eea;
+}
+
+.dropdown-item-filtro i {
+    font-size: 1.1rem;
+    width: 20px;
+    flex-shrink: 0;
+}
+
+.dropdown-header {
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem 0.25rem;
+    margin-top: 0.5rem;
+}
+
+.dropdown-header:first-child {
+    margin-top: 0;
+}
+
+/* Estados de filtros seleccionados */
+.btn-filtro-dropdown.selected {
+    background: rgba(40, 167, 69, 0.3);
+    border-color: rgba(40, 167, 69, 0.5);
+    color: white !important;
+}
+
+.btn-filtro-dropdown.selected:hover {
+    background: rgba(40, 167, 69, 0.4);
+    border-color: rgba(40, 167, 69, 0.6);
+}
+
+/* Botón de ubicación "Cerca de Mí" */
+#cerca-de-mi-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+#cerca-de-mi-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+#cerca-de-mi-btn.locating {
+    background: rgba(34, 139, 34, 0.3);
+    border-color: rgba(34, 139, 34, 0.5);
+    animation: pulse 2s infinite;
+}
+
+#cerca-de-mi-btn.success {
+    background: rgba(40, 167, 69, 0.4);
+    border-color: rgba(40, 167, 69, 0.6);
+}
+
+#cerca-de-mi-btn.error {
+    background: rgba(220, 53, 69, 0.3);
+    border-color: rgba(220, 53, 69, 0.5);
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(34, 139, 34, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(34, 139, 34, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 139, 34, 0); }
+}
+
+/* Área de resultados AJAX */
+#ajax-results {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    margin-top: 2rem;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+#ajax-results .card:hover {
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+/* Loading spinner personalizado */
+#ajax-loading .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3em;
+}
+
+/* Asegurar z-index alto para todos los dropdowns de Bootstrap */
+.dropdown-menu.show {
+    z-index: 9999 !important;
+}
+
+.dropdown {
+    position: relative !important;
+}
+
+/* Prevenir overflow de contenido detrás de dropdowns */
+.dropdown.show {
+    z-index: 9999 !important;
 }
 
 /* Search Autocomplete Styling */
@@ -277,9 +575,10 @@ html {
     overflow-x: hidden;
     background: white;
     border: none;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     border-radius: 0.75rem;
     padding: 0.5rem;
+    z-index: 1000;
 }
 
 .ui-menu-item-wrapper {
@@ -297,20 +596,81 @@ html {
 /* Mobile Optimizations */
 @media (max-width: 768px) {
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2.5rem !important;
     }
     
-    .hero-subtitle {
-        font-size: 1.1rem;
+    .search-modern-clean .form-control {
+        font-size: 1rem;
+        padding: 0.875rem 1.25rem;
     }
     
-    .search-modern {
-        margin-bottom: 2rem;
+    .filtros-home {
+        padding: 1.5rem;
+        margin: 0 1rem;
     }
     
-    .feature-card {
-        margin-bottom: 1rem;
+    .btn-filtro-dropdown {
+        font-size: 0.9rem;
+        padding: 0.6rem 1.2rem;
     }
+    
+    .dropdown-menu-filtros {
+        min-width: 280px;
+        max-width: 320px;
+        max-height: 300px;
+    }
+    
+    .dropdown-item-filtro {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Degradados para botones - Máxima especificidad */
+.btn.btn-gradient-purple, 
+a.btn.btn-gradient-purple,
+button.btn.btn-gradient-purple {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: none !important;
+}
+
+.btn.btn-gradient-purple:hover, 
+a.btn.btn-gradient-purple:hover,
+button.btn.btn-gradient-purple:hover,
+.btn.btn-gradient-purple:focus,
+a.btn.btn-gradient-purple:focus {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.btn.btn-gradient-green,
+a.btn.btn-gradient-green,
+button.btn.btn-gradient-green {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: none !important;
+}
+
+.btn.btn-gradient-green:hover,
+a.btn.btn-gradient-green:hover,
+button.btn.btn-gradient-green:hover,
+.btn.btn-gradient-green:focus,
+a.btn.btn-gradient-green:focus {
+    background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4) !important;
+    color: white !important;
+    border: none !important;
 }
 </style>
 {% endblock %}
@@ -339,7 +699,7 @@ $(document).ready(function() {
         minLength: 2,
         select: function(event, ui) {
             if (ui.item.slug) {
-                window.location.href = "/lugar/" + ui.item.slug + "/";
+                window.location.href = "{% url 'explorer:lugares_detail' slug='PLACE_SLUG' %}".replace('PLACE_SLUG', ui.item.slug);
             }
         }
     });
@@ -354,6 +714,537 @@ $(document).ready(function() {
             }, 800);
         }
     });
+    
+    // Variables para almacenar selecciones
+    let filtrosSeleccionados = {
+        area: null,
+        categoria: null,
+        caracteristica: null
+    };
+    
+    // Variable para almacenar ubicación del usuario
+    let ubicacionUsuario = null;
+    
+    // Configurar dropdowns para que siempre se abran hacia abajo
+    document.addEventListener('show.bs.dropdown', function(event) {
+        // Forzar posición hacia abajo
+        const dropdown = event.target;
+        const menu = dropdown.nextElementSibling;
+        
+        if (menu && menu.classList.contains('dropdown-menu-filtros')) {
+            // Configurar Popper.js para forzar posición bottom
+            menu.setAttribute('data-bs-popper', 'static');
+            
+            // Aplicar estilos directamente para forzar posición
+            setTimeout(() => {
+                menu.style.position = 'absolute';
+                menu.style.top = '100%';
+                menu.style.bottom = 'auto';
+                menu.style.left = '0';
+                menu.style.right = 'auto';
+                menu.style.transform = 'none';
+                menu.style.inset = 'auto';
+            }, 10);
+        }
+    });
+    
+    // Función para actualizar estado de filtros
+    function actualizarEstadoFiltros() {
+        const requiredCount = (filtrosSeleccionados.area !== null ? 1 : 0) + (filtrosSeleccionados.categoria !== null ? 1 : 0);
+        const totalCount = Object.values(filtrosSeleccionados).filter(v => v !== null).length;
+        
+        $('#filtros-count').text(`${requiredCount}/2 obligatorios`);
+        
+        if (totalCount > 0) {
+            $('#filtros-estado').show();
+            
+            // Actualizar resumen
+            let resumen = [];
+            if (filtrosSeleccionados.area) resumen.push(`📍 ${filtrosSeleccionados.area.name}`);
+            if (filtrosSeleccionados.categoria) resumen.push(`🏢 ${filtrosSeleccionados.categoria.name}`);
+            if (filtrosSeleccionados.caracteristica) resumen.push(`⭐ ${filtrosSeleccionados.caracteristica.name}`);
+            $('#filtros-resumen').html(resumen.join(' • '));
+            
+            // Solo requiere área y categoría para habilitar búsqueda
+            if (requiredCount === 2) {
+                $('#buscar-btn').show().prop('disabled', false);
+            } else {
+                $('#buscar-btn').prop('disabled', true);
+            }
+        } else {
+            $('#filtros-estado').hide();
+            $('#buscar-btn').hide();
+        }
+    }
+    
+    // Manejar selección de área
+    $('.area-option').on('click', function(e) {
+        e.preventDefault();
+        filtrosSeleccionados.area = {
+            id: $(this).data('area-id'),
+            name: $(this).data('area-name'),
+            slug: $(this).data('area-slug')
+        };
+        $('#area-selected-text').text(filtrosSeleccionados.area.name);
+        $('#area-check').show();
+        $('#areasDropdown').addClass('selected');
+        $('#areasDropdown').dropdown('hide');
+        actualizarEstadoFiltros();
+    });
+    
+    // Manejar selección de categoría
+    $('.categoria-option').on('click', function(e) {
+        e.preventDefault();
+        filtrosSeleccionados.categoria = {
+            id: $(this).data('categoria-id'),
+            name: $(this).data('categoria-name')
+        };
+        $('#categoria-selected-text').text(filtrosSeleccionados.categoria.name);
+        $('#categoria-check').show();
+        $('#categoriasDropdown').addClass('selected');
+        $('#categoriasDropdown').dropdown('hide');
+        actualizarEstadoFiltros();
+    });
+    
+    // Manejar selección de característica
+    $('.caracteristica-option').on('click', function(e) {
+        e.preventDefault();
+        const caracteristicaId = $(this).data('caracteristica-id');
+        const caracteristicaName = $(this).data('caracteristica-name');
+        
+        if (caracteristicaId === 'none') {
+            filtrosSeleccionados.caracteristica = null;
+            $('#caracteristica-selected-text').text('Características (Opcional)');
+            $('#caracteristica-check').hide();
+            $('#etiquetasDropdown').removeClass('selected');
+        } else {
+            filtrosSeleccionados.caracteristica = {
+                id: caracteristicaId,
+                name: caracteristicaName
+            };
+            $('#caracteristica-selected-text').text(filtrosSeleccionados.caracteristica.name);
+            $('#caracteristica-check').show();
+            $('#etiquetasDropdown').addClass('selected');
+        }
+        
+        $('#etiquetasDropdown').dropdown('hide');
+        actualizarEstadoFiltros();
+    });
+    
+    // Manejar búsqueda AJAX
+    $('#buscar-btn').on('click', function() {
+        // Mostrar loading
+        $('#ajax-loading').show();
+        $('#ajax-results').hide();
+        
+        // Hacer llamada AJAX
+        $.ajax({
+            url: "{% url 'explorer:filtros_ajax' %}",
+            type: 'GET',
+            data: {
+                area: filtrosSeleccionados.area.id,
+                categoria: filtrosSeleccionados.categoria.id,
+                caracteristica: filtrosSeleccionados.caracteristica ? filtrosSeleccionados.caracteristica.id : 'all'
+            },
+            success: function(response) {
+                $('#ajax-loading').hide();
+                
+                if (response.success) {
+                    renderizarResultados(response);
+                } else {
+                    mostrarError('Error en la búsqueda: ' + response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#ajax-loading').hide();
+                mostrarError('Error de conexión: ' + error);
+            }
+        });
+    });
+    
+    // Función para generar URL completa con slugs
+    function generarUrlCompleta(data) {
+        let baseUrl;
+        let params = new URLSearchParams();
+        
+        // Priorizar slug de área seleccionada, luego del area_info del response
+        let areaSlug = null;
+        if (filtrosSeleccionados.area && filtrosSeleccionados.area.slug) {
+            areaSlug = filtrosSeleccionados.area.slug;
+        } else if (data.area_info && data.area_info.slug) {
+            areaSlug = data.area_info.slug;
+        }
+        
+        // Si hay slug del área, usar URL con slug
+        if (areaSlug) {
+            baseUrl = `/lugares/${areaSlug}/`;
+        } else {
+            // Fallback a URL con parámetros
+            baseUrl = '{% url "explorer:lugares_list" %}';
+            if (filtrosSeleccionados.area) {
+                params.append('comuna', filtrosSeleccionados.area.id);
+            }
+        }
+        
+        // Agregar otros filtros como parámetros
+        if (filtrosSeleccionados.categoria && filtrosSeleccionados.categoria.id !== 'all') {
+            params.append('tipo', filtrosSeleccionados.categoria.id);
+        }
+        
+        if (filtrosSeleccionados.caracteristica && filtrosSeleccionados.caracteristica.id !== 'all') {
+            params.append(filtrosSeleccionados.caracteristica.id, 'true');
+        }
+        
+        // Construir URL final
+        return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+    }
+    
+    // Función para renderizar resultados
+    function renderizarResultados(data) {
+        let html = `
+            <div class="container py-5">
+                <div class="text-center mb-5 text-white">
+                    <h2 class="fw-bold">Resultados de tu Búsqueda</h2>
+                    <p class="lead">Encontramos ${data.total} lugares que coinciden con tus filtros</p>
+                    <div class="mt-3">
+                        <span class="badge bg-primary bg-opacity-20 text-white fs-6 px-3 py-2 me-2">
+                            📍 ${filtrosSeleccionados.area.name}
+                        </span>
+                        <span class="badge bg-primary bg-opacity-20 text-white fs-6 px-3 py-2 me-2">
+                            🏢 ${filtrosSeleccionados.categoria.name}
+                        </span>
+                        ${filtrosSeleccionados.caracteristica ? 
+                            `<span class="badge bg-primary bg-opacity-20 text-white fs-6 px-3 py-2">
+                                ⭐ ${filtrosSeleccionados.caracteristica.name}
+                            </span>` : 
+                            '<span class="badge bg-secondary bg-opacity-20 text-white fs-6 px-3 py-2">Sin filtro especial</span>'
+                        }
+                    </div>
+                </div>
+                
+                <div class="row g-4">
+        `;
+        
+        data.lugares.forEach(lugar => {
+            html += `
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm border-0 rounded-4">
+                        ${lugar.imagen ? 
+                            `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${lugar.nombre}" style="height: 200px; object-fit: cover;" loading="lazy">` :
+                            `<div class="bg-light d-flex align-items-center justify-content-center rounded-top-4" style="height: 200px;">
+                                <i class="bi bi-image text-muted fs-2"></i>
+                            </div>`
+                        }
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-semibold mb-2">${lugar.nombre}</h5>
+                            
+                            <div class="mb-2">
+                                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill">
+                                    <i class="bi bi-geo-alt me-1"></i>${lugar.tipo}
+                                </span>
+                            </div>
+
+                            <div class="mb-3">
+                                ${lugar.es_destacado ? '<span class="badge bg-warning text-dark me-1"><i class="bi bi-star-fill me-1"></i>Destacado</span>' : ''}
+                                ${lugar.es_exclusivo ? '<span class="badge bg-success me-1"><i class="bi bi-gem me-1"></i>Exclusivo</span>' : ''}
+                                ${lugar.rating >= 4.5 ? '<span class="badge bg-info text-dark"><i class="bi bi-award me-1"></i>Top Valorado</span>' : ''}
+                            </div>
+
+                            ${lugar.rating ? 
+                                `<div class="small text-muted mb-3">
+                                    <i class="bi bi-star-fill text-warning me-1"></i>
+                                    <span class="fw-semibold">${lugar.rating}</span> / 5
+                                    ${lugar.total_reviews ? `<span class="ms-1">(${lugar.total_reviews} reseñas)</span>` : ''}
+                                </div>` : ''
+                            }
+
+                            ${lugar.url ? 
+                                `<a href="${lugar.url}" class="btn btn-primary mt-auto w-100 rounded-pill">
+                                    <i class="bi bi-eye me-1"></i>Ver detalles
+                                </a>` :
+                                '<span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">Sin detalles</span>'
+                            }
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `
+                </div>
+                
+                <div class="text-center mt-5">
+                    <a href="${generarUrlCompleta(data)}" 
+                       class="btn btn-outline-light btn-lg rounded-pill px-4">
+                        <i class="bi bi-arrow-right me-2"></i>Ver Todos los Resultados
+                    </a>
+                </div>
+            </div>
+        `;
+        
+        $('#ajax-results').html(html).show();
+        
+        // Scroll suave a los resultados
+        $('html, body').animate({
+            scrollTop: $('#ajax-results').offset().top - 100
+        }, 800);
+    }
+    
+    // Función para mostrar errores
+    function mostrarError(mensaje) {
+        $('#ajax-results').html(`
+            <div class="container py-5">
+                <div class="text-center text-white">
+                    <i class="bi bi-exclamation-triangle fs-1 text-warning mb-3"></i>
+                    <h3>¡Ups! Algo salió mal</h3>
+                    <p class="lead">${mensaje}</p>
+                    <button class="btn btn-outline-light" onclick="location.reload();">
+                        <i class="bi bi-arrow-clockwise me-2"></i>Intentar de nuevo
+                    </button>
+                </div>
+            </div>
+        `).show();
+    }
+    
+    // GEOLOCALIZACIÓN - Botón "Cerca de mí"
+    $('#cerca-de-mi-btn').on('click', function() {
+        obtenerUbicacionYBuscar();
+    });
+    
+    function obtenerUbicacionYBuscar() {
+        const btn = $('#cerca-de-mi-btn');
+        const textSpan = $('#ubicacion-text');
+        const loadingSpan = $('#ubicacion-loading');
+        
+        // Verificar soporte de geolocalización
+        if (!navigator.geolocation) {
+            mostrarErrorUbicacion('Tu navegador no soporta geolocalización');
+            return;
+        }
+        
+        // Estado: obteniendo ubicación
+        btn.removeClass('success error').addClass('locating');
+        textSpan.text('Obteniendo ubicación...');
+        loadingSpan.show();
+        
+        // Opciones de geolocalización
+        const options = {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000 // 5 minutos de cache
+        };
+        
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                // Éxito al obtener ubicación
+                ubicacionUsuario = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                    accuracy: position.coords.accuracy
+                };
+                
+                // Actualizar UI
+                btn.removeClass('locating').addClass('success');
+                textSpan.text('Ubicación encontrada');
+                loadingSpan.hide();
+                
+                // Buscar lugares cercanos
+                buscarLugaresCercanos();
+            },
+            function(error) {
+                // Error al obtener ubicación
+                let mensaje;
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        mensaje = 'Permiso de ubicación denegado. Por favor, habilita la ubicación en tu navegador.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        mensaje = 'No se pudo determinar tu ubicación. Intenta de nuevo.';
+                        break;
+                    case error.TIMEOUT:
+                        mensaje = 'La solicitud de ubicación tardó demasiado. Intenta de nuevo.';
+                        break;
+                    default:
+                        mensaje = 'Error desconocido al obtener la ubicación.';
+                        break;
+                }
+                
+                mostrarErrorUbicacion(mensaje);
+            },
+            options
+        );
+    }
+    
+    function buscarLugaresCercanos() {
+        if (!ubicacionUsuario) {
+            mostrarErrorUbicacion('No se ha obtenido la ubicación del usuario');
+            return;
+        }
+        
+        // Mostrar loading
+        $('#ajax-loading').show();
+        $('#ajax-results').hide();
+        
+        // Llamada AJAX
+        $.ajax({
+            url: "{% url 'explorer:lugares_cercanos_ajax' %}",
+            type: 'GET',
+            data: {
+                lat: ubicacionUsuario.lat,
+                lng: ubicacionUsuario.lng,
+                radio: 0.8 // 800m por defecto
+            },
+            success: function(response) {
+                $('#ajax-loading').hide();
+                
+                if (response.success) {
+                    renderizarResultadosCercanos(response);
+                } else {
+                    mostrarError('Error en la búsqueda: ' + response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#ajax-loading').hide();
+                mostrarError('Error de conexión: ' + error);
+            }
+        });
+    }
+    
+    function renderizarResultadosCercanos(data) {
+        let html = `
+            <div class="container py-5">
+                <div class="text-center mb-5 text-white">
+                    <h2 class="fw-bold">Lugares Cerca de Ti</h2>
+                    <p class="lead">${data.mensaje}</p>
+                    <div class="mt-3">
+                        <span class="badge bg-success bg-opacity-20 text-white fs-6 px-3 py-2">
+                            <i class="bi bi-geo-fill me-2"></i>Radio: ${data.ubicacion_usuario.radio < 1 ? (data.ubicacion_usuario.radio * 1000) + 'm' : data.ubicacion_usuario.radio + 'km'}
+                        </span>
+                        <span class="badge bg-info bg-opacity-20 text-white fs-6 px-3 py-2 ms-2">
+                            <i class="bi bi-bullseye me-2"></i>Precisión GPS activa
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="row g-4">
+        `;
+        
+        data.lugares.forEach(lugar => {
+            html += `
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm border-0 rounded-4">
+                        ${lugar.imagen ? 
+                            `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${lugar.nombre}" style="height: 200px; object-fit: cover;" loading="lazy">` :
+                            `<div class="bg-light d-flex align-items-center justify-content-center rounded-top-4" style="height: 200px;">
+                                <i class="bi bi-image text-muted fs-2"></i>
+                            </div>`
+                        }
+                        
+                        <!-- Badge de distancia -->
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-primary rounded-pill">
+                                <i class="bi bi-geo-alt me-1"></i>${lugar.distancia < 1 ? Math.round(lugar.distancia * 1000) + 'm' : lugar.distancia + 'km'}
+                            </span>
+                        </div>
+                        
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-semibold mb-2">${lugar.nombre}</h5>
+                            
+                            <div class="mb-2">
+                                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill">
+                                    <i class="bi bi-geo-alt me-1"></i>${lugar.tipo}
+                                </span>
+                            </div>
+
+                            <div class="mb-3">
+                                ${lugar.es_destacado ? '<span class="badge bg-warning text-dark me-1"><i class="bi bi-star-fill me-1"></i>Destacado</span>' : ''}
+                                ${lugar.es_exclusivo ? '<span class="badge bg-success me-1"><i class="bi bi-gem me-1"></i>Exclusivo</span>' : ''}
+                                ${lugar.rating >= 4.5 ? '<span class="badge bg-info text-dark"><i class="bi bi-award me-1"></i>Top Valorado</span>' : ''}
+                            </div>
+
+                            ${lugar.rating ? 
+                                `<div class="small text-muted mb-2">
+                                    <i class="bi bi-star-fill text-warning me-1"></i>
+                                    <span class="fw-semibold">${lugar.rating}</span> / 5
+                                    ${lugar.total_reviews ? `<span class="ms-1">(${lugar.total_reviews} reseñas)</span>` : ''}
+                                </div>` : ''
+                            }
+                            
+                            ${lugar.direccion ? 
+                                `<div class="small text-muted mb-3">
+                                    <i class="bi bi-map me-1"></i>${lugar.direccion}
+                                </div>` : ''
+                            }
+
+                            ${lugar.url ? 
+                                `<a href="${lugar.url}" class="btn btn-primary mt-auto w-100 rounded-pill">
+                                    <i class="bi bi-eye me-1"></i>Ver detalles
+                                </a>` :
+                                '<span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">Sin detalles</span>'
+                            }
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `
+                </div>
+                
+                <div class="text-center mt-5">
+                    <button class="btn btn-outline-light btn-lg rounded-pill px-4 me-3" onclick="obtenerUbicacionYBuscar()">
+                        <i class="bi bi-arrow-clockwise me-2"></i>Actualizar Ubicación
+                    </button>
+                    <a href="{% url 'explorer:lugares_list' %}" 
+                       class="btn btn-gradient-green btn-lg rounded-pill px-4">
+                        <i class="bi bi-arrow-right me-2"></i>Ver Todos los Lugares
+                    </a>
+                </div>
+            </div>
+        `;
+        
+        $('#ajax-results').html(html).show();
+        
+        // Scroll suave a los resultados
+        $('html, body').animate({
+            scrollTop: $('#ajax-results').offset().top - 100
+        }, 800);
+    }
+    
+    function mostrarErrorUbicacion(mensaje) {
+        const btn = $('#cerca-de-mi-btn');
+        const textSpan = $('#ubicacion-text');
+        const loadingSpan = $('#ubicacion-loading');
+        
+        btn.removeClass('locating success').addClass('error');
+        textSpan.text('Error de ubicación');
+        loadingSpan.hide();
+        
+        // Mostrar error en resultados
+        $('#ajax-results').html(`
+            <div class="container py-5">
+                <div class="text-center text-white">
+                    <i class="bi bi-geo-alt-fill fs-1 text-danger mb-3"></i>
+                    <h3>Error de Geolocalización</h3>
+                    <p class="lead">${mensaje}</p>
+                    <div class="mt-4">
+                        <button class="btn btn-outline-light me-3" onclick="obtenerUbicacionYBuscar();">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Intentar de nuevo
+                        </button>
+                        <a href="{% url 'explorer:lugares_list' %}" class="btn btn-gradient-green">
+                            <i class="bi bi-compass me-2"></i>Ver todos los lugares
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `).show();
+        
+        // Reset del botón después de 3 segundos
+        setTimeout(() => {
+            btn.removeClass('error');
+            textSpan.text('Cerca de Mí');
+        }, 3000);
+    }
 });
 </script>
 {% endblock %}

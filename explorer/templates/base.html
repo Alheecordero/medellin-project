@@ -4,97 +4,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}ViveMedellín{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}Descubre los mejores lugares de Medellín{% endblock %}">
+    <title>{% block title %}Medellín Explorer - Tu Guía de la Ciudad{% endblock %}</title>
     
-    <!-- Preconnect -->
+    <!-- Meta SEO -->
+    <meta name="description" content="{% block meta_description %}Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}Medellín, turismo, lugares, bares, restaurantes, discotecas, que hacer en Medellín{% endblock %}">
+    <meta name="author" content="Medellín Explorer">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{% block og_title %}Medellín Explorer - Tu Guía de la Ciudad{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.build_absolute_uri }}{% static 'img/medellin.jpg' %}{% endblock %}">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
+    <meta property="twitter:title" content="{% block twitter_title %}Medellín Explorer - Tu Guía de la Ciudad{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín.{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}{{ request.build_absolute_uri }}{% static 'img/medellin.jpg' %}{% endblock %}">
+
+    <!-- Preload recursos críticos -->
+    <link rel="preload" href="{% static 'css/style.css' %}" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
+    
+    <!-- Preconnect a dominios externos -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     
-    <!-- CSS Base -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- CSS Custom -->
+    <!-- CSS crítico inline para evitar FOUC -->
     <style>
-        :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --dark-color: #1a1a2e;
-            --light-color: #f8f9fa;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-        }
-        
-        .btn-gradient {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            border: none;
-            color: white;
-            padding: 0.5rem 1.5rem;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-            color: white;
+        body { 
+            margin: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; 
         }
     </style>
+    
+    <!-- CSS principal -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
     
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="bi bi-geo-alt-fill text-primary me-2"></i>
-                ViveMedellín
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/mapa/">
-                            <i class="bi bi-map me-1"></i> Mapa
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/lugares/">
-                            <i class="bi bi-search me-1"></i> Explorar
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/acerca-de/">
-                            <i class="bi bi-info-circle me-1"></i> Acerca de
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    {% include 'navbar.html' %}
 
-    <!-- Main Content -->
+    <!-- Contenido principal -->
     <main>
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Footer -->
+    {% include 'footer.html' %}
+
+    <!-- Scripts globales -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="{% static 'js/optimizations.js' %}" defer></script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>

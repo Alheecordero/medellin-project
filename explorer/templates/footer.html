@@ -1,0 +1,511 @@
+{% load static %}
+
+<!-- Footer -->
+<footer class="footer mt-5">
+    <div class="container-custom">
+        <!-- Primera fila: Navegación principal -->
+        <div class="row mb-4">
+            <div class="col-lg-4 mb-4">
+                <h5 class="mb-3 fw-bold">
+                    <i class="bi bi-geo-alt-fill me-2 text-gradient"></i>Vive Medellín
+                </h5>
+                <p class="text-light-muted mb-3">
+                    Descubre los mejores lugares de Medellín, la ciudad de la eterna primavera.
+                </p>
+                <div class="social-links">
+                    <a href="{% url 'explorer:home' %}" class="social-btn me-2" title="Inicio">
+                        <i class="bi bi-house-fill"></i>
+                    </a>
+                    <a href="{% url 'explorer:lugares_list' %}" class="social-btn me-2" title="Explorar Lugares">
+                        <i class="bi bi-map"></i>
+                    </a>
+                    <a href="{% url 'explorer:lugares_list' %}?tipo=restaurant" class="social-btn" title="Mejores Restaurantes">
+                        <i class="bi bi-cup-hot"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-lg-12 mb-4">
+                        <h6 class="mb-3 fw-semibold text-white text-center">Newsletter</h6>
+                        <p class="text-light-muted mb-4 text-center">Recibe las mejores recomendaciones de lugares directamente en tu correo</p>
+                        <div class="newsletter-container-wide">
+                                            <form class="newsletter-form-modern" action="{% url 'explorer:newsletter_subscribe' %}" method="post" onsubmit="return newsletterSubmit(event)">
+                    {% csrf_token %}
+                    <div class="input-group-modern-wide">
+                        <input type="email" class="form-control-modern" placeholder="Ingresa tu correo electrónico" required name="email" id="newsletter-email">
+                        <button class="btn-modern-wide" type="submit" id="newsletter-btn">
+                            <i class="bi bi-send-fill me-2"></i>Suscribirme
+                        </button>
+                    </div>
+                </form>
+                            <small class="text-light-muted mt-3 d-block text-center">
+                                <i class="bi bi-shield-check me-1"></i>100% libre de spam • Cancela cuando quieras
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Segunda fila: Enlaces rápidos adicionales -->
+        <div class="row mt-4 pt-4" style="border-top: 1px solid rgba(255,255,255,0.1);">
+            <div class="col-lg-4 mb-3">
+                <h6 class="mb-3 fw-semibold text-white">Experiencias Destacadas</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'explorer:lugares_list' %}?delivery=true" class="badge bg-gradient text-decoration-none">🚚 Con Delivery</a>
+                    <a href="{% url 'explorer:lugares_list' %}?outdoor_seating=true" class="badge bg-gradient text-decoration-none">🌿 Con Terraza</a>
+                    <a href="{% url 'explorer:lugares_list' %}?live_music=true" class="badge bg-gradient text-decoration-none">🎵 Música en Vivo</a>
+                    <a href="{% url 'explorer:lugares_list' %}?serves_cocktails=true" class="badge bg-gradient text-decoration-none">🍹 Cócteles</a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-3">
+                <h6 class="mb-3 fw-semibold text-white">Zonas Premium</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'explorer:lugares_por_comuna' 'el-poblado' %}?tipo=bar" class="badge bg-gradient text-decoration-none">🍸 Bares El Poblado</a>
+                    <a href="{% url 'explorer:lugares_por_comuna' 'laureles-estadio' %}?tipo=restaurant" class="badge bg-gradient text-decoration-none">🍽️ Restaurantes Laureles</a>
+                    <a href="{% url 'explorer:lugares_por_comuna' 'envigado' %}?tipo=cafe" class="badge bg-gradient text-decoration-none">☕ Cafés Envigado</a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-3">
+                <h6 class="mb-3 fw-semibold text-white">Navegación Rápida</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'explorer:home' %}" class="badge bg-gradient text-decoration-none">🏠 Inicio</a>
+                    <a href="{% url 'explorer:lugares_list' %}" class="badge bg-gradient text-decoration-none">🗺️ Explorar Todo</a>
+                    <a href="{% url 'explorer:lugares_list' %}?tipo=night_club" class="badge bg-gradient text-decoration-none">🌙 Vida Nocturna</a>
+                    <a href="{% url 'explorer:lugares_list' %}?good_for_groups=true" class="badge bg-gradient text-decoration-none">👥 Para Grupos</a>
+                </div>
+            </div>
+        </div>
+        
+        <hr class="my-4">
+        
+        <div class="text-center">
+            <p class="mb-2 text-light-muted">
+                <strong>Vive Medellín</strong> - Tu guía definitiva para descubrir los mejores lugares de la Ciudad de la Eterna Primavera
+            </p>
+            <p class="mb-0 small text-light-muted">&copy; {% now "Y" %} ViveMedellín. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Botón scroll to top -->
+<button id="scrollToTop" class="scroll-to-top">
+    <i class="bi bi-arrow-up"></i>
+</button>
+
+<!-- Estilos del Footer -->
+<style>
+/* Footer - Morado Oscuro Sofisticado */
+.footer {
+    background: linear-gradient(135deg,rgb(22, 9, 56) 0%,rgb(16, 9, 39) 100%);
+    color: white;
+    padding: 4rem 0 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(102, 126, 234, 0.6) 20%, 
+        rgba(118, 75, 162, 0.8) 50%, 
+        rgba(102, 126, 234, 0.6) 80%, 
+        transparent);
+}
+
+.footer::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 20%, rgba(102, 126, 234, 0.1) 0%, transparent 50%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Contenido del footer - mejor contraste */
+.footer * {
+    position: relative;
+    z-index: 1;
+}
+
+.footer h5, .footer h6 {
+    color: white;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.footer h5 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+}
+
+.footer h6 {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.footer .text-light-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
+    line-height: 1.6;
+}
+
+.footer a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+}
+
+.footer a:hover {
+    color: #38ef7d;
+    transform: translateX(4px);
+    text-shadow: 0 2px 8px rgba(56, 239, 125, 0.3);
+}
+
+/* Botones sociales mejorados */
+.social-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+}
+
+.social-btn:hover {
+    background: #38ef7d;
+    border-color: #38ef7d;
+    transform: translateY(-4px) scale(1.1);
+    color: #2d1b69;
+    box-shadow: 0 8px 25px rgba(56, 239, 125, 0.4);
+}
+
+/* Newsletter amplio y mejorado */
+.newsletter-container-wide {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.newsletter-form-modern {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.input-group-modern-wide {
+    display: flex;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.input-group-modern-wide:focus-within {
+    border-color: #38ef7d;
+    box-shadow: 0 0 0 4px rgba(56, 239, 125, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.form-control-modern {
+    flex: 1;
+    padding: 1.2rem 1.5rem;
+    border: none;
+    background: transparent;
+    color: white;
+    font-weight: 500;
+    outline: none;
+    font-size: 1rem;
+}
+
+.form-control-modern::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 400;
+}
+
+.btn-modern-wide {
+    padding: 1.2rem 2rem;
+    background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+    border: none;
+    color: #2d1b69;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1rem;
+    white-space: nowrap;
+    min-width: 160px;
+}
+
+.btn-modern-wide:hover {
+    background: linear-gradient(135deg, #32d86a 0%, #0e8678 100%);
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);
+}
+
+/* Botón scroll to top - rediseñado */
+.scroll-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #553c9a 0%, #2d1b69 100%);
+    color: white;
+    border: 2px solid rgba(56, 239, 125, 0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    z-index: 1000;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 25px rgba(85, 60, 154, 0.4);
+    backdrop-filter: blur(10px);
+}
+
+.scroll-to-top:hover {
+    background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+    border-color: #38ef7d;
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 12px 35px rgba(56, 239, 125, 0.5);
+    color: #2d1b69;
+}
+
+.scroll-to-top i {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+/* Efectos especiales */
+.text-gradient {
+    background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+}
+
+.text-light-muted.small {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Animación sutil para los íconos */
+@keyframes logoScale {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.footer h5 i {
+    animation: logoScale 4s ease-in-out infinite;
+    transform-origin: center;
+}
+
+/* Badges de enlaces rápidos */
+.badge.bg-gradient {
+    background: linear-gradient(135deg, rgba(56, 239, 125, 0.2) 0%, rgba(17, 153, 142, 0.2) 100%);
+    border: 1px solid rgba(56, 239, 125, 0.3);
+    color: rgba(255, 255, 255, 0.95) !important;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    border-radius: 25px;
+    font-size: 0.85rem;
+}
+
+.badge.bg-gradient:hover {
+    background: linear-gradient(135deg, rgba(56, 239, 125, 0.4) 0%, rgba(17, 153, 142, 0.4) 100%);
+    border-color: #38ef7d;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);
+    color: white !important;
+}
+
+/* Responsive ajustments */
+@media (max-width: 768px) {
+    .footer {
+        padding: 3rem 0 1.5rem;
+    }
+    
+    .footer .col-lg-3, .footer .col-lg-4, .footer .col-lg-8 {
+        margin-bottom: 2rem;
+    }
+    
+    .social-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+    
+    .scroll-to-top {
+        width: 50px;
+        height: 50px;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .badge.bg-gradient {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .newsletter-form-modern {
+        padding: 1.5rem;
+    }
+    
+    .input-group-modern-wide {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .btn-modern-wide {
+        min-width: 100%;
+        text-align: center;
+    }
+    
+    .form-control-modern {
+        text-align: center;
+    }
+}
+</style>
+
+<!-- Script del Footer -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const scrollBtn = document.getElementById('scrollToTop');
+    
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            scrollBtn.style.display = 'block';
+        } else {
+            scrollBtn.style.display = 'none';
+        }
+    });
+    
+    scrollBtn.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+});
+
+// Newsletter functionality
+function newsletterSubmit(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    const email = formData.get('email');
+    const button = form.querySelector('#newsletter-btn');
+    const originalText = button.innerHTML;
+    
+    // Validación básica
+    if (!email || !email.includes('@')) {
+        showNewsletterMessage('Por favor, ingresa un email válido', 'error');
+        return false;
+    }
+    
+    // Cambiar botón a estado de loading
+    button.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Enviando...';
+    button.disabled = true;
+    
+    // Realizar petición AJAX
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Mostrar mensaje de éxito
+            button.innerHTML = '<i class="bi bi-check-lg"></i> ¡Suscrito!';
+            button.style.background = 'linear-gradient(135deg, #38ef7d 0%, #11998e 100%)';
+            
+            // Limpiar input
+            document.getElementById('newsletter-email').value = '';
+            
+            // Mostrar mensaje personalizado
+            showNewsletterMessage(data.message, 'success');
+            
+            // Restaurar botón después de 4 segundos
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                button.style.background = '';
+            }, 4000);
+            
+        } else {
+            // Mostrar error
+            showNewsletterMessage(data.error || 'Error al procesar la suscripción', 'error');
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNewsletterMessage('Error de conexión. Por favor, intenta más tarde.', 'error');
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+    
+    return false;
+}
+
+function showNewsletterMessage(message, type) {
+    // Remover mensaje anterior si existe
+    const existingMessage = document.querySelector('.newsletter-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    
+    // Crear nuevo mensaje
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'newsletter-message mt-3 text-center';
+    
+    const icon = type === 'success' ? 'bi-check-circle' : 'bi-exclamation-triangle';
+    const colorClass = type === 'success' ? 'text-light' : 'text-warning';
+    
+    messageDiv.innerHTML = `
+        <small class="${colorClass}">
+            <i class="bi ${icon} me-1"></i>${message}
+        </small>
+    `;
+    
+    // Agregar mensaje al contenedor del newsletter
+    const newsletterContainer = document.querySelector('.newsletter-container-wide');
+    newsletterContainer.appendChild(messageDiv);
+    
+    // Remover mensaje después de 6 segundos
+    setTimeout(() => {
+        if (messageDiv.parentNode) {
+            messageDiv.remove();
+        }
+    }, 6000);
+}
+</script> 

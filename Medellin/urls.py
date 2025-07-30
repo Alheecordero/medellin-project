@@ -7,13 +7,10 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # Incluye el namespace correctamente
-    path('usuarios/', include(('usuarios.urls', 'usuarios'), namespace='usuarios')),  
-
-    # Incluye explorer con namespace también (si lo usas en templates como explorer:algo)
+    # Explorer app
     path('', include(('explorer.urls', 'explorer'))),
 
-    path('__debug__/', include('debug_toolbar.urls')),
+    # path('__debug__/', include('debug_toolbar.urls')),  # Comentado temporalmente
     
 ]
 

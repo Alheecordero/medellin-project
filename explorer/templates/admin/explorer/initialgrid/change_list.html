@@ -1,0 +1,78 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block content_title %}
+  <h1>{{ cl.opts.verbose_name_plural|capfirst }}</h1>
+{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  {# Leaflet CSS y JS #}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <style>
+    #map-container {
+      height: 500px;
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+    }
+  </style>
+{% endblock %}
+
+{% block result_list %}
+  {# Contenedor del mapa #}
+  <div id="map-container"></div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Coordenadas de Medellín
+      const medellinLat = 6.2442;
+      const medellinLon = -75.5812;
+      
+      // Inicializar el mapa centrado en Medellín
+      const map = L.map('map-container').setView([medellinLat, medellinLon], 12);
+
+      // Capa base del mapa (OpenStreetMap)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      // Obtener los puntos desde el contexto
+      const points = JSON.parse('{{ points_json|escapejs }}');
+
+      if (points.length > 0) {
+        // Crear una capa de grupo para los marcadores
+        const markers = L.featureGroup();
+        
+        // Añadir cada punto al mapa
+        points.forEach(function(point) {
+          const lat = point[0];
+          const lon = point[1];
+          
+          // Crear un círculo pequeño para cada punto
+          const circleMarker = L.circleMarker([lat, lon], {
+            radius: 4,
+            fillColor: "#ff7800",
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+          });
+          
+          markers.addLayer(circleMarker);
+        });
+        
+        // Añadir la capa de grupo al mapa
+        markers.addTo(map);
+        
+        // Ajustar el zoom del mapa para que todos los puntos sean visibles
+        map.fitBounds(markers.getBounds().pad(0.1));
+      }
+    });
+  </script>
+  
+  {# Renderizar la lista de resultados original del admin #}
+  {{ block.super }}
+{% endblock %} 

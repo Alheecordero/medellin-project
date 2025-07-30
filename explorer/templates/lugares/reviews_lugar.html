@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Reseñas de {{ lugar.nombre }} - ViveMedellín{% endblock %}
+{% block title %}Reseñas de {{ lugar.nombre }} | Vive Medellín{% endblock %}
 
 {% block meta_description %}
   Opiniones sobre {{ lugar.nombre }} en Medellín. Lee reseñas de visitantes y descubre su calificación general antes de visitarlo.
@@ -18,386 +18,416 @@
 {% endblock %}
 
 {% block og_image %}
-  {% if lugar.fotos.exists %}
-    {{ request.build_absolute_uri }}{{ lugar.fotos.first.imagen.url }}
-  {% elif lugar.imagen %}
-    {{ request.build_absolute_uri }}{{ lugar.imagen.url }}
+  {% if lugar.get_primera_foto %}
+    {{ request.build_absolute_uri }}{{ lugar.get_primera_foto.imagen }}
   {% else %}
     {{ request.build_absolute_uri }}static/img/og-image.jpg
   {% endif %}
 {% endblock %}
 
 {% block content %}
-<div class="reviews-page">
-    <!-- Header -->
-    <section class="reviews-header py-5 bg-light">
-        <div class="container-custom">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'explorer:home' %}">Inicio</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'explorer:lugares_list' %}">Lugares</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'explorer:lugares_detail' lugar.slug %}">{{ lugar.nombre|truncatechars:30 }}</a></li>
-                    <li class="breadcrumb-item active">Reseñas</li>
-                </ol>
-            </nav>
-            
-            <div class="text-center">
-                <h1 class="h2 mb-3">Reseñas de {{ lugar.nombre }}</h1>
-                
-                <!-- Resumen de calificación -->
-                <div class="rating-summary mb-4">
-                    <div class="d-flex align-items-center justify-content-center gap-3">
-                        <div class="rating-number">
-                            <span class="display-4 fw-bold">{{ lugar.rating|default:"0" }}</span>
-                            <span class="text-muted">/5</span>
-                        </div>
-                        <div class="rating-stars">
-                            <div class="stars mb-1">
-                                {% for i in "12345" %}
-                                    {% if i|add:0 <= lugar.rating %}
-                                        <i class="fas fa-star text-warning fa-lg"></i>
-                                    {% else %}
-                                        <i class="far fa-star text-warning fa-lg"></i>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                            <p class="text-muted mb-0">
-                                Basado en {{ lugar.total_reviews|default:"0" }} reseñas
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                
-                <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left me-2"></i>Volver al lugar
-                </a>
+
+<!-- Hero Header -->
+<div class="reviews-hero">
+  <div class="container py-5">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <div class="d-flex align-items-center mb-3" style="position: relative; z-index: 1000;">
+          <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-purple me-3 rounded-pill">
+            <i class="bi bi-arrow-left me-1"></i>Volver al lugar
+          </a>
+        </div>
+        
+        <h1 class="display-5 fw-bold text-white mb-3">{{ lugar.nombre }}</h1>
+        <p class="text-white-50 mb-3">
+          <i class="bi bi-chat-quote me-2"></i>{{ total_reviews }} reseña{{ total_reviews|pluralize }}
+        </p>
+        
+        <div class="rating-summary">
+          <div class="d-flex align-items-center">
+            <div class="rating-number">
+              <span class="display-6 fw-bold text-white">{{ lugar.rating|default:"?" }}</span>
+              <small class="text-white-50">/5</small>
             </div>
-        </div>
-    </section>
-
-    <!-- Lista de reseñas -->
-    <section class="reviews-list py-5">
-        <div class="container-custom">
-            {% if reviews %}
-                <!-- Filtros y ordenamiento -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="h4 mb-0">Todas las reseñas</h2>
-                    <div class="d-flex gap-2">
-                        <select class="form-select form-select-sm" id="filterRating">
-                            <option value="">Todas las calificaciones</option>
-                            <option value="5">5 estrellas</option>
-                            <option value="4">4 estrellas</option>
-                            <option value="3">3 estrellas</option>
-                            <option value="2">2 estrellas</option>
-                            <option value="1">1 estrella</option>
-                        </select>
-                        <select class="form-select form-select-sm" id="sortReviews">
-                            <option value="recent">Más recientes</option>
-                            <option value="helpful">Más útiles</option>
-                            <option value="rating-high">Mayor calificación</option>
-                            <option value="rating-low">Menor calificación</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Grid de reseñas -->
-                <div class="reviews-grid">
-                    {% for review in reviews %}
-                    <div class="review-card" data-rating="{{ review.rating }}">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <!-- Header de la reseña -->
-                                <div class="review-header mb-3">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <h5 class="mb-1">{{ review.author_name|default:"Usuario anónimo" }}</h5>
-                                            <p class="text-muted small mb-0">
-                                                {{ review.relative_time_description|default:"Recientemente" }}
-                                            </p>
-                                        </div>
-                                        <div class="rating-badge">
-                                            <span class="badge bg-primary rounded-pill">
-                                                <i class="fas fa-star me-1"></i>{{ review.rating }}/5
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Estrellas visuales -->
-                                <div class="stars mb-3">
-                                    {% for i in "12345" %}
-                                        {% if i|add:0 <= review.rating %}
-                                            <i class="fas fa-star text-warning"></i>
-                                        {% else %}
-                                            <i class="far fa-star text-warning"></i>
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
-
-                                <!-- Texto de la reseña -->
-                                <div class="review-text">
-                                    {% if review.text %}
-                                        <p class="mb-0">{{ review.text|linebreaksbr }}</p>
-                                    {% else %}
-                                        <p class="text-muted mb-0 fst-italic">
-                                            Sin comentario adicional
-                                        </p>
-                                    {% endif %}
-                                </div>
-
-                                <!-- Acciones de la reseña -->
-                                <div class="review-actions mt-3 pt-3 border-top">
-                                    <button class="btn btn-sm btn-light me-2" onclick="marcarUtil(this)">
-                                        <i class="far fa-thumbs-up me-1"></i>Útil
-                                    </button>
-                                    <button class="btn btn-sm btn-light" onclick="compartirReview(this)">
-                                        <i class="fas fa-share-alt me-1"></i>Compartir
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-
-                <!-- Paginación -->
-                {% if reviews|length > 12 %}
-                <nav aria-label="Paginación de reseñas" class="mt-5">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a>
-                        </li>
-                    </ul>
-                </nav>
+            <div class="ms-3">
+              <div class="stars-display mb-1">
+                {% if lugar.rating %}
+                  {% for i in "12345" %}
+                    {% if lugar.rating >= forloop.counter %}
+                      <i class="bi bi-star-fill text-warning fs-4"></i>
+                    {% elif lugar.rating >= forloop.counter|add:"-0.5" %}
+                      <i class="bi bi-star-half text-warning fs-4"></i>
+                    {% else %}
+                      <i class="bi bi-star text-white-50 fs-4"></i>
+                    {% endif %}
+                  {% endfor %}
+                {% else %}
+                  {% for i in "12345" %}
+                    <i class="bi bi-star text-white-50 fs-4"></i>
+                  {% endfor %}
                 {% endif %}
-
-            {% else %}
-                <!-- Estado vacío -->
-                <div class="empty-state text-center py-5">
-                    <i class="fas fa-comments fa-4x text-muted mb-3"></i>
-                    <h3>Aún no hay reseñas</h3>
-                    <p class="text-muted">
-                        Este lugar todavía no tiene reseñas. ¡Sé el primero en compartir tu experiencia!
-                    </p>
-                    <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-primary mt-3">
-                        <i class="fas fa-arrow-left me-2"></i>Volver al lugar
-                    </a>
-                </div>
-            {% endif %}
+              </div>
+              <p class="text-white-50 mb-0">Basado en {{ total_reviews }} opiniones</p>
+            </div>
+          </div>
         </div>
-    </section>
-
-    <!-- CTA Section -->
-    {% if reviews %}
-    <section class="cta-section py-5 bg-light">
-        <div class="container-custom text-center">
-            <h3 class="mb-3">¿Has visitado {{ lugar.nombre }}?</h3>
-            <p class="text-muted mb-4">
-                Comparte tu experiencia y ayuda a otros a descubrir este lugar
-            </p>
-            <button class="btn btn-primary btn-lg">
-                <i class="fas fa-pen me-2"></i>Escribir una reseña
-            </button>
-        </div>
-    </section>
-    {% endif %}
+      </div>
+      
+      <div class="col-lg-4">
+        {% if lugar.get_primera_foto %}
+          <div class="place-preview">
+            <img src="{{ lugar.get_primera_foto.imagen }}" 
+                 alt="{{ lugar.nombre }}" 
+                 class="img-fluid rounded-4 shadow-lg">
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Reviews List -->
+<div class="container pb-5">
+  {% if reviews %}
+    <div class="row g-4">
+      {% for review in reviews %}
+        <div class="col-lg-6">
+          <div class="review-card">
+            <div class="review-header">
+              <div class="reviewer-info">
+                {% if review.foto_perfil %}
+                  <img src="{{ review.foto_perfil }}" 
+                       alt="{{ review.autor }}" 
+                       class="reviewer-avatar">
+                {% else %}
+                  <div class="reviewer-avatar-placeholder">
+                    <i class="bi bi-person-fill"></i>
+                  </div>
+                {% endif %}
+                
+                <div class="reviewer-details">
+                  <h6 class="reviewer-name">{{ review.autor|default:"Usuario anónimo" }}</h6>
+                  <div class="review-date">
+                    {% if review.fecha %}
+                      <i class="bi bi-calendar3 me-1"></i>
+                      <span>{{ review.fecha }}</span>
+                    {% else %}
+                      <span class="text-muted">Fecha no disponible</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="review-rating">
+                {% for i in "12345" %}
+                  {% if forloop.counter <= review.rating %}
+                    <i class="bi bi-star-fill text-warning"></i>
+                  {% else %}
+                    <i class="bi bi-star text-muted"></i>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+            
+            <div class="review-content">
+              {% if review.texto %}
+                <p class="review-text">{{ review.texto|linebreaksbr }}</p>
+              {% else %}
+                <p class="review-text text-muted fst-italic">
+                  <i class="bi bi-chat-quote me-1"></i>
+                  Sin comentario escrito, solo calificación numérica.
+                </p>
+              {% endif %}
+            </div>
+            
+
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <!-- Load More Button -->
+    {% if reviews|length >= 10 %}
+      <div class="text-center mt-5">
+        <button class="btn btn-gradient-purple rounded-pill px-4">
+          <i class="bi bi-arrow-clockwise me-1"></i>Cargar más reseñas
+        </button>
+      </div>
+    {% endif %}
+    
+  {% else %}
+    <!-- Empty State -->
+    <div class="empty-reviews">
+      <div class="text-center py-5">
+        <div class="empty-icon mb-4">
+          <i class="bi bi-chat-quote display-1 text-muted"></i>
+        </div>
+        <h4 class="fw-bold text-dark mb-3">¡Sé el primero en opinar!</h4>
+        <p class="text-muted mb-4">
+          Este lugar aún no tiene reseñas. Comparte tu experiencia para ayudar a otros viajeros.
+        </p>
+        <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-purple rounded-pill">
+          <i class="bi bi-arrow-left me-1"></i>Volver al lugar
+        </a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
 {% endblock %}
 
-{% block extra_css %}
+{% block extra_js %}
+<!-- Cache buster - Button Fix v1.0 - 2025-01-30 -->
 <style>
-/* Reviews header */
-.reviews-header {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+/* Hero Section */
+.reviews-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+  min-height: 400px;
+  z-index: auto;
+}
+
+.reviews-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .rating-summary {
-    max-width: 400px;
-    margin: 0 auto;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.rating-number {
-    line-height: 1;
+.place-preview img {
+  max-height: 200px;
+  width: 100%;
+  object-fit: cover;
 }
 
-/* Reviews grid */
-.reviews-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 1.5rem;
+/* Button gradients */
+.btn-gradient-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  position: relative;
+  z-index: 999;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
+.btn-gradient-purple:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  color: white;
+}
+
+/* Rating Stats */
+.rating-stats-card {
+  background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.stat-item {
+  padding: 15px 10px;
+}
+
+.star-count {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #4a5568;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 80px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  padding: 2px;
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  width: 20px;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Review Cards */
 .review-card {
-    transition: transform 0.2s;
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .review-card:hover {
-    transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
 }
 
-.review-header h5 {
-    font-size: 1.1rem;
-    font-weight: 600;
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
 }
 
-.rating-badge .badge {
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
+.reviewer-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.reviewer-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+  border: 2px solid #e2e8f0;
+}
+
+.reviewer-avatar-placeholder {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  color: white;
+  font-size: 20px;
+}
+
+.reviewer-name {
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+}
+
+.review-date {
+  font-size: 0.8rem;
+  color: #718096;
+  display: flex;
+  align-items: center;
+}
+
+.review-rating {
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+}
+
+.review-content {
+  flex: 1;
+  margin-bottom: 0;
 }
 
 .review-text {
-    color: #495057;
-    line-height: 1.6;
+  color: #4a5568;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin: 0;
+  white-space: pre-line;
 }
 
-.review-actions .btn {
-    transition: all 0.2s;
+
+
+/* Empty State */
+.empty-reviews {
+  background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(102, 126, 234, 0.1);
 }
 
-.review-actions .btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Empty state */
-.empty-state {
-    padding: 4rem 2rem;
-}
-
-/* CTA section */
-.cta-section {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+.empty-icon {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  color: white;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .reviews-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .d-flex.gap-2 {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .d-flex.gap-2 select {
-        width: 100%;
-    }
+  .reviews-hero {
+    min-height: 300px;
+  }
+  
+  .rating-summary {
+    margin-top: 20px;
+  }
+  
+  .place-preview {
+    margin-top: 20px;
+  }
+  
+  .stat-item {
+    padding: 10px 5px;
+  }
+  
+  .progress-bar-container {
+    height: 60px;
+  }
+  
+  .review-card {
+    padding: 20px;
+  }
+  
+  .reviewer-avatar,
+  .reviewer-avatar-placeholder {
+    width: 40px;
+    height: 40px;
+  }
 }
-
-/* Animaciones */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.review-card {
-    animation: fadeIn 0.5s ease-out;
-    animation-fill-mode: both;
-}
-
-.review-card:nth-child(1) { animation-delay: 0.1s; }
-.review-card:nth-child(2) { animation-delay: 0.2s; }
-.review-card:nth-child(3) { animation-delay: 0.3s; }
-.review-card:nth-child(4) { animation-delay: 0.4s; }
-.review-card:nth-child(5) { animation-delay: 0.5s; }
-.review-card:nth-child(6) { animation-delay: 0.6s; }
 </style>
-{% endblock %}
 
-{% block extra_js %}
 <script>
-// Filtrar por calificación
-document.getElementById('filterRating')?.addEventListener('change', function() {
-    const filterValue = this.value;
-    const reviews = document.querySelectorAll('.review-card');
-    
-    reviews.forEach(review => {
-        if (!filterValue || review.dataset.rating === filterValue) {
-            review.style.display = 'block';
-        } else {
-            review.style.display = 'none';
-        }
-    });
-});
-
-// Ordenar reseñas
-document.getElementById('sortReviews')?.addEventListener('change', function() {
-    const sortValue = this.value;
-    const container = document.querySelector('.reviews-grid');
-    const reviews = Array.from(document.querySelectorAll('.review-card'));
-    
-    // Aquí iría la lógica de ordenamiento
-    // Por ahora solo reordenamos aleatoriamente como demo
-    reviews.sort(() => Math.random() - 0.5);
-    
-    reviews.forEach(review => {
-        container.appendChild(review);
-    });
-});
-
-// Marcar como útil
-function marcarUtil(button) {
-    button.classList.toggle('btn-light');
-    button.classList.toggle('btn-primary');
-    
-    const icon = button.querySelector('i');
-    icon.classList.toggle('far');
-    icon.classList.toggle('fas');
-    
-    // Aquí iría la lógica AJAX para guardar en backend
-}
-
-// Compartir reseña
-function compartirReview(button) {
-    const reviewCard = button.closest('.review-card');
-    const reviewText = reviewCard.querySelector('.review-text p').textContent;
-    const author = reviewCard.querySelector('h5').textContent;
-    
-    const shareText = `Reseña de ${author} sobre {{ lugar.nombre }}: "${reviewText.substring(0, 100)}..."`;
-    
-    if (navigator.share) {
-        navigator.share({
-            title: 'Reseña de {{ lugar.nombre }}',
-            text: shareText,
-            url: window.location.href
-        });
-    } else {
-        // Fallback: copiar al portapapeles
-        navigator.clipboard.writeText(window.location.href).then(() => {
-            alert('Enlace copiado al portapapeles');
-        });
-    }
-}
-
-// Lazy loading para imágenes de usuario (si las hubiera)
 document.addEventListener('DOMContentLoaded', function() {
-    const lazyImages = document.querySelectorAll('img[data-src]');
-    
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                img.src = img.dataset.src;
-                img.classList.add('loaded');
-                observer.unobserve(img);
+    // Forzar funcionalidad del botón "Volver al lugar"
+    const volverBtn = document.querySelector('a[href*="/lugar/"]');
+    if (volverBtn) {
+        volverBtn.addEventListener('click', function(e) {
+            // Si por alguna razón el enlace normal no funciona, forzar navegación
+            const href = this.getAttribute('href');
+            if (href && href !== '#') {
+                window.location.href = href;
             }
         });
-    });
-    
-    lazyImages.forEach(img => imageObserver.observe(img));
+        
+        // Debug: mostrar en consola que el botón fue encontrado
+        console.log('✅ Botón "Volver al lugar" encontrado y configurado:', volverBtn.href);
+    } else {
+        console.log('❌ Botón "Volver al lugar" NO encontrado');
+    }
 });
 </script>
 {% endblock %}

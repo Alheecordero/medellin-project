@@ -1,433 +1,518 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ lugar.nombre }} - ViveMedellín{% endblock %}
+{% block title %}{{ lugar.nombre }} | Vive Medellín{% endblock %}
 
 {% block meta_description %}
-  {{ lugar.nombre }} en Medellín. Descubre este {{ lugar.tipo }} con puntuación de {{ lugar.rating|default:"-" }} estrellas. Dirección: {{ lugar.direccion|default:"no disponible" }}.
+  {{ lugar.nombre }} en Medellín. Descubre este {{ lugar.get_tipo_display|default:lugar.tipo }} con puntuación de {{ lugar.rating|default:"-" }} estrellas. Dirección: {{ lugar.direccion|default:"no disponible" }}.
 {% endblock %}
 
 {% block meta_keywords %}
-  {{ lugar.nombre }}, {{ lugar.tipo }}, lugares Medellín, {{ lugar.tipo }} Medellín, mejores lugares en Medellín
+  {{ lugar.nombre }}, {{ lugar.get_tipo_display|default:lugar.tipo }}, lugares Medellín, {{ lugar.get_tipo_display|default:lugar.tipo }} Medellín, mejores lugares en Medellín
 {% endblock %}
 
 {% block og_title %}{{ lugar.nombre }} | Medellín Explorer{% endblock %}
 {% block og_description %}
-  Conoce {{ lugar.nombre }}, un destacado {{ lugar.tipo }} en Medellín con rating de {{ lugar.rating|default:"-" }} y más de {{ lugar.total_reviews|default:"0" }} reseñas.
+  Conoce {{ lugar.nombre }}, un destacado {{ lugar.get_tipo_display|default:lugar.tipo }} en Medellín con rating de {{ lugar.rating|default:"-" }} y más de {{ lugar.total_reviews|default:"0" }} reseñas.
 {% endblock %}
 
 {% block og_image %}
-  {% if lugar.fotos.exists %}
-    {{ lugar.fotos.first.imagen }}
+  {% if lugar.get_primera_foto %}
+    {{ request.build_absolute_uri }}{{ lugar.get_primera_foto.imagen }}
   {% else %}
     {{ request.build_absolute_uri }}static/img/og-image.jpg
   {% endif %}
 {% endblock %}
 
 {% block content %}
-<div class="lugar-detail-page">
-    <!-- Hero Section con imagen -->
-    <section class="lugar-hero position-relative">
-        {% if lugar.fotos.exists %}
-        <div class="hero-carousel">
-            <div id="carouselLugar" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    {% for foto in lugar.fotos.all %}
-                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                        <img data-src="{{ foto.imagen }}"
-                             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600'%3E%3Crect width='1200' height='600' fill='%23f0f0f0'/%3E%3C/svg%3E"
-                             class="d-block w-100 lazy"
-                             alt="Foto de {{ lugar.nombre }}"
-                             loading="lazy">
-                    </div>
-                    {% endfor %}
-                </div>
-                {% if lugar.fotos.count > 1 %}
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselLugar" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon"></span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselLugar" data-bs-slide="next">
-                    <span class="carousel-control-next-icon"></span>
-                </button>
-                <div class="carousel-indicators">
-                    {% for foto in lugar.fotos.all %}
-                    <button type="button" data-bs-target="#carouselLugar"
-                            data-bs-slide-to="{{ forloop.counter0 }}"
-                            {% if forloop.first %}class="active"{% endif %}></button>
-                    {% endfor %}
-                </div>
-                {% endif %}
+<div class="container py-4">
+  <div class="card shadow-lg mx-auto mb-5 rounded-4" style="max-width: 1000px;">
+
+    {% if lugar.get_fotos %}
+      <div id="carouselFotos" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          {% for foto in lugar.get_fotos %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <img src="{{ foto.imagen }}"
+                   class="d-block w-100 rounded-top cursor-pointer"
+                   alt="Foto de {{ lugar.nombre }}"
+                   style="height: 400px; object-fit: cover;"
+                   data-bs-toggle="modal"
+                   data-bs-target="#imagenModal"
+                   data-img-src="{{ foto.imagen }}">
             </div>
+          {% endfor %}
         </div>
-        {% else %}
-        <div class="hero-placeholder d-flex align-items-center justify-content-center">
-            <i class="fas fa-camera fa-4x text-muted"></i>
-        </div>
+        {% if lugar.get_fotos|length > 1 %}
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselFotos" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselFotos" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+          </button>
         {% endif %}
-
-        <!-- Overlay con información básica -->
-        <div class="hero-overlay">
-            <div class="container">
-                <div class="hero-content">
-                    <span class="badge bg-primary mb-2">{{ lugar.get_tipo_display|default:lugar.tipo }}</span>
-                    <h1 class="display-4 fw-bold text-white mb-3">{{ lugar.nombre }}</h1>
-                    {% if lugar.rating %}
-                    <div class="rating-hero mb-3">
-                        <div class="stars">
-                            {% for i in "12345" %}
-                                {% if i|add:0 <= lugar.rating %}
-                                    <i class="fas fa-star text-warning"></i>
-                                {% else %}
-                                    <i class="far fa-star text-warning"></i>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                        <span class="text-white ms-2">{{ lugar.rating }}/5 ({{ lugar.total_reviews|default:"0" }} reseñas)</span>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
+        
+        <!-- Photo counter -->
+        <div class="photo-counter">
+          <i class="bi bi-camera-fill me-1"></i>
+          {{ lugar.get_fotos|length }} foto{{ lugar.get_fotos|length|pluralize }}
         </div>
-    </section>
-
-    <!-- Content Section -->
-    <section class="py-5">
-        <div class="container-custom">
-            <div class="row">
-                <!-- Main Content -->
-                <div class="col-lg-8">
-                    <!-- Card de información -->
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-body">
-                            <h2 class="h4 mb-4">Información del lugar</h2>
-
-                            <div class="info-grid">
-                                {% if lugar.direccion %}
-                                <div class="info-item">
-                                    <i class="fas fa-map-marker-alt text-primary"></i>
-                                    <div>
-                                        <strong>Dirección</strong>
-                                        <p class="mb-0">{{ lugar.direccion }}</p>
-                                    </div>
-                                </div>
-                                {% endif %}
-
-                                {% if lugar.telefono %}
-                                <div class="info-item">
-                                    <i class="fas fa-phone text-success"></i>
-                                    <div>
-                                        <strong>Teléfono</strong>
-                                        <p class="mb-0">
-                                            <a href="tel:{{ lugar.telefono }}" class="text-decoration-none">
-                                                {{ lugar.telefono }}
-                                            </a>
-                                        </p>
-                                    </div>
-                                </div>
-                                {% endif %}
-
-                                {% if lugar.sitio_web %}
-                                <div class="info-item">
-                                    <i class="fas fa-globe text-info"></i>
-                                    <div>
-                                        <strong>Sitio web</strong>
-                                        <p class="mb-0">
-                                            <a href="{{ lugar.sitio_web }}" target="_blank" rel="noopener" class="text-decoration-none">
-                                                Visitar sitio web <i class="fas fa-external-link-alt small"></i>
-                                            </a>
-                                        </p>
-                                    </div>
-                                </div>
-                                {% endif %}
-
-                                {% if lugar.precio %}
-                                <div class="info-item">
-                                    <i class="fas fa-dollar-sign text-warning"></i>
-                                    <div>
-                                        <strong>Rango de precios</strong>
-                                        <p class="mb-0">
-                                            {% if lugar.precio == '$' or lugar.precio == 'PRICE_LEVEL_INEXPENSIVE' %}
-                                                $ • Económico
-                                            {% elif lugar.precio == '$$' or lugar.precio == 'PRICE_LEVEL_MODERATE' %}
-                                                $$ • Moderado
-                                            {% elif lugar.precio == '$$$' or lugar.precio == 'PRICE_LEVEL_EXPENSIVE' %}
-                                                $$$ • Costoso
-                                            {% elif lugar.precio == '$$$$' or lugar.precio == 'PRICE_LEVEL_VERY_EXPENSIVE' %}
-                                                $$$$ • Premium
-                                            {% else %}
-                                                {{ lugar.precio }}
-                                            {% endif %}
-                                        </p>
-                                    </div>
-                                </div>
-                                {% endif %}
-
-                                {% if lugar.abierto_ahora is not None %}
-                                <div class="info-item">
-                                    <i class="fas fa-clock {% if lugar.abierto_ahora %}text-success{% else %}text-danger{% endif %}"></i>
-                                    <div>
-                                        <strong>Estado actual</strong>
-                                        <p class="mb-0">
-                                            {% if lugar.abierto_ahora %}
-                                                <span class="badge bg-success">Abierto ahora</span>
-                                            {% else %}
-                                                <span class="badge bg-danger">Cerrado</span>
-                                            {% endif %}
-                                        </p>
-                                    </div>
-                                </div>
-                                {% endif %}
-                            </div>
-
-                            {% if lugar.horario_texto %}
-                            <div class="horario-section mt-4">
-                                <h3 class="h5 mb-3">
-                                    <i class="fas fa-calendar-week me-2"></i>Horario
-                                </h3>
-                                <div class="horario-grid">
-                                    {% for linea in lugar.horario_texto.splitlines %}
-                                    <div class="horario-item">
-                                        <span class="dia">{{ linea|slice:":13"|title }}</span>
-                                        <span class="hora">{{ linea|slice:"14:" }}</span>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Mapa -->
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-body">
-                            <h3 class="h5 mb-3">
-                                <i class="fas fa-map me-2"></i>Ubicación
-                            </h3>
-                            <div id="mapa" class="rounded" style="height: 400px;"></div>
-                            <div class="mt-3">
-                                <a href="https://www.google.com/maps/search/?api=1&query={{ lugar.ubicacion.y }},{{ lugar.ubicacion.x }}"
-                                   target="_blank"
-                                   class="btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-directions me-1"></i> Cómo llegar
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Reseñas preview -->
-                    {% if lugar.reviews %}
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h3 class="h5 mb-0">
-                                    <i class="fas fa-comments me-2"></i>Reseñas recientes
-                                </h3>
-                                <a href="{% url 'explorer:reseñas_lugar' lugar.slug %}" class="btn btn-outline-primary btn-sm">
-                                    Ver todas →
-                                </a>
-                            </div>
-
-                            <div class="reviews-preview">
-                                {% for review in lugar.reviews|slice:":3" %}
-                                <div class="review-item">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <strong>{{ review.author_name|default:"Usuario" }}</strong>
-                                        <div class="stars small">
-                                            {% for i in "12345" %}
-                                                {% if i|add:0 <= review.rating %}
-                                                    <i class="fas fa-star text-warning"></i>
-                                                {% else %}
-                                                    <i class="far fa-star text-warning"></i>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                    <p class="text-muted small mb-0">{{ review.text|truncatechars:150 }}</p>
-                                </div>
-                                {% if not forloop.last %}<hr class="my-3">{% endif %}
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <!-- Sidebar -->
-                <div class="col-lg-4">
-                    <!-- Card de acciones -->
-                    <div class="card shadow-sm sticky-top" style="top: 100px;">
-                        <div class="card-body">
-                            <div class="d-grid gap-2">
-                                {% if user.is_authenticated %}
-                                    {% if es_favorito %}
-                                    <button class="btn btn-danger" disabled>
-                                        <i class="fas fa-heart me-2"></i>En favoritos
-                                    </button>
-                                    {% else %}
-                                    <form method="post" action="{% url 'explorer:guardar_favorito' lugar.pk %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-outline-danger w-100">
-                                            <i class="far fa-heart me-2"></i>Guardar en favoritos
-                                        </button>
-                                    </form>
-                                    {% endif %}
-                                {% else %}
-                                <a href="{% url 'usuarios:login' %}?next={{ request.path }}"
-                                   class="btn btn-outline-secondary">
-                                    <i class="fas fa-sign-in-alt me-2"></i>Inicia sesión para guardar
-                                </a>
-                                {% endif %}
-
-                                <button class="btn btn-success" onclick="compartirWhatsApp()">
-                                    <i class="fab fa-whatsapp me-2"></i>Compartir
-                                </button>
-
-                                <button class="btn btn-outline-primary" onclick="copiarEnlace()">
-                                    <i class="fas fa-link me-2"></i>Copiar enlace
-                                </button>
-                            </div>
-
-                            <!-- Lugares similares -->
-                            <hr class="my-4">
-                            <h5 class="mb-3">Lugares similares</h5>
-                            <div class="lugares-similares">
-                                <p class="text-muted small">Próximamente...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      </div>
+    {% else %}
+      <div class="placeholder-image d-flex align-items-center justify-content-center rounded-top" style="height: 400px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="text-center text-white">
+          <i class="bi bi-image fs-1 mb-3"></i>
+          <p class="fs-5">Sin fotos disponibles</p>
         </div>
-    </section>
+      </div>
+    {% endif %}
+
+    <div class="card-body px-4 py-4">
+      
+      <!-- Header con badges de estado -->
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <h2 class="card-title fw-bold mb-0">{{ lugar.nombre }}</h2>
+        <div class="status-badges">
+          {% if lugar.es_destacado %}
+            <span class="badge badge-destacado me-1">
+              <i class="bi bi-star-fill me-1"></i>Destacado
+            </span>
+          {% endif %}
+          {% if lugar.es_exclusivo %}
+            <span class="badge badge-exclusivo me-1">
+              <i class="bi bi-gem me-1"></i>Exclusivo
+            </span>
+          {% endif %}
+          {% if lugar.abierto_ahora is not None %}
+            <span class="badge {% if lugar.abierto_ahora %}badge-abierto{% else %}badge-cerrado{% endif %}">
+              <i class="bi bi-clock-fill me-1"></i>
+              {% if lugar.abierto_ahora %}Abierto ahora{% else %}Cerrado{% endif %}
+            </span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Información Principal -->
+      <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+          <ul class="list-unstyled fs-5 mb-0">
+            
+            <!-- Tipo de lugar -->
+            <li class="mb-3">
+              <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+              <strong>Tipo:</strong> {{ lugar.get_tipo_display|default:lugar.tipo }}
+            </li>
+            
+            <!-- Dirección -->
+            {% if lugar.direccion %}
+              <li class="mb-3">
+                <i class="bi bi-map-fill text-primary me-2"></i>
+                <strong>Dirección:</strong> {{ lugar.direccion }}
+              </li>
+            {% endif %}
+            
+            <!-- Teléfono -->
+            {% if lugar.telefono %}
+              <li class="mb-3">
+                <i class="bi bi-telephone-fill text-success me-2"></i>
+                <strong>Teléfono:</strong> 
+                <a href="tel:{{ lugar.telefono }}" class="text-decoration-none">{{ lugar.telefono }}</a>
+              </li>
+            {% endif %}
+            
+            <!-- Sitio Web -->
+            {% if lugar.sitio_web %}
+              <li class="mb-3">
+                <i class="bi bi-globe2 text-dark me-2"></i>
+                <strong>Sitio Web:</strong> 
+                <a href="{{ lugar.sitio_web }}" target="_blank" class="text-decoration-none">Visitar sitio web</a>
+              </li>
+            {% endif %}
+            
+            <!-- Rating -->
+            {% if lugar.rating %}
+              <li class="mb-3">
+                <i class="bi bi-star-fill text-warning me-2"></i>
+                <strong>Rating:</strong> 
+                <span class="rating-stars">
+                  {% for i in "12345" %}
+                    {% if lugar.rating >= forloop.counter %}
+                      <i class="bi bi-star-fill text-warning"></i>
+                    {% elif lugar.rating >= forloop.counter|add:"-0.5" %}
+                      <i class="bi bi-star-half text-warning"></i>
+                    {% else %}
+                      <i class="bi bi-star text-muted"></i>
+                    {% endif %}
+                  {% endfor %}
+                </span>
+                {{ lugar.rating|floatformat:1 }} ({{ lugar.total_reviews|default:"0" }} reseñas)
+              </li>
+            {% endif %}
+            
+            <!-- Precio -->
+            {% if lugar.precio %}
+              <li class="mb-3">
+                <i class="bi bi-cash-coin text-info me-2"></i>
+                <strong>Rango de Precios:</strong> 
+                {% if lugar.precio == '$' or lugar.precio == 'PRICE_LEVEL_INEXPENSIVE' %}
+                  Económico
+                {% elif lugar.precio == '$$' or lugar.precio == 'PRICE_LEVEL_MODERATE' %}
+                  Moderado
+                {% elif lugar.precio == '$$$' or lugar.precio == 'PRICE_LEVEL_EXPENSIVE' %}
+                  Costoso
+                {% elif lugar.precio == '$$$$' or lugar.precio == 'PRICE_LEVEL_VERY_EXPENSIVE' %}
+                  Muy costoso
+                {% else %}
+                  {{ lugar.precio }}
+                {% endif %}
+              </li>
+            {% endif %}
+            
+            <!-- Comuna -->
+            {% if lugar.comuna %}
+              <li class="mb-3">
+                <i class="bi bi-map text-secondary me-2"></i>
+                <strong>zona:</strong> 
+                <a href="{% url 'explorer:lugares_por_comuna' lugar.comuna.slug %}" class="text-decoration-none">{{ lugar.comuna.name }}</a>
+              </li>
+            {% endif %}
+            
+          </ul>
+        </div>
+        
+        <!-- Sidebar con horarios -->
+        <div class="col-lg-4">
+          {% if lugar.horario_texto %}
+            <div class="horarios-card p-3 rounded-3 border">
+              <h6 class="fw-bold mb-3">
+                <i class="bi bi-clock-fill text-primary me-2"></i>Horarios
+              </h6>
+              <div class="horarios-list">
+                {% for linea in lugar.horario_texto.splitlines %}
+                  {% if linea and linea != 'None' and linea.strip %}
+                    <div class="horario-item d-flex justify-content-between py-2" data-linea="{{ linea }}">
+                      <span class="dia text-capitalize fw-semibold">Cargando...</span>
+                      <span class="horas text-muted">...</span>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Badges de servicios y características -->
+      {% if lugar.takeout or lugar.dine_in or lugar.delivery or lugar.serves_breakfast or lugar.serves_lunch or lugar.serves_dinner or lugar.serves_beer or lugar.serves_wine or lugar.serves_cocktails or lugar.outdoor_seating or lugar.live_music or lugar.good_for_groups or lugar.good_for_children or lugar.allows_dogs or lugar.wheelchair_accessible_entrance or lugar.accepts_credit_cards or lugar.accepts_cash_only %}
+        <div class="servicios-badges mb-4">
+          <h6 class="fw-semibold mb-3 text-muted">Servicios y Características</h6>
+          <div class="d-flex flex-wrap gap-2">
+            
+            <!-- Servicios de comida -->
+            {% if lugar.takeout %}
+              <span class="badge service-badge bg-success bg-opacity-10 text-success">
+                <i class="bi bi-bag-check me-1"></i>Para Llevar
+              </span>
+            {% endif %}
+            {% if lugar.dine_in %}
+              <span class="badge service-badge bg-success bg-opacity-10 text-success">
+                <i class="bi bi-cup-straw me-1"></i>Comer en Local
+              </span>
+            {% endif %}
+            {% if lugar.delivery %}
+              <span class="badge service-badge bg-success bg-opacity-10 text-success">
+                <i class="bi bi-truck me-1"></i>Delivery
+              </span>
+            {% endif %}
+            
+            <!-- Comidas -->
+            {% if lugar.serves_breakfast %}
+              <span class="badge service-badge bg-warning bg-opacity-10 text-warning">
+                <i class="bi bi-sunrise me-1"></i>Desayuno
+              </span>
+            {% endif %}
+            {% if lugar.serves_lunch %}
+              <span class="badge service-badge bg-warning bg-opacity-10 text-warning">
+                <i class="bi bi-sun me-1"></i>Almuerzo
+              </span>
+            {% endif %}
+            {% if lugar.serves_dinner %}
+              <span class="badge service-badge bg-warning bg-opacity-10 text-warning">
+                <i class="bi bi-moon me-1"></i>Cena
+              </span>
+            {% endif %}
+            
+            <!-- Bebidas -->
+            {% if lugar.serves_beer %}
+              <span class="badge service-badge bg-info bg-opacity-10 text-info">
+                <i class="bi bi-cup me-1"></i>Cerveza
+              </span>
+            {% endif %}
+            {% if lugar.serves_wine %}
+              <span class="badge service-badge bg-info bg-opacity-10 text-info">
+                <i class="bi bi-wine-glass me-1"></i>Vinos
+              </span>
+            {% endif %}
+            {% if lugar.serves_cocktails %}
+              <span class="badge service-badge bg-info bg-opacity-10 text-info">
+                <i class="bi bi-cocktail me-1"></i>Cócteles
+              </span>
+            {% endif %}
+            
+            <!-- Ambiente -->
+            {% if lugar.outdoor_seating %}
+              <span class="badge service-badge bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-tree me-1"></i>Terraza
+              </span>
+            {% endif %}
+            {% if lugar.live_music %}
+              <span class="badge service-badge bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-music-note me-1"></i>Música en Vivo
+              </span>
+            {% endif %}
+            {% if lugar.good_for_groups %}
+              <span class="badge service-badge bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-people me-1"></i>Para Grupos
+              </span>
+            {% endif %}
+            {% if lugar.good_for_children %}
+              <span class="badge service-badge bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-person-hearts me-1"></i>Para Niños
+              </span>
+            {% endif %}
+            {% if lugar.allows_dogs %}
+              <span class="badge service-badge bg-danger bg-opacity-10 text-danger">
+                <i class="bi bi-heart me-1"></i>Pet Friendly
+              </span>
+            {% endif %}
+            
+            <!-- Accesibilidad -->
+            {% if lugar.wheelchair_accessible_entrance %}
+              <span class="badge service-badge bg-secondary bg-opacity-10 text-secondary">
+                <i class="bi bi-universal-access me-1"></i>Accesible
+              </span>
+            {% endif %}
+            
+            <!-- Pagos -->
+            {% if lugar.accepts_credit_cards %}
+              <span class="badge service-badge bg-dark bg-opacity-10 text-dark">
+                <i class="bi bi-credit-card me-1"></i>Tarjetas
+              </span>
+            {% endif %}
+            {% if lugar.accepts_cash_only %}
+              <span class="badge service-badge bg-warning bg-opacity-20 text-warning">
+                <i class="bi bi-cash me-1"></i>Solo Efectivo
+              </span>
+            {% endif %}
+            
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- Link para reseñas -->
+      {% if lugar.reviews %}
+        <div class="reviews-link mb-4">
+          <a href="{% url 'explorer:reviews_lugar' lugar.slug %}" class="btn btn-gradient-green rounded-pill">
+            <i class="bi bi-chat-quote me-1"></i>Ver todas las reseñas ({{ lugar.total_reviews|default:"0" }})
+          </a>
+        </div>
+      {% endif %}
+
+      <!-- Mapa -->
+      <div class="mapa-section mb-4">
+        <h6 class="fw-semibold mb-3">
+          <i class="bi bi-map-fill text-primary me-2"></i>Ubicación
+        </h6>
+        <div id="mapa" class="shadow-sm rounded-3" style="height:350px;"></div>
+        
+        <!-- Botones de mapa -->
+        <div class="map-actions mt-3 d-flex gap-2 flex-wrap">
+          {% if lugar.google_maps_uri %}
+            <a href="{{ lugar.google_maps_uri }}" target="_blank" class="btn btn-google-maps btn-sm">
+              <i class="bi bi-google me-1"></i>Ver en Google Maps
+            </a>
+          {% endif %}
+          {% if lugar.directions_uri %}
+            <a href="{{ lugar.directions_uri }}" target="_blank" class="btn btn-primary btn-sm">
+              <i class="bi bi-signpost-2 me-1"></i>Cómo llegar
+            </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Compartir -->
+      <div class="share-section text-center">
+        <a href="https://wa.me/?text={{ lugar.nombre|urlencode }}%0AExplóralo aquí: {{ request.build_absolute_uri }}"
+           target="_blank"
+           class="btn btn-whatsapp rounded-pill me-2">
+          <i class="bi bi-whatsapp me-1"></i> Compartir en WhatsApp
+        </a>
+        <button class="btn btn-outline-secondary rounded-pill" onclick="copyToClipboard()">
+          <i class="bi bi-link-45deg me-1"></i> Copiar enlace
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- Lugares Relacionados con Progressive Loading -->
+<div class="container py-4" id="lugares-relacionados-container">
+
+  <!-- Lugares Cercanos con Lazy Loading -->
+  <section class="mb-5" id="lugares-cercanos-section">
+    <div class="d-flex align-items-center mb-4">
+      <i class="bi bi-geo-alt-fill text-primary me-2 fs-4"></i>
+      <h3 class="h4 fw-semibold mb-0">Lugares Cercanos</h3>
+    </div>
+    <div class="row g-4" id="lugares-cercanos-container">
+      <!-- Skeleton Loaders -->
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4 skeleton-card">
+          <div class="skeleton-image rounded-top-4" style="height: 180px;"></div>
+          <div class="card-body">
+            <div class="skeleton-text mb-2" style="height: 20px; width: 80%;"></div>
+            <div class="skeleton-text mb-2" style="height: 16px; width: 60%;"></div>
+            <div class="skeleton-text mb-3" style="height: 14px; width: 40%;"></div>
+            <div class="skeleton-button" style="height: 36px; width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4 skeleton-card">
+          <div class="skeleton-image rounded-top-4" style="height: 180px;"></div>
+          <div class="card-body">
+            <div class="skeleton-text mb-2" style="height: 20px; width: 75%;"></div>
+            <div class="skeleton-text mb-2" style="height: 16px; width: 65%;"></div>
+            <div class="skeleton-text mb-3" style="height: 14px; width: 45%;"></div>
+            <div class="skeleton-button" style="height: 36px; width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4 skeleton-card">
+          <div class="skeleton-image rounded-top-4" style="height: 180px;"></div>
+          <div class="card-body">
+            <div class="skeleton-text mb-2" style="height: 20px; width: 85%;"></div>
+            <div class="skeleton-text mb-2" style="height: 16px; width: 55%;"></div>
+            <div class="skeleton-text mb-3" style="height: 14px; width: 50%;"></div>
+            <div class="skeleton-button" style="height: 36px; width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lugares Similares con Lazy Loading -->
+  <section class="mb-5" id="lugares-similares-section">
+    <div class="d-flex align-items-center mb-4">
+      <i class="bi bi-tags-fill text-success me-2 fs-4"></i>
+      <h3 class="h4 fw-semibold mb-0">Lugares Similares</h3>
+    </div>
+    <div class="row g-4" id="lugares-similares-container">
+      <!-- Skeleton Loaders -->
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4 skeleton-card">
+          <div class="skeleton-image rounded-top-4" style="height: 180px;"></div>
+          <div class="card-body">
+            <div class="skeleton-text mb-2" style="height: 20px; width: 75%;"></div>
+            <div class="skeleton-text mb-2" style="height: 16px; width: 55%;"></div>
+            <div class="skeleton-text mb-3" style="height: 14px; width: 35%;"></div>
+            <div class="skeleton-button" style="height: 36px; width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4 skeleton-card">
+          <div class="skeleton-image rounded-top-4" style="height: 180px;"></div>
+          <div class="card-body">
+            <div class="skeleton-text mb-2" style="height: 20px; width: 85%;"></div>
+            <div class="skeleton-text mb-2" style="height: 16px; width: 65%;"></div>
+            <div class="skeleton-text mb-3" style="height: 14px; width: 45%;"></div>
+            <div class="skeleton-button" style="height: 36px; width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4 skeleton-card">
+          <div class="skeleton-image rounded-top-4" style="height: 180px;"></div>
+          <div class="card-body">
+            <div class="skeleton-text mb-2" style="height: 20px; width: 70%;"></div>
+            <div class="skeleton-text mb-2" style="height: 16px; width: 60%;"></div>
+            <div class="skeleton-text mb-3" style="height: 14px; width: 40%;"></div>
+            <div class="skeleton-button" style="height: 36px; width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lugares de la Misma Comuna con Lazy Loading -->
+  <section class="mb-5" id="lugares-comuna-section">
+    <div class="d-flex align-items-center mb-4">
+      <i class="bi bi-map-fill text-info me-2 fs-4"></i>
+      <h3 class="h4 fw-semibold mb-0">Más lugares en <span id="comuna-name">esta zona</span></h3>
+    </div>
+    <div class="row g-4" id="lugares-comuna-container">
+      <!-- Skeleton Loaders -->
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4 skeleton-card">
+          <div class="skeleton-image rounded-top-4" style="height: 180px;"></div>
+          <div class="card-body">
+            <div class="skeleton-text mb-2" style="height: 20px; width: 80%;"></div>
+            <div class="skeleton-text mb-2" style="height: 16px; width: 50%;"></div>
+            <div class="skeleton-text mb-3" style="height: 14px; width: 30%;"></div>
+            <div class="skeleton-button" style="height: 36px; width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4 skeleton-card">
+          <div class="skeleton-image rounded-top-4" style="height: 180px;"></div>
+          <div class="card-body">
+            <div class="skeleton-text mb-2" style="height: 20px; width: 90%;"></div>
+            <div class="skeleton-text mb-2" style="height: 16px; width: 70%;"></div>
+            <div class="skeleton-text mb-3" style="height: 14px; width: 50%;"></div>
+            <div class="skeleton-button" style="height: 36px; width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4 skeleton-card">
+          <div class="skeleton-image rounded-top-4" style="height: 180px;"></div>
+          <div class="card-body">
+            <div class="skeleton-text mb-2" style="height: 20px; width: 65%;"></div>
+            <div class="skeleton-text mb-2" style="height: 16px; width: 75%;"></div>
+            <div class="skeleton-text mb-3" style="height: 14px; width: 35%;"></div>
+            <div class="skeleton-button" style="height: 36px; width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </div>
 
 <!-- Modal de imagen ampliada -->
-<div class="modal fade" id="imagenModal" tabindex="-1">
-    <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content bg-dark">
-            <div class="modal-header border-0">
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body d-flex align-items-center justify-content-center p-0">
-                <img id="modalImage" class="img-fluid" alt="Imagen ampliada">
-            </div>
-        </div>
+<div class="modal fade" id="imagenModal" tabindex="-1" aria-labelledby="imagenModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content bg-black border-0">
+      <div class="modal-body position-relative p-0">
+        <img id="imagenModalContent" src="" class="w-100" style="object-fit: contain; max-height: 90vh;" alt="Imagen ampliada">
+        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <button id="modalPrev" class="position-absolute top-50 start-0 translate-middle-y btn btn-dark btn-lg rounded-circle opacity-75" style="z-index: 1050;">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button id="modalNext" class="position-absolute top-50 end-0 translate-middle-y btn btn-dark btn-lg rounded-circle opacity-75" style="z-index: 1050;">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
     </div>
+  </div>
 </div>
-{% endblock %}
 
-{% block extra_css %}
-<style>
-/* Hero section */
-.lugar-hero {
-    position: relative;
-    height: 60vh;
-    min-height: 400px;
-    overflow: hidden;
-}
-
-.hero-carousel {
-    height: 100%;
-}
-
-.hero-carousel .carousel-inner,
-.hero-carousel .carousel-item {
-    height: 100%;
-}
-
-.hero-carousel img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.hero-placeholder {
-    height: 100%;
-    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-}
-
-.hero-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
-    padding: 3rem 0;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 1;
-}
-
-/* Info grid */
-.info-grid {
-    display: grid;
-    gap: 1.5rem;
-}
-
-.info-item {
-    display: flex;
-    gap: 1rem;
-    align-items: start;
-}
-
-.info-item i {
-    font-size: 1.25rem;
-    margin-top: 0.25rem;
-}
-
-/* Horario */
-.horario-grid {
-    display: grid;
-    gap: 0.5rem;
-}
-
-.horario-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem;
-    background: #f8f9fa;
-    border-radius: 0.5rem;
-}
-
-.horario-item .dia {
-    font-weight: 600;
-    color: #495057;
-}
-
-/* Reviews preview */
-.review-item {
-    padding: 1rem 0;
-}
-
-.reviews-preview {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-/* Carousel controls */
-.carousel-control-prev,
-.carousel-control-next {
-    width: 5%;
-}
-
-.carousel-indicators {
-    margin-bottom: 2rem;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .lugar-hero {
-        height: 40vh;
-        min-height: 300px;
-    }
-
-    .hero-content h1 {
-        font-size: 2rem;
-    }
-}
-</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -435,43 +520,733 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-// Mapa
-const lat = {{ lugar.ubicacion.y }};
-const lng = {{ lugar.ubicacion.x }};
-const map = L.map('mapa').setView([lat, lng], 16);
+  // Mapa con estilo oscuro y zoom fijo
+  {% if lugar.ubicacion %}
+  const lat = {{ lugar.ubicacion.y }};
+  const lng = {{ lugar.ubicacion.x }};
+  const map = L.map("mapa", {
+    center: [lat, lng],
+    zoom: 18,
+    minZoom: 16,
+    maxZoom: 20,
+    dragging: true,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    zoomControl: true,
+    maxBounds: [
+      [lat - 0.005, lng - 0.005],
+      [lat + 0.005, lng + 0.005]
+    ],
+    maxBoundsViscosity: 1.0
+  });
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-}).addTo(map);
+  // Estilo oscuro con detalles verdes y morados
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 20
+  }).addTo(map);
 
-const marker = L.marker([lat, lng]).addTo(map);
-marker.bindPopup(`<strong>{{ lugar.nombre }}</strong><br>{{ lugar.direccion }}`).openPopup();
+  // Marker personalizado con colores verdes/morados
+  const customIcon = L.divIcon({
+    className: 'custom-marker',
+    html: '<div style="background: linear-gradient(135deg, #38ef7d 0%, #667eea 100%); width: 35px; height: 35px; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 3px 15px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; position: relative;"><i class="bi bi-geo-alt-fill" style="color: white; font-size: 16px;"></i><div style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 12px solid #fff; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));"></div></div>',
+    iconSize: [35, 47],
+    iconAnchor: [17, 47],
+    popupAnchor: [0, -47]
+  });
 
-// Funciones de compartir
-function compartirWhatsApp() {
-    const texto = `{{ lugar.nombre|escapejs }}\n${window.location.href}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
-}
+  L.marker([lat, lng], {icon: customIcon})
+    .addTo(map)
+    .bindPopup(`
+      <div style="text-align: center; padding: 8px; font-family: Arial, sans-serif;">
+        <strong style="color: #667eea; font-size: 14px;">{{ lugar.nombre }}</strong><br>
+        <small style="color: #38ef7d; font-size: 12px;">{{ lugar.get_tipo_display }}</small>
+        {% if lugar.direccion %}
+          <br><small style="color: #999; font-size: 11px;">{{ lugar.direccion|truncatewords:6 }}</small>
+        {% endif %}
+      </div>
+    `, {
+      maxWidth: 200,
+      className: 'custom-popup'
+    })
+    .openPopup();
 
-function copiarEnlace() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-        alert('Enlace copiado al portapapeles');
-    });
-}
+  // Deshabilitar zoom con scroll después de un momento
+  setTimeout(() => {
+    map.scrollWheelZoom.enable();
+  }, 1000);
+  {% endif %}
 
-// Click en imágenes del carousel para ampliar
-document.addEventListener('DOMContentLoaded', function() {
-    const carouselImages = document.querySelectorAll('.carousel-item img');
+  // Función para ordenar horarios
+  document.addEventListener("DOMContentLoaded", () => {
+    const horariosContainer = document.querySelector('.horarios-list');
+    if (horariosContainer) {
+      const horarioItems = Array.from(horariosContainer.children);
+      
+      // Orden de días de la semana
+      const diasOrden = {
+        'lunes': 1, 'monday': 1,
+        'martes': 2, 'tuesday': 2, 'marte': 2,
+        'miércoles': 3, 'miercoles': 3, 'wednesday': 3, 'miérco': 3,
+        'jueves': 4, 'thursday': 4, 'jueve': 4,
+        'viernes': 5, 'friday': 5, 'vierne': 5,
+        'sábado': 6, 'sabado': 6, 'saturday': 6, 'sábad': 6,
+        'domingo': 7, 'sunday': 7, 'doming': 7
+      };
+      
+      // Procesar y ordenar items
+      horarioItems.forEach(item => {
+        const lineaCompleta = item.getAttribute('data-linea');
+        if (lineaCompleta) {
+          const partes = lineaCompleta.split(':');
+          if (partes.length >= 2) {
+            const dia = partes[0].trim().toLowerCase();
+            const hora = lineaCompleta.substring(lineaCompleta.indexOf(':') + 1).trim();
+            
+            // Actualizar el contenido con formato correcto
+            const diaElement = item.querySelector('.dia');
+            const horaElement = item.querySelector('.horas');
+            
+            if (diaElement && horaElement) {
+              diaElement.textContent = partes[0].trim().charAt(0).toUpperCase() + partes[0].trim().slice(1);
+              horaElement.textContent = hora;
+            }
+            
+            // Agregar data attribute para ordenamiento
+            item.setAttribute('data-dia-orden', diasOrden[dia] || 999);
+          }
+        }
+      });
+      
+      // Ordenar por día
+      horarioItems.sort((a, b) => {
+        const ordenA = parseInt(a.getAttribute('data-dia-orden') || 999);
+        const ordenB = parseInt(b.getAttribute('data-dia-orden') || 999);
+        return ordenA - ordenB;
+      });
+      
+      // Limpiar contenedor y re-agregar items ordenados
+      horariosContainer.innerHTML = '';
+      horarioItems.forEach(item => {
+        horariosContainer.appendChild(item);
+      });
+    }
+  });
+
+  // Modal de imágenes
+  document.addEventListener("DOMContentLoaded", () => {
     const modal = new bootstrap.Modal(document.getElementById('imagenModal'));
-    const modalImage = document.getElementById('modalImage');
+    const modalImg = document.getElementById("imagenModalContent");
+    const imagenes = Array.from(document.querySelectorAll("[data-img-src]"));
+    let currentIndex = 0;
 
-    carouselImages.forEach(img => {
-        img.style.cursor = 'zoom-in';
-        img.addEventListener('click', function() {
-            modalImage.src = this.src;
-            modal.show();
-        });
+    function updateModalImage(index) {
+      if (imagenes[index]) {
+        modalImg.src = imagenes[index].getAttribute("data-img-src");
+        currentIndex = index;
+      }
+    }
+
+    imagenes.forEach((img, index) => {
+      img.addEventListener("click", () => {
+        updateModalImage(index);
+        modal.show();
+      });
     });
+
+    document.getElementById("modalPrev").addEventListener("click", () => {
+      const newIndex = (currentIndex - 1 + imagenes.length) % imagenes.length;
+      updateModalImage(newIndex);
+    });
+
+    document.getElementById("modalNext").addEventListener("click", () => {
+      const newIndex = (currentIndex + 1) % imagenes.length;
+      updateModalImage(newIndex);
+    });
+  });
+
+  // Copiar enlace
+  function copyToClipboard() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      alert('¡Enlace copiado al portapapeles!');
+    });
+  }
+</script>
+
+<style>
+/* Card principal más grande */
+.card {
+  max-width: 1000px !important;
+}
+
+/* Photo counter */
+.photo-counter {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Badges de estado */
+.status-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.badge-destacado {
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  color: #000;
+}
+
+.badge-exclusivo {
+  background: linear-gradient(135deg, #9d4edd 0%, #7209b7 100%);
+  color: white;
+}
+
+.badge-abierto {
+  background: linear-gradient(135deg, #06d6a0 0%, #118ab2 100%);
+  color: white;
+}
+
+.badge-cerrado {
+  background: linear-gradient(135deg, #e63946 0%, #a4161a 100%);
+  color: white;
+}
+
+/* Imagen placeholder */
+.cursor-pointer {
+  cursor: zoom-in;
+}
+
+/* Horarios card */
+.horarios-card {
+  background: #f8f9ff;
+  border: 1px solid #e2e8f0 !important;
+  transition: box-shadow 0.3s ease;
+}
+
+.horarios-card:hover {
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+.horario-item {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.horario-item:last-child {
+  border-bottom: none;
+}
+
+/* Service badges */
+.service-badge {
+  padding: 6px 12px !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  border-radius: 15px !important;
+  margin-bottom: 5px;
+}
+
+/* Tags */
+.bg-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* Custom marker styling */
+.custom-marker {
+  background: none !important;
+  border: none !important;
+}
+
+/* Custom popup styling */
+.custom-popup .leaflet-popup-content-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.custom-popup .leaflet-popup-tip {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: none;
+}
+
+/* Mapa fijo styling */
+#mapa {
+  border: 2px solid #e2e8f0;
+  position: relative;
+  overflow: hidden;
+}
+
+#mapa .leaflet-control-zoom {
+  border: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+#mapa .leaflet-control-zoom a {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+#mapa .leaflet-control-zoom a:hover {
+  background: #667eea;
+  color: white;
+}
+
+/* Mejorar horarios */
+.horario-item {
+  border-bottom: 1px solid #e2e8f0;
+  transition: background-color 0.2s ease;
+}
+
+.horario-item:last-child {
+  border-bottom: none;
+}
+
+.horario-item:hover {
+  background-color: rgba(102, 126, 234, 0.05);
+  border-radius: 6px;
+}
+
+.dia {
+  color: #4a5568;
+  font-weight: 600;
+  min-width: 100px;
+  font-size: 0.9rem;
+}
+
+.horas {
+  color: #718096;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Rating stars */
+.rating-stars {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+/* Card hover effects for related places */
+.card:hover {
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+/* Button gradients */
+.btn-gradient-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-gradient-purple:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  color: white;
+}
+
+.btn-gradient-green {
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);
+}
+
+.btn-gradient-green:hover {
+  background: linear-gradient(135deg, #2dd36f 0%, #0d8478 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
+  color: white;
+}
+
+/* Google Maps Button */
+.btn-google-maps {
+  background: linear-gradient(135deg, #4285f4 0%, #ea4335 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+}
+
+.btn-google-maps:hover {
+  background: linear-gradient(135deg, #3367d6 0%, #d33b2c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(66, 133, 244, 0.4);
+  color: white;
+}
+
+/* WhatsApp Button */
+.btn-whatsapp {
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+}
+
+.btn-whatsapp:hover {
+  background: linear-gradient(135deg, #20ba5a 0%, #0f7a6b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .status-badges {
+    justify-content: center;
+    margin-top: 15px;
+  }
+  
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .card-title {
+    margin-bottom: 15px !important;
+  }
+}
+
+/* Cache buster - Horarios Fixed v2.1 - 2025-01-30 */
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Skeleton Loaders para Progressive Loading */
+/* ──────────────────────────────────────────────────────────────── */
+
+.skeleton-card {
+  background: rgba(255, 255, 255, 0.8);
+  animation: skeleton-pulse 1.5s ease-in-out infinite alternate;
+}
+
+.skeleton-image {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.skeleton-text {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeleton-button {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 25px;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes skeleton-pulse {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Transiciones suaves para contenido cargado dinámicamente */
+/* ──────────────────────────────────────────────────────────────── */
+
+.fade-in {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading spinner para casos de error */
+.loading-spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+</style>
+
+<script>
+// ──────────────────────────────────────────────────────────────────────
+// Progressive Loading con Intersection Observer
+// ──────────────────────────────────────────────────────────────────────
+
+document.addEventListener("DOMContentLoaded", () => {
+  const lugarSlug = '{{ lugar.slug }}';
+  
+  // Estado de carga para evitar duplicados
+  const loadingState = {
+    cercanos: false,
+    similares: false,
+    comuna: false
+  };
+
+  // Función para crear HTML de lugar
+  function createPlaceHTML(lugar) {
+    const imageHTML = lugar.imagen 
+      ? `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="Imagen de ${lugar.nombre}" style="height: 180px; object-fit: cover;" loading="lazy">`
+      : `<div class="bg-light d-flex align-items-center justify-content-center rounded-top-4" style="height: 180px;"><i class="bi bi-image text-muted fs-3"></i></div>`;
+    
+    const destacadoBadge = lugar.es_destacado 
+      ? `<span class="badge bg-warning text-dark me-1 small"><i class="bi bi-star-fill me-1"></i>Destacado</span>`
+      : '';
+    
+    const exclusivoBadge = lugar.es_exclusivo 
+      ? `<span class="badge bg-success me-1 small"><i class="bi bi-gem me-1"></i>Exclusivo</span>`
+      : '';
+    
+    const ratingHTML = lugar.rating 
+      ? `<div class="small text-muted mb-3"><i class="bi bi-star-fill text-warning me-1"></i><span class="fw-semibold">${lugar.rating}</span></div>`
+      : '';
+
+    return `
+      <div class="col-md-4 fade-in">
+        <div class="card h-100 shadow-sm border-0 rounded-4">
+          ${imageHTML}
+          <div class="card-body d-flex flex-column">
+            <h6 class="card-title fw-semibold mb-2">${lugar.nombre}</h6>
+            <div class="mb-2">
+              <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill small">
+                <i class="bi bi-geo-alt me-1"></i>${lugar.tipo}
+              </span>
+            </div>
+            <div class="mb-2">
+              ${destacadoBadge}
+              ${exclusivoBadge}
+            </div>
+            ${ratingHTML}
+            <a href="/lugares/${lugar.slug}/" class="btn btn-gradient-purple mt-auto w-100 rounded-pill small">
+              <i class="bi bi-eye me-1"></i>Ver detalles
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Función para cargar lugares cercanos
+  async function loadLugaresCercanos() {
+    if (loadingState.cercanos) return;
+    loadingState.cercanos = true;
+
+    try {
+      const response = await fetch(`/api/lugares/${lugarSlug}/cercanos/`);
+      const data = await response.json();
+      
+      const container = document.getElementById('lugares-cercanos-container');
+      
+      if (data.lugares && data.lugares.length > 0) {
+        container.innerHTML = data.lugares.map(lugar => createPlaceHTML(lugar)).join('');
+      } else {
+        container.innerHTML = `
+          <div class="col-12 text-center py-4">
+            <div class="text-muted">
+              <i class="bi bi-geo-alt fs-2 mb-2 d-block"></i>
+              <p>No hay lugares cercanos disponibles en este momento.</p>
+            </div>
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error('Error cargando lugares cercanos:', error);
+      document.getElementById('lugares-cercanos-container').innerHTML = `
+        <div class="col-12 text-center py-4">
+          <div class="text-danger">
+            <i class="bi bi-exclamation-triangle fs-2 mb-2 d-block"></i>
+            <p>Error al cargar lugares cercanos. <button class="btn btn-link p-0" onclick="loadLugaresCercanos()">Reintentar</button></p>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // Función para cargar lugares similares
+  async function loadLugaresSimilares() {
+    if (loadingState.similares) return;
+    loadingState.similares = true;
+
+    try {
+      const response = await fetch(`/api/lugares/${lugarSlug}/similares/`);
+      const data = await response.json();
+      
+      const container = document.getElementById('lugares-similares-container');
+      
+      if (data.lugares && data.lugares.length > 0) {
+        container.innerHTML = data.lugares.map(lugar => createPlaceHTML(lugar)).join('');
+      } else {
+        container.innerHTML = `
+          <div class="col-12 text-center py-4">
+            <div class="text-muted">
+              <i class="bi bi-tags fs-2 mb-2 d-block"></i>
+              <p>No hay lugares similares disponibles en este momento.</p>
+            </div>
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error('Error cargando lugares similares:', error);
+      document.getElementById('lugares-similares-container').innerHTML = `
+        <div class="col-12 text-center py-4">
+          <div class="text-danger">
+            <i class="bi bi-exclamation-triangle fs-2 mb-2 d-block"></i>
+            <p>Error al cargar lugares similares. <button class="btn btn-link p-0" onclick="loadLugaresSimilares()">Reintentar</button></p>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // Función para cargar lugares de la comuna
+  async function loadLugaresComuna() {
+    if (loadingState.comuna) return;
+    loadingState.comuna = true;
+
+    try {
+      const response = await fetch(`/api/lugares/${lugarSlug}/comuna/`);
+      const data = await response.json();
+      
+      const container = document.getElementById('lugares-comuna-container');
+      
+      // Actualizar nombre de la comuna
+      if (data.comuna_nombre) {
+        document.getElementById('comuna-name').textContent = data.comuna_nombre;
+      }
+      
+      if (data.lugares && data.lugares.length > 0) {
+        container.innerHTML = data.lugares.map(lugar => createPlaceHTML(lugar)).join('');
+      } else {
+        container.innerHTML = `
+          <div class="col-12 text-center py-4">
+            <div class="text-muted">
+              <i class="bi bi-map fs-2 mb-2 d-block"></i>
+              <p>No hay más lugares en esta zona disponibles en este momento.</p>
+            </div>
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error('Error cargando lugares de la comuna:', error);
+      document.getElementById('lugares-comuna-container').innerHTML = `
+        <div class="col-12 text-center py-4">
+          <div class="text-danger">
+            <i class="bi bi-exclamation-triangle fs-2 mb-2 d-block"></i>
+            <p>Error al cargar lugares de la zona. <button class="btn btn-link p-0" onclick="loadLugaresComuna()">Reintentar</button></p>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // Hacer funciones globales para reintentos
+  window.loadLugaresCercanos = loadLugaresCercanos;
+  window.loadLugaresSimilares = loadLugaresSimilares;
+  window.loadLugaresComuna = loadLugaresComuna;
+
+  // Intersection Observer para lazy loading
+  const observerOptions = {
+    root: null,
+    rootMargin: '100px',
+    threshold: 0.1
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const sectionId = entry.target.id;
+        
+        switch (sectionId) {
+          case 'lugares-cercanos-section':
+            loadLugaresCercanos();
+            observer.unobserve(entry.target);
+            break;
+          case 'lugares-similares-section':
+            loadLugaresSimilares();
+            observer.unobserve(entry.target);
+            break;
+          case 'lugares-comuna-section':
+            loadLugaresComuna();
+            observer.unobserve(entry.target);
+            break;
+        }
+      }
+    });
+  }, observerOptions);
+
+  // Observar las secciones
+  const sections = [
+    'lugares-cercanos-section',
+    'lugares-similares-section', 
+    'lugares-comuna-section'
+  ];
+
+  sections.forEach(sectionId => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      observer.observe(section);
+    }
+  });
+
+  // Cargar inmediatamente si el usuario ya hizo scroll
+  setTimeout(() => {
+    sections.forEach(sectionId => {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        const rect = section.getBoundingClientRect();
+        if (rect.top < window.innerHeight + 100) {
+          const event = new IntersectionObserverEntry();
+          event.target = section;
+          event.isIntersecting = true;
+          observer.callback([event]);
+        }
+      }
+    });
+  }, 500);
 });
 </script>
+
 {% endblock %}

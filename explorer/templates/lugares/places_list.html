@@ -1,340 +1,463 @@
 {% extends "base.html" %}
-{% load static %}
 
-{% block title %}Lugares de Medellín - ViveMedellín{% endblock %}
+{% block title %}{{ titulo_pagina }} | Medellín Explorer{% endblock %}
+
+{% block meta_description %}
+  {{ descripcion_pagina }}. Encuentra los lugares mejor valorados en Medellín Explorer.
+{% endblock %}
+
+{% block meta_keywords %}
+  {% if tipo_actual == 'restaurant' %}
+    restaurantes Medellín, mejores restaurantes, gastronomía Medellín, comida paisa
+  {% elif tipo_actual == 'bar' %}
+    bares Medellín, discotecas Medellín, vida nocturna, rumba Medellín
+  {% elif tipo_actual == 'cafe' %}
+    cafeterías Medellín, café paisa, cultura cafetera, cafés Medellín
+  {% else %}
+    lugares Medellín, bares Medellín, restaurantes Medellín, sitios para salir en Medellín
+  {% endif %}
+{% endblock %}
+
+{% block og_title %}
+  {{ titulo_pagina }} | Medellín Explorer
+{% endblock %}
+
+{% block og_description %}
+  {{ descripcion_pagina }}. Descubre lugares con calificaciones reales en Medellín.
+{% endblock %}
+
+{% block og_image %}
+  {{ request.build_absolute_uri }}static/img/og-image.jpg
+{% endblock %}
 
 {% block content %}
-<!-- Hero Section Simplificado -->
-<section class="hero-simple py-5 bg-gradient-primary text-white">
-    <div class="container-custom">
-        <h1 class="display-4 fw-bold mb-3">Lugares en Medellín</h1>
-        <p class="lead">Descubre los mejores sitios de la ciudad</p>
-    </div>
-</section>
+<div class="container py-4">
+  <div class="text-center mb-5">
+    {% if tipo_actual %}
+      <div class="mb-3">
+        {% if tipo_actual == 'restaurant' %}
+          <i class="bi bi-cup-hot text-success fs-1"></i>
+        {% elif tipo_actual == 'bar' %}
+          <i class="bi bi-cup-straw text-warning fs-1"></i>
+        {% elif tipo_actual == 'cafe' %}
+          <i class="bi bi-cup text-info fs-1"></i>
+        {% else %}
+          <i class="bi bi-grid-3x3-gap text-primary fs-1"></i>
+        {% endif %}
+      </div>
+    {% endif %}
+    <h1 class="fw-bold">{{ titulo_pagina }}</h1>
+    <p class="lead text-muted">{{ descripcion_pagina }}</p>
+    
+    {% if busqueda_actual %}
+      <div class="mt-3">
+        <span class="badge bg-primary bg-opacity-10 text-primary fs-6 px-3 py-2">
+          <i class="bi bi-search me-1"></i>Búsqueda: "{{ busqueda_actual }}"
+        </span>
+      </div>
+    {% endif %}
+  </div>
 
-<!-- Main Content -->
-<div class="container-custom my-5">
-    <div class="row">
-        <!-- Filters Sidebar -->
-        <div class="col-lg-3 mb-4">
-            <!-- Header con búsqueda y filtros -->
-            <div class="lugares-header">
-                <h1 class="text-center mb-4">
-                    <i class="fas fa-map-marked-alt"></i> Explora Medellín
-                </h1>
-                
-                <!-- Barra de búsqueda mejorada -->
-                <div class="row justify-content-center mb-4">
-                    <div class="col-md-8">
-                        <form method="get" action="{% url 'explorer:lugares_list' %}" class="search-form">
-                            <div class="input-group input-group-lg shadow-sm">
-                                <span class="input-group-text bg-white">
-                                    <i class="fas fa-search"></i>
-                                </span>
-                                <input type="text" 
-                                       name="q" 
-                                       class="form-control border-start-0" 
-                                       placeholder="Buscar lugares por nombre o dirección..." 
-                                       value="{{ request.GET.q }}"
-                                       autocomplete="off">
-                                <button class="btn btn-primary" type="submit">
-                                    Buscar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Filtros rápidos -->
-                <div class="filters-section mb-4">
-                    <div class="d-flex flex-wrap justify-content-center gap-2">
-                        <button class="btn btn-filter active" data-filter="all">
-                            <i class="fas fa-th"></i> Todos
-                        </button>
-                        <button class="btn btn-filter" data-filter="bar">
-                            <i class="fas fa-cocktail"></i> Bares
-                        </button>
-                        <button class="btn btn-filter" data-filter="restaurant">
-                            <i class="fas fa-utensils"></i> Restaurantes
-                        </button>
-                        <button class="btn btn-filter" data-filter="cafe">
-                            <i class="fas fa-coffee"></i> Cafés
-                        </button>
-                        <button class="btn btn-filter" data-filter="night_club">
-                            <i class="fas fa-music"></i> Discotecas
-                        </button>
-                        <button class="btn btn-filter" data-filter="tourist_attraction">
-                            <i class="fas fa-camera"></i> Turístico
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Opciones de vista y ordenamiento -->
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="results-count">
-                        <span class="text-muted">
-                            {% if lugares %}
-                                Mostrando {{ page_obj.start_index }}-{{ page_obj.end_index }} de {{ page_obj.paginator.count }} lugares
-                            {% else %}
-                                No se encontraron resultados
-                            {% endif %}
-                        </span>
-                    </div>
-                    
-                    <div class="view-options">
-                        <div class="btn-group" role="group">
-                            <button class="btn btn-sm btn-outline-secondary active" id="gridView">
-                                <i class="fas fa-th"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary" id="listView">
-                                <i class="fas fa-list"></i>
-                            </button>
-                        </div>
-                        
-                        <select class="form-select form-select-sm ms-2" id="sortBy" style="width: auto;">
-                            <option value="recent">Más recientes</option>
-                            <option value="rating">Mejor calificados</option>
-                            <option value="name">Nombre A-Z</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+  <!-- Filtros de la Lista -->
+  <div class="container mb-5">
+    <div class="card shadow border-0 rounded-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+      <div class="card-body" style="background: rgba(255, 255, 255, 0.1); border-radius: 16px; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label small text-white fw-semibold">
+              <i class="bi bi-geo-alt me-1 text-white"></i>Área
+            </label>
+                         <select class="form-select form-select-sm rounded-pill" id="filtro-comuna" name="comuna">
+               <option value="">Todas las áreas</option>
+               {% for region in regiones_filtro %}
+                 <option value="{{ region.osm_id }}" 
+                         data-slug="{{ region.slug }}"
+                         {% if request.GET.comuna == region.osm_id|stringformat:'s' or region_actual.osm_id == region.osm_id %}selected{% endif %}>
+                   {{ region.name }}
+                 </option>
+               {% endfor %}
+             </select>
+          </div>
+          
+          <div class="col-md-3">
+            <label class="form-label small text-white fw-semibold">
+              <i class="bi bi-grid-3x3-gap me-1 text-white"></i>Tipo
+            </label>
+            <select class="form-select form-select-sm rounded-pill" id="filtro-tipo" name="tipo">
+              <option value="">Todos los tipos</option>
+              <optgroup label="🍽️ Restaurantes">
+                <option value="restaurant" {% if tipo_actual == 'restaurant' %}selected{% endif %}>Restaurante General</option>
+                <option value="fine_dining_restaurant" {% if tipo_actual == 'fine_dining_restaurant' %}selected{% endif %}>Restaurante Gourmet</option>
+                <option value="pizza_restaurant" {% if tipo_actual == 'pizza_restaurant' %}selected{% endif %}>Pizzería</option>
+                <option value="italian_restaurant" {% if tipo_actual == 'italian_restaurant' %}selected{% endif %}>Restaurante Italiano</option>
+                <option value="mexican_restaurant" {% if tipo_actual == 'mexican_restaurant' %}selected{% endif %}>Restaurante Mexicano</option>
+                <option value="chinese_restaurant" {% if tipo_actual == 'chinese_restaurant' %}selected{% endif %}>Restaurante Chino</option>
+                <option value="seafood_restaurant" {% if tipo_actual == 'seafood_restaurant' %}selected{% endif %}>Marisquería</option>
+                <option value="steak_house" {% if tipo_actual == 'steak_house' %}selected{% endif %}>Parrilla de Carnes</option>
+                <option value="fast_food_restaurant" {% if tipo_actual == 'fast_food_restaurant' %}selected{% endif %}>Comida Rápida</option>
+              </optgroup>
+              <optgroup label="🍻 Bares & Vida Nocturna">
+                <option value="bar" {% if tipo_actual == 'bar' %}selected{% endif %}>Bar</option>
+                <option value="wine_bar" {% if tipo_actual == 'wine_bar' %}selected{% endif %}>Bar de Vinos</option>
+                <option value="pub" {% if tipo_actual == 'pub' %}selected{% endif %}>Pub</option>
+                <option value="night_club" {% if tipo_actual == 'night_club' %}selected{% endif %}>Discoteca</option>
+                <option value="karaoke" {% if tipo_actual == 'karaoke' %}selected{% endif %}>Karaoke</option>
+              </optgroup>
+              <optgroup label="☕ Cafeterías">
+                <option value="cafe" {% if tipo_actual == 'cafe' %}selected{% endif %}>Cafetería</option>
+                <option value="internet_cafe" {% if tipo_actual == 'internet_cafe' %}selected{% endif %}>Cibercafé</option>
+                <option value="breakfast_restaurant" {% if tipo_actual == 'breakfast_restaurant' %}selected{% endif %}>Desayunos</option>
+                <option value="brunch" {% if tipo_actual == 'brunch' %}selected{% endif %}>Brunch</option>
+              </optgroup>
+            </select>
+          </div>
+          
+          <div class="col-md-3">
+            <label class="form-label small text-white fw-semibold">
+              <i class="bi bi-stars me-1 text-white"></i>Características
+            </label>
+            <select class="form-select form-select-sm rounded-pill" id="filtro-caracteristicas" name="caracteristicas">
+              <option value="">Sin filtro especial</option>
+              <optgroup label="🚚 Servicios de Entrega">
+                <option value="delivery" {% if request.GET.delivery == 'true' %}selected{% endif %}>Delivery</option>
+                <option value="takeout" {% if request.GET.takeout == 'true' %}selected{% endif %}>Para Llevar</option>
+                <option value="dine_in" {% if request.GET.dine_in == 'true' %}selected{% endif %}>Comer en Local</option>
+              </optgroup>
+              <optgroup label="⭐ Ambiente & Experiencia">
+                <option value="outdoor_seating" {% if request.GET.outdoor_seating == 'true' %}selected{% endif %}>Terraza</option>
+                <option value="live_music" {% if request.GET.live_music == 'true' %}selected{% endif %}>Música en Vivo</option>
+                <option value="good_for_groups" {% if request.GET.good_for_groups == 'true' %}selected{% endif %}>Para Grupos</option>
+                <option value="good_for_children" {% if request.GET.good_for_children == 'true' %}selected{% endif %}>Para Niños</option>
+              </optgroup>
+              <optgroup label="🍹 Especialidades">
+                <option value="serves_cocktails" {% if request.GET.serves_cocktails == 'true' %}selected{% endif %}>Cócteles</option>
+                <option value="serves_wine" {% if request.GET.serves_wine == 'true' %}selected{% endif %}>Vinos</option>
+                <option value="serves_coffee" {% if request.GET.serves_coffee == 'true' %}selected{% endif %}>Café Especialidad</option>
+                <option value="serves_dessert" {% if request.GET.serves_dessert == 'true' %}selected{% endif %}>Postres</option>
+              </optgroup>
+              <optgroup label="♿ Accesibilidad">
+                <option value="wheelchair_accessible_entrance" {% if request.GET.wheelchair_accessible_entrance == 'true' %}selected{% endif %}>Acceso Accesible</option>
+                <option value="allows_dogs" {% if request.GET.allows_dogs == 'true' %}selected{% endif %}>Pet Friendly</option>
+                <option value="accepts_credit_cards" {% if request.GET.accepts_credit_cards == 'true' %}selected{% endif %}>Tarjetas de Crédito</option>
+              </optgroup>
+            </select>
+          </div>
+          
+          <div class="col-md-3 d-flex align-items-end">
+            <button type="button" class="btn btn-light btn-sm rounded-pill w-100 fw-semibold" id="aplicar-filtros" style="background: rgba(255, 255, 255, 0.9); border: none; color: #667eea;">
+              <i class="bi bi-funnel me-1"></i>Aplicar Filtros
+            </button>
+          </div>
         </div>
+        
+        <!-- Filtros actuales aplicados -->
+        <div id="filtros-aplicados" class="mt-3" style="display: none;">
+          <div class="d-flex flex-wrap gap-2">
+            <span class="small text-white me-2">Filtros activos:</span>
+            <div id="badges-filtros"></div>
+                          <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-white" id="limpiar-filtros" style="opacity: 0.9;">
+                <i class="bi bi-x-circle me-1"></i>Limpiar todos
+              </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <!-- Lista de lugares con diseño mejorado -->
-        <div class="col-lg-9">
-            <div class="row g-4" id="lugaresGrid">
-                {% for lugar in lugares %}
-                <div class="col-md-6 col-lg-4 lugar-item" data-tipo="{{ lugar.tipo }}">
-                    <div class="card lugar-card h-100 shadow-sm">
-                        <div class="position-relative">
-                            {% if lugar.fotos.exists %}
-                                <img data-src="{{ lugar.fotos.first.imagen }}"
-                                     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f0f0f0'/%3E%3C/svg%3E"
-                                     class="card-img-top lugar-img lazy" 
-                                     alt="{{ lugar.nombre }}"
-                                     loading="lazy">
-                            {% else %}
-                                <img src="{% static 'img/placeholder.jpg' %}" 
-                                     class="card-img-top lugar-img" 
-                                     alt="Sin imagen">
-                            {% endif %}
-                            
-                            <!-- Badge de tipo -->
-                            <span class="badge bg-primary position-absolute top-0 start-0 m-2">
-                                {{ lugar.get_tipo_display|default:lugar.tipo }}
-                            </span>
-                            
-                            <!-- Favorito -->
-                            {% if user.is_authenticated %}
-                            <button class="btn btn-favorite position-absolute top-0 end-0 m-2" 
-                                    data-lugar-id="{{ lugar.id }}">
-                                <i class="far fa-heart"></i>
-                            </button>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title mb-2">
-                                <a href="{% url 'explorer:lugares_detail' slug=lugar.slug %}" 
-                                   class="text-decoration-none text-dark stretched-link">
-                                    {{ lugar.nombre|truncatechars:40 }}
-                                </a>
-                            </h5>
-                            
-                            <!-- Rating -->
-                            {% if lugar.rating %}
-                            <div class="rating mb-2">
-                                <div class="stars">
-                                    {% for i in "12345" %}
-                                        {% if i|add:0 <= lugar.rating %}
-                                            <i class="fas fa-star text-warning"></i>
-                                        {% else %}
-                                            <i class="far fa-star text-warning"></i>
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
-                                <span class="text-muted small">({{ lugar.rating }}/5)</span>
-                            </div>
-                            {% endif %}
-                            
-                            <!-- Dirección -->
-                            {% if lugar.direccion %}
-                            <p class="card-text text-muted small mb-2">
-                                <i class="fas fa-map-marker-alt me-1"></i>
-                                {{ lugar.direccion|truncatechars:60 }}
-                            </p>
-                            {% endif %}
-                            
-                            <!-- Tags/Características -->
-                            <div class="lugar-tags mt-auto">
-                                {% if lugar.precio %}
-                                <span class="badge bg-light text-dark">{{ lugar.precio }}</span>
-                                {% endif %}
-                                {% if lugar.abierto_ahora %}
-                                <span class="badge bg-success">Abierto ahora</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="card-footer bg-transparent">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="{% url 'explorer:lugares_detail' slug=lugar.slug %}" 
-                                   class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-info-circle me-1"></i> Ver detalles
-                                </a>
-                                <button class="btn btn-sm btn-outline-secondary share-btn" 
-                                        data-url="{{ request.build_absolute_uri }}{{ lugar.get_absolute_url }}">
-                                    <i class="fas fa-share-alt"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="col-12">
-                    <div class="empty-state text-center py-5">
-                        <i class="fas fa-search fa-4x text-muted mb-3"></i>
-                        <h3>No se encontraron lugares</h3>
-                        <p class="text-muted">
-                            {% if request.GET.q %}
-                                No hay resultados para "{{ request.GET.q }}"
-                            {% else %}
-                                No hay lugares disponibles en este momento
-                            {% endif %}
-                        </p>
-                        <a href="{% url 'explorer:lugares_list' %}" class="btn btn-primary mt-3">
-                            <i class="fas fa-redo me-2"></i> Ver todos los lugares
-                        </a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
-            <!-- Paginación mejorada -->
-            {% if is_paginated %}
-            <nav aria-label="Navegación de páginas" class="mt-5">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
-                            <i class="fas fa-angle-double-left"></i>
-                        </a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
-                            <i class="fas fa-angle-left"></i>
-                        </a>
-                    </li>
-                    {% endif %}
-                    
-                    {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ num }}</span>
-                        </li>
-                        {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
-                                {{ num }}
-                            </a>
-                        </li>
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
-                            <i class="fas fa-angle-right"></i>
-                        </a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
-                            <i class="fas fa-angle-double-right"></i>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
+  {% if lugares %}
+    <div class="row g-4">
+      {% for lugar in lugares %}
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm border-0 rounded-4">
+            {% if lugar.get_primera_foto %}
+              <img src="{{ lugar.get_primera_foto.imagen }}" 
+                   class="card-img-top rounded-top-4" 
+                   alt="Imagen de {{ lugar.nombre }}" 
+                   style="height: 200px; object-fit: cover;"
+                   loading="lazy">
+            {% else %}
+              <div class="bg-light d-flex align-items-center justify-content-center rounded-top-4" style="height: 200px;">
+                <i class="bi bi-image text-muted fs-2"></i>
+              </div>
             {% endif %}
+
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title fw-semibold mb-2">{{ lugar.nombre }}</h5>
+              
+              <!-- Tipo de lugar -->
+              <div class="mb-2">
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill">
+                  <i class="bi bi-geo-alt me-1"></i>{{ lugar.get_tipo_display|default:lugar.tipo|title }}
+                </span>
+              </div>
+
+              <!-- Badges de estado -->
+              <div class="mb-3">
+                {% if lugar.es_destacado %}
+                  <span class="badge bg-warning text-dark me-1">
+                    <i class="bi bi-star-fill me-1"></i>Destacado
+                  </span>
+                {% endif %}
+                {% if lugar.es_exclusivo %}
+                  <span class="badge bg-success me-1">
+                    <i class="bi bi-gem me-1"></i>Exclusivo
+                  </span>
+                {% endif %}
+                {% if lugar.rating and lugar.rating >= 4.5 %}
+                  <span class="badge bg-info text-dark">
+                    <i class="bi bi-award me-1"></i>Top Valorado
+                  </span>
+                {% endif %}
+              </div>
+
+              <!-- Rating -->
+              {% if lugar.rating %}
+              <div class="small text-muted mb-3">
+                <i class="bi bi-star-fill text-warning me-1"></i>
+                <span class="fw-semibold">{{ lugar.rating|floatformat:1 }}</span> / 5
+                {% if lugar.total_reviews %}
+                  <span class="ms-1">({{ lugar.total_reviews }} reseñas)</span>
+                {% endif %}
+              </div>
+              {% endif %}
+
+              {% if lugar.slug %}
+                <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-purple mt-auto w-100 rounded-pill">
+                  <i class="bi bi-eye me-1"></i>Ver detalles
+                </a>
+              {% else %}
+                <span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">Sin detalles</span>
+              {% endif %}
+            </div>
+          </div>
         </div>
+      {% endfor %}
     </div>
+
+    <!-- Paginación -->
+    {% if is_paginated %}
+      <nav class="mt-5 d-flex justify-content-center">
+        <ul class="pagination">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link rounded-pill me-2" href="?page={{ page_obj.previous_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
+                <i class="bi bi-chevron-left me-1"></i>Anterior
+              </a>
+            </li>
+          {% endif %}
+
+          <li class="page-item disabled">
+            <span class="page-link border-0 bg-transparent text-muted">
+              Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+          </li>
+
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link rounded-pill ms-2" href="?page={{ page_obj.next_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
+                Siguiente<i class="bi bi-chevron-right ms-1"></i>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+
+  {% else %}
+    <div class="text-center py-5">
+      <i class="bi bi-search display-1 text-muted mb-3"></i>
+      <h3 class="text-muted">No hay lugares disponibles</h3>
+      <p class="text-muted">No se encontraron lugares que coincidan con tu búsqueda.</p>
+      <a href="{% url 'explorer:lugares_list' %}" class="btn btn-primary rounded-pill">
+        Ver todos los lugares
+      </a>
+    </div>
+  {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Card Hover Effects */
+.card:hover {
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+/* Pagination styling */
+.pagination .page-link {
+    border: 1px solid #dee2e6;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.pagination .page-link:hover {
+    background-color: #f8f9fa;
+    border-color: #6c757d;
+}
+
+/* Estilos para la sección de filtros con glassmorphism */
+#aplicar-filtros:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.form-select.rounded-pill {
+    backdrop-filter: blur(5px);
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.form-select.rounded-pill:focus {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+}
+
+/* Efecto hover para el botón limpiar filtros */
+#limpiar-filtros:hover {
+    opacity: 1 !important;
+    text-decoration: underline !important;
+}
+
+/* Degradados para botones */
+.btn-gradient-purple {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient-purple:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+.btn-gradient-green {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient-green:hover {
+    background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+    color: white;
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Filtros de tipo
-    const filterButtons = document.querySelectorAll('.btn-filter');
-    const lugarItems = document.querySelectorAll('.lugar-item');
+$(document).ready(function() {
+    // Aplicar filtros
+    $('#aplicar-filtros').on('click', function() {
+        aplicarFiltros();
+    });
     
-    filterButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            filterButtons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
+    // Limpiar filtros
+    $('#limpiar-filtros').on('click', function() {
+        $('#filtro-comuna').val('');
+        $('#filtro-tipo').val('');
+        $('#filtro-caracteristicas').val('');
+        aplicarFiltros();
+    });
+    
+    // Cambio de filtros automático (opcional)
+    $('#filtro-comuna, #filtro-tipo, #filtro-caracteristicas').on('change', function() {
+        actualizarBadgesFiltros();
+    });
+    
+    function aplicarFiltros() {
+        const params = new URLSearchParams();
+        
+        // Obtener valores de filtros
+        const comuna = $('#filtro-comuna').val();
+        const tipo = $('#filtro-tipo').val();
+        const caracteristica = $('#filtro-caracteristicas').val();
+        
+        console.log('=== DEBUG aplicarFiltros ===');
+        console.log('Comuna ID:', comuna);
+        console.log('Tipo:', tipo);
+        console.log('Característica:', caracteristica);
+        
+        // Mantener búsqueda si existe
+        const busqueda = '{{ busqueda_actual|escapejs }}';
+        if (busqueda) params.append('q', busqueda);
+        
+        // Construir URL según si hay comuna seleccionada
+        let baseUrl = '{% url "explorer:lugares_list" %}';
+        
+        // Si hay comuna, usar URL con slug
+        if (comuna) {
+            // Obtener el slug real de la opción seleccionada
+            const comunaSlug = $('#filtro-comuna option:selected').data('slug');
+            console.log('Slug encontrado:', comunaSlug);
             
-            const filter = this.dataset.filter;
-            
-            lugarItems.forEach(item => {
-                if (filter === 'all' || item.dataset.tipo === filter) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-    });
-    
-    // Vista grid/lista
-    const gridView = document.getElementById('gridView');
-    const listView = document.getElementById('listView');
-    const lugaresGrid = document.getElementById('lugaresGrid');
-    
-    listView?.addEventListener('click', function() {
-        gridView.classList.remove('active');
-        this.classList.add('active');
-        lugaresGrid.classList.add('list-view');
-    });
-    
-    gridView?.addEventListener('click', function() {
-        listView.classList.remove('active');
-        this.classList.add('active');
-        lugaresGrid.classList.remove('list-view');
-    });
-    
-    // Favoritos (AJAX)
-    const favoriteButtons = document.querySelectorAll('.btn-favorite');
-    favoriteButtons.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const lugarId = this.dataset.lugarId;
-            // Implementar lógica AJAX para favoritos
-            this.querySelector('i').classList.toggle('far');
-            this.querySelector('i').classList.toggle('fas');
-        });
-    });
-    
-    // Compartir
-    const shareButtons = document.querySelectorAll('.share-btn');
-    shareButtons.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const url = this.dataset.url;
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Mira este lugar en ViveMedellín',
-                    url: url
-                });
+            if (comunaSlug) {
+                // Usar URL con slug para comunas
+                baseUrl = `/lugares/${comunaSlug}/`;
+                console.log('Usando URL con slug:', baseUrl);
             } else {
-                // Copiar al portapapeles
-                navigator.clipboard.writeText(url);
-                alert('Enlace copiado al portapapeles');
+                // Fallback a URL con parámetros si no hay slug
+                baseUrl = '{% url "explorer:lugares_list" %}';
+                params.append('comuna', comuna);
+                console.log('Fallback a URL con parámetros, comuna ID:', comuna);
             }
-        });
-    });
+        } else {
+            // Sin comuna, usar URL base
+            baseUrl = '{% url "explorer:lugares_list" %}';
+            console.log('Sin comuna, URL base:', baseUrl);
+        }
+        
+        // Agregar filtros adicionales como parámetros
+        if (tipo) params.append('tipo', tipo);
+        if (caracteristica) params.append(caracteristica, 'true');
+        
+        // Redireccionar
+        const finalUrl = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+        console.log('URL final:', finalUrl);
+        console.log('=== FIN DEBUG ===');
+        
+        window.location.href = finalUrl;
+    }
+    
+    function actualizarBadgesFiltros() {
+        const comuna = $('#filtro-comuna option:selected').text();
+        const tipo = $('#filtro-tipo option:selected').text();
+        const caracteristica = $('#filtro-caracteristicas option:selected').text();
+        
+        let badges = [];
+        
+        if ($('#filtro-comuna').val()) {
+            badges.push(`<span class="badge bg-primary me-1">📍 ${comuna}</span>`);
+        }
+        if ($('#filtro-tipo').val()) {
+            badges.push(`<span class="badge bg-success me-1">🏢 ${tipo}</span>`);
+        }
+        if ($('#filtro-caracteristicas').val()) {
+            badges.push(`<span class="badge bg-info me-1">⭐ ${caracteristica}</span>`);
+        }
+        
+        if (badges.length > 0) {
+            $('#badges-filtros').html(badges.join(''));
+            $('#filtros-aplicados').show();
+        } else {
+            $('#filtros-aplicados').hide();
+        }
+    }
+    
+    // Inicializar badges al cargar la página
+    actualizarBadgesFiltros();
 });
 </script>
 {% endblock %}

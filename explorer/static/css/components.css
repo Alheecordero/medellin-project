@@ -1,0 +1,170 @@
+/* ================================
+   COMPONENTES GLOBALES - MEDELLÍN EXPLORER
+   ================================ */
+
+/* Variables CSS globales */
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --dark-color: #1a1a2e;
+    --light-color: #f8f9fa;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --border-radius: 0.5rem;
+    --transition-speed: 0.3s;
+}
+
+/* ================================
+   UTILIDADES GLOBALES
+   ================================ */
+
+/* Gradientes reutilizables */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+}
+
+/* ================================
+   BOTONES GLOBALES
+   ================================ */
+
+.btn-gradient {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border: none;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-speed) ease;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: white;
+}
+
+.btn-modern {
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-speed) ease;
+}
+
+.btn-outline-modern {
+    border: 2px solid rgba(255,255,255,0.8);
+    color: white;
+    font-weight: 500;
+    padding: calc(0.75rem - 2px) calc(1.5rem - 2px);
+    border-radius: var(--border-radius);
+    transition: all var(--transition-speed) ease;
+    background: transparent;
+}
+
+.btn-outline-modern:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+/* ================================
+   CARDS Y CONTENEDORES
+   ================================ */
+
+.card-modern {
+    border: none;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    transition: all var(--transition-speed) ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.card-modern:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.container-custom {
+    width: 100%;
+    max-width: 1320px;
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 1rem;
+    padding-left: 1rem;
+}
+
+/* ================================
+   HERO SECTIONS
+   ================================ */
+
+.hero-section {
+    min-height: 400px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+/* ================================
+   RESPONSIVIDAD
+   ================================ */
+
+@media (max-width: 768px) {
+    .container-custom {
+        padding-right: 1.25rem;
+        padding-left: 1.25rem;
+    }
+    
+    .btn-modern,
+    .btn-gradient {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* ================================
+   ANIMACIONES GENERALES
+   ================================ */
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================================
+   UTILIDADES DE ESPACIADO
+   ================================ */
+
+.section-padding {
+    padding: 4rem 0;
+}
+
+.section-padding-sm {
+    padding: 2rem 0;
+}
+
+.section-padding-lg {
+    padding: 6rem 0;
+}
+
+@media (max-width: 768px) {
+    .section-padding { padding: 2rem 0; }
+    .section-padding-sm { padding: 1.5rem 0; }
+    .section-padding-lg { padding: 3rem 0; }
+} 

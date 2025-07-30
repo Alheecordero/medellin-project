@@ -80,7 +80,6 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 # Application definition
 
 INSTALLED_APPS = [
-    'usuarios',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -88,9 +87,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'easy_thumbnails',  # Para manejo de thumbnails
     'rest_framework',
     'explorer',
     'storages',
+    'django_extensions',
+    'taggit',  # Añadimos django-taggit
 ]
 
 MIDDLEWARE = [
@@ -103,12 +105,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-if DEBUG:
-    INSTALLED_APPS += ['debug_toolbar']
-    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
-    INTERNAL_IPS = [
-        '127.0.0.1',
-    ]
+# Debug toolbar comentado temporalmente por problemas de templates
+# if DEBUG:
+#     INSTALLED_APPS += ['debug_toolbar']
+#     MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+#     INTERNAL_IPS = [
+#         '127.0.0.1',
+#     ]
 
 ROOT_URLCONF = 'Medellin.urls'
 
@@ -123,7 +126,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'explorer.context_processors.comunas_context_optimized',
+                'explorer.context_processors.comunas_context',
             ],
         },
     },
@@ -214,40 +217,63 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 
+# AUTH_USER_MODEL = 'usuarios.User'  # Comentado para usar User predeterminado
+LOGIN_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/'
 
-AUTH_USER_MODEL = 'usuarios.User'
-LOGIN_URL = '/usuarios/login/'
+# Configuración para django-allauth - ELIMINADO
+# SITE_ID = 1
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    # 'allauth.account.auth_backends.AuthenticationBackend',  # Eliminado
+]
 
+# Configuración de allauth - ELIMINADO
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# ACCOUNT_AUTHENTICATION_METHOD = "email"
+# ACCOUNT_USERNAME_REQUIRED = False
 
+# Configuración de Google OAuth - ELIMINADO
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'SCOPE': [
+#             'profile',
+#             'email',
+#         ],
+#         'AUTH_PARAMS': {
+#             'access_type': 'online',
+#         },
+#         'OAUTH_PKCE_ENABLED': True,
+#     }
+# }
 
-#storage
-# Ruta a tu archivo de clave JSON
-GS_CREDENTIALS_PATH = env('GS_CREDENTIALS_PATH', 'vivemedellin-fdc8cbb3b441.json')
-# Cargar credenciales de GCS
-from google.oauth2 import service_account
-if GS_CREDENTIALS_PATH:
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-        os.path.join(BASE_DIR, GS_CREDENTIALS_PATH)
-    )
+# URLs de redirección después del login/logout
 
-# Nombre del bucket
-GS_BUCKET_NAME = env('GS_BUCKET_NAME')
+# ======================================================
+# CONFIGURACIÓN DE GOOGLE CLOUD STORAGE (GCS)
+# ======================================================
 
-# Configuración de almacenamiento de archivos
-# Forzamos el uso de GCS para que las imágenes funcionen en el entorno de desarrollo local.
-USE_GCS = True 
-
-if USE_GCS:
-    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-    GS_DEFAULT_ACL = None # Cambiado de 'publicRead' a None
-    MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
-else:
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
+# --- Google Cloud Storage Configuration ---
+try:
+    from google.oauth2 import service_account
+    GS_CREDENTIALS_PATH = os.path.join(BASE_DIR, 'vivemedellin-fdc8cbb3b441.json')
+    if os.path.exists(GS_CREDENTIALS_PATH):
+        print("✅ Configuración de Google Cloud Storage cargada.")
+        GS_PROJECT_ID = 'vivemedellin'
+        GS_BUCKET_NAME = 'vivemedellin-bucket'
+        GS_CREDENTIALS = service_account.Credentials.from_service_account_file(GS_CREDENTIALS_PATH)
+        GS_LOCATION = 'us-central1'
+        DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+        GS_CUSTOM_ENDPOINT = f'https://storage.googleapis.com/{GS_BUCKET_NAME}'
+        GS_DEFAULT_ACL = 'publicRead'
+        print(f"   - Bucket: {GS_BUCKET_NAME}")
+    else:
+        print("⚠️  Advertencia: No se encontró el archivo de credenciales de GCS. El almacenamiento de archivos podría no funcionar.")
+except ImportError:
+    print("⚠️  Advertencia: Librerías de Google no instaladas. El almacenamiento de archivos no funcionará.")
+# --- End Google Cloud Storage Configuration ---
 
 
 # La configuración de STATICFILES_STORAGE ya está manejada arriba basada en USE_GCS
@@ -277,6 +303,29 @@ CACHES['staticfiles'] = {
 # Optimización de sesiones
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 SESSION_CACHE_ALIAS = 'default'
+
+# Configuración de Easy Thumbnails
+THUMBNAIL_ALIASES = {
+    '': {
+        'small': {'size': (100, 100), 'crop': True},
+        'medium': {'size': (300, 300), 'crop': True},
+        'large': {'size': (600, 600), 'crop': 'smart'},
+        'card': {'size': (400, 300), 'crop': True},
+        'hero': {'size': (1200, 600), 'crop': True},
+        'list': {'size': (250, 200), 'crop': True},
+    },
+}
+
+THUMBNAIL_PROCESSORS = (
+    # Default processors
+    'easy_thumbnails.processors.colorspace',
+    'easy_thumbnails.processors.autocrop',
+    'easy_thumbnails.processors.scale_and_crop',
+    'easy_thumbnails.processors.filters',
+)
+
+# Configuración de django-taggit
+TAGGIT_CASE_INSENSITIVE = True  # Las etiquetas no serán sensibles a mayúsculas/minúsculas
 
 # Importar configuraciones locales si existen
 try:

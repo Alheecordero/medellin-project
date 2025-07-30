@@ -1,742 +1,1351 @@
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, TemplateView
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import Http404, HttpResponse
-from django.core.serializers import serialize
-from django.utils.text import slugify
+from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
 from django.core.cache import cache
-from django.contrib.gis.db.models.functions import Transform, Distance
-from django.core.paginator import Paginator
-from django.db import models
-from django.db.models import Prefetch, Q, Avg, Count
-from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid
-import json
-import math
-from django.urls import reverse
-from django.views.decorators.http import require_GET
-from django.utils.decorators import method_decorator
-
+from django.db.models import Count, Q, F, Window, Prefetch
+from django.db.models.functions import Rank
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from django.http import JsonResponse
-from django.templatetags.static import static
-from django.conf import settings
-import os
-import time
+from django.utils import timezone
+import json
+import ipaddress
 
-# ======================================================
-# LIST VIEW CON CACHE Y PREFETCH OPTIMIZADO
-# ======================================================
+from .models import Places, Foto, RegionOSM, Tag, NewsletterSubscription, PLACE_TYPE_CHOICES
 
-class LugaresListView(ListView):
+# ────────────────────────────────────────────────────────────────────────
+# Mixins Optimizados
+# ────────────────────────────────────────────────────────────────────────
+
+class CacheMixin:
+    """Mixin para manejar caché en las vistas."""
+    cache_timeout = 3600  # 1 hora por defecto
+
+    def get_cache_key(self):
+        """Genera una clave de caché única basada en la vista y parámetros."""
+        params = "_".join(f"{k}:{v}" for k, v in sorted(self.request.GET.items()))
+        return f"{self.__class__.__name__}_{self.request.path}_{params}"
+
+    def get_from_cache(self):
+        return cache.get(self.get_cache_key())
+
+    def set_to_cache(self, data):
+        # No intentamos cachear querysets con prefetch_related para 'fotos'
+        # ya que causan problemas al deserializar
+        if hasattr(data, '_prefetch_related_lookups'):
+            prefetch_lookups = [str(lookup) for lookup in data._prefetch_related_lookups]
+            if 'fotos' in prefetch_lookups or any('fotos' in lookup for lookup in prefetch_lookups):
+                # Omitimos el cacheo para evitar el error
+                return
+        
+        cache.set(self.get_cache_key(), data, self.cache_timeout)
+
+
+class BasePlacesMixin:
+    """Mixin base para todas las vistas de lugares con configuraciones comunes."""
     model = Places
-    template_name = 'lugares/places_list.html'
-    context_object_name = 'lugares'
-    paginate_by = 12
-
-    def get_queryset(self):
-        queryset = super().get_queryset().prefetch_related(
-            Prefetch('fotos', queryset=Foto.objects.only('imagen'), to_attr='cached_fotos')
-        ).order_by('-fecha_actualizacion')
-
-        query = self.request.GET.get('q')
-        if query:
-            queryset = queryset.filter(
-                Q(nombre__icontains=query) | 
-                Q(tipo__icontains=query) |
-                Q(direccion__icontains=query)
-            )
-        
-        comuna_slug = self.kwargs.get('slug')
-        if comuna_slug:
-            queryset = queryset.filter(comuna__slug=comuna_slug)
-        
-        return queryset
+    context_object_name = "lugares"
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['query'] = self.request.GET.get('q', '')
-        context['comuna_slug'] = self.kwargs.get('slug', '')
-        return context
-
-
-class LugaresDetailView(DetailView):
-    model = Places
-    template_name = 'lugares/places_detail.html'
-    context_object_name = 'lugar'
-    slug_field = 'slug'
-    slug_url_kwarg = 'slug'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        lugar = self.get_object()
-
-        # Usar la consulta explícita para fotos
-        context['fotos_lugar'] = Foto.objects.filter(lugar=lugar)
-        
-        # Obtener la primera foto para la imagen principal
-        primera_foto = context['fotos_lugar'].first()
-        context['primera_foto_url'] = primera_foto.imagen if primera_foto and primera_foto.imagen else None
-
-        if lugar.ubicacion:
-            # Obtener 5 lugares cercanos
-            context['lugares_cercanos'] = Places.objects.exclude(id=lugar.id).filter(
-                ubicacion__distance_lt=(lugar.ubicacion, 1000)
-            ).annotate(
-                distance=Distance('ubicacion', lugar.ubicacion)
-            ).order_by('distance')[:5]
-
-        return context
-
-
-
-
-
-
-# ======================================================
-# VISTAS PERSONALIZADAS OPTIMIZADAS
-# ======================================================
-
-OSM_IDS_MEDELLIN = [
-    -7680678, -7680807, -7680859, -11937925,
-    -7676068, -7676069, -7680798, -7680904, -7680903,
-    -7673972, -7673973, -7680403, -7673971, -7677386,
-    -7680799, -7680490
-]
-
-def mapa_explorar(request):
-    """
-    Vista mejorada del mapa con soporte para comunas y lugares
-    """
-    # Obtener comunas (admin_level='8') y municipios (admin_level='6')
-    comunas = RegionOSM.objects.filter(
-        admin_level__in=['6', '8']
-    ).annotate(
-        geom_transformed=Transform('geom_4326', 3857)
-    )
-
-    # Preparar datos de comunas para el mapa
-    comunas_json = []
-    for c in comunas:
-        if c.geom_4326:  # Asegurarse de que tiene geometría
-            comunas_json.append({
-                "id": c.osm_id,
-                "name": c.name,
-                "geometry": json.loads(c.geom_4326.geojson),
-                "admin_level": c.admin_level,
-                "ciudad": c.ciudad
-            })
-
-    # Obtener lugares destacados
-    lugares = Places.objects.filter(
-        rating__gte=4.0,
-        total_reviews__gte=5
-    ).select_related().prefetch_related(
-        Prefetch('fotos', queryset=Foto.objects.only('imagen'), to_attr='cached_fotos')
-    ).order_by('-rating', '-total_reviews')[:100]
-
-    # Preparar datos de lugares para el mapa
-    lugares_json = []
-    for lugar in lugares:
-        primera_foto = lugar.cached_fotos[0] if lugar.cached_fotos else None
-        image_url = primera_foto.imagen if primera_foto and primera_foto.imagen else static('img/placeholder.jpg')
-
-        lugares_json.append({
-            "id": lugar.id,
-            "nombre": lugar.nombre,
-            "lat": lugar.ubicacion.y if lugar.ubicacion else None,
-            "lng": lugar.ubicacion.x if lugar.ubicacion else None,
-            "slug": lugar.slug,
-            "tipo": lugar.tipo,
-            "rating": float(lugar.rating) if lugar.rating else None,
-            "total_reviews": lugar.total_reviews,
-            "direccion": lugar.direccion,
-            "imagen": image_url,
-            "comuna_id": lugar.comuna_osm_id
-        })
-
-    context = {
-        'comunas_json': json.dumps(comunas_json),
-        'lugares_json': json.dumps(lugares_json),
-    }
-    
-    return render(request, "lugares/places_map.html", context)
-
-
-@require_GET
-def buscar_lugares_cercanos(request):
-    """
-    API endpoint para buscar lugares en un radio de 500 metros desde un punto.
-    """
-    try:
-        lat = float(request.GET.get('lat'))
-        lng = float(request.GET.get('lng'))
-        radio_metros = float(request.GET.get('radio', 500))  # Por defecto 500 metros
-        
-        # Caching por coordenada redondeada (aprox 10-20 m de precisión)
-        cache_key = f"nearby_{round(lat,4)}_{round(lng,4)}_{int(radio_metros)}"
-        cached = cache.get(cache_key)
-        if cached:
-            return JsonResponse({'success': True, 'lugares': cached})
-
-        from django.contrib.gis.geos import Point
-        punto_usuario = Point(lng, lat, srid=4326)
-
-        # Query optimizada: seleccionar solo los campos necesarios y diferir columnas grandes
-        lugares_cercanos = (
-            Places.objects.only(
-                'id', 'nombre', 'ubicacion', 'slug', 'tipo', 'rating', 'total_reviews', 'direccion'
-            )
-            .filter(ubicacion__distance_lte=(punto_usuario, radio_metros))
-            .annotate(distance=Distance('ubicacion', punto_usuario))
-            .order_by('distance')[:50]
-            .prefetch_related(
-                Prefetch('fotos', queryset=Foto.objects.only('imagen'), to_attr='cached_fotos')
-            )
+    def get_base_queryset(self):
+        """Queryset base optimizado para todos los lugares."""
+        return Places.objects.filter(tiene_fotos=True).prefetch_related(
+            Prefetch('fotos', queryset=Foto.objects.only('imagen')[:3], to_attr='cached_fotos'),
+            Prefetch('tags', to_attr='cached_tags')
         )
+
+
+class SearchMixin:
+    """Mixin para búsqueda avanzada con pesos personalizados."""
+    search_fields = ['nombre', 'descripcion', 'tipo']
+    search_weights = {'nombre': 'A', 'descripcion': 'B', 'tipo': 'C'}
+
+    def get_search_vector(self):
+        """Crea un vector de búsqueda ponderado."""
+        return sum(
+            (SearchVector(field, weight=self.search_weights.get(field, 'D'))
+             for field in self.search_fields),
+            SearchVector()
+        )
+
+    def apply_search(self, queryset, search_term):
+        """Aplica búsqueda con ranking de resultados."""
+        if not search_term:
+            return queryset
+
+        search_query = SearchQuery(search_term)
+        search_vector = self.get_search_vector()
         
-        # Serializar resultados
-        lugares_data = []
-        for lugar in lugares_cercanos:
-            primera_foto = lugar.cached_fotos[0] if lugar.cached_fotos else None
-            image_url = primera_foto.imagen if primera_foto and primera_foto.imagen else static('img/placeholder.jpg')
+        return queryset.annotate(
+            search=search_vector,
+            rank=SearchRank(search_vector, search_query)
+        ).filter(
+            search=search_query
+        ).order_by('-rank')
 
-            lugares_data.append({
-                "id": lugar.id,
-                "nombre": lugar.nombre,
-                "lat": lugar.ubicacion.y,
-                "lng": lugar.ubicacion.x,
-                "slug": lugar.slug,
-                "tipo": lugar.tipo,
-                "rating": float(lugar.rating) if lugar.rating else None,
-                "total_reviews": lugar.total_reviews,
-                "direccion": lugar.direccion,
-                "imagen": image_url,
-                "distance": round(lugar.distance.m)
-            })
+
+# ────────────────────────────────────────────────────────────────────────
+# Vistas Principales
+# ────────────────────────────────────────────────────────────────────────
+
+class HomeView(TemplateView):
+    """Vista de inicio que muestra lugares agrupados por regiones OSM."""
+    template_name = "home.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         
-        # Guardar en caché por 1 minuto
-        cache.set(cache_key, lugares_data, 60)
-
-        return JsonResponse({'success': True, 'lugares': lugares_data})
+        # Datos para filtros
+        context.update(self._get_filtros_data())
         
-    except (ValueError, TypeError) as e:
-        return JsonResponse({'success': False, 'error': 'Coordenadas inválidas', 'message': str(e)}, status=400)
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': 'Error interno del servidor', 'message': str(e)}, status=500)
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ======================================================
-# COMUNAS
-# ======================================================
-
-def lugares_por_comuna_view(request, slug):
-    """
-    Muestra los lugares de una comuna o municipio específico, identificado por su slug.
-    """
-    # El modelo RegionOSM no tiene un campo slug, por lo que no podemos filtrar directamente.
-    # Obtenemos todas las regiones (comunas y municipios) y encontramos la que coincide con el slug.
-    regiones = RegionOSM.objects.filter(admin_level__in=['6', '8'])
-    comuna_seleccionada = None
-    for region in regiones:
-        if region.slug == slug:
-            comuna_seleccionada = region
-            break
-
-    if not comuna_seleccionada:
-        # Si no se encuentra la comuna/municipio, devolver un 404.
-        raise Http404("Comuna o municipio no encontrado")
-
-    # Obtener los lugares que pertenecen a esa comuna/municipio.
-    lugares_en_comuna = Places.objects.filter(comuna_osm_id=comuna_seleccionada.osm_id).prefetch_related('fotos')
-
-    context = {
-        'comuna': comuna_seleccionada,
-        'lugares': lugares_en_comuna,
-        'es_municipio': comuna_seleccionada.admin_level == '6'
-    }
-    return render(request, 'lugares/lugares_por_comuna.html', context)
-
-# Vista de home refactorizada
-def home(request):
-    """
-    Vista para la página de inicio. Muestra una selección de lugares
-    agrupados por comunas y categorías.
-    """
-    try:
-        # Obtener lugares destacados - simplificado
-        lugares_destacados = []
-        lugares_query = Places.objects.filter(
-            rating__gte=4.5,
-            total_reviews__gte=10,
-            fotos__isnull=False
-        ).select_related().prefetch_related('fotos').order_by('-rating', '-total_reviews').distinct()[:12]
+        # Verificar caché
+        cache_key = "home_regiones_osm"
+        comuna_con_lugares = cache.get(cache_key)
         
-        for lugar in lugares_query:
-            primera_foto = lugar.get_primera_foto()
-            lugares_destacados.append({
-                'nombre': lugar.nombre,
-                'slug': lugar.slug,
-                'rating': lugar.rating,
-                'tipo': lugar.get_tipo_display() if hasattr(lugar, 'get_tipo_display') else lugar.tipo,  # type: ignore
-                'imagen': primera_foto.imagen if primera_foto else None,
-                'direccion': lugar.direccion,
-                'comuna': lugar.comuna
-            })
-
-        # Obtener comunas y municipios con lugares
-        comuna_con_lugares = []
-        
-        # Primero las comunas de Medellín (admin_level='8')
-        comunas_medellin = RegionOSM.objects.filter(
-            admin_level='8',
-            ciudad='Medellín'
-        ).order_by('name')[:6]
-        
-        # Luego los municipios cercanos (admin_level='6')
-        municipios_cercanos = RegionOSM.objects.filter(
-            admin_level='6'
-        ).order_by('name')
-        
-        print(f"Comunas Medellín encontradas: {comunas_medellin.count()}")
-        print(f"Municipios cercanos encontrados: {municipios_cercanos.count()}")
-
-        # Procesar comunas de Medellín
-        for comuna in comunas_medellin:
-            lugares_comuna = Places.objects.filter(
-                comuna_osm_id=comuna.osm_id,
-                rating__gte=4.0,
-                fotos__isnull=False
-            ).select_related().prefetch_related('fotos').order_by('-rating').distinct()[:3]
+        if comuna_con_lugares is None:
+            # Obtener regiones que tienen lugares destacados para home
+            # Orden personalizado: El Poblado, Laureles, comunas (nivel 8), municipios (nivel 6)
+            from django.db.models import Case, When, IntegerField
             
-            lugares_data = []
-            for lugar in lugares_comuna:
-                primera_foto = lugar.get_primera_foto()
-                lugares_data.append({
-                    'nombre': lugar.nombre,
-                    'slug': lugar.slug,
-                    'rating': lugar.rating,
-                    'tipo': lugar.get_tipo_display() if hasattr(lugar, 'get_tipo_display') else lugar.tipo,  # type: ignore
-                    'imagen': primera_foto.imagen if primera_foto else None
-                })
+            regiones_con_lugares = RegionOSM.objects.filter(
+                osm_id__in=Places.objects.filter(
+                    show_in_home=True,
+                    tiene_fotos=True
+                ).values_list('comuna_osm_id', flat=True).distinct()
+            ).annotate(
+                orden_prioridad=Case(
+                    When(name__icontains='Poblado', then=1),
+                    When(name__icontains='Laureles', then=2),
+                    When(admin_level='8', then=3),  # Comunas
+                    When(admin_level='6', then=4),  # Municipios
+                    default=5,
+                    output_field=IntegerField()
+                )
+            ).order_by('orden_prioridad', 'name')[:6]  # Máximo 6 regiones
             
-            if lugares_data:
-                comuna_con_lugares.append({
-                    'comuna': comuna,
-                    'nombre': comuna.name,
-                    'ref': f"Comuna de Medellín",
-                    'lugares': lugares_data,
-                    'es_municipio': False
-                })
+            # Si no hay lugares con show_in_home, usar regiones con mejor rating
+            if not regiones_con_lugares.exists():
+                regiones_con_lugares = RegionOSM.objects.filter(
+                    osm_id__in=Places.objects.filter(
+                        tiene_fotos=True,
+                        rating__gte=4.0
+                    ).values_list('comuna_osm_id', flat=True).distinct()
+                ).annotate(
+                    orden_prioridad=Case(
+                        When(name__icontains='Poblado', then=1),
+                        When(name__icontains='Laureles', then=2),
+                        When(admin_level='8', then=3),  # Comunas
+                        When(admin_level='6', then=4),  # Municipios
+                        default=5,
+                        output_field=IntegerField()
+                    )
+                ).order_by('orden_prioridad', 'name')[:6]
+            
+            # Procesar datos por región
+            comuna_con_lugares = []
+            for region in regiones_con_lugares:
+                # Obtener lugares de esta región
+                lugares_region = Places.objects.filter(
+                    comuna_osm_id=region.osm_id,
+                    tiene_fotos=True,
+                    show_in_home=True
+                ).prefetch_related('fotos').order_by('-rating')[:6]
+                
+                # Si no hay lugares con show_in_home en esta región, usar los mejores
+                if not lugares_region.exists():
+                    lugares_region = Places.objects.filter(
+                        comuna_osm_id=region.osm_id,
+                        tiene_fotos=True,
+                        rating__gte=4.0
+                    ).prefetch_related('fotos').order_by('-rating')[:6]
+                
+                if lugares_region.exists():
+                    # Procesar lugares de la región
+                    lugares_data = []
+                    for lugar in lugares_region:
+                        primera_foto = lugar.fotos.first()
+                        lugares_data.append({
+                            'nombre': lugar.nombre,
+                            'slug': lugar.slug,
+                            'rating': lugar.rating or 0.0,
+                            'total_reviews': lugar.total_reviews,
+                            'tipo': lugar.get_tipo_display(),
+                            'imagen': primera_foto.imagen if primera_foto else None,
+                            'es_destacado': lugar.es_destacado,
+                            'es_exclusivo': lugar.es_exclusivo
+                        })
+                    
+                    comuna_con_lugares.append({
+                        'nombre': region.name,
+                        'slug': region.slug,
+                        'lugares': lugares_data,
+                        'es_municipio': region.admin_level == '6',
+                        'osm_id': region.osm_id
+                    })
+            
+            # Guardar en caché por 1 hora
+            cache.set(cache_key, comuna_con_lugares, 3600)
         
-        # Procesar municipios cercanos
-        for municipio in municipios_cercanos:
-            lugares_municipio = Places.objects.filter(
-                comuna_osm_id=municipio.osm_id,
-                rating__gte=4.0,
-                fotos__isnull=False
-            ).select_related().prefetch_related('fotos').order_by('-rating').distinct()[:3]
-            
-            lugares_data = []
-            for lugar in lugares_municipio:
-                primera_foto = lugar.get_primera_foto()
-                lugares_data.append({
-                    'nombre': lugar.nombre,
-                    'slug': lugar.slug,
-                    'rating': lugar.rating,
-                    'tipo': lugar.get_tipo_display() if hasattr(lugar, 'get_tipo_display') else lugar.tipo,  # type: ignore
-                    'imagen': primera_foto.imagen if primera_foto else None
-                })
-            
-            if lugares_data:
-                comuna_con_lugares.append({
-                    'comuna': municipio,
-                    'nombre': municipio.name,
-                    'ref': f"Municipio del Valle de Aburrá",
-                    'lugares': lugares_data,
-                    'es_municipio': True
-                })
+        context['comuna_con_lugares'] = comuna_con_lugares
+        return context
 
-        # Si no hay comunas con lugares, al menos mostrar lugares destacados agrupados
-        if not comuna_con_lugares and lugares_destacados:
-            comuna_con_lugares = [{
-                'comuna': None,
-                'nombre': 'Lugares Destacados',
-                'ref': 'Los mejores lugares de Medellín',
-                'lugares': [
-                    {
-                        'nombre': l['nombre'],
-                        'slug': l['slug'],
-                        'rating': l['rating'],
-                        'tipo': l['tipo'],
-                        'imagen': l['imagen']
-                    }
-                    for l in lugares_destacados[:9]
-                ],
-                'es_municipio': False
-            }]
-
-        # Estadísticas
-        total_lugares = Places.objects.count()
-        total_comunas = RegionOSM.objects.filter(admin_level__in=['6', '8']).count()
-
-        print(f"Lugares destacados: {len(lugares_destacados)}")
-        print(f"Comunas/Municipios con lugares: {len(comuna_con_lugares)}")
+    def _get_filtros_data(self):
+        """Obtiene datos para los filtros del home."""
+        # 1. ÁREAS - Obtener regiones principales (priorizando Poblado y Laureles)
+        from django.db.models import Case, When, IntegerField
         
-        context = {
-            'lugares_destacados': lugares_destacados,
-            'comuna_con_lugares': comuna_con_lugares,
-            'total_lugares': total_lugares,
-            'total_comunas': total_comunas,
+        regiones_areas = RegionOSM.objects.filter(
+            osm_id__in=Places.objects.filter(tiene_fotos=True).values_list('comuna_osm_id', flat=True).distinct()
+        ).annotate(
+            orden_area=Case(
+                When(name__icontains='Poblado', then=1),
+                When(name__icontains='Laureles', then=2),
+                default=3,
+                output_field=IntegerField()
+            )
+        ).order_by('orden_area', 'name')[:22]
+        
+        # 2. CATEGORÍAS REALES - Basadas en PLACE_TYPE_CHOICES
+        categorias_reales = [
+            {
+                'name': 'Restaurantes',
+                'icon': 'bi-cup-hot',
+                'color': 'success',
+                'subcategorias': [
+                    {'value': 'restaurant', 'name': 'Restaurante General'},
+                    {'value': 'fine_dining_restaurant', 'name': 'Restaurante Gourmet'},
+                    {'value': 'pizza_restaurant', 'name': 'Pizzería'},
+                    {'value': 'italian_restaurant', 'name': 'Restaurante Italiano'},
+                    {'value': 'mexican_restaurant', 'name': 'Restaurante Mexicano'},
+                    {'value': 'chinese_restaurant', 'name': 'Restaurante Chino'},
+                    {'value': 'seafood_restaurant', 'name': 'Marisquería'},
+                    {'value': 'steak_house', 'name': 'Parrilla de Carnes'},
+                    {'value': 'fast_food_restaurant', 'name': 'Comida Rápida'},
+                ]
+            },
+            {
+                'name': 'Bares & Vida Nocturna',
+                'icon': 'bi-cup-straw',
+                'color': 'warning',
+                'subcategorias': [
+                    {'value': 'bar', 'name': 'Bar'},
+                    {'value': 'wine_bar', 'name': 'Bar de Vinos'},
+                    {'value': 'pub', 'name': 'Pub'},
+                    {'value': 'night_club', 'name': 'Discoteca'},
+                    {'value': 'karaoke', 'name': 'Karaoke'},
+                ]
+            },
+            {
+                'name': 'Cafeterías',
+                'icon': 'bi-cup',
+                'color': 'info',
+                'subcategorias': [
+                    {'value': 'cafe', 'name': 'Cafetería'},
+                    {'value': 'internet_cafe', 'name': 'Cibercafé'},
+                    {'value': 'breakfast_restaurant', 'name': 'Desayunos'},
+                    {'value': 'brunch_restaurant', 'name': 'Brunch'},
+                ]
+            }
+        ]
+        
+        # 3. ETIQUETAS ESPECIALES - Características y servicios
+        etiquetas_especiales = [
+            {
+                'name': 'Servicios de Entrega',
+                'icon': 'bi-bicycle',
+                'opciones': [
+                    {'field': 'delivery', 'name': 'Delivery', 'icon': 'bi-bicycle'},
+                    {'field': 'takeout', 'name': 'Para Llevar', 'icon': 'bi-bag'},
+                    {'field': 'dine_in', 'name': 'Comer en Local', 'icon': 'bi-house'},
+                ]
+            },
+            {
+                'name': 'Ambiente & Experiencia',
+                'icon': 'bi-stars',
+                'opciones': [
+                    {'field': 'outdoor_seating', 'name': 'Terraza', 'icon': 'bi-tree'},
+                    {'field': 'live_music', 'name': 'Música en Vivo', 'icon': 'bi-music-note-beamed'},
+                    {'field': 'good_for_groups', 'name': 'Para Grupos', 'icon': 'bi-people'},
+                    {'field': 'good_for_children', 'name': 'Para Niños', 'icon': 'bi-emoji-smile'},
+                ]
+            },
+            {
+                'name': 'Especialidades',
+                'icon': 'bi-cup-straw',
+                'opciones': [
+                    {'field': 'serves_cocktails', 'name': 'Cócteles', 'icon': 'bi-cup-straw'},
+                    {'field': 'serves_wine', 'name': 'Vinos', 'icon': 'bi-cup'},
+                    {'field': 'serves_coffee', 'name': 'Café Especialidad', 'icon': 'bi-cup-hot'},
+                    {'field': 'serves_dessert', 'name': 'Postres', 'icon': 'bi-cake'},
+                ]
+            },
+            {
+                'name': 'Accesibilidad & Comodidades',
+                'icon': 'bi-universal-access',
+                'opciones': [
+                    {'field': 'wheelchair_accessible_entrance', 'name': 'Acceso Accesible', 'icon': 'bi-universal-access'},
+                    {'field': 'allows_dogs', 'name': 'Pet Friendly', 'icon': 'bi-heart'},
+                    {'field': 'accepts_credit_cards', 'name': 'Tarjetas de Crédito', 'icon': 'bi-credit-card'},
+                ]
+            }
+        ]
+        
+        return {
+            'regiones_areas': regiones_areas,
+            'categorias_reales': categorias_reales,
+            'etiquetas_especiales': etiquetas_especiales,
+        }
+
+
+class PlacesListView(ListView):
+    """Lista paginada de lugares - SIMPLIFICADA PARA QUE FUNCIONE."""
+    template_name = "lugares/places_list.html"
+    model = Places
+    context_object_name = "lugares"
+    paginate_by = 24
+    
+    def get_queryset(self):
+        """Obtiene y filtra lugares según parámetros de búsqueda."""
+        # Queryset base optimizado - solo lugares con fotos
+        qs = Places.objects.filter(tiene_fotos=True).prefetch_related('fotos').order_by('-rating', 'nombre')
+
+        # Búsqueda por nombre
+        q = self.request.GET.get("q")
+        if q:
+            qs = qs.filter(nombre__icontains=q)
+        
+        # Filtro por tipo de lugar (desde dropdown del navbar)
+        tipo = self.request.GET.get('tipo')
+        if tipo:
+            qs = qs.filter(tipo=tipo)
+            
+        # Filtro por comuna/barrio
+        comuna = self.request.GET.get('comuna')
+        if comuna:
+            qs = qs.filter(comuna_osm_id=comuna)
+            
+        # Filtros especiales de características
+        filtros_especiales = [
+            'delivery', 'takeout', 'dine_in', 'outdoor_seating', 'live_music', 
+            'allows_dogs', 'good_for_groups', 'good_for_children', 'serves_cocktails', 
+            'serves_wine', 'serves_coffee', 'serves_dessert',
+            'wheelchair_accessible_entrance', 'accepts_credit_cards'
+        ]
+        
+        for filtro in filtros_especiales:
+            valor = self.request.GET.get(filtro)
+            if valor == 'true':
+                qs = qs.filter(**{filtro: True})
+            
+        return qs
+    
+    def get_context_data(self, **kwargs):
+        """Contexto básico para la lista de lugares."""
+        context = super().get_context_data(**kwargs)
+        
+        # Información de filtros
+        tipo_actual = self.request.GET.get("tipo", "")
+        busqueda_actual = self.request.GET.get("q", "")
+        comuna_actual = self.request.GET.get("comuna", "")
+        
+        # Mapeo de tipos a títulos y descripciones
+        tipos_info = {
+            'restaurant': {
+                'titulo': 'Mejores Restaurantes en Medellín',
+                'descripcion': 'Descubre los sabores más auténticos de la gastronomía paisa y mundial',
+                'icono': 'bi-cup-hot'
+            },
+            'bar': {
+                'titulo': 'Mejores Bares y Discotecas en Medellín', 
+                'descripcion': 'Vive la mejor vida nocturna de la ciudad de la eterna primavera',
+                'icono': 'bi-cup-straw'
+            },
+            'cafe': {
+                'titulo': 'Mejores Cafeterías en Medellín',
+                'descripcion': 'Experimenta la auténtica cultura cafetera paisa',
+                'icono': 'bi-cup'
+            }
         }
         
-        return render(request, 'home.html', context)
+        # Detectar filtros especiales activos
+        filtros_activos = []
+        filtros_especiales_map = {
+            'delivery': 'con Delivery',
+            'takeout': 'Para Llevar',
+            'dine_in': 'Comer en Local',
+            'outdoor_seating': 'con Terraza',
+            'live_music': 'con Música en Vivo',
+            'allows_dogs': 'Pet Friendly',
+            'good_for_groups': 'Para Grupos',
+            'good_for_children': 'Para Niños',
+            'serves_cocktails': 'con Cócteles',
+            'serves_wine': 'con Vinos',
+            'serves_coffee': 'Café Especialidad',
+            'serves_dessert': 'con Postres',
+            'wheelchair_accessible_entrance': 'Accesibles',
+            'accepts_credit_cards': 'Aceptan Tarjetas',
+        }
         
-    except Exception as e:
-        print(f"Error en la vista home: {e}")
-        import traceback
-        traceback.print_exc()
-        # En caso de error, renderiza con datos mínimos
-        return render(request, 'home.html', {
-            'lugares_destacados': [],
-            'comuna_con_lugares': [],
-            'total_lugares': 17000,
-            'total_comunas': 22,
-        })
+        for filtro, nombre in filtros_especiales_map.items():
+            if self.request.GET.get(filtro) == 'true':
+                filtros_activos.append(nombre)
 
-def lugares_detail(request, slug):
-    """
-    Muestra la página de detalle de un lugar específico.
-    """
-    lugar = get_object_or_404(Places.objects.prefetch_related('fotos'), slug=slug)
-    comuna = lugar.comuna
+        # Obtener información de la comuna si está filtrada
+        comuna_info = None
+        if comuna_actual:
+            try:
+                comuna_info = RegionOSM.objects.get(osm_id=comuna_actual)
+            except RegionOSM.DoesNotExist:
+                pass
+
+        # Título y descripción dinámicos
+        if busqueda_actual:
+            titulo_pagina = f'Resultados para "{busqueda_actual}"'
+            descripcion_pagina = f'Lugares que coinciden con tu búsqueda en Medellín'
+        elif comuna_info and not tipo_actual and not filtros_activos:
+            # Cuando viene de "Ver todos" de una comuna específica
+            titulo_pagina = f'Los mejores lugares en {comuna_info.name}'
+            descripcion_pagina = f'Descubre los sitios más destacados de {comuna_info.name}'
+        elif comuna_info and tipo_actual and tipo_actual in tipos_info:
+            # Comuna + tipo específico
+            info = tipos_info[tipo_actual]
+            titulo_pagina = f'{info["titulo"].replace("en Medellín", f"en {comuna_info.name}")}'
+            if filtros_activos:
+                titulo_pagina += f' {" y ".join(filtros_activos[:2])}'
+            descripcion_pagina = f'{info["descripcion"]} en la zona de {comuna_info.name}'
+        elif comuna_info and filtros_activos:
+            # Comuna + filtros especiales
+            titulo_pagina = f'Lugares {" y ".join(filtros_activos[:2])} en {comuna_info.name}'
+            descripcion_pagina = f'Lugares especializados en {comuna_info.name} que cumplen tus criterios'
+        elif tipo_actual and tipo_actual in tipos_info:
+            # Solo tipo, sin comuna
+            info = tipos_info[tipo_actual]
+            titulo_pagina = info['titulo']
+            if filtros_activos:
+                titulo_pagina += f' {" y ".join(filtros_activos[:2])}'
+            descripcion_pagina = info['descripcion']
+        elif filtros_activos:
+            # Solo filtros especiales, sin comuna ni tipo
+            titulo_pagina = f'Lugares {" y ".join(filtros_activos[:2])} en Medellín'
+            descripcion_pagina = 'Lugares especializados que cumplen tus criterios de búsqueda'
+        else:
+            # Vista general sin filtros
+            titulo_pagina = 'Todos los Lugares en Medellín'
+            descripcion_pagina = 'Descubre los mejores sitios que ofrece la ciudad'
+        
+        # Obtener regiones para filtros
+        from django.db.models import Case, When, IntegerField
+        regiones_filtro = RegionOSM.objects.filter(
+            osm_id__in=Places.objects.filter(tiene_fotos=True).values_list('comuna_osm_id', flat=True).distinct()
+        ).annotate(
+            orden_area=Case(
+                When(name__icontains='Poblado', then=1),
+                When(name__icontains='Laureles', then=2),
+                default=3,
+                output_field=IntegerField()
+            )
+        ).order_by('orden_area', 'name')
+        
+        context.update({
+            "busqueda_actual": busqueda_actual,
+            "tipo_actual": tipo_actual,
+            "titulo_pagina": titulo_pagina,
+            "descripcion_pagina": descripcion_pagina,
+            "tipos_info": tipos_info,
+            "regiones_filtro": regiones_filtro,
+        })
+        return context
+
+
+
+
+
+class PlaceDetailView(DetailView, BasePlacesMixin):
+    """Vista detallada de un lugar con información completa y recomendaciones."""
+    template_name = "lugares/places_detail.html"
+    slug_field = "slug"
+    context_object_name = "lugar"
     
-    context = {
-        'lugar': lugar,
-        'comuna': comuna,
-    }
-    return render(request, 'lugares/places_detail.html', context)
+    def get_queryset(self):
+        """Queryset optimizado específicamente para vista de detalle."""
+        return Places.objects.filter(tiene_fotos=True).prefetch_related(
+            Prefetch('fotos', queryset=Foto.objects.only('imagen')[:5], to_attr='cached_fotos'),
+            Prefetch('tags', to_attr='cached_tags')
+        )
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        lugar = self.object
+        
+        # 🚀 PROGRESSIVE LOADING: Solo cargar info esencial inicialmente
+        
+        # Características del lugar (muy rápido - sin DB)
+        context['caracteristicas'] = self._get_caracteristicas(lugar)
+        
+        # Horarios formateados (muy rápido - solo procesamiento)
+        context['horarios'] = self._format_horarios(lugar)
+        
+        # 🎯 LAZY LOADING: Lugares relacionados se cargan con AJAX
+        # Esto reduce el tiempo inicial de ~2.2s a ~0.5s
+        context['lugares_cercanos'] = []
+        context['lugares_similares'] = []
+        context['lugares_misma_comuna'] = []
+        
+        # Meta data para AJAX loading
+        context['ajax_endpoints'] = {
+            'lugares_cercanos': f'/api/lugares/{lugar.slug}/cercanos/',
+            'lugares_similares': f'/api/lugares/{lugar.slug}/similares/',
+            'lugares_comuna': f'/api/lugares/{lugar.slug}/comuna/',
+        }
+        
+        return context
+    
+    def _get_lugares_cercanos(self, lugar, distance=500, limit=3):
+        """Obtener lugares cercanos con caché y optimización geoespacial."""
+        if not lugar.ubicacion:
+            return []
+            
+        cache_key = f"nearby_optimized_{lugar.id}_{distance}_{limit}"
+        result = cache.get(cache_key)
+        
+        if result is None:
+            # Optimización 1: Reducir distancia de 1000m a 500m
+            # Optimización 2: Usar select_related para comuna
+            # Optimización 3: Usar only() para limitar campos
+            # Optimización 4: Reducir límite de 5 a 3
+            result = list(Places.objects.filter(
+                tiene_fotos=True,
+                ubicacion__distance_lte=(lugar.ubicacion, distance)
+            ).exclude(
+                id=lugar.id
+            ).only(
+                'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo', 'comuna_osm_id'
+            ).prefetch_related(
+                Prefetch('fotos', queryset=Foto.objects.only('imagen')[:1], to_attr='cached_fotos')
+            ).order_by('-rating')[:limit])  # Orden por rating en lugar de aleatorio
+            
+            cache.set(cache_key, result, 3600)  # 1 hora de caché
+        
+        return result
+    
+    def _get_lugares_similares(self, lugar, limit=3):
+        """Obtener lugares relacionados por tags compartidos."""
+        cache_key = f"related_tags_optimized_{lugar.id}_{limit}"
+        result = cache.get(cache_key)
+        
+        if result is None:
+            # Optimización: Usar select_related y limitar las consultas de tags
+            tags = list(lugar.tags.values_list('id', flat=True)[:5])  # Máximo 5 tags
+            if not tags:
+                # Si no hay tags, buscar por tipo similar
+                result = list(Places.objects.filter(
+                    tiene_fotos=True,
+                    tipo=lugar.tipo
+                                 ).exclude(
+                     id=lugar.id
+                 ).only(
+                     'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo'
+                 ).prefetch_related(
+                     Prefetch('fotos', queryset=Foto.objects.only('imagen')[:1], to_attr='cached_fotos')
+                 ).order_by('-rating')[:limit])
+            else:
+                result = list(Places.objects.filter(
+                    tiene_fotos=True,
+                    tags__id__in=tags
+                ).exclude(
+                    id=lugar.id
+                ).only(
+                    'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo'
+                ).prefetch_related(
+                    Prefetch('fotos', queryset=Foto.objects.only('imagen')[:1], to_attr='cached_fotos')
+                ).distinct().order_by('-rating')[:limit])
+            
+            cache.set(cache_key, result, 3600)  # 1 hora de caché
+        
+        return result
+    
+    def _get_lugares_misma_comuna(self, lugar):
+        """Obtener otros lugares de la misma comuna."""
+        if not lugar.comuna_osm_id:
+            return []
+            
+        cache_key = f"comuna_optimized_{lugar.comuna_osm_id}_{lugar.id}"
+        result = cache.get(cache_key)
+        
+        if result is None:
+            result = list(Places.objects.filter(
+                tiene_fotos=True,
+                comuna_osm_id=lugar.comuna_osm_id
+            ).exclude(
+                id=lugar.id
+            ).only(
+                'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo'
+            ).prefetch_related(
+                Prefetch('fotos', queryset=Foto.objects.only('imagen')[:1], to_attr='cached_fotos')
+            ).order_by('-rating')[:3])  # Reducir de 5 a 3
+            
+            cache.set(cache_key, result, 3600)  # 1 hora de caché
+        
+        return result
+    
+    def _get_caracteristicas(self, lugar):
+        """Obtener características del lugar para mostrar en UI."""
+        caracteristicas = []
+        
+        # Servicios
+        if lugar.takeout:
+            caracteristicas.append({'icon': 'bi-bag', 'name': 'Para llevar'})
+        
+        if lugar.delivery:
+            caracteristicas.append({'icon': 'bi-bicycle', 'name': 'Entrega a domicilio'})
+        
+        if lugar.dine_in:
+            caracteristicas.append({'icon': 'bi-cup-hot', 'name': 'Servicio en mesa'})
+        
+        # Pagos
+        if lugar.accepts_credit_cards:
+            caracteristicas.append({'icon': 'bi-credit-card', 'name': 'Tarjetas de crédito'})
+        
+        # Accesibilidad
+        if lugar.wheelchair_accessible_entrance:
+            caracteristicas.append({'icon': 'bi-universal-access', 'name': 'Acceso para sillas de ruedas'})
+        
+        # Otros servicios
+        if lugar.outdoor_seating:
+            caracteristicas.append({'icon': 'bi-tree', 'name': 'Terraza al aire libre'})
+        
+        if lugar.good_for_children:
+            caracteristicas.append({'icon': 'bi-people', 'name': 'Apto para niños'})
+        
+        if lugar.allows_dogs:
+            caracteristicas.append({'icon': 'bi-emoji-smile', 'name': 'Admite mascotas'})
+        
+        return caracteristicas
+    
+    def _format_horarios(self, lugar):
+        """Formatear horarios para mostrar en UI."""
+        if not lugar.horario_json:
+            return []
+        
+        dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+        horarios = []
+        
+        try:
+            for i, dia in enumerate(dias):
+                key = str(i)
+                if key in lugar.horario_json:
+                    horario = lugar.horario_json[key]
+                    if horario:
+                        horarios.append({
+                            'dia': dia,
+                            'horario': horario
+                        })
+                    else:
+                        horarios.append({
+                            'dia': dia,
+                            'horario': 'Cerrado'
+                        })
+        except (TypeError, KeyError):
+            pass
+        
+        return horarios
+
+
+class PlaceReviewsView(DetailView):
+    """Vista para mostrar y gestionar reseñas de un lugar."""
+    model = Places
+    template_name = "lugares/reviews_lugar.html"
+    slug_field = "slug"
+    context_object_name = "lugar"
+    
+    def get_queryset(self):
+        return Places.objects.filter(tiene_fotos=True).prefetch_related(
+            Prefetch('fotos', queryset=Foto.objects.only('imagen'), to_attr='cached_fotos')
+        )
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        lugar = self.object
+        
+        # Procesar reviews desde JSON
+        reviews = []
+        if lugar.reviews:
+            try:
+                for review in lugar.reviews:
+                    # Procesar el texto de la review correctamente
+                    texto_review = review.get('text', '')
+                    if isinstance(texto_review, dict):
+                        # Si el texto viene como dict, tomar el valor del texto
+                        texto_review = texto_review.get('text', '') if texto_review else ''
+                    elif isinstance(texto_review, list):
+                        # Si viene como lista, unir todos los elementos
+                        texto_review = ' '.join(str(item) for item in texto_review if item)
+                    
+                    # Limpiar y formatear el texto
+                    if texto_review:
+                        texto_review = str(texto_review).strip()
+                        # Remover caracteres de escape y formatear
+                        texto_review = texto_review.replace('\\n', '\n').replace('\\r', '\r')
+                        texto_review = texto_review.replace('\\"', '"').replace("\\'", "'")
+                    
+                    # Procesar fecha (preferir publishTime sobre time)
+                    fecha_review = review.get('publishTime', '') or review.get('time', '') or review.get('relativePublishTimeDescription', '')
+                    if fecha_review and str(fecha_review).isdigit():
+                        try:
+                            from datetime import datetime
+                            fecha_review = datetime.fromtimestamp(int(fecha_review)).strftime('%d/%m/%Y')
+                        except:
+                            fecha_review = 'Fecha no disponible'
+                    elif not fecha_review:
+                        fecha_review = 'Fecha no disponible'
+                    
+                    # Procesar autor (preferir authorAttribution sobre author_name)
+                    autor_review = 'Anónimo'
+                    if review.get('authorAttribution'):
+                        author_attr = review['authorAttribution']
+                        if isinstance(author_attr, dict):
+                            autor_review = author_attr.get('displayName', 'Anónimo')
+                        else:
+                            autor_review = str(author_attr)
+                    elif review.get('author_name'):
+                        autor_review = review['author_name']
+                    
+                    reviews.append({
+                        'autor': autor_review,
+                        'rating': int(review.get('rating', 0)) if review.get('rating') else 0,
+                        'texto': texto_review,
+                        'fecha': fecha_review,
+                        'foto_perfil': review.get('profile_photo_url', '')
+                    })
+            except (AttributeError, TypeError) as e:
+                print(f"Error procesando reviews: {e}")
+                pass
+        
+        context['reviews'] = reviews
+        context['rating_promedio'] = lugar.rating
+        context['total_reviews'] = lugar.total_reviews or len(reviews)
+        
+        return context
+
+
+# ────────────────────────────────────────────────────────────────────────
+# Funciones de Vista
+# ────────────────────────────────────────────────────────────────────────
+
+@cache_page(60 * 60)  # 1 hora de caché de página completa - OPTIMIZADO
+def home(request):
+    """Vista de inicio que usa HomeView OPTIMIZADA."""
+    view = HomeView.as_view()
+    return view(request)
 
 
 def lugares_list(request):
-    """
-    Vista principal que muestra la lista de lugares con búsqueda y filtros.
-    """
-    from .models import PLACE_TYPE_CHOICES
+    """Vista de lista de lugares que usa PlacesListView."""
+    view = PlacesListView.as_view()
+    return view(request)
+
+
+def lugares_detail(request, slug):
+    """Vista de detalle de lugar que usa PlaceDetailView."""
+    view = PlaceDetailView.as_view()
+    return view(request, slug=slug)
+
+
+def reviews_lugar(request, slug):
+    """Vista de reseñas de lugar que usa PlaceReviewsView."""
+    view = PlaceReviewsView.as_view()
+    return view(request, slug=slug)
+
+
+def lugares_por_comuna(request, comuna_slug):
+    """Vista de lugares filtrada por comuna usando slug SEO-friendly."""
     
-    # Obtener todos los lugares
-    lugares_queryset = Places.objects.prefetch_related(
-        Prefetch('fotos', queryset=Foto.objects.only('imagen'), to_attr='cached_fotos')
-    ).select_related().order_by('-rating', '-total_reviews')
+    # Obtener la región por slug
+    try:
+        # Buscar región por slug directo (método principal)
+        region = RegionOSM.objects.filter(slug=comuna_slug).first()
+        
+        if not region:
+            # Fallback: buscar por nombre convertido a slug
+            region = RegionOSM.objects.filter(
+                name__icontains=comuna_slug.replace('-', ' ')
+            ).first()
+        
+        if not region:
+            # Si no se encuentra la región, usar la vista normal con mensaje
+            from django.shortcuts import render
+            return render(request, 'lugares/places_list.html', {
+                'lugares': [],
+                'titulo_pagina': 'Comuna no encontrada',
+                'descripcion_pagina': f'No se encontró información para "{comuna_slug}"',
+                'regiones_filtro': RegionOSM.objects.all()[:20]
+            })
+            
+    except Exception:
+        from django.shortcuts import render
+        return render(request, 'lugares/places_list.html', {
+            'lugares': [],
+            'titulo_pagina': 'Error',
+            'descripcion_pagina': 'Error al buscar la comuna',
+            'regiones_filtro': RegionOSM.objects.all()[:20]
+        })
     
-    # Filtro por búsqueda
-    query = request.GET.get('q', '')
-    if query:
-        lugares_queryset = lugares_queryset.filter(
-            Q(nombre__icontains=query) | 
-            Q(direccion__icontains=query) |
-            Q(tipo__icontains=query)
-        )
+    # Crear una versión personalizada de PlacesListView con filtro de comuna
+    class LugaresPorComunaView(PlacesListView):
+        def get_queryset(self):
+            # Queryset base filtrado por comuna
+            qs = Places.objects.filter(
+                tiene_fotos=True,
+                comuna_osm_id=region.osm_id
+            ).prefetch_related('fotos').order_by('-rating', 'nombre')
+            
+            # Aplicar filtros adicionales de la URL
+            q = self.request.GET.get("q")
+            if q:
+                qs = qs.filter(nombre__icontains=q)
+            
+            tipo = self.request.GET.get('tipo')
+            if tipo:
+                qs = qs.filter(tipo=tipo)
+
+            # Filtros especiales
+            filtros_especiales = [
+                'delivery', 'takeout', 'dine_in', 'outdoor_seating', 'live_music', 
+                'allows_dogs', 'good_for_groups', 'good_for_children', 'serves_cocktails', 
+                'serves_wine', 'serves_coffee', 'serves_dessert',
+                'wheelchair_accessible_entrance', 'accepts_credit_cards'
+            ]
+            
+            for filtro in filtros_especiales:
+                valor = self.request.GET.get(filtro)
+                if valor == 'true':
+                    qs = qs.filter(**{filtro: True})
+                
+            return qs
+        
+        def get_context_data(self, **kwargs):
+            context = super().get_context_data(**kwargs)
+            
+            # Información de filtros actuales
+            tipo_actual = self.request.GET.get("tipo", "")
+            busqueda_actual = self.request.GET.get("q", "")
+            
+            # Mapeo de tipos para comuna específica
+            tipos_info = {
+                'restaurant': {
+                    'titulo': f'Mejores Restaurantes en {region.name}',
+                    'descripcion': f'Descubre los sabores más auténticos en {region.name}',
+                    'icono': 'bi-cup-hot'
+                },
+                'bar': {
+                    'titulo': f'Mejores Bares en {region.name}', 
+                    'descripcion': f'Vive la mejor vida nocturna en {region.name}',
+                    'icono': 'bi-cup-straw'
+                },
+                'cafe': {
+                    'titulo': f'Mejores Cafeterías en {region.name}',
+                    'descripcion': f'Experimenta la cultura cafetera en {region.name}',
+                    'icono': 'bi-cup'
+                }
+            }
+            
+            # Detectar filtros especiales activos
+            filtros_activos = []
+            filtros_especiales_map = {
+                'delivery': 'con Delivery', 'takeout': 'Para Llevar', 
+                'dine_in': 'Comer en Local', 'outdoor_seating': 'con Terraza',
+                'live_music': 'con Música en Vivo', 'allows_dogs': 'Pet Friendly',
+                'good_for_groups': 'Para Grupos', 'good_for_children': 'Para Niños',
+                'serves_cocktails': 'con Cócteles', 'serves_wine': 'con Vinos',
+                'serves_coffee': 'Café Especialidad', 'serves_dessert': 'con Postres',
+                'wheelchair_accessible_entrance': 'Accesibles',
+                'accepts_credit_cards': 'Aceptan Tarjetas',
+            }
+            
+            for filtro, nombre in filtros_especiales_map.items():
+                if self.request.GET.get(filtro) == 'true':
+                    filtros_activos.append(nombre)
+
+            # Título dinámico para comuna específica
+            if busqueda_actual:
+                titulo_pagina = f'Resultados para "{busqueda_actual}" en {region.name}'
+                descripcion_pagina = f'Lugares que coinciden con tu búsqueda en {region.name}'
+            elif tipo_actual and tipo_actual in tipos_info:
+                info = tipos_info[tipo_actual]
+                titulo_pagina = info['titulo']
+                if filtros_activos:
+                    titulo_pagina += f' {" y ".join(filtros_activos[:2])}'
+                descripcion_pagina = info['descripcion']
+            elif filtros_activos:
+                titulo_pagina = f'Lugares {" y ".join(filtros_activos[:2])} en {region.name}'
+                descripcion_pagina = f'Lugares especializados en {region.name} que cumplen tus criterios'
+            else:
+                titulo_pagina = f'Los mejores lugares en {region.name}'
+                descripcion_pagina = f'Descubre los sitios más destacados de {region.name}'
+            
+            # Actualizar contexto
+            context.update({
+                "titulo_pagina": titulo_pagina,
+                "descripcion_pagina": descripcion_pagina,
+                "region_actual": region,
+                "comuna_slug": comuna_slug,
+            })
+            
+            return context
     
-    # Filtro por tipo
-    tipo_filter = request.GET.get('tipo', '')
-    if tipo_filter:
-        lugares_queryset = lugares_queryset.filter(tipo=tipo_filter)
-    
-    # Paginación
-    paginator = Paginator(lugares_queryset, 12)  # 12 lugares por página
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
-    # Agregar is_paginated para compatibilidad con template
-    is_paginated = page_obj.has_other_pages()
-    
-    context = {
-        'lugares': page_obj,  # El template espera la lista en 'lugares'
-        'page_obj': page_obj,  # También proporcionar page_obj para paginación
-        'is_paginated': is_paginated,
-        'query': query,
-        'tipo_choices': PLACE_TYPE_CHOICES,
-        'tipo_filter': tipo_filter,
-    }
-    
-    return render(request, 'lugares/places_list.html', context)
+    # Usar la vista personalizada
+    view = LugaresPorComunaView.as_view()
+    return view(request)
 
 
-
-
-
-
-
-
-
-
-
-#vistas AJAX 
 @require_GET
 def autocomplete_places_view(request):
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        term = request.GET.get('term', '')
-        resultados = Places.objects.filter(nombre__icontains=term).order_by('nombre')[:10]
-        data = [
-            {'label': lugar.nombre, 'value': lugar.nombre, 'slug': lugar.slug}
-            for lugar in resultados
-        ]
-        return JsonResponse(data, safe=False)
-    return JsonResponse([], safe=False)
+    """API para autocompletar lugares."""
+    from django.http import JsonResponse
+    
+    term = request.GET.get('term', '')
+    if not term or len(term) < 2:
+        return JsonResponse([], safe=False)
+    
+    lugares = Places.objects.filter(
+        tiene_fotos=True
+    ).filter(
+        Q(nombre__icontains=term) | 
+        Q(direccion__icontains=term)
+    ).values('nombre', 'slug', 'tipo')[:10]
+    
+    results = []
+    for lugar in lugares:
+        results.append({
+            'label': f"{lugar['nombre']} ({lugar['tipo']})",
+            'value': lugar['nombre'],
+            'slug': lugar['slug']
+        })
+    
+    return JsonResponse(results, safe=False) 
 
 
 @require_GET
-def lugares_destacados(request):
-    """Obtiene los mejores lugares destacados para mostrar en el mapa inicial"""
+def filtros_ajax_view(request):
+    """API AJAX para filtros combinados del home."""
+    from django.http import JsonResponse
+    
+    # Obtener parámetros
+    area_id = request.GET.get('area')
+    categoria = request.GET.get('categoria') 
+    caracteristica = request.GET.get('caracteristica')
+    
+    if not all([area_id, categoria]):
+        return JsonResponse({
+            'error': 'Se requieren área y categoría. La característica es opcional.'
+        }, status=400)
+    
     try:
-        cache_key = "featured_places_v1"
-        cached = cache.get(cache_key)
-        if cached:
-            return JsonResponse({'success': True, 'lugares': cached})
-
-        lugares_destacados = (
-            Places.objects.only(
-                'id', 'nombre', 'ubicacion', 'slug', 'tipo', 'rating', 'total_reviews', 'direccion'
-            )
-            .filter(rating__gte=4.0)
-            .annotate(review_count=Count('reviews'))
-            .filter(review_count__gte=5)
-            .order_by('-rating', '-review_count')[:15]
-            .prefetch_related(
-                Prefetch('fotos', queryset=Foto.objects.only('imagen'), to_attr='cached_fotos')
-            )
-        )
+        # Construir queryset base
+        qs = Places.objects.filter(tiene_fotos=True)
         
-        lugares_data = []
-        for lugar in lugares_destacados:
-            cached_fotos = getattr(lugar, 'cached_fotos', [])
-            primera_foto = cached_fotos[0] if cached_fotos else None
+        # Aplicar filtros
+        if area_id != 'all':
+            qs = qs.filter(comuna_osm_id=area_id)
             
-            image_url = static('img/placeholder.jpg')
-            if primera_foto and primera_foto.imagen:
-                image_url = primera_foto.imagen
-
-            lugares_data.append({
-                "id": lugar.id,
-                "nombre": lugar.nombre,
-                "lat": lugar.ubicacion.y,
-                "lng": lugar.ubicacion.x,
-                "slug": lugar.slug,
-                "tipo": lugar.tipo,
-                "rating": float(lugar.rating) if lugar.rating else None,
-                "total_reviews": lugar.review_count,
-                "direccion": lugar.direccion,
-                "imagen": image_url,
-                "distance": None
+        if categoria != 'all':
+            qs = qs.filter(tipo=categoria)
+            
+        if caracteristica and caracteristica != 'all':
+            qs = qs.filter(**{caracteristica: True})
+        
+        # Obtener resultados con prefetch
+        lugares = qs.prefetch_related('fotos').order_by('-rating', 'nombre')[:12]
+        
+        # Formatear datos para JSON
+        resultados = []
+        for lugar in lugares:
+            primera_foto = lugar.fotos.first()
+            resultados.append({
+                'nombre': lugar.nombre,
+                'slug': lugar.slug,
+                'rating': lugar.rating or 0.0,
+                'total_reviews': lugar.total_reviews or 0,
+                'tipo': lugar.get_tipo_display(),
+                'imagen': primera_foto.imagen if primera_foto else None,
+                'es_destacado': lugar.es_destacado,
+                'es_exclusivo': lugar.es_exclusivo,
+                'url': f"/lugares/{lugar.slug}/" if lugar.slug else None
             })
         
-        # Cachear resultado por 10 minutos
-        cache.set(cache_key, lugares_data, 600)
-
-        return JsonResponse({'success': True, 'lugares': lugares_data})
+        # Obtener información del área
+        area_info = None
+        if area_id != 'all':
+            try:
+                region = RegionOSM.objects.get(osm_id=area_id)
+                area_info = {
+                    'nombre': region.name,
+                    'osm_id': region.osm_id,
+                    'slug': region.slug
+                }
+            except RegionOSM.DoesNotExist:
+                pass
+        
+        return JsonResponse({
+            'success': True,
+            'total': len(resultados),
+            'lugares': resultados,
+            'area_info': area_info,
+            'filtros_aplicados': {
+                'area': area_id,
+                'categoria': categoria,
+                'caracteristica': caracteristica
+            }
+        })
         
     except Exception as e:
-        # For debugging purposes
-        import traceback
-        traceback.print_exc()
         return JsonResponse({
-            'success': False,
-            'error': 'Error al cargar lugares destacados',
-            'message': str(e)
+            'error': f'Error en la búsqueda: {str(e)}'
         }, status=500)
 
 
-# ======================================================
-# VISTA ADMINISTRATIVA DEL MAPA
-# ======================================================
-
-def admin_mapa_regiones(request):
-    """Vista de mapa simple para visualización de las Zonas Cubiertas y puntos guardados."""
-    zonas_cubiertas = ZonaCubierta.objects.all()
-    file_path = os.path.join(settings.BASE_DIR, 'coordenadas_guardadas.json')
+@require_GET
+def lugares_cercanos_ajax_view(request):
+    """API AJAX para lugares cercanos basados en geolocalización."""
+    from django.http import JsonResponse
+    from django.contrib.gis.geos import Point
+    from django.contrib.gis.measure import D  # Para distancias
+    from django.db import models
+    from django.db.models import functions
     
-    # Preparar datos de zonas cubiertas
-    zonas_data = [
-        {'geometry': json.loads(z.poligono.geojson)}
-        for z in zonas_cubiertas if z.poligono
-    ]
-    
-    # Cargar los puntos guardados desde el archivo GeoJSON
-    puntos_guardados_geojson = {'type': 'FeatureCollection', 'features': []}
-    if os.path.exists(file_path):
-        with open(file_path, 'r') as f:
-            try:
-                puntos_guardados_geojson = json.load(f)
-            except json.JSONDecodeError:
-                pass  # Si el archivo está corrupto o vacío, se ignora
-    
-    context = {
-        'zonas_cubiertas_json': json.dumps(zonas_data),
-        'puntos_guardados_json': json.dumps(puntos_guardados_geojson),
-    }
-    
-    return render(request, "lugares/admin_mapa_regiones.html", context)
-
-
-@require_GET 
-def ejecutar_fetch_lugares(request):
-    """Vista AJAX simple para ejecutar el script fetch_nearby_places_v2.py"""
-    if not request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse({'error': 'Solo requests AJAX'}, status=400)
-    
+    # Obtener coordenadas
     lat = request.GET.get('lat')
     lng = request.GET.get('lng')
+    radio = request.GET.get('radio', '0.8')  # Radio por defecto 800m
     
     if not lat or not lng:
-        return JsonResponse({'error': 'Faltan coordenadas lat/lng'}, status=400)
-    
-    try:
-        import subprocess
-        import os
-        from django.conf import settings
-        
-        # Imprimir en terminal del servidor al iniciar
-        print(f"\n{'='*60}")
-        print(f"🚀 EJECUTANDO SCRIPT EN COORDENADAS: {lat}, {lng}")
-        print(f"{'='*60}")
-        
-        # Ejecutar el script con output en tiempo real
-        process = subprocess.Popen([
-            'python', 'manage.py', 'fetch_nearby_places_v2', 
-            '--lat', str(lat), 
-            '--lng', str(lng)
-        ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, 
-           text=True, cwd=settings.BASE_DIR, bufsize=1, universal_newlines=True)
-        
-        # Mostrar output línea por línea en tiempo real
-        if process.stdout:
-            for line in iter(process.stdout.readline, ''):
-                if line:
-                    print(line.rstrip())  # Imprimir cada línea inmediatamente
-        
-        # Esperar a que termine el proceso
-        process.wait()
-        
-        # Imprimir resultado final en terminal
-        print(f"{'='*60}")
-        if process.returncode == 0:
-            print(f"✅ SCRIPT COMPLETADO EXITOSAMENTE")
-            response_data = {
-                'success': True, 
-                'message': f'Script ejecutado exitosamente en {lat}, {lng}',
-                'note': 'Ver logs en terminal del servidor'
-            }
-        else:
-            print(f"❌ SCRIPT TERMINÓ CON ERRORES (código: {process.returncode})")
-            response_data = {
-                'success': False, 
-                'error': f'Script terminó con código de error: {process.returncode}',
-                'note': 'Ver detalles en terminal del servidor'
-            }
-        
-        print(f"{'='*60}\n")
-        return JsonResponse(response_data)
-            
-    except Exception as e:
-        print(f"\n❌ ERROR AL EJECUTAR SCRIPT: {str(e)}\n")
-        return JsonResponse({'success': False, 'error': f'Error: {str(e)}'})
-
-def guardar_coordenada_view(request):
-    """
-    Vista AJAX para guardar una coordenada clickeada en un archivo GeoJSON.
-    """
-    if not request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.method != 'POST':
-        return JsonResponse({'error': 'Petición inválida'}, status=400)
-
-    try:
-        data = json.loads(request.body)
-        lat = float(data.get('lat'))
-        lng = float(data.get('lng'))
-    except (json.JSONDecodeError, TypeError, ValueError):
-        return JsonResponse({'error': 'Datos de coordenadas inválidos'}, status=400)
-
-    file_path = os.path.join(settings.BASE_DIR, 'coordenadas_guardadas.json')
-    
-    try:
-        # Estructura base de un GeoJSON FeatureCollection
-        geojson_data = {'type': 'FeatureCollection', 'features': []}
-        
-        if os.path.exists(file_path):
-            with open(file_path, 'r') as f:
-                try:
-                    existing_data = json.load(f)
-                    # Comprobar si es un GeoJSON válido o el formato antiguo (una lista)
-                    if isinstance(existing_data, dict) and existing_data.get('type') == 'FeatureCollection':
-                        geojson_data = existing_data
-                    elif isinstance(existing_data, list):
-                        # Convertir el formato antiguo a GeoJSON
-                        for item in existing_data:
-                            feature = {
-                                'type': 'Feature',
-                                'properties': {'timestamp': item.get('timestamp')},
-                                'geometry': {
-                                    'type': 'Point',
-                                    'coordinates': [item.get('lng'), item.get('lat')]
-                                }
-                            }
-                            geojson_data['features'].append(feature)
-                except json.JSONDecodeError:
-                    # El archivo está vacío o corrupto, se sobrescribirá
-                    pass
-        
-        # Crear la nueva 'Feature' para la coordenada
-        new_feature = {
-            'type': 'Feature',
-            'properties': {'timestamp': time.time()},
-            'geometry': {
-                'type': 'Point',
-                'coordinates': [lng, lat]  # GeoJSON usa [longitud, latitud]
-            }
-        }
-        geojson_data['features'].append(new_feature)
-        
-        # Guardar el archivo GeoJSON actualizado
-        with open(file_path, 'w') as f:
-            json.dump(geojson_data, f, indent=2)
-            
         return JsonResponse({
-            'success': True, 
-            'message': f'Coordenada ({lat}, {lng}) guardada en GeoJSON. Total: {len(geojson_data["features"])}.'
+            'error': 'Se requieren las coordenadas de latitud y longitud'
+        }, status=400)
+    
+    try:
+        # Convertir a float y validar
+        lat = float(lat)
+        lng = float(lng)
+        radio = float(radio)
+        
+        # Validar rango de coordenadas (aproximado para Medellín)
+        if not (5.0 <= lat <= 7.0) or not (-76.0 <= lng <= -74.0):
+            return JsonResponse({
+                'error': 'Las coordenadas parecen estar fuera del área de Medellín'
+            }, status=400)
+        
+        # Crear punto de ubicación del usuario
+        user_location = Point(lng, lat, srid=4326)
+        
+        # Buscar lugares cercanos - enfoque simplificado
+        from django.contrib.gis.db.models.functions import Distance
+        
+        lugares_cercanos = Places.objects.filter(
+            tiene_fotos=True,
+            ubicacion__distance_lte=(user_location, D(km=radio))
+        ).prefetch_related('fotos').annotate(
+            distancia_metros=Distance('ubicacion', user_location)
+        ).order_by('distancia_metros', '-rating')[:15]
+        
+        # Formatear resultados
+        resultados = []
+        for lugar in lugares_cercanos:
+            primera_foto = lugar.fotos.first()
+            resultados.append({
+                'nombre': lugar.nombre,
+                'slug': lugar.slug,
+                'rating': lugar.rating or 0.0,
+                'total_reviews': lugar.total_reviews or 0,
+                'tipo': lugar.get_tipo_display(),
+                'imagen': primera_foto.imagen if primera_foto else None,
+                'es_destacado': lugar.es_destacado,
+                'es_exclusivo': lugar.es_exclusivo,
+                'url': f"/lugares/{lugar.slug}/" if lugar.slug else None,
+                'distancia': round(lugar.distancia_metros.km, 2) if hasattr(lugar, 'distancia_metros') and lugar.distancia_metros else None,
+                'direccion': lugar.direccion
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'total': len(resultados),
+            'lugares': resultados,
+            'ubicacion_usuario': {
+                'lat': lat,
+                'lng': lng,
+                'radio': radio
+            },
+            'mensaje': f'Encontramos {len(resultados)} lugares en un radio de {int(radio * 1000)}m' if radio < 1 else f'Encontramos {len(resultados)} lugares en un radio de {radio}km'
+        })
+        
+    except ValueError:
+        return JsonResponse({
+            'error': 'Las coordenadas proporcionadas no son válidas'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'error': f'Error al buscar lugares cercanos: {str(e)}'
+        }, status=500)
+
+
+# ────────────────────────────────────────────────────────────────────────
+# Newsletter Views
+# ────────────────────────────────────────────────────────────────────────
+
+def get_client_ip(request):
+    """Obtiene la IP real del cliente."""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+@require_POST
+def newsletter_subscribe(request):
+    """Vista para manejar suscripciones al newsletter."""
+    try:
+        # Obtener datos del POST
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+        else:
+            data = request.POST
+
+        email = data.get('email', '').strip().lower()
+        nombre = data.get('nombre', '').strip()
+
+        # Validar email
+        if not email:
+            return JsonResponse({
+                'success': False,
+                'error': 'El email es requerido'
+            }, status=400)
+
+        try:
+            validate_email(email)
+        except ValidationError:
+            return JsonResponse({
+                'success': False,
+                'error': 'El formato del email no es válido'
+            }, status=400)
+
+        # Obtener información adicional
+        ip_address = get_client_ip(request)
+        user_agent = request.META.get('HTTP_USER_AGENT', '')[:255]  # Limitar tamaño
+
+        # Verificar si ya existe
+        existing_subscription = NewsletterSubscription.objects.filter(email=email).first()
+        
+        if existing_subscription:
+            if existing_subscription.activo:
+                return JsonResponse({
+                    'success': True,
+                    'message': '¡Ya estás suscrito! Gracias por tu interés en Medellín Explorer.',
+                    'status': 'already_subscribed'
+                })
+            else:
+                # Reactivar suscripción
+                existing_subscription.reactivar()
+                return JsonResponse({
+                    'success': True,
+                    'message': '¡Hemos reactivado tu suscripción! Pronto recibirás nuestras recomendaciones.',
+                    'status': 'reactivated'
+                })
+
+        # Crear nueva suscripción
+        subscription = NewsletterSubscription.objects.create(
+            email=email,
+            nombre=nombre,
+            ip_address=ip_address,
+            user_agent=user_agent,
+            fuente='website_footer'
+        )
+
+        # En un entorno de producción, aquí enviarías un email de confirmación
+        # send_confirmation_email(subscription)
+
+        return JsonResponse({
+            'success': True,
+            'message': '¡Gracias por suscribirte! Te mantendremos informado sobre los mejores lugares de Medellín.',
+            'status': 'new_subscription',
+            'subscription_id': subscription.id
         })
 
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'error': 'Datos JSON inválidos'
+        }, status=400)
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        return JsonResponse({
+            'success': False,
+            'error': f'Error interno del servidor: {str(e)}'
+        }, status=500)
+
+@require_GET
+def newsletter_confirm(request, token):
+    """Vista para confirmar suscripción via email."""
+    try:
+        subscription = get_object_or_404(
+            NewsletterSubscription, 
+            token_confirmacion=token,
+            activo=True
+        )
+        
+        if subscription.confirmado:
+            return render(request, 'newsletter/already_confirmed.html', {
+                'subscription': subscription
+            })
+        
+        subscription.confirmar_suscripcion()
+        
+        return render(request, 'newsletter/confirmation_success.html', {
+            'subscription': subscription
+        })
+        
+    except Exception as e:
+        return render(request, 'newsletter/confirmation_error.html', {
+            'error': str(e)
+        })
+
+@require_GET
+def newsletter_unsubscribe(request, token):
+    """Vista para dar de baja del newsletter."""
+    try:
+        subscription = get_object_or_404(
+            NewsletterSubscription, 
+            token_confirmacion=token
+        )
+        
+        subscription.desactivar()
+        
+        return render(request, 'newsletter/unsubscribe_success.html', {
+            'subscription': subscription
+        })
+        
+    except Exception as e:
+        return render(request, 'newsletter/unsubscribe_error.html', {
+            'error': str(e)
+        })
+
+@require_GET
+def newsletter_stats(request):
+    """Vista para estadísticas del newsletter (solo para staff)."""
+    if not request.user.is_staff:
+        return JsonResponse({
+            'error': 'Acceso denegado'
+        }, status=403)
+    
+    stats = {
+        'total_suscriptores': NewsletterSubscription.total_suscriptores(),
+        'suscriptores_activos': NewsletterSubscription.objects.filter(activo=True).count(),
+        'suscriptores_confirmados': NewsletterSubscription.objects.filter(confirmado=True).count(),
+        'suscriptores_pendientes': NewsletterSubscription.objects.filter(
+            activo=True, 
+            confirmado=False
+        ).count(),
+        'suscripciones_hoy': NewsletterSubscription.objects.filter(
+            fecha_suscripcion__date=timezone.now().date()
+        ).count(),
+    }
+    
+    return JsonResponse(stats)
 
 
+# ────────────────────────────────────────────────────────────────────────
+# AJAX Views para Progressive Loading de Lugares Relacionados
+# ────────────────────────────────────────────────────────────────────────
 
-# ======================================================
-# VISTAS DUMMY PARA COMPATIBILIDAD CON TEMPLATES
-# ======================================================
+@require_GET
+def lugares_cercanos_ajax(request, slug):
+    """AJAX endpoint para cargar lugares cercanos."""
+    try:
+        lugar = Places.objects.filter(tiene_fotos=True, slug=slug).first()
+        if not lugar:
+            return JsonResponse({'error': 'Lugar no encontrado'}, status=404)
+        
+        view = PlaceDetailView()
+        lugares_cercanos = view._get_lugares_cercanos(lugar) if lugar.ubicacion else []
+        
+        # Serializar lugares
+        data = []
+        for lugar_cercano in lugares_cercanos:
+            data.append({
+                'id': lugar_cercano.id,
+                'nombre': lugar_cercano.nombre,
+                'slug': lugar_cercano.slug,
+                'tipo': lugar_cercano.get_tipo_display(),
+                'rating': lugar_cercano.rating,
+                'es_destacado': lugar_cercano.es_destacado,
+                'es_exclusivo': lugar_cercano.es_exclusivo,
+                'imagen': lugar_cercano.cached_fotos[0].imagen if lugar_cercano.cached_fotos else None,
+            })
+        
+        return JsonResponse({'lugares': data})
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
-def acerca_view(request):
-    """Vista dummy para la página acerca que redirige a home"""
-    return redirect('explorer:home')
 
-def perfil_dummy(request):
-    """Vista dummy para perfil que redirige a home"""
-    return redirect('explorer:home')
+@require_GET  
+def lugares_similares_ajax(request, slug):
+    """AJAX endpoint para cargar lugares similares."""
+    try:
+        lugar = Places.objects.filter(tiene_fotos=True, slug=slug).first()
+        if not lugar:
+            return JsonResponse({'error': 'Lugar no encontrado'}, status=404)
+        
+        view = PlaceDetailView()
+        lugares_similares = view._get_lugares_similares(lugar)
+        
+        # Serializar lugares
+        data = []
+        for lugar_similar in lugares_similares:
+            data.append({
+                'id': lugar_similar.id,
+                'nombre': lugar_similar.nombre,
+                'slug': lugar_similar.slug,
+                'tipo': lugar_similar.get_tipo_display(),
+                'rating': lugar_similar.rating,
+                'es_destacado': lugar_similar.es_destacado,
+                'es_exclusivo': lugar_similar.es_exclusivo,
+                'imagen': lugar_similar.cached_fotos[0].imagen if lugar_similar.cached_fotos else None,
+            })
+        
+        return JsonResponse({'lugares': data})
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
-def favoritos_dummy(request):
-    """Vista dummy para favoritos que redirige a home"""
-    return redirect('explorer:home')
 
-def resenas_dummy(request, slug):
-    """Vista dummy para reseñas que redirige al detalle del lugar"""
-    return redirect('explorer:lugares_detail', slug=slug)
-
-
+@require_GET
+def lugares_comuna_ajax(request, slug):
+    """AJAX endpoint para cargar lugares de la misma comuna."""
+    try:
+        lugar = Places.objects.filter(tiene_fotos=True, slug=slug).first()
+        if not lugar:
+            return JsonResponse({'error': 'Lugar no encontrado'}, status=404)
+        
+        view = PlaceDetailView()
+        lugares_comuna = view._get_lugares_misma_comuna(lugar) if lugar.comuna_osm_id else []
+        
+        # Serializar lugares
+        data = []
+        for lugar_comuna_item in lugares_comuna:
+            data.append({
+                'id': lugar_comuna_item.id,
+                'nombre': lugar_comuna_item.nombre,
+                'slug': lugar_comuna_item.slug,
+                'tipo': lugar_comuna_item.get_tipo_display(),
+                'rating': lugar_comuna_item.rating,
+                'es_destacado': lugar_comuna_item.es_destacado,
+                'es_exclusivo': lugar_comuna_item.es_exclusivo,
+                'imagen': lugar_comuna_item.cached_fotos[0].imagen if lugar_comuna_item.cached_fotos else None,
+            })
+        
+        return JsonResponse({'lugares': data, 'comuna_nombre': lugar.comuna.name if hasattr(lugar, 'comuna') and lugar.comuna else 'esta zona'})
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500) 

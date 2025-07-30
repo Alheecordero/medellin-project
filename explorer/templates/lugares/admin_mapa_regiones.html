@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visualizador de Zonas Cubiertas</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        html, body, #mapa {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+
+<div id="mapa"></div>
+
+<script>
+// Función para obtener el token CSRF de las cookies, necesario para POST
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const zonasData = {{ zonas_cubiertas_json|safe }};
+    const puntosGuardados = {{ puntos_guardados_json|safe }};
+
+const map = L.map('mapa').setView([6.2442, -75.5812], 12);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+}).addTo(map);
+
+    // Capa para las zonas cubiertas (polígonos de búfer)
+    if (zonasData.length > 0) {
+        const zonasLayer = L.geoJSON(zonasData.map(z => z.geometry), {
+            style: { color: '#0d6efd', weight: 1, fillColor: '#0d6efd', fillOpacity: 0.3, interactive: false }
+        }).addTo(map);
+        
+        const zonasBounds = zonasLayer.getBounds();
+        if (zonasBounds.isValid()) {
+            map.fitBounds(zonasBounds.pad(0.1));
+        }
+    }
+
+    // Capa para los puntos guardados en el GeoJSON
+    if (puntosGuardados && puntosGuardados.features.length > 0) {
+        L.geoJSON(puntosGuardados, {
+            pointToLayer: function (feature, latlng) {
+                // GeoJSON tiene las coordenadas invertidas [lng, lat]
+                // Leaflet necesita [lat, lng], pero geoJSON() lo maneja.
+                return L.circleMarker(latlng, {
+                    radius: 8,
+                    fillColor: '#FF1493', // Rosa vibrante
+                    color: '#FFFFFF',
+                    weight: 2,
+                    fillOpacity: 0.9
+                });
+            }
+        }).addTo(map);
+    }
+    
+    // --- LÓGICA PARA GUARDAR COORDENADAS ---
+    map.on('click', function(e) {
+        const lat = e.latlng.lat.toFixed(6);
+        const lng = e.latlng.lng.toFixed(6);
+
+        if (confirm(`¿Deseas guardar las coordenadas (${lat}, ${lng})?`)) {
+            fetch("{% url 'explorer:guardar_coordenada' %}", {
+                method: 'POST',
+        headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ lat: lat, lng: lng })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+                    alert(data.message); // Notificación de éxito
+                    // Añadir un punto rosa en el mapa como feedback visual
+                    L.circleMarker([lat, lng], {
+                        radius: 8,           // Aumentado para mayor tamaño
+                        fillColor: '#FF1493', // Rosa más vibrante (Deep Pink)
+                        color: '#FFFFFF',
+                        weight: 2,           // Borde más grueso
+                        fillOpacity: 0.9
+                    }).addTo(map);
+        } else {
+                    alert('Error al guardar: ' + data.error); // Notificación de error
+        }
+    })
+    .catch(error => {
+                console.error('Error en la petición fetch:', error);
+                alert('Ocurrió un error de red al intentar guardar la coordenada.');
+            });
+        }
+    });
+});
+</script>
+
+</body>
+</html> 
