@@ -72,8 +72,11 @@ class EnvMock:
         from urllib.parse import urlparse
         parsed = urlparse(url)
         
+        # SIEMPRE usar PostGIS para PostgreSQL ya que es un proyecto GeoDjango
+        engine = 'django.contrib.gis.db.backends.postgis' if 'postgres' in parsed.scheme else 'django.db.backends.' + parsed.scheme
+        
         return {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis' if 'postgres' in parsed.scheme else 'django.db.backends.' + parsed.scheme,
+            'ENGINE': engine,
             'NAME': parsed.path[1:] if parsed.path else '',
             'USER': parsed.username or '',
             'PASSWORD': parsed.password or '',
@@ -355,11 +358,13 @@ THUMBNAIL_PROCESSORS = (
 # Configuración de django-taggit
 TAGGIT_CASE_INSENSITIVE = True  # Las etiquetas no serán sensibles a mayúsculas/minúsculas
 
-# Importar configuraciones locales si existen
-try:
-    from .settings_local import *
-except ImportError:
-    pass
+# Importar configuraciones locales SOLO en desarrollo (si no existe .env)
+# Esto evita que settings_local.py sobrescriba la configuración de producción
+if not os.path.exists(os.path.join(BASE_DIR, '.env')):
+    try:
+        from .settings_local import *
+    except ImportError:
+        pass
 
 # Al final del archivo, agregar configuración de Debug Toolbar
 DEBUG_TOOLBAR_CONFIG = {
