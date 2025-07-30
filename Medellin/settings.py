@@ -52,7 +52,34 @@ class EnvMock:
         return str(val).lower() in ('true', '1', 'yes')
     
     def db(self):
+        # Parsear DATABASE_URL si existe
+        database_url = self._env_vars.get('DATABASE_URL', os.environ.get('DATABASE_URL'))
+        if database_url:
+            try:
+                import dj_database_url
+                return dj_database_url.parse(database_url)
+            except ImportError:
+                # Fallback manual parsing si dj_database_url no está instalado
+                return self._parse_database_url(database_url)
         return {}
+    
+    def _parse_database_url(self, url):
+        """Parse DATABASE_URL manually"""
+        # postgres://user:password@host:port/database
+        if url.startswith('postgres://'):
+            url = url.replace('postgres://', 'postgresql://')
+        
+        from urllib.parse import urlparse
+        parsed = urlparse(url)
+        
+        return {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis' if 'postgres' in parsed.scheme else 'django.db.backends.' + parsed.scheme,
+            'NAME': parsed.path[1:] if parsed.path else '',
+            'USER': parsed.username or '',
+            'PASSWORD': parsed.password or '',
+            'HOST': parsed.hostname or '',
+            'PORT': str(parsed.port) if parsed.port else '',
+        }
     
     def list(self, key, default=None):
         val = self._env_vars.get(key, os.environ.get(key, default))
@@ -138,7 +165,8 @@ WSGI_APPLICATION = 'Medellin.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-if 'DATABASE_URL' in os.environ:
+# Usar DATABASE_URL si está disponible (recomendado para producción)
+if 'DATABASE_URL' in os.environ or env('DATABASE_URL', None):
     DATABASES = {
         'default': env.db()
     }
@@ -260,7 +288,6 @@ try:
     from google.oauth2 import service_account
     GS_CREDENTIALS_PATH = os.path.join(BASE_DIR, 'vivemedellin-fdc8cbb3b441.json')
     if os.path.exists(GS_CREDENTIALS_PATH):
-        print("✅ Configuración de Google Cloud Storage cargada.")
         GS_PROJECT_ID = 'vivemedellin'
         GS_BUCKET_NAME = 'vivemedellin-bucket'
         GS_CREDENTIALS = service_account.Credentials.from_service_account_file(GS_CREDENTIALS_PATH)
@@ -268,11 +295,12 @@ try:
         DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
         GS_CUSTOM_ENDPOINT = f'https://storage.googleapis.com/{GS_BUCKET_NAME}'
         GS_DEFAULT_ACL = 'publicRead'
-        print(f"   - Bucket: {GS_BUCKET_NAME}")
     else:
-        print("⚠️  Advertencia: No se encontró el archivo de credenciales de GCS. El almacenamiento de archivos podría no funcionar.")
+        # Usar almacenamiento local si no están las credenciales de GCS
+        DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 except ImportError:
-    print("⚠️  Advertencia: Librerías de Google no instaladas. El almacenamiento de archivos no funcionará.")
+    # Usar almacenamiento local si no están instaladas las librerías de Google
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 # --- End Google Cloud Storage Configuration ---
 
 

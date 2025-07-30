@@ -720,7 +720,10 @@ class PlaceReviewsView(DetailView):
                         'foto_perfil': review.get('profile_photo_url', '')
                     })
             except (AttributeError, TypeError) as e:
-                print(f"Error procesando reviews: {e}")
+                # Log error silently instead of printing to console
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.warning(f"Error procesando reviews: {e}")
                 pass
         
         context['reviews'] = reviews
