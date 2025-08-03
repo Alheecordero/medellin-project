@@ -151,7 +151,7 @@ class HomeView(TemplateView):
                     comuna_osm_id=region.osm_id,
                     tiene_fotos=True,
                     show_in_home=True
-                ).prefetch_related('fotos').order_by('-rating')[:6]
+                ).prefetch_related('fotos').order_by('-es_destacado', '-rating')[:6]
                 
                 # Si no hay lugares con show_in_home en esta región, usar los mejores
                 if not lugares_region.exists():
@@ -159,7 +159,7 @@ class HomeView(TemplateView):
                         comuna_osm_id=region.osm_id,
                         tiene_fotos=True,
                         rating__gte=4.0
-                    ).prefetch_related('fotos').order_by('-rating')[:6]
+                    ).prefetch_related('fotos').order_by('-es_destacado', '-rating')[:6]
                 
                 if lugares_region.exists():
                     # Procesar lugares de la región
@@ -308,8 +308,8 @@ class PlacesListView(ListView):
     
     def get_queryset(self):
         """Obtiene y filtra lugares según parámetros de búsqueda."""
-        # Queryset base optimizado - solo lugares con fotos
-        qs = Places.objects.filter(tiene_fotos=True).prefetch_related('fotos').order_by('-rating', 'nombre')
+        # Queryset base optimizado - solo lugares con fotos, priorizando destacados
+        qs = Places.objects.filter(tiene_fotos=True).prefetch_related('fotos').order_by('-es_destacado', '-rating', 'nombre')
 
         # Búsqueda por nombre
         q = self.request.GET.get("q")
@@ -524,7 +524,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
                 'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo', 'comuna_osm_id'
             ).prefetch_related(
                 Prefetch('fotos', queryset=Foto.objects.only('imagen')[:1], to_attr='cached_fotos')
-            ).order_by('-rating')[:limit])  # Orden por rating en lugar de aleatorio
+            ).order_by('-es_destacado', '-rating')[:limit])  # Priorizando destacados y rating
             
             cache.set(cache_key, result, 3600)  # 1 hora de caché
         
@@ -549,7 +549,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
                      'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo'
                  ).prefetch_related(
                      Prefetch('fotos', queryset=Foto.objects.only('imagen')[:1], to_attr='cached_fotos')
-                 ).order_by('-rating')[:limit])
+                 ).order_by('-es_destacado', '-rating')[:limit])
             else:
                 result = list(Places.objects.filter(
                     tiene_fotos=True,
@@ -560,7 +560,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
                     'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo'
                 ).prefetch_related(
                     Prefetch('fotos', queryset=Foto.objects.only('imagen')[:1], to_attr='cached_fotos')
-                ).distinct().order_by('-rating')[:limit])
+                ).distinct().order_by('-es_destacado', '-rating')[:limit])
             
             cache.set(cache_key, result, 3600)  # 1 hora de caché
         
@@ -584,7 +584,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
                 'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo'
             ).prefetch_related(
                 Prefetch('fotos', queryset=Foto.objects.only('imagen')[:1], to_attr='cached_fotos')
-            ).order_by('-rating')[:3])  # Reducir de 5 a 3
+            ).order_by('-es_destacado', '-rating')[:3])  # Priorizando destacados
             
             cache.set(cache_key, result, 3600)  # 1 hora de caché
         
@@ -798,11 +798,11 @@ def lugares_por_comuna(request, comuna_slug):
     # Crear una versión personalizada de PlacesListView con filtro de comuna
     class LugaresPorComunaView(PlacesListView):
         def get_queryset(self):
-            # Queryset base filtrado por comuna
+            # Queryset base filtrado por comuna, priorizando destacados
             qs = Places.objects.filter(
                 tiene_fotos=True,
                 comuna_osm_id=region.osm_id
-            ).prefetch_related('fotos').order_by('-rating', 'nombre')
+            ).prefetch_related('fotos').order_by('-es_destacado', '-rating', 'nombre')
             
             # Aplicar filtros adicionales de la URL
             q = self.request.GET.get("q")
@@ -959,8 +959,8 @@ def filtros_ajax_view(request):
         if caracteristica and caracteristica != 'all':
             qs = qs.filter(**{caracteristica: True})
         
-        # Obtener resultados con prefetch
-        lugares = qs.prefetch_related('fotos').order_by('-rating', 'nombre')[:12]
+        # Obtener resultados con prefetch, priorizando destacados
+        lugares = qs.prefetch_related('fotos').order_by('-es_destacado', '-rating', 'nombre')[:12]
         
         # Formatear datos para JSON
         resultados = []
@@ -1051,7 +1051,7 @@ def lugares_cercanos_ajax_view(request):
             ubicacion__distance_lte=(user_location, D(km=radio))
         ).prefetch_related('fotos').annotate(
             distancia_metros=Distance('ubicacion', user_location)
-        ).order_by('distancia_metros', '-rating')[:15]
+        ).order_by('distancia_metros', '-es_destacado', '-rating')[:15]
         
         # Formatear resultados
         resultados = []
