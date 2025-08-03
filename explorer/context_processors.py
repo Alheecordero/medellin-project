@@ -1,6 +1,7 @@
 from .models import RegionOSM
 from django.core.cache import cache
 from django.utils.text import slugify
+from django.conf import settings
 
 OSM_IDS_MEDELLIN = [
     -7680678, -7680807, -7680859, -11937925, 
@@ -37,3 +38,12 @@ def comunas_context_optimized(request):
         86400  # Cache por 24 horas
     )
     return {'comunas': comunas}
+
+def settings_context(request):
+    """Context processor para hacer settings específicas disponibles en templates"""
+    return {
+        'settings': {
+            'GOOGLE_ANALYTICS_ID': getattr(settings, 'GOOGLE_ANALYTICS_ID', None),
+            'DEBUG': getattr(settings, 'DEBUG', False),
+        }
+    }

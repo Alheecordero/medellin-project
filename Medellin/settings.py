@@ -157,6 +157,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'explorer.context_processors.comunas_context',
+                'explorer.context_processors.settings_context',
             ],
         },
     },
@@ -219,6 +220,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 GOOGLE_API_KEY=env('GOOGLE_API_KEY')
+
+# Google Analytics 
+GOOGLE_ANALYTICS_ID = env('GOOGLE_ANALYTICS_ID', default=None)
 
 LANGUAGE_CODE = 'en-us'
 
