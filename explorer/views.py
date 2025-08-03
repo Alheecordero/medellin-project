@@ -975,7 +975,7 @@ def filtros_ajax_view(request):
                 'imagen': primera_foto.imagen if primera_foto else None,
                 'es_destacado': lugar.es_destacado,
                 'es_exclusivo': lugar.es_exclusivo,
-                'url': f"/lugares/{lugar.slug}/" if lugar.slug else None
+                'url': f"/lugar/{lugar.slug}/" if lugar.slug else None
             })
         
         # Obtener información del área
@@ -1066,7 +1066,7 @@ def lugares_cercanos_ajax_view(request):
                 'imagen': primera_foto.imagen if primera_foto else None,
                 'es_destacado': lugar.es_destacado,
                 'es_exclusivo': lugar.es_exclusivo,
-                'url': f"/lugares/{lugar.slug}/" if lugar.slug else None,
+                'url': f"/lugar/{lugar.slug}/" if lugar.slug else None,
                 'distancia': round(lugar.distancia_metros.km, 2) if hasattr(lugar, 'distancia_metros') and lugar.distancia_metros else None,
                 'direccion': lugar.direccion
             })
