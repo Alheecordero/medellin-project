@@ -13,6 +13,8 @@ from django.http import JsonResponse
 from django.utils import timezone
 import json
 import ipaddress
+from pgvector.django import CosineDistance
+from django.views import View
 
 from .models import Places, Foto, RegionOSM, Tag, NewsletterSubscription, PLACE_TYPE_CHOICES
 
@@ -737,7 +739,7 @@ class PlaceReviewsView(DetailView):
 # Funciones de Vista
 # ────────────────────────────────────────────────────────────────────────
 
-@cache_page(60 * 60)  # 1 hora de caché de página completa - OPTIMIZADO
+# @cache_page(60 * 60)  # desactivado temporalmente para ver cambios inmediatos
 def home(request):
     """Vista de inicio que usa HomeView OPTIMIZADA."""
     view = HomeView.as_view()
@@ -903,31 +905,6 @@ def lugares_por_comuna(request, comuna_slug):
     return view(request)
 
 
-@require_GET
-def autocomplete_places_view(request):
-    """API para autocompletar lugares."""
-    from django.http import JsonResponse
-    
-    term = request.GET.get('term', '')
-    if not term or len(term) < 2:
-        return JsonResponse([], safe=False)
-    
-    lugares = Places.objects.filter(
-        tiene_fotos=True
-    ).filter(
-        Q(nombre__icontains=term) | 
-        Q(direccion__icontains=term)
-    ).values('nombre', 'slug', 'tipo')[:10]
-    
-    results = []
-    for lugar in lugares:
-        results.append({
-            'label': f"{lugar['nombre']} ({lugar['tipo']})",
-            'value': lugar['nombre'],
-            'slug': lugar['slug']
-        })
-    
-    return JsonResponse(results, safe=False) 
 
 
 @require_GET
@@ -1352,3 +1329,117 @@ def lugares_comuna_ajax(request, slug):
     
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500) 
+
+
+@require_GET
+def semantic_search_ajax(request):
+	from django.http import JsonResponse
+	from google import genai
+	from google.genai import types
+
+	query = request.GET.get('q', '').strip()
+	top_k = int(request.GET.get('top', '12') or 12)
+	if not query:
+		return JsonResponse({'success': False, 'error': 'Parámetro q requerido'}, status=400)
+	if CosineDistance is None:
+		return JsonResponse({'success': False, 'error': 'pgvector no disponible'}, status=500)
+	try:
+		client = genai.Client(vertexai=True, project='vivemedellin', location='us-central1')
+		result = client.models.embed_content(
+			model='gemini-embedding-001',
+			contents=query,
+			config=types.EmbedContentConfig(
+				output_dimensionality=768,
+				task_type='RETRIEVAL_QUERY'
+			)
+		)
+		emb_q = result.embeddings[0].values
+	except Exception as e:
+		return JsonResponse({'success': False, 'error': f'Error generando embedding: {e}'}, status=500)
+
+	qs = (
+		Places.objects
+		.filter(tiene_fotos=True)
+		.exclude(embedding__isnull=True)
+		.annotate(distance=CosineDistance(F('embedding'), emb_q))
+		.order_by('distance')
+		.prefetch_related('fotos')
+	)
+	lugares = list(qs[:top_k])
+	resp = []
+	for lugar in lugares:
+		foto = lugar.fotos.first()
+		try:
+			score = max(0.0, 1.0 - float(getattr(lugar, 'distance', 1.0)))
+		except Exception:
+			score = None
+		resp.append({
+			'nombre': lugar.nombre,
+			'slug': lugar.slug,
+			'tipo': lugar.get_tipo_display() if hasattr(lugar, 'get_tipo_display') else lugar.tipo,
+			'direccion': lugar.direccion,
+			'rating': lugar.rating or 0.0,
+			'imagen': foto.imagen if foto else None,
+			'score': round(score, 4) if score is not None else None,
+			'url': f"/lugar/{lugar.slug}/" if lugar.slug else None,
+			'es_destacado': bool(getattr(lugar, 'es_destacado', False)),
+			'es_exclusivo': bool(getattr(lugar, 'es_exclusivo', False)),
+			'total_reviews': lugar.total_reviews or 0,
+		})
+	return JsonResponse({'success': True, 'query': query, 'total': len(resp), 'lugares': resp}) 
+
+
+class SemanticSearchView(View):
+    def get(self, request):
+        from google import genai
+        from google.genai import types
+        query = request.GET.get("q", "").strip()
+        as_json = request.headers.get("x-requested-with") == "XMLHttpRequest" or request.GET.get("json") == "1"
+
+        resultados = []
+        error = ""
+
+        if query:
+            try:
+                client = genai.Client(vertexai=True, project='vivemedellin', location='us-central1')
+                result = client.models.embed_content(
+                    model='gemini-embedding-001',
+                    contents=query,
+                    config=types.EmbedContentConfig(
+                        output_dimensionality=768,
+                        task_type='RETRIEVAL_QUERY'
+                    )
+                )
+                emb_q = result.embeddings[0].values
+
+                qs = (
+                    Places.objects
+                    .filter(tiene_fotos=True)
+                    .exclude(embedding__isnull=True)
+                    .annotate(distance=CosineDistance(F('embedding'), emb_q))
+                    .order_by('distance')
+                )[:10]
+
+                for l in qs:
+                    try:
+                        score = max(0.0, 1.0 - float(getattr(l, 'distance', 1.0)))
+                    except Exception:
+                        score = None
+                    resultados.append({
+                        "nombre": l.nombre,
+                        "tipo": l.get_tipo_display() if hasattr(l, 'get_tipo_display') else l.tipo,
+                        "direccion": l.direccion,
+                        "rating": l.rating,
+                        "score": round(score, 3) if score is not None else None,
+                    })
+            except Exception as e:
+                error = str(e)
+
+        if as_json:
+            return JsonResponse({"resultados": resultados, "error": error})
+        else:
+            return render(request, "semantic_results.html", {
+                "query": query,
+                "resultados": resultados,
+                "error": error
+            }) 

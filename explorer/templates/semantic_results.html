@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Resultados Semánticos{% endblock %}
+{% block content %}
+<h2>Resultados para: "{{ query }}"</h2>
+
+{% if error %}
+  <div class="alert alert-danger">{{ error }}</div>
+{% elif resultados %}
+  {% for r in resultados %}
+    <div class="alert alert-info mb-2">
+      <strong>{{ r.nombre }}</strong> ({{ r.tipo }})<br>
+      <small>{{ r.direccion }}</small><br>
+      <small>{{ r.rating }}</small><br>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No se encontraron resultados.</p>
+{% endif %}
+{% endblock %} 

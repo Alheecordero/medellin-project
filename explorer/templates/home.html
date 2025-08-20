@@ -569,29 +569,6 @@
 }
 
 /* Search Autocomplete Styling */
-.ui-autocomplete {
-    max-height: 300px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    background: white;
-    border: none;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    border-radius: 0.75rem;
-    padding: 0.5rem;
-    z-index: 1000;
-}
-
-.ui-menu-item-wrapper {
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.ui-menu-item-wrapper:hover {
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
-}
 
 /* Mobile Optimizations */
 @media (max-width: 768px) {
@@ -677,31 +654,38 @@ a.btn.btn-gradient-green:focus {
 
 {% block extra_js %}
 <script>
-// Initialize search with autocomplete
+// Búsqueda semántica (Enter o botón)
 $(document).ready(function() {
-    $("#search-places").autocomplete({
-        source: function(request, response) {
-            $.ajax({
-                url: "{% url 'explorer:autocomplete_places' %}",
-                dataType: "json",
-                data: { term: request.term },
-                success: function(data) {
-                    response($.map(data, function(item) {
-                        return {
-                            label: item.label,
-                            value: item.label,
-                            slug: item.slug
-                        };
-                    }));
+    function ejecutarBusquedaSemantica(texto) {
+        if (!texto || texto.length < 2) return;
+        $('#ajax-loading').show();
+        $('#ajax-results').hide();
+        $.ajax({
+            url: "{% url 'explorer:semantic_search_ajax' %}",
+            type: 'GET',
+            data: { q: texto, top: 12 },
+            success: function(resp) {
+                $('#ajax-loading').hide();
+                if (resp.success) {
+                    renderizarResultadosSemanticos(resp);
+                } else {
+                    mostrarError('Error en búsqueda semántica: ' + resp.error);
                 }
-            });
-        },
-        minLength: 2,
-        select: function(event, ui) {
-            if (ui.item.slug) {
-                window.location.href = "{% url 'explorer:lugares_detail' slug='PLACE_SLUG' %}".replace('PLACE_SLUG', ui.item.slug);
+            },
+            error: function(xhr, status, error) {
+                $('#ajax-loading').hide();
+                mostrarError('Error de conexión: ' + error);
             }
+        });
+    }
+    $('#search-places').on('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            ejecutarBusquedaSemantica($(this).val().trim());
         }
+    });
+    $('.search-modern-clean button').on('click', function() {
+        ejecutarBusquedaSemantica($('#search-places').val().trim());
     });
     
     // Smooth scroll for anchor links
@@ -1246,5 +1230,34 @@ $(document).ready(function() {
         }, 3000);
     }
 });
+
+    function renderizarResultadosSemanticos(data) {
+        let html = `
+            <div class="container py-5">
+                <div class="text-center mb-5 text-white">
+                    <h2 class="fw-bold">Resultados Semánticos</h2>
+                    <p class="lead">Consulta: ${data.query}</p>
+                </div>
+                <div class="row g-4">`;
+        data.lugares.forEach(lugar => {
+            html += `
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm border-0 rounded-4">
+                        ${lugar.imagen ? `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${lugar.nombre}" style="height: 200px; object-fit: cover;" loading="lazy">` : `<div class=\"bg-light d-flex align-items-center justify-content-center rounded-top-4\" style=\"height: 200px;\"><i class=\"bi bi-image text-muted fs-2\"></i></div>`}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-semibold mb-2">${lugar.nombre}</h5>
+                            <div class="small text-muted mb-2">${lugar.tipo || ''}</div>
+                                                        ${lugar.direccion ? `<div class="small text-muted mb-3"><i class="bi bi-map me-1"></i>${lugar.direccion}</div>` : ''}
+                            ${lugar.url ? `<a href="${lugar.url}" class="btn btn-gradient-purple mt-auto w-100 rounded-pill"><i class="bi bi-eye me-1"></i>Ver detalles</a>` : `<span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">Sin detalles</span>`}
+                        </div>
+                    </div>
+                </div>`;
+        });
+        html += `
+                </div>
+            </div>`;
+        $('#ajax-results').html(html).show();
+        $('html, body').animate({ scrollTop: $('#ajax-results').offset().top - 100 }, 800);
+    }
 </script>
 {% endblock %}

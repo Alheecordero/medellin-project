@@ -6,15 +6,16 @@ app_name = 'explorer'
 urlpatterns = [
     # Vistas principales
     path('', views.home, name='home'),
+    path('semantic-search/', views.SemanticSearchView.as_view(), name='semantic_search_page'),
     path('lugares/', views.lugares_list, name='lugares_list'),
     path('lugares/<slug:comuna_slug>/', views.lugares_por_comuna, name='lugares_por_comuna'),
     path('lugar/<slug:slug>/', views.lugares_detail, name='lugares_detail'),
     path('lugar/<slug:slug>/reviews/', views.reviews_lugar, name='reviews_lugar'),
     
     # API endpoints
-    path('api/lugares/autocompletar/', views.autocomplete_places_view, name='autocomplete_places'),
     path('api/filtros-ajax/', views.filtros_ajax_view, name='filtros_ajax'),
     path('api/lugares-cercanos/', views.lugares_cercanos_ajax_view, name='lugares_cercanos_ajax'),
+    path('api/semantic-search/', views.semantic_search_ajax, name='semantic_search_ajax'),
     
     # Newsletter endpoints
     path('api/newsletter/suscribir/', views.newsletter_subscribe, name='newsletter_subscribe'),
