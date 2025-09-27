@@ -44,11 +44,6 @@
         }
     </style>
     
-    <!-- Banner y estilos temporales de verificación de deploy -->
-    <style>
-      .navbar { background: #111 !important; }
-    </style>
-
     <!-- Google Analytics -->
     {% if settings.GOOGLE_ANALYTICS_ID %}
     <!-- Google tag (gtag.js) -->
@@ -72,7 +67,6 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <div style="position:sticky;top:0;z-index:2000;background:#ff0044;color:#fff;text-align:center;padding:6px 10px;font-weight:700">DEPLOY OK</div>
     <!-- Navbar -->
     {% include 'navbar.html' %}
 
