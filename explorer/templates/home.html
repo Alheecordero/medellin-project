@@ -280,15 +280,12 @@
                 </div>
 
                 <!-- Rating -->
-                {% if lugar.rating %}
-                <div class="small text-muted mb-3">
-                  <i class="bi bi-star-fill text-warning me-1"></i>
-                  <span class="fw-semibold">{{ lugar.rating|floatformat:1 }}</span> / 5
-                  {% if lugar.total_reviews %}
-                    <span class="ms-1">({{ lugar.total_reviews }} reseñas)</span>
-                  {% endif %}
-                </div>
-                {% endif %}
+                                            {% if lugar.rating %}
+                              <div class="small text-muted mb-3">
+                                <i class="bi bi-star-fill text-warning me-1"></i>
+                                <span class="fw-semibold">{{ lugar.rating|floatformat:1 }}</span> / 5
+                              </div>
+                            {% endif %}
 
                 {% if lugar.slug %}
                   <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-purple mt-auto w-100 rounded-pill">
@@ -938,7 +935,6 @@ $(document).ready(function() {
                                 `<div class="small text-muted mb-3">
                                     <i class="bi bi-star-fill text-warning me-1"></i>
                                     <span class="fw-semibold">${lugar.rating}</span> / 5
-                                    ${lugar.total_reviews ? `<span class="ms-1">(${lugar.total_reviews} reseñas)</span>` : ''}
                                 </div>` : ''
                             }
 
@@ -1150,7 +1146,6 @@ $(document).ready(function() {
                                 `<div class="small text-muted mb-2">
                                     <i class="bi bi-star-fill text-warning me-1"></i>
                                     <span class="fw-semibold">${lugar.rating}</span> / 5
-                                    ${lugar.total_reviews ? `<span class="ms-1">(${lugar.total_reviews} reseñas)</span>` : ''}
                                 </div>` : ''
                             }
                             

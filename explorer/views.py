@@ -671,11 +671,13 @@ class PlaceReviewsView(DetailView):
         context = super().get_context_data(**kwargs)
         lugar = self.object
         
-        # Procesar reviews desde JSON
+        # Procesar reviews desde JSON (máximo 5 de Google API)
         reviews = []
         if lugar.reviews:
             try:
-                for review in lugar.reviews:
+                # Procesar todas las reseñas disponibles (Google solo envía máximo 5)
+                reviews_to_process = lugar.reviews
+                for review in reviews_to_process:
                     # Procesar el texto de la review correctamente
                     texto_review = review.get('text', '')
                     if isinstance(texto_review, dict):
@@ -730,7 +732,9 @@ class PlaceReviewsView(DetailView):
         
         context['reviews'] = reviews
         context['rating_promedio'] = lugar.rating
-        context['total_reviews'] = lugar.total_reviews or len(reviews)
+        # Total de reseñas (no lo mostramos en el template)
+        actual_total = len(lugar.reviews) if lugar.reviews else 0
+        context['total_reviews'] = lugar.total_reviews or actual_total
         
         return context
 
@@ -1443,3 +1447,59 @@ class SemanticSearchView(View):
                 "resultados": resultados,
                 "error": error
             }) 
+
+
+# Funciones de API de reseñas (comentadas - Google solo envía 5 reseñas)
+# def _serialize_reviews(lugar: Places) -> list[dict]:
+# 	items = []
+# 	if not lugar or not lugar.reviews:
+# 		return items
+# 	try:
+# 		for review in lugar.reviews:
+# 			texto_review = review.get('text', '')
+# 			if isinstance(texto_review, dict):
+# 				texto_review = texto_review.get('text', '') if texto_review else ''
+# 			elif isinstance(texto_review, list):
+# 				texto_review = ' '.join(str(item) for item in texto_review if item)
+# 			if texto_review:
+# 				texto_review = str(texto_review).strip().replace('\\n', '\n').replace('\\r', '\r').replace('\\"', '"').replace("\\'", "'")
+# 			fecha_review = review.get('publishTime', '') or review.get('time', '') or review.get('relativePublishTimeDescription', '')
+# 			if fecha_review and str(fecha_review).isdigit():
+# 				from datetime import datetime
+# 				try:
+# 					fecha_review = datetime.fromtimestamp(int(fecha_review)).strftime('%d/%m/%Y')
+# 				except Exception:
+# 					fecha_review = 'Fecha no disponible'
+# 			elif not fecha_review:
+# 				fecha_review = 'Fecha no disponible'
+# 			autor_review = 'Anónimo'
+# 			if review.get('authorAttribution'):
+# 				author_attr = review['authorAttribution']
+# 				if isinstance(author_attr, dict):
+# 					autor_review = author_attr.get('displayName', 'Anónimo')
+# 				else:
+# 					autor_review = str(author_attr)
+# 			elif review.get('author_name'):
+# 				autor_review = review['author_name']
+# 			items.append({
+# 				'autor': autor_review,
+# 				'rating': int(review.get('rating', 0)) if review.get('rating') else 0,
+# 				'texto': texto_review,
+# 				'fecha': fecha_review,
+# 				'foto_perfil': review.get('profile_photo_url', '')
+# 			})
+# 	except Exception:
+# 		pass
+# 	return items
+
+
+# def reviews_lugar_ajax(request, slug):
+# 	from django.shortcuts import get_object_or_404
+# 	offset = int(request.GET.get('offset') or 0)
+# 	limit = int(request.GET.get('limit') or 10)
+# 	limit = max(1, min(limit, 50))
+# 	lugar = get_object_or_404(Places, slug=slug)
+# 	all_reviews = _serialize_reviews(lugar)
+# 	total = len(all_reviews)
+# 	chunk = all_reviews[offset:offset+limit]
+# 	return JsonResponse({'success': True, 'total': total, 'count': len(chunk), 'offset': offset, 'limit': limit, 'reviews': chunk}) 

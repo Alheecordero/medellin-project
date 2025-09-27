@@ -211,14 +211,11 @@
               </div>
 
               <!-- Rating -->
-              {% if lugar.rating %}
-              <div class="small text-muted mb-3">
-                <i class="bi bi-star-fill text-warning me-1"></i>
-                <span class="fw-semibold">{{ lugar.rating|floatformat:1 }}</span> / 5
-                {% if lugar.total_reviews %}
-                  <span class="ms-1">({{ lugar.total_reviews }} reseñas)</span>
-                {% endif %}
-              </div>
+                            {% if lugar.rating %}
+                <div class="small text-muted mb-3">
+                  <i class="bi bi-star-fill text-warning me-1"></i>
+                  <span class="fw-semibold">{{ lugar.rating|floatformat:1 }}</span> / 5
+                </div>
               {% endif %}
 
               {% if lugar.slug %}

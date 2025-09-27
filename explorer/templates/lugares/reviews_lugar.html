@@ -12,7 +12,6 @@
 {% endblock %}
 
 {% block og_title %}Reseñas de {{ lugar.nombre }} | Medellín Explorer{% endblock %}
-
 {% block og_description %}
   Explora las opiniones y calificaciones de otros usuarios sobre {{ lugar.nombre }}. Descubre qué dicen antes de tu próxima salida.
 {% endblock %}
@@ -40,7 +39,7 @@
         
         <h1 class="display-5 fw-bold text-white mb-3">{{ lugar.nombre }}</h1>
         <p class="text-white-50 mb-3">
-          <i class="bi bi-chat-quote me-2"></i>{{ total_reviews }} reseña{{ total_reviews|pluralize }}
+          <i class="bi bi-chat-quote me-2"></i>Reseñas del lugar
         </p>
         
         <div class="rating-summary">
@@ -67,7 +66,6 @@
                   {% endfor %}
                 {% endif %}
               </div>
-              <p class="text-white-50 mb-0">Basado en {{ total_reviews }} opiniones</p>
             </div>
           </div>
         </div>
@@ -89,9 +87,9 @@
 <!-- Reviews List -->
 <div class="container pb-5">
   {% if reviews %}
-    <div class="row g-4">
+    <div class="row g-4" id="reviews-container">
       {% for review in reviews %}
-        <div class="col-lg-6">
+        <div class="col-lg-6 review-item">
           <div class="review-card">
             <div class="review-header">
               <div class="reviewer-info">
@@ -140,20 +138,10 @@
               {% endif %}
             </div>
             
-
           </div>
         </div>
       {% endfor %}
     </div>
-    
-    <!-- Load More Button -->
-    {% if reviews|length >= 10 %}
-      <div class="text-center mt-5">
-        <button class="btn btn-gradient-purple rounded-pill px-4">
-          <i class="bi bi-arrow-clockwise me-1"></i>Cargar más reseñas
-        </button>
-      </div>
-    {% endif %}
     
   {% else %}
     <!-- Empty State -->
@@ -355,8 +343,6 @@
   white-space: pre-line;
 }
 
-
-
 /* Empty State */
 .empty-reviews {
   background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
@@ -410,24 +396,32 @@
 }
 </style>
 
+<!-- Script simple para reseñas -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Forzar funcionalidad del botón "Volver al lugar"
-    const volverBtn = document.querySelector('a[href*="/lugar/"]');
-    if (volverBtn) {
-        volverBtn.addEventListener('click', function(e) {
-            // Si por alguna razón el enlace normal no funciona, forzar navegación
-            const href = this.getAttribute('href');
-            if (href && href !== '#') {
-                window.location.href = href;
-            }
-        });
-        
-        // Debug: mostrar en consola que el botón fue encontrado
-        console.log('✅ Botón "Volver al lugar" encontrado y configurado:', volverBtn.href);
-    } else {
-        console.log('❌ Botón "Volver al lugar" NO encontrado');
-    }
+    // Solo animación simple, sin scroll infinito
+    const reviewItems = document.querySelectorAll('.review-item');
+    reviewItems.forEach((item, index) => {
+        item.style.animationDelay = `${index * 0.1}s`;
+    });
 });
 </script>
+
+<!-- Animación fade-in para nuevas reseñas -->
+<style>
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.review-item {
+    animation: fadeIn 0.3s ease-in;
+}
+</style>
 {% endblock %}
