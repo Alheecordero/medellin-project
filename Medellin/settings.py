@@ -104,7 +104,12 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG')
 
 # Añade la IP de tu servidor y tu dominio a esta lista
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default='127.0.0.1,localhost,vivemedellin.co,www.vivemedellin.co')
+# Confiar en estos orígenes para CSRF cuando se usa HTTPS tras proxy (Nginx)
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default='https://vivemedellin.co,https://www.vivemedellin.co')
+# Respetar cabeceras de proxy para host y esquema
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
