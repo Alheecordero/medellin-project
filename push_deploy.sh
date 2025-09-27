@@ -16,10 +16,11 @@ SERVICE=${SERVICE:-gunicorn}
 GIT_REPO=${GIT_REPO:-https://github.com/Alheecordero/medellin-project.git}
 
 # Push a GitHub
-if ! git diff --quiet || ! git diff --cached --quiet; then
-	echo -e "${GREEN}Auto-commit de cambios locales...${NC}"
-	git add -A
-	git commit -m "auto: deploy $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+echo -e "${GREEN}Verificando cambios locales...${NC}"
+git add -A
+if ! git diff --cached --quiet; then
+    echo -e "${GREEN}Auto-commit de cambios locales...${NC}"
+    git commit -m "auto: deploy $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
 fi
 
 echo -e "${GREEN}Pushing changes to GitHub...${NC}"
