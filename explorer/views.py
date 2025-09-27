@@ -1341,8 +1341,9 @@ def _build_genai_client():
 	"""Crea el cliente de Google GenAI prefiriendo API key; si no hay, intenta Vertex."""
 	from google import genai
 	api_key = getattr(settings, 'GOOGLE_API_KEY', None)
-	# Preferir API key para evitar problemas de JWT en producción
+	# Si hay API key, usarla y asegurarnos de no usar credenciales de servicio
 	if api_key:
+		os.environ.pop('GOOGLE_APPLICATION_CREDENTIALS', None)
 		return genai.Client(api_key=api_key)
 	# Si no hay API key, intentar Vertex si existen credenciales de servicio
 	if os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'):
@@ -1353,6 +1354,7 @@ def _build_genai_client():
 	# Último intento: API key del entorno (si estuviera en env directa)
 	env_api_key = os.environ.get('GOOGLE_API_KEY')
 	if env_api_key:
+		os.environ.pop('GOOGLE_APPLICATION_CREDENTIALS', None)
 		return genai.Client(api_key=env_api_key)
 	# Fallback final a Vertex (mismo comportamiento previo)
 	return genai.Client(vertexai=True, project='vivemedellin', location='us-central1')
