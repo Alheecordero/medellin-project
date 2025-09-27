@@ -380,3 +380,44 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG and env.bool('SHOW_DEBUG_TOOLBAR', True),
     'SHOW_COLLAPSED': True,
 }
+
+# Logging profesional para producción
+if not DEBUG:
+    import logging
+    from logging.handlers import RotatingFileHandler
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '%(asctime)s %(levelname)s %(name)s %(message)s'
+            },
+        },
+        'handlers': {
+            'file_error': {
+                'level': 'ERROR',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': '/var/log/medellin/django.err',
+                'maxBytes': 1024*1024*10,  # 10MB
+                'backupCount': 5,
+                'formatter': 'verbose',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['file_error'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+            'django.request': {
+                'handlers': ['file_error'],
+                'level': 'WARNING',
+                'propagate': False,
+            },
+            'django.security': {
+                'handlers': ['file_error'],
+                'level': 'WARNING',
+                'propagate': False,
+            },
+        },
+    }
