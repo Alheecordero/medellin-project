@@ -15,6 +15,8 @@ import json
 import ipaddress
 from pgvector.django import CosineDistance
 from django.views import View
+from django.conf import settings
+import os
 
 from .models import Places, Foto, RegionOSM, Tag, NewsletterSubscription, PLACE_TYPE_CHOICES
 
@@ -1335,10 +1337,26 @@ def lugares_comuna_ajax(request, slug):
         return JsonResponse({'error': str(e)}, status=500) 
 
 
+def _build_genai_client():
+	"""Crea el cliente de Google GenAI prefiriendo Vertex si hay credenciales,
+	de lo contrario usa API key si está configurada."""
+	from google import genai
+	api_key = getattr(settings, 'GOOGLE_API_KEY', None)
+	# Preferir Vertex si hay credenciales de servicio disponibles
+	if os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'):
+		try:
+			return genai.Client(vertexai=True, project='vivemedellin', location='us-central1')
+		except Exception:
+			pass
+	# Fallback a API key
+	if api_key:
+		return genai.Client(api_key=api_key)
+	# Último intento: Vertex (mantener comportamiento previo)
+	return genai.Client(vertexai=True, project='vivemedellin', location='us-central1')
+
 @require_GET
 def semantic_search_ajax(request):
 	from django.http import JsonResponse
-	from google import genai
 	from google.genai import types
 
 	query = request.GET.get('q', '').strip()
@@ -1348,7 +1366,7 @@ def semantic_search_ajax(request):
 	if CosineDistance is None:
 		return JsonResponse({'success': False, 'error': 'pgvector no disponible'}, status=500)
 	try:
-		client = genai.Client(vertexai=True, project='vivemedellin', location='us-central1')
+		client = _build_genai_client()
 		result = client.models.embed_content(
 			model='gemini-embedding-001',
 			contents=query,
@@ -1395,7 +1413,6 @@ def semantic_search_ajax(request):
 
 class SemanticSearchView(View):
     def get(self, request):
-        from google import genai
         from google.genai import types
         query = request.GET.get("q", "").strip()
         as_json = request.headers.get("x-requested-with") == "XMLHttpRequest" or request.GET.get("json") == "1"
@@ -1405,7 +1422,7 @@ class SemanticSearchView(View):
 
         if query:
             try:
-                client = genai.Client(vertexai=True, project='vivemedellin', location='us-central1')
+                client = _build_genai_client()
                 result = client.models.embed_content(
                     model='gemini-embedding-001',
                     contents=query,
@@ -1440,13 +1457,8 @@ class SemanticSearchView(View):
                 error = str(e)
 
         if as_json:
-            return JsonResponse({"resultados": resultados, "error": error})
-        else:
-            return render(request, "semantic_results.html", {
-                "query": query,
-                "resultados": resultados,
-                "error": error
-            }) 
+            return JsonResponse({"success": error == "", "error": error, "resultados": resultados})
+        return render(request, "semantic_results.html", {"resultados": resultados, "error": error, "q": query}) 
 
 
 # Funciones de API de reseñas (comentadas - Google solo envía 5 reseñas)

@@ -42,6 +42,10 @@ ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc 'set -e; \
   # Do NOT remove untracked files to preserve .env and keys \
   if [ ! -d \"$VENV_DIR\" ]; then python3 -m venv \"$VENV_DIR\"; fi; \
   source \"$VENV_DIR\"/bin/activate; \
+  # Exportar credenciales de Google si existe el JSON local \
+  if [ -f \"vivemedellin-fdc8cbb3b441.json\" ]; then \
+    export GOOGLE_APPLICATION_CREDENTIALS=\"$APP_DIR/vivemedellin-fdc8cbb3b441.json\"; \
+  fi; \
   pip install --upgrade pip; \
   pip install -r requirements.txt; \
   python manage.py migrate --noinput; \
@@ -50,9 +54,9 @@ ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc 'set -e; \
   sudo systemctl restart \"$SERVICE\"; \
   sleep 2; \
   HC_CODE=$(curl -s -o /dev/null -w \"%{http_code}\" --unix-socket /run/gunicorn.sock http://localhost/ || echo 000); \
-  if [ \"\$HC_CODE\" != \"200\" ] && [ \"\$HC_CODE\" != \"301\" ]; then \
-    echo \"Healthcheck failed (\$HC_CODE). Rolling back to \$PREV_COMMIT\"; \
-    git reset --hard \"\$PREV_COMMIT\"; \
+  if [ \"$HC_CODE\" != \"200\" ] && [ \"$HC_CODE\" != \"301\" ]; then \
+    echo \"Healthcheck failed ($HC_CODE). Rolling back to $PREV_COMMIT\"; \
+    git reset --hard \"$PREV_COMMIT\"; \
     sudo systemctl restart \"$SERVICE\"; \
     exit 1; \
   fi; \
