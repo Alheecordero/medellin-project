@@ -1338,33 +1338,23 @@ def lugares_comuna_ajax(request, slug):
 
 
 def _build_genai_client():
-	"""Crea el cliente de Google GenAI prefiriendo API key; si no hay, intenta Vertex."""
-	from google import genai
-	api_key = getattr(settings, 'GOOGLE_API_KEY', None)
-	# Si hay API key, usarla y asegurarnos de no usar credenciales de servicio ni project
+	"""Crea un cliente de embeddings usando API key primero (google.generativeai), Vertex como fallback (google.genai)."""
+	api_key = getattr(settings, 'GOOGLE_API_KEY', None) or os.environ.get('GOOGLE_API_KEY')
+	# Si hay API key, usar google.generativeai
 	if api_key:
 		os.environ.pop('GOOGLE_APPLICATION_CREDENTIALS', None)
 		os.environ.pop('GOOGLE_CLOUD_PROJECT', None)
-		return genai.Client(api_key=api_key)
-	# Si no hay API key, intentar Vertex si existen credenciales de servicio
-	if os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'):
-		try:
-			return genai.Client(vertexai=True, project='vivemedellin', location='us-central1')
-		except Exception:
-			pass
-	# Último intento: API key del entorno (si estuviera en env directa)
-	env_api_key = os.environ.get('GOOGLE_API_KEY')
-	if env_api_key:
-		os.environ.pop('GOOGLE_APPLICATION_CREDENTIALS', None)
-		os.environ.pop('GOOGLE_CLOUD_PROJECT', None)
-		return genai.Client(api_key=env_api_key)
-	# Fallback final a Vertex (mismo comportamiento previo)
-	return genai.Client(vertexai=True, project='vivemedellin', location='us-central1')
+		import google.generativeai as genai_v1
+		genai_v1.configure(api_key=api_key)
+		return ('generativeai', genai_v1)
+	# Vertex fallback
+	from google import genai as genai_vertex
+	return ('genai', genai_vertex)
 
 @require_GET
 def semantic_search_ajax(request):
 	from django.http import JsonResponse
-	from google.genai import types
+	from google.genai import types as vertex_types
 
 	query = request.GET.get('q', '').strip()
 	top_k = int(request.GET.get('top', '12') or 12)
@@ -1373,16 +1363,23 @@ def semantic_search_ajax(request):
 	if CosineDistance is None:
 		return JsonResponse({'success': False, 'error': 'pgvector no disponible'}, status=500)
 	try:
-		client = _build_genai_client()
-		result = client.models.embed_content(
-			model='text-embedding-004',
-			contents=query,
-			config=types.EmbedContentConfig(
-				output_dimensionality=768,
-				task_type='RETRIEVAL_QUERY'
+		client_kind, client = _build_genai_client()
+		if client_kind == 'generativeai':
+			# Usar google-generativeai embeddings
+			model = client.GenerativeModel('text-embedding-004')
+			resp = model.embed_content(query)
+			emb_q = resp.embeddings[0].values if hasattr(resp, 'embeddings') else resp["embedding"]["values"]
+		else:
+			# Usar Vertex
+			result = client.Client(vertexai=True, project='vivemedellin', location='us-central1').models.embed_content(
+				model='text-embedding-004',
+				contents=query,
+				config=vertex_types.EmbedContentConfig(
+					output_dimensionality=768,
+					task_type='RETRIEVAL_QUERY'
+				)
 			)
-		)
-		emb_q = result.embeddings[0].values
+			emb_q = result.embeddings[0].values
 	except Exception as e:
 		return JsonResponse({'success': False, 'error': f'Error generando embedding: {e}'}, status=500)
 
@@ -1420,7 +1417,7 @@ def semantic_search_ajax(request):
 
 class SemanticSearchView(View):
     def get(self, request):
-        from google.genai import types
+        from google.genai import types as vertex_types
         query = request.GET.get("q", "").strip()
         as_json = request.headers.get("x-requested-with") == "XMLHttpRequest" or request.GET.get("json") == "1"
 
@@ -1429,16 +1426,21 @@ class SemanticSearchView(View):
 
         if query:
             try:
-                client = _build_genai_client()
-                result = client.models.embed_content(
-                    model='text-embedding-004',
-                    contents=query,
-                    config=types.EmbedContentConfig(
-                        output_dimensionality=768,
-                        task_type='RETRIEVAL_QUERY'
+                client_kind, client = _build_genai_client()
+                if client_kind == 'generativeai':
+                    model = client.GenerativeModel('text-embedding-004')
+                    resp = model.embed_content(query)
+                    emb_q = resp.embeddings[0].values if hasattr(resp, 'embeddings') else resp["embedding"]["values"]
+                else:
+                    result = client.Client(vertexai=True, project='vivemedellin', location='us-central1').models.embed_content(
+                        model='text-embedding-004',
+                        contents=query,
+                        config=vertex_types.EmbedContentConfig(
+                            output_dimensionality=768,
+                            task_type='RETRIEVAL_QUERY'
+                        )
                     )
-                )
-                emb_q = result.embeddings[0].values
+                    emb_q = result.embeddings[0].values
 
                 qs = (
                     Places.objects

@@ -22,3 +22,4 @@ django-taggit>=4.0.0
 easy-thumbnails
 django-extensions
 google-genai==1.2.0
+google-generativeai==0.8.3
