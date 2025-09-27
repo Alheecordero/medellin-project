@@ -31,37 +31,31 @@ fi
 # Actualizar y reiniciar en servidor
 echo -e "${GREEN}Updating and restarting on server...${NC}"
 ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc 'set -e; \
-  mkdir -p "$APP_DIR"; cd "$APP_DIR"; \
-  git config --global --add safe.directory "$APP_DIR" || true; \
-  git config --global init.defaultBranch main || true; \
-  if [ -d .git ]; then \
-    git fetch origin "$BRANCH" || true; \
-    (git checkout -f "$BRANCH" || git checkout -B "$BRANCH"); \
-    git reset --hard "origin/$BRANCH" || true; \
-    git clean -fd || true; \
-  else \
-    if [ -z "$(ls -A .)" ]; then \
-      git clone -b "$BRANCH" "$GIT_REPO" .; \
-    else \
-      git init; \
-      git remote remove origin 2>/dev/null || true; \
-      git remote add origin "$GIT_REPO"; \
-      git fetch origin "$BRANCH"; \
-      git checkout -B "$BRANCH"; \
-      git reset --hard "origin/$BRANCH"; \
-      git clean -fd; \
-    fi; \
-  fi; \
-  if [ ! -d "$VENV_DIR" ]; then python3 -m venv "$VENV_DIR"; fi; \
-  source "$VENV_DIR"/bin/activate; \
+  cd \"$APP_DIR\"; \
+  if [ ! -d .git ]; then echo -e \"${RED}ERROR: Git repo not found in $APP_DIR${NC}\"; exit 1; fi; \
+  if [ ! -f .env ]; then echo -e \"${RED}ERROR: .env not found in $APP_DIR (required)${NC}\"; exit 1; fi; \
+  PREV_COMMIT=$(git rev-parse --short HEAD || echo none); \
+  git fetch origin \"$BRANCH\" || true; \
+  git checkout -B \"$BRANCH\"; \
+  git reset --hard \"origin/$BRANCH\"; \
+  # Do NOT remove untracked files to preserve .env and keys \
+  if [ ! -d \"$VENV_DIR\" ]; then python3 -m venv \"$VENV_DIR\"; fi; \
+  source \"$VENV_DIR\"/bin/activate; \
   pip install --upgrade pip; \
   pip install -r requirements.txt; \
   python manage.py migrate --noinput; \
   python manage.py collectstatic --noinput; \
   sudo systemctl daemon-reload || true; \
-  sudo systemctl restart "$SERVICE" || true; \
-  sudo systemctl status "$SERVICE" --no-pager || true; \
-  sudo systemctl reload nginx || true; \
+  sudo systemctl restart \"$SERVICE\"; \
+  sleep 2; \
+  HC_CODE=$(curl -s -o /dev/null -w \"%{http_code}\" --unix-socket /run/gunicorn.sock http://localhost/ || echo 000); \
+  if [ \"$HC_CODE\" != \"200\" ] && [ \"$HC_CODE\" != \"301\" ]; then \
+    echo \"Healthcheck failed ($HC_CODE). Rolling back to $PREV_COMMIT\"; \
+    git reset --hard \"$PREV_COMMIT\"; \
+    sudo systemctl restart \"$SERVICE\"; \
+    exit 1; \
+  fi; \
+  if sudo nginx -t; then sudo systemctl reload nginx || true; else echo \"Skipping nginx reload (config test failed)\"; fi; \
   echo OK'"
 
 if [ $? -ne 0 ]; then
