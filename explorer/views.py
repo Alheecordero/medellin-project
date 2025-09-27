@@ -1371,7 +1371,7 @@ def semantic_search_ajax(request):
 	try:
 		client = _build_genai_client()
 		result = client.models.embed_content(
-			model='gemini-embedding-001',
+			model='text-embedding-004',
 			contents=query,
 			config=types.EmbedContentConfig(
 				output_dimensionality=768,
@@ -1427,7 +1427,7 @@ class SemanticSearchView(View):
             try:
                 client = _build_genai_client()
                 result = client.models.embed_content(
-                    model='gemini-embedding-001',
+                    model='text-embedding-004',
                     contents=query,
                     config=types.EmbedContentConfig(
                         output_dimensionality=768,
