@@ -1366,9 +1366,8 @@ def semantic_search_ajax(request):
 		client_kind, client = _build_genai_client()
 		if client_kind == 'generativeai':
 			# Usar google-generativeai embeddings
-			model = client.GenerativeModel('text-embedding-004')
-			resp = model.embed_content(query)
-			emb_q = resp.embeddings[0].values if hasattr(resp, 'embeddings') else resp["embedding"]["values"]
+			resp = client.embed_content(model='text-embedding-004', content=query)
+			emb_q = resp['embedding']['values'] if isinstance(resp, dict) else (resp.embeddings[0].values if hasattr(resp, 'embeddings') else resp.embedding.values)
 		else:
 			# Usar Vertex
 			result = client.Client(vertexai=True, project='vivemedellin', location='us-central1').models.embed_content(
@@ -1428,9 +1427,8 @@ class SemanticSearchView(View):
             try:
                 client_kind, client = _build_genai_client()
                 if client_kind == 'generativeai':
-                    model = client.GenerativeModel('text-embedding-004')
-                    resp = model.embed_content(query)
-                    emb_q = resp.embeddings[0].values if hasattr(resp, 'embeddings') else resp["embedding"]["values"]
+                    resp = client.embed_content(model='text-embedding-004', content=query)
+                    emb_q = resp['embedding']['values'] if isinstance(resp, dict) else (resp.embeddings[0].values if hasattr(resp, 'embeddings') else resp.embedding.values)
                 else:
                     result = client.Client(vertexai=True, project='vivemedellin', location='us-central1').models.embed_content(
                         model='text-embedding-004',
