@@ -1,0 +1,2 @@
+Environment=ALLOWED_HOSTS=127.0.0.1,localhost,vivemedellin.co,www.vivemedellin.co
+Environment=CSRF_TRUSTED_ORIGINS=https://vivemedellin.co,https://www.vivemedellin.co
