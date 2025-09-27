@@ -31,17 +31,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 class EnvMock:
     def __init__(self):
         self._env_vars = {}
-        # Leer el archivo .env
-        env_file = os.path.join(BASE_DIR, '.env')
-        if os.path.exists(env_file):
-            with open(env_file, 'r') as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith('#') and '=' in line:
-                        key, value = line.split('=', 1)
-                        key = key.strip()
-                        value = value.strip().strip("'\"")
-                        self._env_vars[key] = value
+        # Leer el/los archivo(s) .env
+        env_paths = [
+            os.path.join(BASE_DIR, '.env'),
+            os.path.join(BASE_DIR.parent, '.env'),  # raíz del repo/deploy
+        ]
+        for env_file in env_paths:
+            if os.path.exists(env_file):
+                with open(env_file, 'r') as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith('#') and '=' in line:
+                            key, value = line.split('=', 1)
+                            key = key.strip()
+                            value = value.strip().strip("'\"")
+                            # No sobreescribir si ya fue cargada desde un .env más específico
+                            self._env_vars.setdefault(key, value)
     
     def __call__(self, key, default=None):
         # Primero buscar en el archivo .env, luego en os.environ
