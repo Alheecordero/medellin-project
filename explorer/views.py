@@ -1353,7 +1353,7 @@ def semantic_search_ajax(request):
 	if not query:
 		return JsonResponse({'success': False, 'error': 'Parámetro q requerido'}, status=400)
 	try:
-		client = vertex_genai.Client(vertexai=True)
+		client = vertex_genai.Client(vertexai=True, project='vivemedellin', location='us-central1')
 		result = client.models.embed_content(
 			model='gemini-embedding-001',
 			contents=query,
@@ -1407,7 +1407,7 @@ class SemanticSearchView(View):
 
         if query:
             try:
-                genai_client = vertex_genai.Client(vertexai=True)
+                genai_client = vertex_genai.Client(vertexai=True, project="vivemedellin", location="us-central1")
                 result = genai_client.models.embed_content(
                     model="gemini-embedding-001",
                     contents=query,
