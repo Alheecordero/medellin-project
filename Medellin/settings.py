@@ -45,8 +45,8 @@ class EnvMock:
                             key, value = line.split('=', 1)
                             key = key.strip()
                             value = value.strip().strip("'\"")
-                            # No sobreescribir si ya fue cargada desde un .env más específico
-                            self._env_vars.setdefault(key, value)
+                            # La última definición gana (robusto ante duplicados en .env)
+                            self._env_vars[key] = value
     
     def __call__(self, key, default=None):
         # Primero buscar en el archivo .env, luego en os.environ
