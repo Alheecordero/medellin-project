@@ -1338,66 +1338,45 @@ def lugares_comuna_ajax(request, slug):
 
 
 def _build_genai_client():
-	"""Crea un cliente de embeddings usando API key primero (google.generativeai), Vertex como fallback (google.genai)."""
-	api_key = getattr(settings, 'GOOGLE_API_KEY', None) or os.environ.get('GOOGLE_API_KEY')
-	# Si hay API key, usar google.generativeai
-	if api_key:
-		os.environ.pop('GOOGLE_APPLICATION_CREDENTIALS', None)
-		os.environ.pop('GOOGLE_CLOUD_PROJECT', None)
-		import google.generativeai as genai_v1
-		genai_v1.configure(api_key=api_key)
-		return ('generativeai', genai_v1)
-	# Vertex fallback
+	"""Crea SIEMPRE un cliente Vertex AI (camino único)."""
 	from google import genai as genai_vertex
 	return ('genai', genai_vertex)
 
 @require_GET
 def semantic_search_ajax(request):
 	from django.http import JsonResponse
+	from google import genai as vertex_genai
 	from google.genai import types as vertex_types
 
 	query = request.GET.get('q', '').strip()
 	top_k = int(request.GET.get('top', '12') or 12)
 	if not query:
 		return JsonResponse({'success': False, 'error': 'Parámetro q requerido'}, status=400)
-	if CosineDistance is None:
-		return JsonResponse({'success': False, 'error': 'pgvector no disponible'}, status=500)
 	try:
-		client_kind, client = _build_genai_client()
-		if client_kind == 'generativeai':
-			# Usar google-generativeai embeddings
-			resp = client.embed_content(model='models/text-embedding-004', content=query)
-			emb_q = resp['embedding']['values'] if isinstance(resp, dict) else (resp.embeddings[0].values if hasattr(resp, 'embeddings') else resp.embedding.values)
-		else:
-			# Usar Vertex
-			result = client.Client(vertexai=True, project='vivemedellin', location='us-central1').models.embed_content(
-				model='text-embedding-004',
-				contents=query,
-				config=vertex_types.EmbedContentConfig(
-					output_dimensionality=768,
-					task_type='RETRIEVAL_QUERY'
-				)
+		client = vertex_genai.Client(vertexai=True, project='vivemedellin', location='us-central1')
+		result = client.models.embed_content(
+			model='gemini-embedding-001',
+			contents=query,
+			config=vertex_types.EmbedContentConfig(
+				output_dimensionality=768,
+				task_type='RETRIEVAL_QUERY'
 			)
-			emb_q = result.embeddings[0].values
+		)
+		query_embedding = result.embeddings[0].values
 	except Exception as e:
 		return JsonResponse({'success': False, 'error': f'Error generando embedding: {e}'}, status=500)
 
 	qs = (
 		Places.objects
-		.filter(tiene_fotos=True)
-		.exclude(embedding__isnull=True)
-		.annotate(distance=CosineDistance(F('embedding'), emb_q))
-		.order_by('distance')
+		.extra(select={"score": "1 - (embedding <=> %s::vector)"}, select_params=[query_embedding])
+		.filter(tiene_fotos=True, embedding__isnull=False)
+		.order_by('-score')
 		.prefetch_related('fotos')
-	)
-	lugares = list(qs[:top_k])
+	)[:top_k]
+
 	resp = []
-	for lugar in lugares:
+	for lugar in qs:
 		foto = lugar.fotos.first()
-		try:
-			score = max(0.0, 1.0 - float(getattr(lugar, 'distance', 1.0)))
-		except Exception:
-			score = None
 		resp.append({
 			'nombre': lugar.nombre,
 			'slug': lugar.slug,
@@ -1405,7 +1384,7 @@ def semantic_search_ajax(request):
 			'direccion': lugar.direccion,
 			'rating': lugar.rating or 0.0,
 			'imagen': foto.imagen if foto else None,
-			'score': round(score, 4) if score is not None else None,
+			'score': round(getattr(lugar, 'score', 0.0), 4),
 			'url': f"/lugar/{lugar.slug}/" if lugar.slug else None,
 			'es_destacado': bool(getattr(lugar, 'es_destacado', False)),
 			'es_exclusivo': bool(getattr(lugar, 'es_exclusivo', False)),
@@ -1416,7 +1395,10 @@ def semantic_search_ajax(request):
 
 class SemanticSearchView(View):
     def get(self, request):
+        # Forzar Vertex AI como en la versión original solicitada
+        from google import genai as vertex_genai
         from google.genai import types as vertex_types
+
         query = request.GET.get("q", "").strip()
         as_json = request.headers.get("x-requested-with") == "XMLHttpRequest" or request.GET.get("json") == "1"
 
@@ -1425,47 +1407,47 @@ class SemanticSearchView(View):
 
         if query:
             try:
-                client_kind, client = _build_genai_client()
-                if client_kind == 'generativeai':
-                    resp = client.embed_content(model='models/text-embedding-004', content=query)
-                    emb_q = resp['embedding']['values'] if isinstance(resp, dict) else (resp.embeddings[0].values if hasattr(resp, 'embeddings') else resp.embedding.values)
-                else:
-                    result = client.Client(vertexai=True, project='vivemedellin', location='us-central1').models.embed_content(
-                        model='text-embedding-004',
-                        contents=query,
-                        config=vertex_types.EmbedContentConfig(
-                            output_dimensionality=768,
-                            task_type='RETRIEVAL_QUERY'
-                        )
+                genai_client = vertex_genai.Client(vertexai=True, project="vivemedellin", location="us-central1")
+                result = genai_client.models.embed_content(
+                    model="gemini-embedding-001",
+                    contents=query,
+                    config=vertex_types.EmbedContentConfig(
+                        output_dimensionality=768,
+                        task_type="RETRIEVAL_QUERY"
                     )
-                    emb_q = result.embeddings[0].values
+                )
+                query_embedding = result.embeddings[0].values
 
-                qs = (
-                    Places.objects
-                    .filter(tiene_fotos=True)
-                    .exclude(embedding__isnull=True)
-                    .annotate(distance=CosineDistance(F('embedding'), emb_q))
-                    .order_by('distance')
-                )[:10]
+                lugares = (
+                    Places.objects.extra(
+                        select={"score": "1 - (embedding <=> %s::vector)"},
+                        select_params=[query_embedding]
+                    )
+                    .filter(embedding__isnull=False, tiene_fotos=True)
+                    .order_by("-score")[:10]
+                )
 
-                for l in qs:
-                    try:
-                        score = max(0.0, 1.0 - float(getattr(l, 'distance', 1.0)))
-                    except Exception:
-                        score = None
-                    resultados.append({
+                resultados = [
+                    {
                         "nombre": l.nombre,
                         "tipo": l.get_tipo_display() if hasattr(l, 'get_tipo_display') else l.tipo,
                         "direccion": l.direccion,
                         "rating": l.rating,
-                        "score": round(score, 3) if score is not None else None,
-                    })
+                        "score": round(getattr(l, 'score', 0.0), 3),
+                    }
+                    for l in lugares
+                ]
             except Exception as e:
                 error = str(e)
 
         if as_json:
-            return JsonResponse({"success": error == "", "error": error, "resultados": resultados})
-        return render(request, "semantic_results.html", {"resultados": resultados, "error": error, "q": query}) 
+            return JsonResponse({"resultados": resultados, "error": error})
+        else:
+            return render(request, "semantic_results.html", {
+                "query": query,
+                "resultados": resultados,
+                "error": error
+            })
 
 
 # Funciones de API de reseñas (comentadas - Google solo envía 5 reseñas)
