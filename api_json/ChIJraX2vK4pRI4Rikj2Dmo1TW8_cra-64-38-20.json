@@ -1,0 +1,259 @@
+{
+  "name": "places/ChIJraX2vK4pRI4Rikj2Dmo1TW8",
+  "id": "ChIJraX2vK4pRI4Rikj2Dmo1TW8",
+  "types": [
+    "park",
+    "premise",
+    "point_of_interest",
+    "establishment",
+    "street_address"
+  ],
+  "formattedAddress": "Cra. 64 #38 - 20, Laureles - Estadio, Medell\u00edn, Laureles, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "38 - 20",
+      "shortText": "38 - 20",
+      "types": [
+        "street_number"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Carrera 64",
+      "shortText": "Cra. 64",
+      "types": [
+        "route"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Conquistadores",
+      "shortText": "Conquistadores",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Laureles - Estadio",
+      "shortText": "Laureles - Estadio",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Laureles",
+      "shortText": "Laureles",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050030",
+      "shortText": "050030",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "location": {
+    "latitude": 6.2425204,
+    "longitude": -75.58095449999999
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.241188759261228,
+      "longitude": -75.58231800120834
+    },
+    "high": {
+      "latitude": 6.243886719844233,
+      "longitude": -75.57962004062531
+    }
+  },
+  "googleMapsUri": "https://maps.google.com/?cid=8020125241050548362&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"street-address\">Carrera 64 #38 - 20</span>, <span class=\"region\">Laureles - Estadio</span>, <span class=\"locality\">Medell\u00edn, Laureles, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050030</span>, <span class=\"country-name\">Colombia</span>",
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet",
+  "iconBackgroundColor": "#4DB546",
+  "displayName": {
+    "text": "Cra. 64 #38 - 20"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Parque",
+    "languageCode": "es"
+  },
+  "primaryType": "park",
+  "shortFormattedAddress": "Cra. 64 #38 - 20, Laureles - Estadio, Medell\u00edn",
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJR8aPoq4pRI4Rlwt1Je0B42g",
+        "placeId": "ChIJR8aPoq4pRI4Rlwt1Je0B42g",
+        "displayName": {
+          "text": "Vilanova Apartamentos",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest",
+          "real_estate_agency"
+        ],
+        "spatialRelationship": "ACROSS_THE_ROAD",
+        "straightLineDistanceMeters": 40.522785,
+        "travelDistanceMeters": 44.150726
+      },
+      {
+        "name": "places/ChIJKQEco64pRI4RTAinZgpASjk",
+        "placeId": "ChIJKQEco64pRI4RTAinZgpASjk",
+        "displayName": {
+          "text": "Los Cl\u00e1sicos Barbershop \"Conquistadores\"",
+          "languageCode": "en"
+        },
+        "types": [
+          "establishment",
+          "hair_care",
+          "health",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "DOWN_THE_ROAD",
+        "straightLineDistanceMeters": 31.780388,
+        "travelDistanceMeters": 45.405754
+      },
+      {
+        "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "placeId": "ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "displayName": {
+          "text": "Parques del R\u00edo",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest",
+          "tourist_attraction"
+        ],
+        "spatialRelationship": "AROUND_THE_CORNER",
+        "straightLineDistanceMeters": 199.28793,
+        "travelDistanceMeters": 273.67856
+      },
+      {
+        "name": "places/ChIJrbg2UqkpRI4R4xOwVqzfN9g",
+        "placeId": "ChIJrbg2UqkpRI4R4xOwVqzfN9g",
+        "displayName": {
+          "text": "unidad torres del rio",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 155.70746,
+        "travelDistanceMeters": 274.90222
+      },
+      {
+        "name": "places/ChIJK7cYia4pRI4RVYTDKorMMbk",
+        "placeId": "ChIJK7cYia4pRI4RVYTDKorMMbk",
+        "displayName": {
+          "text": "FUNDACI\u00d3N DIVERSIDAD Sede 1",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 142.55289,
+        "travelDistanceMeters": 139.76242
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJraX2vK4pRI4Rikj2Dmo1TW8",
+        "placeId": "ChIJraX2vK4pRI4Rikj2Dmo1TW8",
+        "displayName": {
+          "text": "parque residencial mall conquistadores",
+          "languageCode": "es"
+        },
+        "containment": "OUTSKIRTS"
+      },
+      {
+        "name": "places/ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "placeId": "ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "displayName": {
+          "text": "Conquistadores",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "placeId": "ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "displayName": {
+          "text": "Laureles - Estadio",
+          "languageCode": "es"
+        },
+        "containment": "WITHIN"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e4429aebcf6a5ad:0x6f4d356a0ef6488a!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=8020125241050548362&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429aebcf6a5ad:0x6f4d356a0ef6488a!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "postalCode": "050030",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn",
+    "addressLines": [
+      "Cra. 64 #38 - 20"
+    ]
+  }
+}

@@ -54,6 +54,18 @@
       gtag('js', new Date());
       gtag('config', '{{ settings.GOOGLE_ANALYTICS_ID }}');
     </script>
+      {% if request.GET.ga_test == '1' %}
+      <script>
+        // Evento de prueba manual para validar GA4 en tiempo real
+        if (typeof gtag === 'function') {
+          gtag('event', 'test_ping', {
+            'debug_mode': true,
+            'send_to': '{{ settings.GOOGLE_ANALYTICS_ID }}',
+            'timestamp': Date.now()
+          });
+        }
+      </script>
+      {% endif %}
     {% endif %}
 
     <!-- CSS principal -->

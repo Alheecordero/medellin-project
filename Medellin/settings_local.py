@@ -14,6 +14,7 @@ SECRET_KEY = 'django-insecure-dev-key-only-for-local-development'
 
 # API Keys
 GOOGLE_API_KEY = 'AIzaSyAyepBu9y5XMYUWsfkxClZ1W2kcLdvIfow'  # Reemplazar con tu key real si la necesitas
+GOOGLE_ANALYTICS_ID = 'G-7T6TJ7020J'
 
 # Base de datos de desarrollo
 DATABASES = {

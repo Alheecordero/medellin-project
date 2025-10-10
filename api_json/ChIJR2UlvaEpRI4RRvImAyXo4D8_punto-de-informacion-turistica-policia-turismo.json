@@ -1,0 +1,312 @@
+{
+  "name": "places/ChIJR2UlvaEpRI4RRvImAyXo4D8",
+  "id": "ChIJR2UlvaEpRI4RRvImAyXo4D8",
+  "types": [
+    "park",
+    "point_of_interest",
+    "establishment"
+  ],
+  "formattedAddress": "Cra. 63A #1889, Laureles - Estadio, Medell\u00edn, Laureles, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "1889",
+      "shortText": "1889",
+      "types": [
+        "street_number"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Carrera 63A",
+      "shortText": "Cra. 63A",
+      "types": [
+        "route"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Conquistadores",
+      "shortText": "Conquistadores",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Laureles - Estadio",
+      "shortText": "Laureles - Estadio",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Laureles",
+      "shortText": "Laureles",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050030",
+      "shortText": "050030",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "67R66CVC+95",
+    "compoundCode": "6CVC+95 Medell\u00edn, Antioquia"
+  },
+  "location": {
+    "latitude": 6.2433817,
+    "longitude": -75.57959
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.242168669708498,
+      "longitude": -75.58119868029151
+    },
+    "high": {
+      "latitude": 6.244866630291503,
+      "longitude": -75.5785007197085
+    }
+  },
+  "rating": 5,
+  "googleMapsUri": "https://maps.google.com/?cid=4602934064836964934&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"street-address\">Carrera 63A #1889</span>, <span class=\"region\">Laureles - Estadio</span>, <span class=\"locality\">Medell\u00edn, Laureles, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050030</span>, <span class=\"country-name\">Colombia</span>",
+  "businessStatus": "OPERATIONAL",
+  "userRatingCount": 1,
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet",
+  "iconBackgroundColor": "#4DB546",
+  "displayName": {
+    "text": "Punto de informaci\u00f3n tur\u00edstica polic\u00eda turismo",
+    "languageCode": "es"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Parque",
+    "languageCode": "es"
+  },
+  "primaryType": "park",
+  "shortFormattedAddress": "Cra. 63A #1889, Laureles - Estadio, Medell\u00edn",
+  "reviews": [
+    {
+      "name": "places/ChIJR2UlvaEpRI4RRvImAyXo4D8/reviews/ChZDSUhNMG9nS0VJQ0FnSURUa1otMU1BEAE",
+      "relativePublishTimeDescription": "Hace un a\u00f1o",
+      "rating": 5,
+      "authorAttribution": {
+        "displayName": "Mauricio Upegui",
+        "uri": "https://www.google.com/maps/contrib/109849430147183813606/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocLaqcsk6aA2Bz41ch7eZd9rq99mNmSD1GeVXrFeEU-J0A06Fg=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2024-05-25T12:14:00.826513Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSURUa1otMU1BEAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSURUa1otMU1BEAE!2m1!1s0x8e4429a1bd256547:0x3fe0e8250326f246"
+    }
+  ],
+  "photos": [
+    {
+      "name": "places/ChIJR2UlvaEpRI4RRvImAyXo4D8/photos/AciIO2etanQRb5S3DerXxB1BK8czQqT7VV_7eI58VkWzoPs0xTwqVSinjXmAnWmpMyP_riT151QH4uxYWkhDkH-x4sOQskvvGfypcRXwh9QKZd9M-jmoVnajf4rDDqQFGujaL7KH8F1-ydaA7SP5BOO8nJTBiD9PPlz8-9iUmB8j-h-Uemt1TWTng_rhz9dLHRA29J0ONA9FlqJsKF6F-Fk5vMyC4ayL-97qvYN7QWipPT_3VyYAZdG6Hu0VLW6RvT7CB4a30WhznuE1PiGHy-r0uNiYLAe0d7X6n-_g9H3kTzFs6mZ8kcobYE47HfEuo-2JnXghYSgAaY8Gs2Na4TB0CMOlvNYxE5F8vA-ufrmx1Iuht40LlrX3kn9-dbIFIQNp9T9ah110wtbnwHuxA1trdDPRoFH9gMHJTXHR2wUOSxY93q4w",
+      "widthPx": 1920,
+      "heightPx": 1080,
+      "authorAttributions": [
+        {
+          "displayName": "Alejandro Sepulveda",
+          "uri": "https://maps.google.com/maps/contrib/116414461846108881205",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVFpb830jgDwsELq7sf6EpgoAEbS3Sxzn2VCyXCYL8wVJoCXF90Uw=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIC-z9327wE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIC-z9327wE!2e10!4m2!3m1!1s0x8e4429a1bd256547:0x3fe0e8250326f246"
+    },
+    {
+      "name": "places/ChIJR2UlvaEpRI4RRvImAyXo4D8/photos/AciIO2ew7I33yS99AyjZyGjG7H5ne2wTaUvLCBcnGeC49ofuzyCVxH8Y-n-B_uLbi2lNUMH5o7oR1KIyuToH1A_iKny4f0m2fFLcrqgqggF38Ix34kSntUt21_BkiC1GsOOvhe4grZEWEf7EsSoTc_EWQLs7iu7c2e0p3Uz9qvY6ZmW4pmzVXfv5NZPE63OwYRqOd3j5VFae4brAvCwhxtJ24eM5QejPPHxpOd0n9SVKRLKBGxIaXNbQFEzLnGGq0pCutbleF15iA4ZkY3COnLp1fmTXGMP3RpH9RNZF96hO5UDlwqLXslYmidsQoZnAazv1sLVMksm-YdoXZ_tFpqwCkriy5fRH5vyRX0rI0hDvJue6_Ije_lVuGbX6qUdbxBYVuavDZg-yl3lkIgFUn4ae4JBXPUNZDmV9z7TR8mCnaMn5wMge",
+      "widthPx": 1920,
+      "heightPx": 1080,
+      "authorAttributions": [
+        {
+          "displayName": "Alejandro Sepulveda",
+          "uri": "https://maps.google.com/maps/contrib/116414461846108881205",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVFpb830jgDwsELq7sf6EpgoAEbS3Sxzn2VCyXCYL8wVJoCXF90Uw=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIC-z93-2QE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIC-z93-2QE!2e10!4m2!3m1!1s0x8e4429a1bd256547:0x3fe0e8250326f246"
+    }
+  ],
+  "goodForChildren": true,
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "placeId": "ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "displayName": {
+          "text": "Parques del R\u00edo",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest",
+          "tourist_attraction"
+        ],
+        "spatialRelationship": "BESIDE",
+        "straightLineDistanceMeters": 24.847212,
+        "travelDistanceMeters": 68.834305
+      },
+      {
+        "name": "places/ChIJZVE4GawpRI4RkfaYKP0Xf9s",
+        "placeId": "ChIJZVE4GawpRI4RkfaYKP0Xf9s",
+        "displayName": {
+          "text": "Centro Residencial Colseguros",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 71.44169,
+        "travelDistanceMeters": 81.94574
+      },
+      {
+        "name": "places/ChIJ2-JPY6wpRI4RLkHsAWxVH5Q",
+        "placeId": "ChIJ2-JPY6wpRI4RLkHsAWxVH5Q",
+        "displayName": {
+          "text": "Teatro Metropolitano Jos\u00e9 Guti\u00e9rrez G\u00f3mez",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 239.10088,
+        "travelDistanceMeters": 398.5687
+      },
+      {
+        "name": "places/ChIJJ1buuqspRI4R0mmnMcbmofQ",
+        "placeId": "ChIJJ1buuqspRI4R0mmnMcbmofQ",
+        "displayName": {
+          "text": "Edificio Inteligente de EPM",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 257.25397,
+        "travelDistanceMeters": 386.2549
+      },
+      {
+        "name": "places/ChIJAQBA_6spRI4Rbtr6QgkM-nE",
+        "placeId": "ChIJAQBA_6spRI4Rbtr6QgkM-nE",
+        "displayName": {
+          "text": "Cancha Colseguros",
+          "languageCode": "en"
+        },
+        "types": [
+          "establishment",
+          "gym",
+          "health",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "DOWN_THE_ROAD",
+        "straightLineDistanceMeters": 39.99929,
+        "travelDistanceMeters": 88.04912
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "placeId": "ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "displayName": {
+          "text": "Conquistadores",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "placeId": "ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "displayName": {
+          "text": "Laureles - Estadio",
+          "languageCode": "es"
+        },
+        "containment": "OUTSKIRTS"
+      },
+      {
+        "name": "places/ChIJ58qCAKwpRI4RaHsKRvHVNUE",
+        "placeId": "ChIJ58qCAKwpRI4RaHsKRvHVNUE",
+        "displayName": {
+          "text": "Cancha Colseguros",
+          "languageCode": "en"
+        },
+        "containment": "OUTSKIRTS"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e4429a1bd256547:0x3fe0e8250326f246!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=4602934064836964934&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "writeAReviewUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429a1bd256547:0x3fe0e8250326f246!12e1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e4429a1bd256547:0x3fe0e8250326f246!9m1!1b1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429a1bd256547:0x3fe0e8250326f246!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "postalCode": "050030",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn, Laureles, Medell\u00edn",
+    "sublocality": "Laureles - Estadio",
+    "addressLines": [
+      "Cra. 63A #1889"
+    ]
+  }
+}

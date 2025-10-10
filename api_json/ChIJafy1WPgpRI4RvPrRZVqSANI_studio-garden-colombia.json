@@ -1,0 +1,740 @@
+{
+  "name": "places/ChIJafy1WPgpRI4RvPrRZVqSANI",
+  "id": "ChIJafy1WPgpRI4RvPrRZVqSANI",
+  "types": [
+    "garden",
+    "park",
+    "point_of_interest",
+    "establishment"
+  ],
+  "nationalPhoneNumber": "302 2182154",
+  "internationalPhoneNumber": "+57 302 2182154",
+  "formattedAddress": "Tv 42B #63c-131, Laureles - Estadio, Medell\u00edn, Laureles, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "63c-131",
+      "shortText": "63c-131",
+      "types": [
+        "street_number"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Transversal 42B",
+      "shortText": "Tv 42B",
+      "types": [
+        "route"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Conquistadores",
+      "shortText": "Conquistadores",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Laureles - Estadio",
+      "shortText": "Laureles - Estadio",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Laureles",
+      "shortText": "Laureles",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050030",
+      "shortText": "050030",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "67R66CW9+73",
+    "compoundCode": "6CW9+73 Medell\u00edn, Antioquia"
+  },
+  "location": {
+    "latitude": 6.2457443999999995,
+    "longitude": -75.582292
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.244447919708498,
+      "longitude": -75.5835958802915
+    },
+    "high": {
+      "latitude": 6.2471458802915025,
+      "longitude": -75.58089791970848
+    }
+  },
+  "rating": 5,
+  "googleMapsUri": "https://maps.google.com/?cid=15132255664917838524&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "regularOpeningHours": {
+    "openNow": false,
+    "periods": [
+      {
+        "open": {
+          "day": 0,
+          "hour": 12,
+          "minute": 0
+        },
+        "close": {
+          "day": 0,
+          "hour": 20,
+          "minute": 0
+        }
+      },
+      {
+        "open": {
+          "day": 1,
+          "hour": 12,
+          "minute": 0
+        },
+        "close": {
+          "day": 1,
+          "hour": 20,
+          "minute": 0
+        }
+      },
+      {
+        "open": {
+          "day": 2,
+          "hour": 12,
+          "minute": 0
+        },
+        "close": {
+          "day": 2,
+          "hour": 20,
+          "minute": 0
+        }
+      },
+      {
+        "open": {
+          "day": 3,
+          "hour": 12,
+          "minute": 0
+        },
+        "close": {
+          "day": 3,
+          "hour": 20,
+          "minute": 0
+        }
+      },
+      {
+        "open": {
+          "day": 4,
+          "hour": 12,
+          "minute": 0
+        },
+        "close": {
+          "day": 4,
+          "hour": 20,
+          "minute": 0
+        }
+      },
+      {
+        "open": {
+          "day": 5,
+          "hour": 12,
+          "minute": 0
+        },
+        "close": {
+          "day": 5,
+          "hour": 20,
+          "minute": 0
+        }
+      },
+      {
+        "open": {
+          "day": 6,
+          "hour": 12,
+          "minute": 0
+        },
+        "close": {
+          "day": 6,
+          "hour": 20,
+          "minute": 0
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: 12:00\u201320:00",
+      "martes: 12:00\u201320:00",
+      "mi\u00e9rcoles: 12:00\u201320:00",
+      "jueves: 12:00\u201320:00",
+      "viernes: 12:00\u201320:00",
+      "s\u00e1bado: 12:00\u201320:00",
+      "domingo: 12:00\u201320:00"
+    ],
+    "nextOpenTime": "2025-10-07T17:00:00Z"
+  },
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"street-address\">Transversal 42B #63c-131</span>, <span class=\"region\">Laureles - Estadio</span>, <span class=\"locality\">Medell\u00edn, Laureles, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050030</span>, <span class=\"country-name\">Colombia</span>",
+  "businessStatus": "OPERATIONAL",
+  "userRatingCount": 6,
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet",
+  "iconBackgroundColor": "#4DB546",
+  "displayName": {
+    "text": "Studio Garden Colombia",
+    "languageCode": "es"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Jard\u00edn",
+    "languageCode": "es"
+  },
+  "currentOpeningHours": {
+    "openNow": false,
+    "periods": [
+      {
+        "open": {
+          "day": 0,
+          "hour": 12,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 12
+          }
+        },
+        "close": {
+          "day": 0,
+          "hour": 20,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 12
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 1,
+          "hour": 12,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 6
+          }
+        },
+        "close": {
+          "day": 1,
+          "hour": 20,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 6
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 2,
+          "hour": 12,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 7
+          }
+        },
+        "close": {
+          "day": 2,
+          "hour": 20,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 7
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 3,
+          "hour": 12,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 8
+          }
+        },
+        "close": {
+          "day": 3,
+          "hour": 20,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 8
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 4,
+          "hour": 12,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 9
+          }
+        },
+        "close": {
+          "day": 4,
+          "hour": 20,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 9
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 5,
+          "hour": 12,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 10
+          }
+        },
+        "close": {
+          "day": 5,
+          "hour": 20,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 10
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 6,
+          "hour": 12,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 11
+          }
+        },
+        "close": {
+          "day": 6,
+          "hour": 20,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 11
+          }
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: 12:00\u201320:00",
+      "martes: 12:00\u201320:00",
+      "mi\u00e9rcoles: 12:00\u201320:00",
+      "jueves: 12:00\u201320:00",
+      "viernes: 12:00\u201320:00",
+      "s\u00e1bado: 12:00\u201320:00",
+      "domingo: 12:00\u201320:00"
+    ],
+    "nextOpenTime": "2025-10-07T17:00:00Z"
+  },
+  "primaryType": "garden",
+  "shortFormattedAddress": "Tv 42B #63c-131, Laureles - Estadio, Medell\u00edn",
+  "reviews": [
+    {
+      "name": "places/ChIJafy1WPgpRI4RvPrRZVqSANI/reviews/ChZDSUhNMG9nS0VJQ0FnSURKclp6dk9BEAE",
+      "relativePublishTimeDescription": "Hace 2 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Excelente lugar; el mejor dispensario de CBD  en medellin. \ud83d\ude0d\ud83d\ude0d\ud83d\ude0d\ud83c\udf8a\ud83c\udf89",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Excelente lugar; el mejor dispensario de CBD  en medellin. \ud83d\ude0d\ud83d\ude0d\ud83d\ude0d\ud83c\udf8a\ud83c\udf89",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "LEIDY MARCELA ORORIO RESTREPO",
+        "uri": "https://www.google.com/maps/contrib/111343081826220131783/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWzcD9doCOt_nEokJbYOHP2thHUP7MLTHaV56nE7Edo4-AQdKEv=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2023-07-22T02:42:27.632357Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSURKclp6dk9BEAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSURKclp6dk9BEAE!2m1!1s0x8e4429f858b5fc69:0xd200925a65d1fabc"
+    },
+    {
+      "name": "places/ChIJafy1WPgpRI4RvPrRZVqSANI/reviews/ChZDSUhNMG9nS0VJQ0FnSURac2NfZVV3EAE",
+      "relativePublishTimeDescription": "Hace 2 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Es excelente lograr se aprender mucho  muy buena asesoria buena atenci\u00f3n muy buenos productos",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Es excelente lograr se aprender mucho  muy buena asesoria buena atenci\u00f3n muy buenos productos",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "johan arley agudelo eusse",
+        "uri": "https://www.google.com/maps/contrib/114574870213241528064/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVZFW6CosvBElD4L3jreUG-P8kEaeYevVKI0m6ufWfMyS5BgCj3uQ=s128-c0x00000000-cc-rp-mo-ba4"
+      },
+      "publishTime": "2023-10-03T09:14:58.742113Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSURac2NfZVV3EAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSURac2NfZVV3EAE!2m1!1s0x8e4429f858b5fc69:0xd200925a65d1fabc"
+    },
+    {
+      "name": "places/ChIJafy1WPgpRI4RvPrRZVqSANI/reviews/ChZDSUhNMG9nS0VJQ0FnSURoblBueVNnEAE",
+      "relativePublishTimeDescription": "Hace 2 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Muy buena atenci\u00f3n a distribuidores de GARDEN HIGHPRO",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Muy buena atenci\u00f3n a distribuidores de GARDEN HIGHPRO",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Pentagrama Tienda de cultivo",
+        "uri": "https://www.google.com/maps/contrib/100740734316457791245/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocI64iJQnBz7x1eDoKSIa0Zix-4EEsU6vPUDiB5KmhcZjFnbUw=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2023-03-03T18:44:21.065418Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSURoblBueVNnEAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSURoblBueVNnEAE!2m1!1s0x8e4429f858b5fc69:0xd200925a65d1fabc"
+    },
+    {
+      "name": "places/ChIJafy1WPgpRI4RvPrRZVqSANI/reviews/ChdDSUhNMG9nS0VJQ0FnSUNwek1LcDlnRRAB",
+      "relativePublishTimeDescription": "Hace 2 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Has encontrado el mejor dispensario de Medell\u00edn. Tambi\u00e9n vendemos hongos.",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "You have found the best dispensary in Medellin. Also has mushroom supplies",
+        "languageCode": "en"
+      },
+      "authorAttribution": {
+        "displayName": "Mtn Hombre",
+        "uri": "https://www.google.com/maps/contrib/114556248376901175624/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXah_tCMB0RZWmgNEwmwdBoFMCqZxvGepgFVdnDQRVAnqwQjoUs=s128-c0x00000000-cc-rp-mo-ba3"
+      },
+      "publishTime": "2023-07-30T02:22:00.137430Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSUNwek1LcDlnRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSUNwek1LcDlnRRAB!2m1!1s0x8e4429f858b5fc69:0xd200925a65d1fabc"
+    },
+    {
+      "name": "places/ChIJafy1WPgpRI4RvPrRZVqSANI/reviews/ChZDSUhNMG9nS0VJQ0FnSUNqbk1qWlhnEAE",
+      "relativePublishTimeDescription": "Hace un a\u00f1o",
+      "rating": 5,
+      "authorAttribution": {
+        "displayName": "Cristian Soto",
+        "uri": "https://www.google.com/maps/contrib/117238062062098525105/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocJ3IkEfBQga-he5LOVSf7-1XJe4QKRI7FUV6Y2T-LGntuDGow=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2024-04-18T18:47:04.874375Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSUNqbk1qWlhnEAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSUNqbk1qWlhnEAE!2m1!1s0x8e4429f858b5fc69:0xd200925a65d1fabc"
+    }
+  ],
+  "photos": [
+    {
+      "name": "places/ChIJafy1WPgpRI4RvPrRZVqSANI/photos/AciIO2eC4wFQLBlBgzPJQozW6djGaaycF343kAkvxkId-3mo66oQbr3w7FuBlf3sDY8pzamW9aBfs2uuHQi6WlCBQzncUoz9u_t1bWCLK20-qNpRycviCzRgSQV4yBp4BT3KuM301sI2DASp1j6w4yJ0ABhj-otU3ZqrrYSYuaCp0BrHAlls-60Gu1L4ekMzIyBq4Yh4dyCuICCUw6axtaIEHaHXaCalqPh9c0TTcZ9USAjzzabScrz4DDmv5Nuo3mHZ9g-ltZfFwAAW5u--edJL2xuCdktLY8vLFMkCnX8e9kxn5ZfXX7baeqEGUywvI-rUbmqkYEODHbDKqcMwIr-BPDlNX9IiyUDWDYGhiZDxZQl5oxylX2TlpdjjrqgO57GHFN7yU4cZubfQvsmzLRtGY1dlHX8wiepJKOLMh9MC90aInw",
+      "widthPx": 4032,
+      "heightPx": 3024,
+      "authorAttributions": [
+        {
+          "displayName": "LEIDY MARCELA ORORIO RESTREPO",
+          "uri": "https://maps.google.com/maps/contrib/111343081826220131783",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWzcD9doCOt_nEokJbYOHP2thHUP7MLTHaV56nE7Edo4-AQdKEv=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDJrdyqfw&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDJrdyqfw!2e10!4m2!3m1!1s0x8e4429f858b5fc69:0xd200925a65d1fabc"
+    },
+    {
+      "name": "places/ChIJafy1WPgpRI4RvPrRZVqSANI/photos/AciIO2fAiYAEkh7RGmvI60QMaejgyvcEh_QavoslQPKOS9UrmqRgGJBT0NRJoh_DHEiiqHgQffGaghhxQkKXcTx9DxCK-n3lH41M62giQULkGkax9uF9YDDXTmMaIF55LMSJ-Clbd2n27yly0HaFDLGeLThrkS_Kd9mTkVKWQ_p9Z91aBwU_V-piDKwYq3pILhMJlyxMZpT2Zv9jDOcTNmTCnwJNtnTHzxb21ezs8WKAWAwY46ealQsEUw-5vZmMlqE01aQ-JkboY8F9_gHTTLpxrfqF4JBGUwIjt1skbzMAhZV3O_8JSqDMVjvhXn1sZkNRZ2EFYmYjfnAOLSSYl98DtouKwYHrVhAdFXYy5WDxSnRmQ7ZNGVhZzxx7PwzwzkqUWAQNbIWUUOvoorAH1YdQX1_qSFeuNFaGg1fz4M7A6jDhoA",
+      "widthPx": 1200,
+      "heightPx": 1600,
+      "authorAttributions": [
+        {
+          "displayName": "Pentagrama Tienda de cultivo",
+          "uri": "https://maps.google.com/maps/contrib/100740734316457791245",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocI64iJQnBz7x1eDoKSIa0Zix-4EEsU6vPUDiB5KmhcZjFnbUw=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDvsOK7Ig&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDvsOK7Ig!2e10!4m2!3m1!1s0x8e4429f858b5fc69:0xd200925a65d1fabc"
+    },
+    {
+      "name": "places/ChIJafy1WPgpRI4RvPrRZVqSANI/photos/AciIO2fFEfD0HvXZYuGuZQloduvc3ezIhEVMOLLtwgVoNZwy3dgDlBfCaqoCEBJntNap97hd8kpGq0zupcQF8dRoq-cXnD1qaqSnj-x8rWg1SecCMnZlWGyaJkxSB1ML-Opgs3w4ERp9y1yjW3D6ielCz0wISqSIjq-y8LQgNsNd57wO1L7cPk44pODOKokaGq8a5ouoyp6MEZ1Iu3VqY3CnBtV3QA1PwXAnvopm25rYPq8II7IosPWbIfWhodKaQW1lDxAwdhs7eGXad7EEvLRQ98pdga8kfKhlRRzF0l9auQYicKEm0tST-Rh-1z9Zg2lKmyYnITSUGXKsmYWX5Wi5GEMKvHdid5BXM0qUgx99vmQZ2349Sjs9GEO5JUEe2BKz6h9s8ooteMYCZC9KSKeOMzLO4BYyFU57Cnx8fG4h6hA",
+      "widthPx": 3024,
+      "heightPx": 4032,
+      "authorAttributions": [
+        {
+          "displayName": "Pentagrama Tienda de cultivo",
+          "uri": "https://maps.google.com/maps/contrib/100740734316457791245",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocI64iJQnBz7x1eDoKSIa0Zix-4EEsU6vPUDiB5KmhcZjFnbUw=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDv8PzPFw&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDv8PzPFw!2e10!4m2!3m1!1s0x8e4429f858b5fc69:0xd200925a65d1fabc"
+    },
+    {
+      "name": "places/ChIJafy1WPgpRI4RvPrRZVqSANI/photos/AciIO2dIqZlJifrvOJUKEDrJASM0YERR-XeBOKkH8bX9lpBnnmA2Tre3aBpGL4_QZ4XoVrP-N5OXK0ORRCNHtQ5oi4EPNXX9_xZiK2k5PgnxEHFcnbtgGWyn6wvdO-RxluEf6x7V9DWfe14AZ7sQoDyLQgxYNsFyMyPzxdxCfDyAhadeBypPZm4MdaCKM6T8fNEn8Pc5DwpkiqUZzLV7oOgVOQUldE0Xgo9fyOcgEk75NZxU5zKXG4AbxDi11CAAuysxjAWYUut5x0wrRuVWX9l4JEDZS2mlfAth8Q8s-3mWBMD5sF9_Qk1DhYMGJIVOQ9KqtCQgqktTwcL-JlsY6VNRTiSiaMlUYlww2YSzpChczEj0oN5lNwaLXmW2E70Q_6CkahVX8Djw7FmVGBOFP8IbLA6cAjPtmp1SY8ZsFrymsT5cHQ",
+      "widthPx": 4624,
+      "heightPx": 2604,
+      "authorAttributions": [
+        {
+          "displayName": "Ivan Dario Agudelo",
+          "uri": "https://maps.google.com/maps/contrib/113459172592849100821",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVweN0JnXmEQkacxVhCizPTTyFBXlkggzjvzua3tRaJMA_-lBEP3g=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDpzYDKYA&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDpzYDKYA!2e10!4m2!3m1!1s0x8e4429f858b5fc69:0xd200925a65d1fabc"
+    },
+    {
+      "name": "places/ChIJafy1WPgpRI4RvPrRZVqSANI/photos/AciIO2dwmz4SchCBG-4nBbxN6q5vouFKyo5Upo27aXg-j7iMPYOC4AqIvz3c5b99e5pjzr8kDtZlmZjI8RIOaSxhGFGPRJrj3mtcyxeuUtosgZwU4jRkPgSRqsLUyrQiWwn6xrMheieEaPc8xwvNBdP3TGxcRJFw-36I3TRd3FdqfzLHS944h_JydCk9BGSMV3hR0Ks1mtJoKv_Yk73KKo1lQOxxhslkUPc3eDYDAOlVnwPW4oPhT_RFzkDXHHLOj7z4v6BxPkyGoUCq4JhS5LLhiaQ7QJepTBV2GSahYSufFlWPL0NSuPkjESYNL-lwk1Jk8BQmT4dh9zbhClxPzP6GbxwHTKzTC1X-1LA4Qb6ZTCVGBiqZ-kdbsJ2Dp96KBYQkqqQxV1oLKy4-91kXuCDUDG607YRovg0uhKCj_tezRe2I9w",
+      "widthPx": 4032,
+      "heightPx": 2268,
+      "authorAttributions": [
+        {
+          "displayName": "Lorena Dom\u00ednguez",
+          "uri": "https://maps.google.com/maps/contrib/103973285988212665494",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIPtyLyxjondk-QZO-I_z7mFV8Lz9D731Att5BrPkLLkznB6g=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDhyMSrHw&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDhyMSrHw!2e10!4m2!3m1!1s0x8e4429f858b5fc69:0xd200925a65d1fabc"
+    },
+    {
+      "name": "places/ChIJafy1WPgpRI4RvPrRZVqSANI/photos/AciIO2fjSWx6OVCd8hEBNnTPhMYBDY1-Im0r1YAx7o96cNsBo4MjK968QRI7ynaYwdHp3JrVWumzmCOJJ-GkUNEUkKW8Xd2pXXdvyDMAGLgpbPt93eIPIksxTqDe4gORRnnW6ZQMCN3UnJ6GdDPs-iTJGrARxED5SKRX0BXcttfKUSYndWokhP-xAgC5fE9MoR7RjsVLKMz-hgrVn0HBwTgjJwkHwPClkz2k1LavkqW9j2iYOQt_7KjC9p0qdaB4Gbi3K4ALSGT2eglX-Y0hnq5IXn7qX5mU0ZE4Xb-4amHWHQEXrHbCf8d6RGTCeEw5SE8WiyVWrXxSDtsB_HWuRznhCozJaaAOqBCToRDdcSnImXJbNzCUiiB4iax6dTjkDcc03nVYizQLkAlbOWs1Py1XEHcqnKehva4d-DgysnwNc6GK_UYZ",
+      "widthPx": 4624,
+      "heightPx": 2604,
+      "authorAttributions": [
+        {
+          "displayName": "Ivan Dario Agudelo",
+          "uri": "https://maps.google.com/maps/contrib/113459172592849100821",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVweN0JnXmEQkacxVhCizPTTyFBXlkggzjvzua3tRaJMA_-lBEP3g=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDpjb-7igE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDpjb-7igE!2e10!4m2!3m1!1s0x8e4429f858b5fc69:0xd200925a65d1fabc"
+    },
+    {
+      "name": "places/ChIJafy1WPgpRI4RvPrRZVqSANI/photos/AciIO2dQhVJJJ1pIHE6BWLElnwIubGp5pbfV9dc1HU9T8-DnGp7DheDd7kA_knBoQv524I_dboJjISVZmh7jVVxUupVGAfGWI6xnTH1jVu6nvHPXpGqm0jYkQSW_np4AD0Waet2NvBYYT5Dc0sek6z16SQb5XSHSQ3EMp4Hn5r2k1VcevDwOJz7deG9Mq9wP0qNjSv1Lsy7BsRPMecaRV6UdT1s-86hOgq57TPmij_oYtcblncEfU7Ko8HAa4mNh0q35BqYy6PaHTcyI2OAHfTCuIyJK8BJPxYyaobM3MJQVpSm6p4eiHue3ZZfqGcAGf3b6Ub11hxdoo0RpbK-1LFutKAYol2ylRenVXh-mszjNo_d5O6aBULELX_v3tESWzEYS1Lvgl_7_B7DCR2CFQRXQ6Vn_pSu7tFqcB76tou1khRE",
+      "widthPx": 3024,
+      "heightPx": 4032,
+      "authorAttributions": [
+        {
+          "displayName": "LEIDY MARCELA ORORIO RESTREPO",
+          "uri": "https://maps.google.com/maps/contrib/111343081826220131783",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWzcD9doCOt_nEokJbYOHP2thHUP7MLTHaV56nE7Edo4-AQdKEv=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDJrZzveA&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDJrZzveA!2e10!4m2!3m1!1s0x8e4429f858b5fc69:0xd200925a65d1fabc"
+    }
+  ],
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJS2BJwq0pRI4RTFB_F3OwBus",
+        "placeId": "ChIJS2BJwq0pRI4RTFB_F3OwBus",
+        "displayName": {
+          "text": "Bloom IPS.",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "health",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "ACROSS_THE_ROAD",
+        "straightLineDistanceMeters": 19.328499,
+        "travelDistanceMeters": 2.430748
+      },
+      {
+        "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "placeId": "ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "displayName": {
+          "text": "Parques del R\u00edo",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest",
+          "tourist_attraction"
+        ],
+        "straightLineDistanceMeters": 387.81525,
+        "travelDistanceMeters": 404.53058
+      },
+      {
+        "name": "places/ChIJaXT8WKgpRI4Rf6zWAvi9Vc0",
+        "placeId": "ChIJaXT8WKgpRI4Rf6zWAvi9Vc0",
+        "displayName": {
+          "text": "Tienda D1 La 65",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "food",
+          "grocery_or_supermarket",
+          "point_of_interest",
+          "store",
+          "supermarket"
+        ],
+        "straightLineDistanceMeters": 209.21797,
+        "travelDistanceMeters": 304.7848
+      },
+      {
+        "name": "places/ChIJQ5AuO6kpRI4R65L9w5OvlWw",
+        "placeId": "ChIJQ5AuO6kpRI4R65L9w5OvlWw",
+        "displayName": {
+          "text": "grupo protrans",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 148.76445,
+        "travelDistanceMeters": 262.97687
+      },
+      {
+        "name": "places/ChIJ0eHmtuMpRI4RZvbu53pacAs",
+        "placeId": "ChIJ0eHmtuMpRI4RZvbu53pacAs",
+        "displayName": {
+          "text": "Magenta Seguros ltda",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "insurance_agency",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "ACROSS_THE_ROAD",
+        "straightLineDistanceMeters": 46.069,
+        "travelDistanceMeters": 44.295692
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "placeId": "ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "displayName": {
+          "text": "Conquistadores",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "placeId": "ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "displayName": {
+          "text": "Laureles - Estadio",
+          "languageCode": "es"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJ31X2cqYpRI4R5IKUsLcREps",
+        "placeId": "ChIJ31X2cqYpRI4R5IKUsLcREps",
+        "displayName": {
+          "text": "San Joaquin",
+          "languageCode": "en"
+        },
+        "containment": "NEAR"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e4429f858b5fc69:0xd200925a65d1fabc!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=15132255664917838524&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "writeAReviewUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429f858b5fc69:0xd200925a65d1fabc!12e1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e4429f858b5fc69:0xd200925a65d1fabc!9m1!1b1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429f858b5fc69:0xd200925a65d1fabc!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "postalCode": "050030",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn",
+    "sublocality": "Laureles - Estadio",
+    "addressLines": [
+      "Tv 42B #63c-131"
+    ]
+  }
+}

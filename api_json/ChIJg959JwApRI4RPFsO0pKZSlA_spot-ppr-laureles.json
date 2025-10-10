@@ -1,0 +1,256 @@
+{
+  "name": "places/ChIJg959JwApRI4RPFsO0pKZSlA",
+  "id": "ChIJg959JwApRI4RPFsO0pKZSlA",
+  "types": [
+    "park",
+    "point_of_interest",
+    "establishment"
+  ],
+  "formattedAddress": "Cra. 65 #39-47, Laureles - Estadio, Medell\u00edn, Laureles, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "39-47",
+      "shortText": "39-47",
+      "types": [
+        "street_number"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Carrera 65",
+      "shortText": "Cra. 65",
+      "types": [
+        "route"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Conquistadores",
+      "shortText": "Conquistadores",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Laureles - Estadio",
+      "shortText": "Laureles - Estadio",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Laureles",
+      "shortText": "Laureles",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050030",
+      "shortText": "050030",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "67R66CV8+FM",
+    "compoundCode": "6CV8+FM Medell\u00edn, Antioquia"
+  },
+  "location": {
+    "latitude": 6.243641299999999,
+    "longitude": -75.58327070000001
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.242291019708498,
+      "longitude": -75.58464018029149
+    },
+    "high": {
+      "latitude": 6.2449889802915015,
+      "longitude": -75.58194221970848
+    }
+  },
+  "googleMapsUri": "https://maps.google.com/?cid=5785605527179254588&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"street-address\">Carrera 65 #39-47</span>, <span class=\"region\">Laureles - Estadio</span>, <span class=\"locality\">Medell\u00edn, Laureles, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050030</span>, <span class=\"country-name\">Colombia</span>",
+  "businessStatus": "OPERATIONAL",
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet",
+  "iconBackgroundColor": "#4DB546",
+  "displayName": {
+    "text": "Spot ppr laureles",
+    "languageCode": "es"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Parque",
+    "languageCode": "es"
+  },
+  "primaryType": "park",
+  "shortFormattedAddress": "Cra. 65 #39-47, Laureles - Estadio, Medell\u00edn",
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJYXIu2q4pRI4RZ9gfjv3GGVU",
+        "placeId": "ChIJYXIu2q4pRI4RZ9gfjv3GGVU",
+        "displayName": {
+          "text": "Edificio Marquez De Caceres",
+          "languageCode": "en"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 112.72168,
+        "travelDistanceMeters": 246.87755
+      },
+      {
+        "name": "places/ChIJK_gHKK8pRI4R4sNpv4sVR8Q",
+        "placeId": "ChIJK_gHKK8pRI4R4sNpv4sVR8Q",
+        "displayName": {
+          "text": "Parque Urbano El Tri\u00e1ngulo",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "DOWN_THE_ROAD",
+        "straightLineDistanceMeters": 37.53545,
+        "travelDistanceMeters": 42.802826
+      },
+      {
+        "name": "places/ChIJp5DQc6UpRI4RpsNomiT2bEI",
+        "placeId": "ChIJp5DQc6UpRI4RpsNomiT2bEI",
+        "displayName": {
+          "text": "Centro Comercial Unicentro",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest",
+          "shopping_mall"
+        ],
+        "straightLineDistanceMeters": 534.0416,
+        "travelDistanceMeters": 467.46683
+      },
+      {
+        "name": "places/ChIJZ6Oc064pRI4R2y_MGg_jzrs",
+        "placeId": "ChIJZ6Oc064pRI4R2y_MGg_jzrs",
+        "displayName": {
+          "text": "Edificio Horus",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "AROUND_THE_CORNER",
+        "straightLineDistanceMeters": 65.61717,
+        "travelDistanceMeters": 143.62112
+      },
+      {
+        "name": "places/ChIJyTgMr6gpRI4RPQ0BaQ7hQc4",
+        "placeId": "ChIJyTgMr6gpRI4RPQ0BaQ7hQc4",
+        "displayName": {
+          "text": "City Raiz",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "general_contractor",
+          "point_of_interest",
+          "real_estate_agency"
+        ],
+        "spatialRelationship": "ACROSS_THE_ROAD",
+        "straightLineDistanceMeters": 70.281166,
+        "travelDistanceMeters": 23.373615
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "placeId": "ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "displayName": {
+          "text": "Conquistadores",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "placeId": "ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "displayName": {
+          "text": "Laureles - Estadio",
+          "languageCode": "es"
+        },
+        "containment": "WITHIN"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e442900277dde83:0x504a9992d20e5b3c!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=5785605527179254588&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "writeAReviewUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e442900277dde83:0x504a9992d20e5b3c!12e1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e442900277dde83:0x504a9992d20e5b3c!9m1!1b1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e442900277dde83:0x504a9992d20e5b3c!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "postalCode": "050030",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn, Laureles, Medell\u00edn",
+    "sublocality": "Laureles - Estadio",
+    "addressLines": [
+      "Cra. 65 #39-47"
+    ]
+  }
+}

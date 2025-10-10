@@ -1,0 +1,455 @@
+{
+  "name": "places/ChIJuykpcmApRI4Re1brRSb1zyk",
+  "id": "ChIJuykpcmApRI4Re1brRSb1zyk",
+  "types": [
+    "art_gallery",
+    "point_of_interest",
+    "establishment"
+  ],
+  "nationalPhoneNumber": "45086873",
+  "internationalPhoneNumber": "+57 45086873",
+  "formattedAddress": "\u12ab\u12ec 37 #64A 03, Laureles - Estadio, Medell\u00edn, Laureles, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "64A 03",
+      "shortText": "64A 03",
+      "types": [
+        "street_number"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "\u12ab\u12ec 37",
+      "shortText": "\u12ab\u12ec 37",
+      "types": [
+        "route"
+      ],
+      "languageCode": "am"
+    },
+    {
+      "longText": "Conquistadores",
+      "shortText": "Conquistadores",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Laureles - Estadio",
+      "shortText": "Laureles - Estadio",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Laureles",
+      "shortText": "Laureles",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050030",
+      "shortText": "050030",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "67R66CR9+P7",
+    "compoundCode": "6CR9+P7 Medell\u00edn, Antioquia"
+  },
+  "location": {
+    "latitude": 6.2417508,
+    "longitude": -75.5817591
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.240422269708498,
+      "longitude": -75.5831099302915
+    },
+    "high": {
+      "latitude": 6.243120230291502,
+      "longitude": -75.58041196970849
+    }
+  },
+  "googleMapsUri": "https://maps.google.com/?cid=3012896220464764539&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "regularOpeningHours": {
+    "openNow": false,
+    "periods": [
+      {
+        "open": {
+          "day": 1,
+          "hour": 8,
+          "minute": 0
+        },
+        "close": {
+          "day": 1,
+          "hour": 17,
+          "minute": 30
+        }
+      },
+      {
+        "open": {
+          "day": 2,
+          "hour": 8,
+          "minute": 0
+        },
+        "close": {
+          "day": 2,
+          "hour": 17,
+          "minute": 30
+        }
+      },
+      {
+        "open": {
+          "day": 3,
+          "hour": 8,
+          "minute": 0
+        },
+        "close": {
+          "day": 3,
+          "hour": 17,
+          "minute": 30
+        }
+      },
+      {
+        "open": {
+          "day": 4,
+          "hour": 8,
+          "minute": 0
+        },
+        "close": {
+          "day": 4,
+          "hour": 17,
+          "minute": 30
+        }
+      },
+      {
+        "open": {
+          "day": 5,
+          "hour": 8,
+          "minute": 0
+        },
+        "close": {
+          "day": 5,
+          "hour": 17,
+          "minute": 30
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: 8:00\u201317:30",
+      "martes: 8:00\u201317:30",
+      "mi\u00e9rcoles: 8:00\u201317:30",
+      "jueves: 8:00\u201317:30",
+      "viernes: 8:00\u201317:30",
+      "s\u00e1bado: Cerrado",
+      "domingo: Cerrado"
+    ],
+    "nextOpenTime": "2025-10-07T13:00:00Z"
+  },
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"street-address\">\u12ab\u12ec 37 #64A 03</span>, <span class=\"region\">Laureles - Estadio</span>, <span class=\"locality\">Medell\u00edn, Laureles, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050030</span>, <span class=\"country-name\">Colombia</span>",
+  "businessStatus": "OPERATIONAL",
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+  "iconBackgroundColor": "#7B9EB0",
+  "displayName": {
+    "text": "\u00cdTAKA",
+    "languageCode": "es"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Galer\u00eda de arte",
+    "languageCode": "es"
+  },
+  "currentOpeningHours": {
+    "openNow": false,
+    "periods": [
+      {
+        "open": {
+          "day": 1,
+          "hour": 8,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 6
+          }
+        },
+        "close": {
+          "day": 1,
+          "hour": 17,
+          "minute": 30,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 6
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 2,
+          "hour": 8,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 7
+          }
+        },
+        "close": {
+          "day": 2,
+          "hour": 17,
+          "minute": 30,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 7
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 3,
+          "hour": 8,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 8
+          }
+        },
+        "close": {
+          "day": 3,
+          "hour": 17,
+          "minute": 30,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 8
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 4,
+          "hour": 8,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 9
+          }
+        },
+        "close": {
+          "day": 4,
+          "hour": 17,
+          "minute": 30,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 9
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 5,
+          "hour": 8,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 10
+          }
+        },
+        "close": {
+          "day": 5,
+          "hour": 17,
+          "minute": 30,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 10
+          }
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: 8:00\u201317:30",
+      "martes: 8:00\u201317:30",
+      "mi\u00e9rcoles: 8:00\u201317:30",
+      "jueves: 8:00\u201317:30",
+      "viernes: 8:00\u201317:30",
+      "s\u00e1bado: Cerrado",
+      "domingo: Cerrado"
+    ],
+    "nextOpenTime": "2025-10-07T13:00:00Z"
+  },
+  "primaryType": "art_gallery",
+  "shortFormattedAddress": "\u12ab\u12ec 37 #64A 03, Laureles - Estadio, Medell\u00edn",
+  "restroom": true,
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJK7cYia4pRI4RVYTDKorMMbk",
+        "placeId": "ChIJK7cYia4pRI4RVYTDKorMMbk",
+        "displayName": {
+          "text": "FUNDACI\u00d3N DIVERSIDAD Sede 1",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 75.44083,
+        "travelDistanceMeters": 130.07523
+      },
+      {
+        "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w",
+        "placeId": "ChIJ74ScX64pRI4RKUyuaAVR77w",
+        "displayName": {
+          "text": "Parque Conquistadores 3",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "BESIDE",
+        "straightLineDistanceMeters": 33.78291,
+        "travelDistanceMeters": 1.3524017
+      },
+      {
+        "name": "places/ChIJ9cT9C6YpRI4R5_KEvYsF8GI",
+        "placeId": "ChIJ9cT9C6YpRI4R5_KEvYsF8GI",
+        "displayName": {
+          "text": "Edificio Barlovento",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "BESIDE",
+        "straightLineDistanceMeters": 21.129337,
+        "travelDistanceMeters": 4.0644455
+      },
+      {
+        "name": "places/ChIJByPr9q4pRI4RkRwPlb25ylI",
+        "placeId": "ChIJByPr9q4pRI4RkRwPlb25ylI",
+        "displayName": {
+          "text": "Centro de est\u00e9tica HSN",
+          "languageCode": "es"
+        },
+        "types": [
+          "beauty_salon",
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 38.23352,
+        "travelDistanceMeters": 199.99516
+      },
+      {
+        "name": "places/ChIJjeZ7964pRI4RBr5u5z2Z-Sg",
+        "placeId": "ChIJjeZ7964pRI4RBr5u5z2Z-Sg",
+        "displayName": {
+          "text": "Ed. Torre Pontevedra",
+          "languageCode": "en"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 60.05524,
+        "travelDistanceMeters": 224.23871
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "placeId": "ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "displayName": {
+          "text": "Conquistadores",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "placeId": "ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "displayName": {
+          "text": "Laureles - Estadio",
+          "languageCode": "es"
+        },
+        "containment": "WITHIN"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e442960722929bb:0x29cff52645eb567b!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=3012896220464764539&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "writeAReviewUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e442960722929bb:0x29cff52645eb567b!12e1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e442960722929bb:0x29cff52645eb567b!9m1!1b1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e442960722929bb:0x29cff52645eb567b!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "postalCode": "050030",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn",
+    "addressLines": [
+      "\u12ab\u12ec 37 #64A 03"
+    ]
+  }
+}

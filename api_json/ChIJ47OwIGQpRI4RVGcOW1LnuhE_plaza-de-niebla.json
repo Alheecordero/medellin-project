@@ -1,0 +1,533 @@
+{
+  "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE",
+  "id": "ChIJ47OwIGQpRI4RVGcOW1LnuhE",
+  "types": [
+    "park",
+    "point_of_interest",
+    "establishment"
+  ],
+  "formattedAddress": "La Candelaria, Medell\u00edn, La Candelaria, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "La Alpujarra",
+      "shortText": "La Alpujarra",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "La Candelaria",
+      "shortText": "La Candelaria",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "La Candelaria",
+      "shortText": "La Candelaria",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050015",
+      "shortText": "050015",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "67R66CWC+5C",
+    "compoundCode": "6CWC+5C Medell\u00edn, Antioquia"
+  },
+  "location": {
+    "latitude": 6.2454231,
+    "longitude": -75.5789319
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.244095919708498,
+      "longitude": -75.5802147802915
+    },
+    "high": {
+      "latitude": 6.246793880291503,
+      "longitude": -75.57751681970849
+    }
+  },
+  "rating": 5,
+  "googleMapsUri": "https://maps.google.com/?cid=1277587785213962068&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "regularOpeningHours": {
+    "openNow": true,
+    "periods": [
+      {
+        "open": {
+          "day": 0,
+          "hour": 0,
+          "minute": 0
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: Abierto 24 horas",
+      "martes: Abierto 24 horas",
+      "mi\u00e9rcoles: Abierto 24 horas",
+      "jueves: Abierto 24 horas",
+      "viernes: Abierto 24 horas",
+      "s\u00e1bado: Abierto 24 horas",
+      "domingo: Abierto 24 horas"
+    ]
+  },
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"region\">La Candelaria</span>, <span class=\"locality\">Medell\u00edn, La Candelaria, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050015</span>, <span class=\"country-name\">Colombia</span>",
+  "businessStatus": "OPERATIONAL",
+  "userRatingCount": 7,
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet",
+  "iconBackgroundColor": "#4DB546",
+  "displayName": {
+    "text": "Plaza de Niebla",
+    "languageCode": "en"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Parque",
+    "languageCode": "es"
+  },
+  "currentOpeningHours": {
+    "openNow": true,
+    "periods": [
+      {
+        "open": {
+          "day": 1,
+          "hour": 0,
+          "minute": 0,
+          "truncated": true,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 6
+          }
+        },
+        "close": {
+          "day": 0,
+          "hour": 23,
+          "minute": 59,
+          "truncated": true,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 12
+          }
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: Abierto 24 horas",
+      "martes: Abierto 24 horas",
+      "mi\u00e9rcoles: Abierto 24 horas",
+      "jueves: Abierto 24 horas",
+      "viernes: Abierto 24 horas",
+      "s\u00e1bado: Abierto 24 horas",
+      "domingo: Abierto 24 horas"
+    ]
+  },
+  "primaryType": "park",
+  "shortFormattedAddress": "La Candelaria, Medell\u00edn",
+  "reviews": [
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/reviews/ChdDSUhNMG9nS0VJQ0FnSUNpd3RLaW5nRRAB",
+      "relativePublishTimeDescription": "Hace 4 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Excelente lugar para disfrutar en familia y hacer deporte.",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Excelente lugar para disfrutar en familia y hacer deporte.",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Adrian Corredor",
+        "uri": "https://www.google.com/maps/contrib/116822116616245088465/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjV01-7iu68OvTtp5jAd0JsLclDYpsV8nbPEGvYyOKU4yjMrnNEY=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2020-10-26T03:20:27.508107Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSUNpd3RLaW5nRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSUNpd3RLaW5nRRAB!2m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    },
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/reviews/ChZDSUhNMG9nS0VJQ0FnSUR5cnVLOWJnEAE",
+      "relativePublishTimeDescription": "Hace 4 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Muy buen sitio para compartir en familia",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Muy buen sitio para compartir en familia",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Carlos Rodriguez",
+        "uri": "https://www.google.com/maps/contrib/106302708682655120964/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjU381152_gz1PPx87_O7XEK7OfDNPENaoYlmVZd3z9HX_cSDPsH=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2021-03-07T23:56:16.592359Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSUR5cnVLOWJnEAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSUR5cnVLOWJnEAE!2m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    },
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/reviews/ChdDSUhNMG9nS0VJQ0FnSUMxeXBXTXh3RRAB",
+      "relativePublishTimeDescription": "Hace un a\u00f1o",
+      "rating": 5,
+      "authorAttribution": {
+        "displayName": "Jaime Soto",
+        "uri": "https://www.google.com/maps/contrib/117520572716995932023/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVqiy4l4AI6mJoleycysgXaOLWaFLaUG-BpSv5GxGGvVdFtqXpZMQ=s128-c0x00000000-cc-rp-mo-ba5"
+      },
+      "publishTime": "2023-12-27T13:14:48.102993Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSUMxeXBXTXh3RRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSUMxeXBXTXh3RRAB!2m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    },
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/reviews/ChdDSUhNMG9nS0VJQ0FnSUNaNThmQjFnRRAB",
+      "relativePublishTimeDescription": "Hace 2 a\u00f1os",
+      "rating": 5,
+      "authorAttribution": {
+        "displayName": "Diana Cristina Guzman",
+        "uri": "https://www.google.com/maps/contrib/107785041927230645472/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocLWVw25tIlnoLx9VgvtUjC9EVFhrskxBHdcxbJf9UwjDtEJvQ=s128-c0x00000000-cc-rp-mo-ba2"
+      },
+      "publishTime": "2023-09-19T21:32:02.459428Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSUNaNThmQjFnRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSUNaNThmQjFnRRAB!2m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    },
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/reviews/ChdDSUhNMG9nS0VJQ0FnSURSdE9ELXJnRRAB",
+      "relativePublishTimeDescription": "Hace 2 a\u00f1os",
+      "rating": 5,
+      "authorAttribution": {
+        "displayName": "jose luis alarc\u00f2n ort\u00ecz",
+        "uri": "https://www.google.com/maps/contrib/111248202268890408274/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW7JbADHvBrzeNjhie4kZQhlppZosy1fHTHi42s2U-E_MTmVE8Y=s128-c0x00000000-cc-rp-mo-ba4"
+      },
+      "publishTime": "2023-04-18T21:09:56.978365Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSURSdE9ELXJnRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSURSdE9ELXJnRRAB!2m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    }
+  ],
+  "photos": [
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/photos/AciIO2d_24aMT7s2_EItfBZmZN2P_NN9dZUT_oBWeRJnLAYQZjor0EKCM156pIhJfI5n6I8l03PTBjGJNJD9UdedJDJif0g802d3EZRk0XKcHFyVInpxdHLenoJNk_RlfmBWIgj_fuZRCVr1WDCQ7UiwkZ1gMI5cFelj9Hgdy1boxE6VsFRHBNCaGUCCQJAoa4Ew_A5ryqYCvm3ZPCYekxcFelKw-u8QWdBb5AfjX6Wtlb4K2eOb-VP21l3sTT7fWDT6bMHYPpmrtAO3HPQ9cA3WxsZYcYcq_LXoZ_bKc-Q6LlTHao-ZokM_m6o3mFvLGB1CAYWH8kk3KYaSWwiiFrfh5o9u_4a7e8e-IEksGERgn9rbUxIg3bzkwqgEL7yqAsoUe52ffKYx9c0w1CJjSLsSGr1qS19a_IPAKQlW8vPw8HJb4w",
+      "widthPx": 1920,
+      "heightPx": 1080,
+      "authorAttributions": [
+        {
+          "displayName": "jose luis alarc\u00f2n ort\u00ecz",
+          "uri": "https://maps.google.com/maps/contrib/111248202268890408274",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW7JbADHvBrzeNjhie4kZQhlppZosy1fHTHi42s2U-E_MTmVE8Y=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDRtODOZg&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDRtODOZg!2e10!4m2!3m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    },
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/photos/AciIO2c0di7tWjw3pf_oqNNAHDi4FoPM1rrupD4-uNbTID0tv3NCUW-W4TlXqb4QnoGLVqRwSA027hcpNfKWJr0FOEe477_eynQPu8a-RqCGy4VsrVjOQyiiIYjA3M1jKqubD_tjQoALKRbf53J2PnwQsOaqF0D0kp18Fm1yt2jUDZbzwc2ncoBACIwBVJ8xgvFKQW1c_hwjjhYkI5HDKzE1GD6sf8l0bLphg8gi-ZBJr7i0f8aoznSFNG3YTx3iJyLtoevAXNw7WnbSobyxdNkDceXx2_nv_jpLQdaMBmJAFm5BDPO82NfC5E7I-NdTldLY6yKlOt9GCLnTngdb-pzXHfKEMi0DfbuFc01IxjQ6sTd_TI0cJt-gMdkaIC1ZqCHyjYFxuF305_lN_KT55JjvUQ_ZyprVAbjImQiA3UZFzQJM_A",
+      "widthPx": 1920,
+      "heightPx": 1080,
+      "authorAttributions": [
+        {
+          "displayName": "jose luis alarc\u00f2n ort\u00ecz",
+          "uri": "https://maps.google.com/maps/contrib/111248202268890408274",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW7JbADHvBrzeNjhie4kZQhlppZosy1fHTHi42s2U-E_MTmVE8Y=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDRtOC2Ow&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDRtOC2Ow!2e10!4m2!3m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    },
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/photos/AciIO2ddf2hG48EW68syNgandlRdyol6x3AzziDHwQAA2IyjkM8BmIXqEOYM4FnR4XlL2IEcn_CBvCBZwfWRdi2BIpIc4Cw50cGivcadkHVRL7ks_7XktWd0cxY1tErTuxgOiafkvg8s6WtEC86AXRsl01AznGA4EDK9rxXPu075cWAFwe_gbo4jcPQ_9E-fm0BKUR8_A8Ui89q5JclMVRO_Yj-m3Kx_iki8tQ_FMlq8wc1KkunuyYUIEtS0MNKgNm427ylHKZYnSkwlU4NcyXyjf5q1NQMeQK8Vkl3IXtZIab9kci5oSwZ-dgJnAXKdrSVV7ctUTLTfIkQXHpYog_aIy-BIQqjr7hsXHethN_NcfuP-F7mxiymolhlVIyqyzotQNSMhiTZ6IiBZAqLhTPUOWGuRzZ2eWoYbWdOURHd93kWQ8LtQ",
+      "widthPx": 4080,
+      "heightPx": 3072,
+      "authorAttributions": [
+        {
+          "displayName": "Miguel Andres Rodriguez Guatame",
+          "uri": "https://maps.google.com/maps/contrib/118219853409272570199",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVUtax2IP6sHlL5ufBcktWI_Nx7Lgs8gztHDp9_kch6JfkrhG9e5Q=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDNgpTDyAE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDNgpTDyAE!2e10!4m2!3m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    },
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/photos/AciIO2fkjXmSeMwgy9FImCUuBdzl3Yl6i48ZJKAuMb4Wr0w2x9IHeGDIDlt6gXZwwDzjEhX9lDVddhslinUuyg6N30Q1dJs6BAwwLDPILlHi6wg4amWl3cUkJ2X3Cqp7um84v2XV140i-zgudG0kQXa22sL7yrX1XtYSfub4KQS0C-qJ2D5EJk4t3u1iiVCZu3ak8PcoEkxpCiIoS75SHbhjWjeAqU87qV3Hfi61Mt4sdbFnkaVF0ve5n9qvVZCkCJDoHpWvuCorifhCex9RX8AcxB5pXQiF0cz4MYg9z2JdLbh5_Xym0EBK5JBZsQoFkpYqLjcny6Mw1yqbsejv9z5iOoN4fIGW0arEsfZBISG8AiIfC6WWlkXbsNKr3QLDU1MQeaBROitU7jss_JixaMRT32-SuUpmpi7E5kWY8Sf_x1WSslwS",
+      "widthPx": 2296,
+      "heightPx": 4080,
+      "authorAttributions": [
+        {
+          "displayName": "Jos\u00e9 Olascoaga",
+          "uri": "https://maps.google.com/maps/contrib/115684151654900650957",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVj1d9-KiyB9dFyb4-glGkVeQNcN_tl3AueVDdKkInVVta7xflx0g=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICLyIzPyQE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICLyIzPyQE!2e10!4m2!3m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    },
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/photos/AciIO2eYVIjJwkuk_a36sEU_N1_Lg2W-gr-2tXOK6w61afFN0P3RTJ2eDMZHOGsBrrO7cmZfKSsNbXlqqpeqrDfgOa1zd1CnCWEplX_njfxN-g0rmKXZ0uNQC5UMHPw6IGECdl3ycZem4xznXNQDbvvidpVkQI_t7kKFRSimYMmhsETh57XvJcvP_phvmrNHihB6soxrZi7JnHkMw8_I9jA6tNMq7mGMafF1nAkEa5GKNDOyp5Hq_1k6qeCaXAlkAEOAaQ4DSFp-Gli1iQdyGwb57xCHLR4UvB2HG174kKcbYoUJC7d4Qsp8fSEze5T8T7lDrLGVxkhwXil5lUsfydBiarxXk6-jFZhFZwV2oelrBARChTB1UFhbC6QLlWnwLz-lE0PjGVF6rXv2_v3xL6PGFw1nEre6xf7KL0AqbKrQVZZu2Q",
+      "widthPx": 1680,
+      "heightPx": 928,
+      "authorAttributions": [
+        {
+          "displayName": "E.J Pino Mosquera",
+          "uri": "https://maps.google.com/maps/contrib/103050821667854073270",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjX35v5QpPnczAqeDPMfy-saqx95dBr98Xx7fprCEZb2W9NxWY0_Kw=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDqlIyODA&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDqlIyODA!2e10!4m2!3m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    },
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/photos/AciIO2f-pbp2Hx-8V-dMiGOdrzFqAMo6PQys99ZTkLBCfzia33_678FYpLzaEr2vGs42SVyrH4tElQaBAJ3ywHj68eGEygreVcbOBWodywWOySgz7Wzg_OydIU6LoQO0r_xf4BF0qTrj2g3sFM4owNFS3d8khHFJe6elQ0j_8DNEbrPdz4GDKrPW5wrgrVVGUgJu6kt3P1a_XZtw-ucRcCJrewQJZ4K2gh93CX8EYxUiZYrmhcoZKLCKNWKNQ_gQ5d_1YzH_xQyDLpdw4SQ7HrHh4Z-DbFlWe90L_IhEcgTp5WmUAF7IPS4P7Xf3fRpFS95oKjgdbwlJCWS3GSEAJHLttP6gjwsRNDOY8iW5ygNuM5xzy9dv9A2laMdlxDmDopuV14rCR2kqbL2FpK4VqpCw8MhnfA6RXJ7YPC9AyXpSEv4XDQ",
+      "widthPx": 4080,
+      "heightPx": 3072,
+      "authorAttributions": [
+        {
+          "displayName": "Miguel Andres Rodriguez Guatame",
+          "uri": "https://maps.google.com/maps/contrib/118219853409272570199",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVUtax2IP6sHlL5ufBcktWI_Nx7Lgs8gztHDp9_kch6JfkrhG9e5Q=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDNgpTuUw&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDNgpTuUw!2e10!4m2!3m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    },
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/photos/AciIO2cPYo4bQGmwygB4-oIpddmea3Na46VBNar4AeeSHzi5UKAOBRghu8OXPfUuvpRMkb_Wbu3oPAxpwU2vaEsfFIIa8VjAE2Bq43tHuQ51Z6karhLZh47HoXQeJKHq-AFo2SLJw6SAsi94QZvFWXsO6mKv-els9SHGzVDlNIdHqv4jI34GFg3D60ktppJQOUn8-SyPuRkttYRPTKpPefzX4DSAkk-BdgjgBJdRKwKlbNjZlXD55uSrVQW2DgGYx3Z92A7GTe7vZgDuoORZbbSw4enHAj6CJtBY90-P2hhEi3DBd1pNYu8c9mU7SsKA4sRPxJxiDByot0SMVHRFLmjM9GsX5fY_J_vsWj20z0ebD81mH_LaqaGSsqmK4uAqY-PTCbIFgAvcLdOmQVAGM2e8IMSerOSJRxOBXhpbpBZnnOQ6Ug",
+      "widthPx": 1920,
+      "heightPx": 1080,
+      "authorAttributions": [
+        {
+          "displayName": "jose luis alarc\u00f2n ort\u00ecz",
+          "uri": "https://maps.google.com/maps/contrib/111248202268890408274",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjW7JbADHvBrzeNjhie4kZQhlppZosy1fHTHi42s2U-E_MTmVE8Y=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDRtOCeZQ&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDRtOCeZQ!2e10!4m2!3m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    },
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/photos/AciIO2djTIez1cbvjHo1_VndoS-Dc0QVaFR-Iea8IRSi4qesgPIGrarpeE-MUoFA1-MapjgrrttipXwAQ5DEkf0WkW98YnDKTTN9vPpBHgZ9g0doc08Uj-yWknrpAr-NGTOrrvhRDbW-lqrVBENuGH_fZGjGNB1dZwm6gUtjp57VOj2iGwm6uMWdhPbhPG8zbbvorGOycdl_Td-m3hOkU2KIfk-ktvPFglqILKARQVM_vvfckzf88Mp2cRn3RrkdL1HWBmwm1O88rPzpA8hfHfyPsGf67RZ_Z1brW4fh_29qrnowc3VGN49BjmnypQw8qXC1U5XEBKGcw5r-Q8369YYEhPeT-gtgAtodJPAvdiJfERvs0WPTZjcILeN39Zc8RwUUfjsYDvsTrAH2Y8LbzqW2tGXvZIYG09KV9zbK6ouwUUcFy3s",
+      "widthPx": 3600,
+      "heightPx": 4800,
+      "authorAttributions": [
+        {
+          "displayName": "maicol stiven puerta sepulveda",
+          "uri": "https://maps.google.com/maps/contrib/116105046265143460261",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWHS951xeVZ-uIMjXl_7tJxb9bj7sKxWcu9-1GgljWHDNwRVxA0=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDm2J64-gE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDm2J64-gE!2e10!4m2!3m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    },
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/photos/AciIO2d5a1ZV-8IU8wTzaTVEInpn040EzTZtJWqhBYwbYGSujjU5tKfUFY8ysautC73PBHvadGtK4nFcb48yRhxvG4_FrXWDAtG-1O5SXl-mMXpKMpzH0izVgwfP0Qr0j5nXlom394-E_KcyiRDJyb2yKVLktG-pNkjgh245HwvjsXnTqVleODxXAyp9wb-PXKVFD-FLtKzmLoOT61GSv4qL05fKjLBgwK_yxMgbuvdRGwr1Wy9DZNDbjyWdDTUgsy9_mGadJ6qDRTFFTbZ0qZosjIYRNjN_FD_EB1RxM2KIrGzlRxGopJMvzk7Ti5sz5cq-2x_DhffDcolhSyY_JTNzsLXmnLWa_26nwghS_loddEsEk3egxCKsyk9VjvUPSEMuShNGCvji67kG4codV9uj9xoyOe0KoGex9PsadAUWPNk",
+      "widthPx": 3600,
+      "heightPx": 4800,
+      "authorAttributions": [
+        {
+          "displayName": "maicol stiven puerta sepulveda",
+          "uri": "https://maps.google.com/maps/contrib/116105046265143460261",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWHS951xeVZ-uIMjXl_7tJxb9bj7sKxWcu9-1GgljWHDNwRVxA0=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDm2O7bNg&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDm2O7bNg!2e10!4m2!3m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    },
+    {
+      "name": "places/ChIJ47OwIGQpRI4RVGcOW1LnuhE/photos/AciIO2dVMON-3YkUuoT8hLmxSb9v3VFFsE7shtpuR6ygrwIWJ70FH0fb2uijkylSiFrDm-kG8XgR_WQp7pyNn9gQZCXhz0n4ETUsNh915lkMcc2YhuBmP4HNmdJrbdPR59Bkl9oSsRVZ6mJYLV4BHXHZnfAB4I_nIqAgxg9p1ouM98jAOwp7Ki8kE_Zxb9y7VP9ITOQN2DDVUt2Ai_l1KaPglLd3WKffbe8821gRPYIVyOMwxO4Te0DIhlKaQJEj6Pjk0F4o4eap4RtgPBG8MR4sqwqRER2lE1gjTNVPD3K8dfimhbS9-rlO3LVc7a5sFMCPg4roFtrhZwdH5efYs11OnlzeZKXfp-EwwJxoLBl0cxSPQvFFPtps-nS5lGnrSIspPmyzQxTAOiLMTds9CirjhxNtyXL1J-ZL_RP-NDxctNtG4l0v",
+      "widthPx": 4032,
+      "heightPx": 3024,
+      "authorAttributions": [
+        {
+          "displayName": "David S",
+          "uri": "https://maps.google.com/maps/contrib/108167293364207941931",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVsyLJ9ZnHehzF0cPm6K0jejPbQYylDy2nz9Mc0SvSYExik_3GK=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgID1gomWlAE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgID1gomWlAE!2e10!4m2!3m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754"
+    }
+  ],
+  "goodForChildren": true,
+  "allowsDogs": true,
+  "accessibilityOptions": {
+    "wheelchairAccessibleEntrance": true
+  },
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJJ1buuqspRI4R0mmnMcbmofQ",
+        "placeId": "ChIJJ1buuqspRI4R0mmnMcbmofQ",
+        "displayName": {
+          "text": "Edificio Inteligente de EPM",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "DOWN_THE_ROAD",
+        "straightLineDistanceMeters": 102.74766,
+        "travelDistanceMeters": 163.64967
+      },
+      {
+        "name": "places/ChIJ2-JPY6wpRI4RLkHsAWxVH5Q",
+        "placeId": "ChIJ2-JPY6wpRI4RLkHsAWxVH5Q",
+        "displayName": {
+          "text": "Teatro Metropolitano Jos\u00e9 Guti\u00e9rrez G\u00f3mez",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 310.9874,
+        "travelDistanceMeters": 404.97424
+      },
+      {
+        "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "placeId": "ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "displayName": {
+          "text": "Parques del R\u00edo",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest",
+          "tourist_attraction"
+        ],
+        "straightLineDistanceMeters": 218.59361,
+        "travelDistanceMeters": 326.11902
+      },
+      {
+        "name": "places/ChIJ3xE-CqspRI4RPl8BKzTDilc",
+        "placeId": "ChIJ3xE-CqspRI4RPl8BKzTDilc",
+        "displayName": {
+          "text": "Parque de los Pies Descalzos",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest",
+          "tourist_attraction"
+        ],
+        "straightLineDistanceMeters": 203.24333,
+        "travelDistanceMeters": 304.05072
+      },
+      {
+        "name": "places/ChIJkd04NaopRI4RNWpUIvHArZg",
+        "placeId": "ChIJkd04NaopRI4RNWpUIvHArZg",
+        "displayName": {
+          "text": "Auditorio Himerio P\u00e9rez EPM",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 83.37322,
+        "travelDistanceMeters": 331.47592
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJi_6YhqspRI4RGMLyvMzQyrI",
+        "placeId": "ChIJi_6YhqspRI4RGMLyvMzQyrI",
+        "displayName": {
+          "text": "La Alpujarra",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJ-4qLlFYoRI4RADgF_oEFByo",
+        "placeId": "ChIJ-4qLlFYoRI4RADgF_oEFByo",
+        "displayName": {
+          "text": "La Candelaria",
+          "languageCode": "es"
+        },
+        "containment": "OUTSKIRTS"
+      },
+      {
+        "name": "places/ChIJJ1buuqspRI4R7nvl4loGgcQ",
+        "placeId": "ChIJJ1buuqspRI4R7nvl4loGgcQ",
+        "displayName": {
+          "text": "Edificio Inteligente de EPM",
+          "languageCode": "es"
+        },
+        "containment": "NEAR"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e44296420b0b3e3:0x11bae7525b0e6754!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=1277587785213962068&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "writeAReviewUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e44296420b0b3e3:0x11bae7525b0e6754!12e1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e44296420b0b3e3:0x11bae7525b0e6754!9m1!1b1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e44296420b0b3e3:0x11bae7525b0e6754!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn"
+  }
+}

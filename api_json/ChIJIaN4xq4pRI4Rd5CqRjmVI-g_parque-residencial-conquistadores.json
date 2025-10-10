@@ -1,0 +1,426 @@
+{
+  "name": "places/ChIJIaN4xq4pRI4Rd5CqRjmVI-g",
+  "id": "ChIJIaN4xq4pRI4Rd5CqRjmVI-g",
+  "types": [
+    "park",
+    "point_of_interest",
+    "establishment"
+  ],
+  "formattedAddress": "Tv 39 #66-17, Laureles - Estadio, Laureles, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "66-17",
+      "shortText": "66-17",
+      "types": [
+        "street_number"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Transversal 39",
+      "shortText": "Tv 39",
+      "types": [
+        "route"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Conquistadores",
+      "shortText": "Conquistadores",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Laureles - Estadio",
+      "shortText": "Laureles - Estadio",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Laureles",
+      "shortText": "Laureles",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050030",
+      "shortText": "050030",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "67R66CV9+46",
+    "compoundCode": "6CV9+46 Medell\u00edn, Antioquia"
+  },
+  "location": {
+    "latitude": 6.2428734,
+    "longitude": -75.5818843
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.241303219708498,
+      "longitude": -75.5831234302915
+    },
+    "high": {
+      "latitude": 6.2440011802915025,
+      "longitude": -75.58042546970849
+    }
+  },
+  "rating": 4.8,
+  "googleMapsUri": "https://maps.google.com/?cid=16727377514215411831&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "regularOpeningHours": {
+    "openNow": true,
+    "periods": [
+      {
+        "open": {
+          "day": 0,
+          "hour": 0,
+          "minute": 0
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: Abierto 24 horas",
+      "martes: Abierto 24 horas",
+      "mi\u00e9rcoles: Abierto 24 horas",
+      "jueves: Abierto 24 horas",
+      "viernes: Abierto 24 horas",
+      "s\u00e1bado: Abierto 24 horas",
+      "domingo: Abierto 24 horas"
+    ]
+  },
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"street-address\">Tv 39 #66-17</span>, <span class=\"region\">Laureles - Estadio</span>, <span class=\"locality\">Laureles, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050030</span>, <span class=\"country-name\">Colombia</span>",
+  "businessStatus": "OPERATIONAL",
+  "userRatingCount": 15,
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet",
+  "iconBackgroundColor": "#4DB546",
+  "displayName": {
+    "text": "Parque residencial Conquistadores",
+    "languageCode": "es"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Parque",
+    "languageCode": "es"
+  },
+  "currentOpeningHours": {
+    "openNow": true,
+    "periods": [
+      {
+        "open": {
+          "day": 1,
+          "hour": 0,
+          "minute": 0,
+          "truncated": true,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 6
+          }
+        },
+        "close": {
+          "day": 0,
+          "hour": 23,
+          "minute": 59,
+          "truncated": true,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 12
+          }
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: Abierto 24 horas",
+      "martes: Abierto 24 horas",
+      "mi\u00e9rcoles: Abierto 24 horas",
+      "jueves: Abierto 24 horas",
+      "viernes: Abierto 24 horas",
+      "s\u00e1bado: Abierto 24 horas",
+      "domingo: Abierto 24 horas"
+    ]
+  },
+  "primaryType": "park",
+  "shortFormattedAddress": "Tv 39 #66-17, Laureles - Estadio, Medell\u00edn",
+  "reviews": [
+    {
+      "name": "places/ChIJIaN4xq4pRI4Rd5CqRjmVI-g/reviews/ChZDSUhNMG9nS0VJQ0FnSUNBd0xQamZ3EAE",
+      "relativePublishTimeDescription": "Hace 7 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Un excelente lugar para vivir tranquilo y sano cerca al centro de Medell\u00edn",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Un excelente lugar para vivir tranquilo y sano cerca al centro de Medell\u00edn",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Leonardo Meneses",
+        "uri": "https://www.google.com/maps/contrib/114432821807496931671/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUxumVIeTe65ERhP1g5h2rhuwUPhzU3abKtLwBXVML66HCJQkk=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2018-04-10T01:23:33.387Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSUNBd0xQamZ3EAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSUNBd0xQamZ3EAE!2m1!1s0x8e4429aec678a321:0xe823953946aa9077"
+    },
+    {
+      "name": "places/ChIJIaN4xq4pRI4Rd5CqRjmVI-g/reviews/ChZDSUhNMG9nS0VJQ0FnSURBX3RtMFR3EAE",
+      "relativePublishTimeDescription": "Hace 7 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Lindo pero algo solo. Necesita m\u00e1s bancas o cosas asi.",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Lindo pero algo solo. Necesita m\u00e1s bancas o cosas asi.",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Manuela Roldan",
+        "uri": "https://www.google.com/maps/contrib/110266189968103323046/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIHb5kQGbijexBL5lQi7H6MYIIvRtIFzW8cXSGezlLWIs_BVDY=s128-c0x00000000-cc-rp-mo-ba4"
+      },
+      "publishTime": "2017-10-25T10:24:01.436Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSURBX3RtMFR3EAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSURBX3RtMFR3EAE!2m1!1s0x8e4429aec678a321:0xe823953946aa9077"
+    },
+    {
+      "name": "places/ChIJIaN4xq4pRI4Rd5CqRjmVI-g/reviews/ChdDSUhNMG9nS0VJQ0FnSURnLWJQVHJBRRAB",
+      "relativePublishTimeDescription": "Hace 8 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Un lugar muy tranquilo",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Un lugar muy tranquilo",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "David Alejandro Diaz Orozco",
+        "uri": "https://www.google.com/maps/contrib/102178968493630408713/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXhEO8B-UUd7ip2zFmLjz3Ux0LBxJrhX-Q2SNahznkMETrmtp8B=s128-c0x00000000-cc-rp-mo-ba5"
+      },
+      "publishTime": "2017-07-06T21:49:02.323Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSURnLWJQVHJBRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSURnLWJQVHJBRRAB!2m1!1s0x8e4429aec678a321:0xe823953946aa9077"
+    },
+    {
+      "name": "places/ChIJIaN4xq4pRI4Rd5CqRjmVI-g/reviews/ChdDSUhNMG9nS0VJQ0FnSURReE4zSDBnRRAB",
+      "relativePublishTimeDescription": "Hace 7 a\u00f1os",
+      "rating": 4,
+      "text": {
+        "text": "Agradable",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Agradable",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "andres garcia parra",
+        "uri": "https://www.google.com/maps/contrib/113646800921447310592/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVGqykzPFcP60GjXo0UCMQZDyUsfHRAKoGTcR1BxYqpb89TvDA=s128-c0x00000000-cc-rp-mo-ba4"
+      },
+      "publishTime": "2018-04-14T01:19:15.016Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSURReE4zSDBnRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSURReE4zSDBnRRAB!2m1!1s0x8e4429aec678a321:0xe823953946aa9077"
+    },
+    {
+      "name": "places/ChIJIaN4xq4pRI4Rd5CqRjmVI-g/reviews/ChdDSUhNMG9nS0VJQ0FnSURnLWU3bmtRRRAB",
+      "relativePublishTimeDescription": "Hace 8 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Me encantan estos parquecitos en Conquistadors. Es dif\u00edcil para la gente que intenta encontrar nuestro apartamento.",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "I love these little parks in Conquistadors. Rough on people trying to find our apartment.",
+        "languageCode": "en"
+      },
+      "authorAttribution": {
+        "displayName": "Jeff M",
+        "uri": "https://www.google.com/maps/contrib/109014479868167008862/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWSyTxrVjDZIruY77g_YpqVTQ6lCpENkvSPp6FjXssXDuQ2Q0hivA=s128-c0x00000000-cc-rp-mo-ba6"
+      },
+      "publishTime": "2017-05-04T01:25:11.852Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSURnLWU3bmtRRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSURnLWU3bmtRRRAB!2m1!1s0x8e4429aec678a321:0xe823953946aa9077"
+    }
+  ],
+  "goodForChildren": true,
+  "allowsDogs": true,
+  "accessibilityOptions": {
+    "wheelchairAccessibleEntrance": true
+  },
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJYXIu2q4pRI4RZ9gfjv3GGVU",
+        "placeId": "ChIJYXIu2q4pRI4RZ9gfjv3GGVU",
+        "displayName": {
+          "text": "Edificio Marquez De Caceres",
+          "languageCode": "en"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "AROUND_THE_CORNER",
+        "straightLineDistanceMeters": 76.414604,
+        "travelDistanceMeters": 81.26118
+      },
+      {
+        "name": "places/ChIJ7ZhAL6kpRI4RpO7b_Oz1o64",
+        "placeId": "ChIJ7ZhAL6kpRI4RpO7b_Oz1o64",
+        "displayName": {
+          "text": "Radmedics SAS",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest",
+          "veterinary_care"
+        ],
+        "spatialRelationship": "AROUND_THE_CORNER",
+        "straightLineDistanceMeters": 54.186466,
+        "travelDistanceMeters": 120.373535
+      },
+      {
+        "name": "places/ChIJrbg2UqkpRI4R4xOwVqzfN9g",
+        "placeId": "ChIJrbg2UqkpRI4R4xOwVqzfN9g",
+        "displayName": {
+          "text": "unidad torres del rio",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 177.14557,
+        "travelDistanceMeters": 250.41557
+      },
+      {
+        "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "placeId": "ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "displayName": {
+          "text": "Parques del R\u00edo",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest",
+          "tourist_attraction"
+        ],
+        "straightLineDistanceMeters": 272.84262,
+        "travelDistanceMeters": 396.6717
+      },
+      {
+        "name": "places/ChIJK7cYia4pRI4RVYTDKorMMbk",
+        "placeId": "ChIJK7cYia4pRI4RVYTDKorMMbk",
+        "displayName": {
+          "text": "FUNDACI\u00d3N DIVERSIDAD Sede 1",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 190.94861,
+        "travelDistanceMeters": 248.37532
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "placeId": "ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "displayName": {
+          "text": "Conquistadores",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "placeId": "ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "displayName": {
+          "text": "Laureles - Estadio",
+          "languageCode": "es"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJSepYS6kpRI4RfopFgSZoOp4",
+        "placeId": "ChIJSepYS6kpRI4RfopFgSZoOp4",
+        "displayName": {
+          "text": "UNICOL P.H",
+          "languageCode": "es"
+        },
+        "containment": "NEAR"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e4429aec678a321:0xe823953946aa9077!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=16727377514215411831&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "writeAReviewUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429aec678a321:0xe823953946aa9077!12e1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e4429aec678a321:0xe823953946aa9077!9m1!1b1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429aec678a321:0xe823953946aa9077!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn",
+    "sublocality": "Laureles - Estadio",
+    "addressLines": [
+      "Tv 39 #66-17"
+    ]
+  }
+}

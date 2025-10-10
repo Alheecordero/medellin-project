@@ -1,0 +1,550 @@
+{
+  "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w",
+  "id": "ChIJ74ScX64pRI4RKUyuaAVR77w",
+  "types": [
+    "park",
+    "point_of_interest",
+    "establishment"
+  ],
+  "formattedAddress": "Cra 64A #65D-59, Laureles - Estadio, Laureles, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "65D-59",
+      "shortText": "65D-59",
+      "types": [
+        "street_number"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Carrera 64A",
+      "shortText": "Cra 64A",
+      "types": [
+        "route"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Conquistadores",
+      "shortText": "Conquistadores",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Laureles - Estadio",
+      "shortText": "Laureles - Estadio",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Laureles",
+      "shortText": "Laureles",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050030",
+      "shortText": "050030",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "67R66CR9+J9",
+    "compoundCode": "6CR9+J9 Medell\u00edn, Antioquia"
+  },
+  "location": {
+    "latitude": 6.2415088,
+    "longitude": -75.5815597
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.240166669708498,
+      "longitude": -75.5830046302915
+    },
+    "high": {
+      "latitude": 6.2428646302915025,
+      "longitude": -75.58030666970849
+    }
+  },
+  "rating": 4.4,
+  "googleMapsUri": "https://maps.google.com/?cid=13614189282237238313&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "regularOpeningHours": {
+    "openNow": true,
+    "periods": [
+      {
+        "open": {
+          "day": 0,
+          "hour": 0,
+          "minute": 0
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: Abierto 24 horas",
+      "martes: Abierto 24 horas",
+      "mi\u00e9rcoles: Abierto 24 horas",
+      "jueves: Abierto 24 horas",
+      "viernes: Abierto 24 horas",
+      "s\u00e1bado: Abierto 24 horas",
+      "domingo: Abierto 24 horas"
+    ]
+  },
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"street-address\">Cra 64A #65D-59</span>, <span class=\"region\">Laureles - Estadio</span>, <span class=\"locality\">Laureles, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050030</span>, <span class=\"country-name\">Colombia</span>",
+  "businessStatus": "OPERATIONAL",
+  "userRatingCount": 72,
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet",
+  "iconBackgroundColor": "#4DB546",
+  "displayName": {
+    "text": "Parque Conquistadores 3",
+    "languageCode": "es"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Parque",
+    "languageCode": "es"
+  },
+  "currentOpeningHours": {
+    "openNow": true,
+    "periods": [
+      {
+        "open": {
+          "day": 1,
+          "hour": 0,
+          "minute": 0,
+          "truncated": true,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 6
+          }
+        },
+        "close": {
+          "day": 0,
+          "hour": 23,
+          "minute": 59,
+          "truncated": true,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 12
+          }
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: Abierto 24 horas",
+      "martes: Abierto 24 horas",
+      "mi\u00e9rcoles: Abierto 24 horas",
+      "jueves: Abierto 24 horas",
+      "viernes: Abierto 24 horas",
+      "s\u00e1bado: Abierto 24 horas",
+      "domingo: Abierto 24 horas"
+    ]
+  },
+  "primaryType": "park",
+  "shortFormattedAddress": "Cra 64A #65D-59, Laureles - Estadio, Medell\u00edn",
+  "reviews": [
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/reviews/ChZDSUhNMG9nS0VJQ0FnSURnMHFUclFBEAE",
+      "relativePublishTimeDescription": "Hace 7 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "El parque conquistadores muy rwlajado y rico para hacer yoga o conversar y pasear tu mascota",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "El parque conquistadores muy rwlajado y rico para hacer yoga o conversar y pasear tu mascota",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "CRISTOFER DUR\u00c1N ECHEVERR\u00cdA (krisduran11)",
+        "uri": "https://www.google.com/maps/contrib/114160995717366399069/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXKFNL6kNdtrcH1qPqfsnShMCVTv8QRubfhx70yghuKCx4B_fCYcw=s128-c0x00000000-cc-rp-mo-ba3"
+      },
+      "publishTime": "2018-02-11T17:06:09.303Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSURnMHFUclFBEAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSURnMHFUclFBEAE!2m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    },
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/reviews/ChZDSUhNMG9nS0VJQ0FnSURnd1ppbGVBEAE",
+      "relativePublishTimeDescription": "Hace 7 a\u00f1os",
+      "rating": 4,
+      "text": {
+        "text": "Parque peque\u00f1o pero acogedor, ideal para salir a caminar con tus mascotas, compartir con amigos o simplemente tener un momento de tranquilidad, adicionalmente se encuentra cerca a parques del rio",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Parque peque\u00f1o pero acogedor, ideal para salir a caminar con tus mascotas, compartir con amigos o simplemente tener un momento de tranquilidad, adicionalmente se encuentra cerca a parques del rio",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Andres Mauricio Caballero L\u00f3pez",
+        "uri": "https://www.google.com/maps/contrib/102663681146995271609/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjX59FclERrxgbqB5rS6VB_zh-lblirMhtoH2khweFzCuobKWbww=s128-c0x00000000-cc-rp-mo-ba4"
+      },
+      "publishTime": "2018-06-27T16:18:34.619Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSURnd1ppbGVBEAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSURnd1ppbGVBEAE!2m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    },
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/reviews/ChdDSUhNMG9nS0VJQ0FnSURJdm9yQjh3RRAB",
+      "relativePublishTimeDescription": "Hace 6 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Excelente para caminar y pasear a tu mascota no hay muchas sillas para sentarse pero de seguro tu mascota lo agradecer\u00e1",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Excelente para caminar y pasear a tu mascota no hay muchas sillas para sentarse pero de seguro tu mascota lo agradecer\u00e1",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Sebasti\u00e1n \u201cSebas Montoya\u201d Montoya",
+        "uri": "https://www.google.com/maps/contrib/107492278981506641972/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXsZjIiaCg5VM0GSpnvxBmaGsuhxVheFB6g0QQHWO0I3R7g5O-4Yg=s128-c0x00000000-cc-rp-mo-ba4"
+      },
+      "publishTime": "2019-01-06T16:12:59.807265150Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSURJdm9yQjh3RRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSURJdm9yQjh3RRAB!2m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    },
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/reviews/ChdDSUhNMG9nS0VJQ0FnSURZeUpEWXVRRRAB",
+      "relativePublishTimeDescription": "Hace 6 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Un buen lugar para despejarse, es muy bonito y una importante zona verde como todos los parques de Conquistadores, sin embargo podr\u00eda tener m\u00e1s mantenimiento",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Un buen lugar para despejarse, es muy bonito y una importante zona verde como todos los parques de Conquistadores, sin embargo podr\u00eda tener m\u00e1s mantenimiento",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Juan Pedro Valencia Acosta",
+        "uri": "https://www.google.com/maps/contrib/111605146799341948444/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocI4ivKCW_XB0vXbqihWDW15JstMdmnfueak0ZZwG7Er5ntmxA=s128-c0x00000000-cc-rp-mo-ba4"
+      },
+      "publishTime": "2019-04-27T14:21:20.174615Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSURZeUpEWXVRRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSURZeUpEWXVRRRAB!2m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    },
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/reviews/ChZDSUhNMG9nS0VJQ0FnSUM0aWUtZ1d3EAE",
+      "relativePublishTimeDescription": "Hace 6 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Un lugar tranquilo con flora y fauna bell\u00edsimas y d\u00f3nde las personas pueden sacar tranquilas a sus mascotas.",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Un lugar tranquilo con flora y fauna bell\u00edsimas y d\u00f3nde las personas pueden sacar tranquilas a sus mascotas.",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Diana Beatriz",
+        "uri": "https://www.google.com/maps/contrib/112350270918362732754/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVq8el_O_CZFwcJ1u82sP2CzG1fzjnj0svBMTuJDienNNxKj0i8Cg=s128-c0x00000000-cc-rp-mo-ba5"
+      },
+      "publishTime": "2019-06-08T18:55:11.566467Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSUM0aWUtZ1d3EAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSUM0aWUtZ1d3EAE!2m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    }
+  ],
+  "photos": [
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/photos/AciIO2fspJX0Y-drgjVBT6nqpHMUm9f2b2qt3rgq_C6CBuepLorkVeDQFP7ocVdeGCNSbWEKP8LUF1I_Vd3bHJasLL_v9rl62SUMBLFQCk_B9_DTBA-IR4jPxqBVmYuK1SA1Ud6y2GPgHQY9DC65JAQKbstzKGTxBXmxewyB97vuq8uWAVwvW_OzFJbqPvPjH1CJjUbOQ1leDiKTnezy5xPet46yTCctDqkvqbn8O-duPII4qE2kKqpt94gB4s_mHsxEYu0BP8TiQB_61sH-2FMm4_rkJ6h87AvhYFKQdJuatcmCaLwe6ASGfpka24yllxROSY3MGJ4pqSwMcu001VUTIQLT7GhUOBn-yODOZo2XL_aiKZm2RxogvhdhhmD3LV-lKKy-DDCrLhRsuqPGwRtLyaObJQC2qPuQDlbbiZZ34CxyNJL_",
+      "widthPx": 3264,
+      "heightPx": 1836,
+      "authorAttributions": [
+        {
+          "displayName": "Gloria Montoya",
+          "uri": "https://maps.google.com/maps/contrib/116468432807858703771",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWu-1Zau621k2jySW7uB8mw-HtJGbTgPno52jQm5FrkZOUDHcl2=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDEyfWXlwE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDEyfWXlwE!2e10!4m2!3m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    },
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/photos/AciIO2criTqQELtKilATjjpleWMvtvi0hARsGD59iHSRfyTu3jTcrjB7h2jfRdl13ObaC27I9zfrzed0EjfpBcvcSqd1nwdRtXEIokmNnwhl_kt8h6W_f6hPEzDZieXyoyMZISE1WaX_SRBtPIvljo-LrgmDLd1hEL7dxzANwyhRW_k0JjLtC249h_OCJ666Rg26va5RndsEDs4gjW3jz8vaZmduRHQOO1Y0KUt9M8cTBZfS_PbVcdrWAGlPHAJqDJUJUK01B08fOm7f2yjydpVVGcruI_qAtDTXgUa_541ObubHRp0lyeY5If0_MnmTl12DmCTVuczuKE8-5Yc1f9HKYwopaKyqnrfOJtjJIoPolgPKDEVV6owQHcQByl69qtDiSg-Z1RfXM9xLTXe_U1mu3DgI9G6QqYDJzJVT63MfZrPS_kc",
+      "widthPx": 2976,
+      "heightPx": 3968,
+      "authorAttributions": [
+        {
+          "displayName": "Doris Ospina",
+          "uri": "https://maps.google.com/maps/contrib/114624727121420001563",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUSqRvk3ISbwHBk2EVkxytCS_1uzSlQWDn_CKK7Rb1cpilC5N8M=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDy15iMjwE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDy15iMjwE!2e10!4m2!3m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    },
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/photos/AciIO2dVVuUjawJ1MlKgIG7WbkhJQ1cd_TzrRWBBQX5jio18WnWv3LL9NsAcgFvOpZmH2zNxyzo7kDtEEDx04mSXA4XocblEuAfS2JoLD2hUtcAwXQJgJ8RURg34UtLKJS40ZOPB4VpG0xrEJl_RwROQc556LB7T5V0ZpI_R3ZoalaqaGqR1Om9J7za9HFtWHZa0b_7bQWUergAfgGyT1pvJhZWAGP4OyXZLT_ZpNmBNBZNWxRNhZfxt3vUr-wzzwGuGKBS9lzWOwBIExaIcuL8eUWeIKrp3PZhNEIidYimZ9WXp8M0T-D4LCrHCLC4TyKy7W6THrV352QaKEEgxwc00x3DyQhmU7HChwg1X3XcW8V2vHZFQjKIV7JZ2kMP-xzAYCZuoyNifnH0ZkzB_fk6LD9uB6_dJ4XnCOoD7lz-aRRaPwyoI",
+      "widthPx": 4160,
+      "heightPx": 2336,
+      "authorAttributions": [
+        {
+          "displayName": "patricia gonima",
+          "uri": "https://maps.google.com/maps/contrib/113365041409635007960",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIMn-od_5qGOhE1b06BuVRgnRHbBNNgkbZ3fFnS9fDp52vrPQ=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICEheuGngE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICEheuGngE!2e10!4m2!3m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    },
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/photos/AciIO2edCc7-Bk1yjziKz3Qv3i2MbgRnFAnwJq1x7Q-iaEEc-vKXyI_6GMYC2qowZgeVMuxZzxS2evp0u_xbpTEEyKv72AxGEcdPzR2h79FNVx27Gux6fY6fdjBoIdwVV5eSzRz8a-O7W2YIUo-ZqIU974XLvwxPbeIO-U5PQLmPa7p6BljkpEILFZ4s29FkQL-taxNwm2U-vmstqmf3ASNctjjfugejP0E50GcVaD1fA8GEKii5SqEc1fjw-g8C_eO0DxsTcg9XsapB7r-4AOzS8zxx8sfWgwr7nFCXdHEHg9P4bvtUQNYlCzJaAivJryFgjOVWRYryGgDObkv2j8q-NFsstqFqJ5elroD8V8I4TjBxv8P7JLP5pflPONo--r1Sii1_Vs0K8ib_2XmMaQFmU_RoU_KTEcdV0U55XziG82k",
+      "widthPx": 3096,
+      "heightPx": 4128,
+      "authorAttributions": [
+        {
+          "displayName": "Carlos Arturo Espinosa",
+          "uri": "https://maps.google.com/maps/contrib/104949358400922865254",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUDW1Jpa79lDiMZiOL_lC3TIP_LPtfPGhd_kbw0CyMCXwdYDeAz=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICErJvKdA&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICErJvKdA!2e10!4m2!3m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    },
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/photos/AciIO2fLNwgIUEuz-9Kq-hgpvQncgULYC5bF0LgLIeKNQOF1TmFyJQGEJrNuzs73kxeCcoqAk2vWVBzaJtmJZBymA32Wde8BgvzLvQc8elwF4oTKLcz1fhPYlJFGBXP2p3X_eMwBa8b_TpKZt81B5Pi8o1sqFuKzoliRQJDgkgQOxaXnLJ36hRhpjN7XKmzF317ME9PYdjtxpg2VatIAWLyww4aEb91gATXL5kwhHEkO52d4YoB2SnwFESLA3OkRykTVsso68jwI8QjdqKmnP4i6CrxhsnNKtTi30Q1hVxvNa-PgqCSFEhfpmQB7UIiHm19byGvQ10on-pM7e3cGcTjjzRLXkzwoJJKfABFo51yPZ831Pcg1J6BpCj9F1TslotlreeTtNL2TbIlVVNXeLK5F0mCF1msx3Pik1e7uv593tahsp_Q",
+      "widthPx": 3096,
+      "heightPx": 4128,
+      "authorAttributions": [
+        {
+          "displayName": "Carlos Arturo Espinosa",
+          "uri": "https://maps.google.com/maps/contrib/104949358400922865254",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUDW1Jpa79lDiMZiOL_lC3TIP_LPtfPGhd_kbw0CyMCXwdYDeAz=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICErJuh4AE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICErJuh4AE!2e10!4m2!3m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    },
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/photos/AciIO2f5QEikpvAvymfzmFARor7ODZuXrGuLc4M128aQ1fEkE2sJ2H9SwyvvEwy1-UiCljvJVb2HgUcoC0Hd-DEzZlwS04Mhpe9vyJi29LeGZSOrjfAn86wapRIxgnR9AcN7p1L2GiiED5co_MlUcHD1EXUqRwG6sRI4JUDLy4DjjT6E3r_FSd43s5aR74-GWtCYNcJs_KrcrOosjLVf9d1HJ5sCKLd64ycsp-qyG4PziNT3-hkGHw7A1-i1QqbLXAoaKS4GM9ZyDdKmq2_ho8GkJWUf7anbFH-pXemyLt4Um4fJbwKMcZksZ8Ks82uMKn_DVEs7pmBS1QZN5RVoOBfYFbr4QmpqtOf7zb0HLendcxQkS0G9gdVxwKrkmMjGpKmpMiPHlLt-kQAkXBiGqbg2en3B2FP_tqf6SAxtm5HPtvQOZQ",
+      "widthPx": 3096,
+      "heightPx": 4128,
+      "authorAttributions": [
+        {
+          "displayName": "Carlos Arturo Espinosa",
+          "uri": "https://maps.google.com/maps/contrib/104949358400922865254",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUDW1Jpa79lDiMZiOL_lC3TIP_LPtfPGhd_kbw0CyMCXwdYDeAz=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICErJuaaw&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICErJuaaw!2e10!4m2!3m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    },
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/photos/AciIO2egTv5PNvDEv4k8SuSsR7mDaZyw-PvhbeB70MzBxhA3fsKla57H-x0PFOw7qi7ElketNIU2KYV-K-_GwyWG7JwaPLBQSQApTJDvqPm7xZUpLQJwyMdC0U6gb5tBafcytomgAVu7jQ19pCLjk49BZbntF-TGzaFLZp0WeWTnZ7lx58tx94eO1o8LRmHfj2G0CgWjfM6fdZRv_dqIWs-GXS5IupjgWP291OU9EFoPdKRck4f7eyl4xqcHuAtcC45P6RdlGC50c9kmI1PUiWDyfGBNKz5YMxresaO2G7iie-4oiMXjIb4lV1MwoS7elCUtmxqhOdeFt3VNHcRLkbbGY2UtwTdEmpOgPeNL8KqTPldosHEJke1u9omJKnpPLN5BIGc1d5qds2JCVZY92QwE_tt_5GWekdkS4oOXyabCckXGxw",
+      "widthPx": 2976,
+      "heightPx": 3968,
+      "authorAttributions": [
+        {
+          "displayName": "Doris Ospina",
+          "uri": "https://maps.google.com/maps/contrib/114624727121420001563",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUSqRvk3ISbwHBk2EVkxytCS_1uzSlQWDn_CKK7Rb1cpilC5N8M=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDy15i6eg&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDy15i6eg!2e10!4m2!3m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    },
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/photos/AciIO2eQcV387Yy11XA5SgyUBg8znA-MY2kAchnU3ZK6rzKAfFeg9nSXvITElNSo8Pj2PmZICo_Mu3BFN_R31yNzbxJPzqWWeZZ40dWoXe0jHoYcGxGNpCsHPCbh6NNobOa1kavz0sHVGVDXhsCijLV9U-5sbMj6j75tV0C0WVof9pQ4WrmV_pQr5CirTkMcduHcM0w3V1Uj1muNWHSknTXPaJ8NpBUR1R43EQHZGn0fUl-m-5HMci2Brph1Dgwaghr6Gy-A9wIUrX-d0WKELj8UAxPo4noGcSpzoVsJ8x-qyKSYAomv6WdPBksuSHkekzp33jV4DIxUWcFf97qQnBFyWlf0kFV09HD-RLqCeCGgfJ1zgUwH74AqbeGDb-1ghbLUWnWZ4hWNPl1Ou6dGvWvi3w9GbGO0jt3p_tBEpzh7IIgMstCc",
+      "widthPx": 3096,
+      "heightPx": 4128,
+      "authorAttributions": [
+        {
+          "displayName": "Carlos Arturo Espinosa",
+          "uri": "https://maps.google.com/maps/contrib/104949358400922865254",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUDW1Jpa79lDiMZiOL_lC3TIP_LPtfPGhd_kbw0CyMCXwdYDeAz=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICErJuxlQE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICErJuxlQE!2e10!4m2!3m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    },
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/photos/AciIO2d71L8CkHWJk4SctbluDcEcj9J8fTO_FEsHoFIjY8xBwTxgU-xgzsHArzLLMXAUWZVdPLa-KJ1qvFhUgZBAXOiVk-R3kjRsfToLtDlMF_QkSh0-rMRwFmMl9fSIftIObKWDO6Tnsc-lUJIrnwgpVwAv0oiZjNgDlkS3rIRC6llQk_5fxcb89wrhBqpIIzigmwcAx5CTyErzzFznImSlU5jgNZtQM0pXqYowtv6myOjIlCf-_2FnbFkx5mpUdU5ib0Y4FQpI-h_7IbRWlOqgWyoWNmjQ2RT2ck4-C9uIGL_bEymUSFxk_c4kN_wdbfEJnjnS8qVfqCrnO28oUtNol2D3jRoThYiUHZsFbJ_3tCdLnAlhbi50rGJpVn_tblErLQilG8gtAadbKxkzTSVIFRoHGmkvtlFV31KEmZydgmy85T6x",
+      "widthPx": 2296,
+      "heightPx": 4080,
+      "authorAttributions": [
+        {
+          "displayName": "Jos\u00e9 Olascoaga",
+          "uri": "https://maps.google.com/maps/contrib/115684151654900650957",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVj1d9-KiyB9dFyb4-glGkVeQNcN_tl3AueVDdKkInVVta7xflx0g=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDdldyt-wE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDdldyt-wE!2e10!4m2!3m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    },
+    {
+      "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w/photos/AciIO2d4xDLvmIIti2Pxd4Y0bizpN49IbD3Jd8DjcmJvO0hVTVLCQGVqCuuGp4uSEQ4IdzZw711rI7w1affMg9CFT88c-Rrb4REIZiYYlesz7pHh_lBeeWR9ShBsgSpkSbApkwn6pDbRGy2BP7bZqtwPCEbWdE0Zd7mrANIWBurz7laOVI_9_-wMY_YOo5Kh309PShoLUlTV-doxBHzyiQuKiZFnHpg5lVYs50qH8FuNTBxyAKXa5NFogdndYt1XblSJLjBXAUGUZIe3F5-04-Eu8xfUUVvqclKMK3IUx63YvlehyQRZm0FKWcKWQ8DhRXQm9GZRVpGcqD3RpTUbfqGIioOIvazg7lnZU-4DdesG29q_-muFqubFPM5Qmxtv5GM-zItvs4Hs9kL9Abkp0tO5Rv6WkjmxZjaymalUMYNOaAJO8g",
+      "widthPx": 3096,
+      "heightPx": 4128,
+      "authorAttributions": [
+        {
+          "displayName": "Carlos Arturo Espinosa",
+          "uri": "https://maps.google.com/maps/contrib/104949358400922865254",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUDW1Jpa79lDiMZiOL_lC3TIP_LPtfPGhd_kbw0CyMCXwdYDeAz=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICErJu2Vg&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICErJu2Vg!2e10!4m2!3m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29"
+    }
+  ],
+  "goodForChildren": true,
+  "allowsDogs": true,
+  "accessibilityOptions": {
+    "wheelchairAccessibleEntrance": true
+  },
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJK7cYia4pRI4RVYTDKorMMbk",
+        "placeId": "ChIJK7cYia4pRI4RVYTDKorMMbk",
+        "displayName": {
+          "text": "FUNDACI\u00d3N DIVERSIDAD Sede 1",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 41.957806
+      },
+      {
+        "name": "places/ChIJYXIu2q4pRI4RZ9gfjv3GGVU",
+        "placeId": "ChIJYXIu2q4pRI4RZ9gfjv3GGVU",
+        "displayName": {
+          "text": "Edificio Marquez De Caceres",
+          "languageCode": "en"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 190.2791
+      },
+      {
+        "name": "places/ChIJjeZ7964pRI4RBr5u5z2Z-Sg",
+        "placeId": "ChIJjeZ7964pRI4RBr5u5z2Z-Sg",
+        "displayName": {
+          "text": "Ed. Torre Pontevedra",
+          "languageCode": "en"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 64.10285
+      },
+      {
+        "name": "places/ChIJByPr9q4pRI4RkRwPlb25ylI",
+        "placeId": "ChIJByPr9q4pRI4RkRwPlb25ylI",
+        "displayName": {
+          "text": "Centro de est\u00e9tica HSN",
+          "languageCode": "es"
+        },
+        "types": [
+          "beauty_salon",
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 38.430573
+      },
+      {
+        "name": "places/ChIJ9cT9C6YpRI4R5_KEvYsF8GI",
+        "placeId": "ChIJ9cT9C6YpRI4R5_KEvYsF8GI",
+        "displayName": {
+          "text": "Edificio Barlovento",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 32.808693
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "placeId": "ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "displayName": {
+          "text": "Conquistadores",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "placeId": "ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "displayName": {
+          "text": "Laureles - Estadio",
+          "languageCode": "es"
+        },
+        "containment": "WITHIN"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=13614189282237238313&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "writeAReviewUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29!12e1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29!9m1!1b1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429ae5f9c84ef:0xbcef510568ae4c29!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn",
+    "sublocality": "Laureles - Estadio",
+    "addressLines": [
+      "Cra 64A #65D-59"
+    ]
+  }
+}

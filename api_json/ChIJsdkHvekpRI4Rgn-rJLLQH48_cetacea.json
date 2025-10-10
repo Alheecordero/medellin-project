@@ -1,0 +1,651 @@
+{
+  "name": "places/ChIJsdkHvekpRI4Rgn-rJLLQH48",
+  "id": "ChIJsdkHvekpRI4Rgn-rJLLQH48",
+  "types": [
+    "art_studio",
+    "art_gallery",
+    "point_of_interest",
+    "establishment"
+  ],
+  "nationalPhoneNumber": "316 7954085",
+  "internationalPhoneNumber": "+57 316 7954085",
+  "formattedAddress": "Cl. 42 #63B-35, Laureles - Estadio, Medell\u00edn, Laureles, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "63B-35",
+      "shortText": "63B-35",
+      "types": [
+        "street_number"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Calle 42",
+      "shortText": "Cl. 42",
+      "types": [
+        "route"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Conquistadores",
+      "shortText": "Conquistadores",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Laureles - Estadio",
+      "shortText": "Laureles - Estadio",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Laureles",
+      "shortText": "Laureles",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050030",
+      "shortText": "050030",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "67R66CV9+P9",
+    "compoundCode": "6CV9+P9 Medell\u00edn, Antioquia"
+  },
+  "location": {
+    "latitude": 6.2443387,
+    "longitude": -75.58151529999999
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.243004419708497,
+      "longitude": -75.5828548802915
+    },
+    "high": {
+      "latitude": 6.245702380291502,
+      "longitude": -75.58015691970849
+    }
+  },
+  "rating": 5,
+  "googleMapsUri": "https://maps.google.com/?cid=10313191135239700354&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "websiteUri": "http://www.cetaceailustrada.com/",
+  "regularOpeningHours": {
+    "openNow": false,
+    "periods": [
+      {
+        "open": {
+          "day": 1,
+          "hour": 9,
+          "minute": 0
+        },
+        "close": {
+          "day": 1,
+          "hour": 17,
+          "minute": 0
+        }
+      },
+      {
+        "open": {
+          "day": 2,
+          "hour": 13,
+          "minute": 30
+        },
+        "close": {
+          "day": 2,
+          "hour": 20,
+          "minute": 30
+        }
+      },
+      {
+        "open": {
+          "day": 3,
+          "hour": 9,
+          "minute": 0
+        },
+        "close": {
+          "day": 3,
+          "hour": 17,
+          "minute": 0
+        }
+      },
+      {
+        "open": {
+          "day": 4,
+          "hour": 9,
+          "minute": 0
+        },
+        "close": {
+          "day": 4,
+          "hour": 17,
+          "minute": 0
+        }
+      },
+      {
+        "open": {
+          "day": 5,
+          "hour": 13,
+          "minute": 30
+        },
+        "close": {
+          "day": 5,
+          "hour": 20,
+          "minute": 30
+        }
+      },
+      {
+        "open": {
+          "day": 6,
+          "hour": 9,
+          "minute": 0
+        },
+        "close": {
+          "day": 6,
+          "hour": 17,
+          "minute": 0
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: 9:00\u201317:00",
+      "martes: 13:30\u201320:30",
+      "mi\u00e9rcoles: 9:00\u201317:00",
+      "jueves: 9:00\u201317:00",
+      "viernes: 13:30\u201320:30",
+      "s\u00e1bado: 9:00\u201317:00",
+      "domingo: Cerrado"
+    ],
+    "nextOpenTime": "2025-10-07T18:30:00Z"
+  },
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"street-address\">Calle 42 #63B-35</span>, <span class=\"region\">Laureles - Estadio</span>, <span class=\"locality\">Medell\u00edn, Laureles, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050030</span>, <span class=\"country-name\">Colombia</span>",
+  "businessStatus": "OPERATIONAL",
+  "userRatingCount": 8,
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/school_pinlet",
+  "iconBackgroundColor": "#7B9EB0",
+  "displayName": {
+    "text": "Cetacea",
+    "languageCode": "en"
+  },
+  "currentOpeningHours": {
+    "openNow": false,
+    "periods": [
+      {
+        "open": {
+          "day": 1,
+          "hour": 9,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 6
+          }
+        },
+        "close": {
+          "day": 1,
+          "hour": 17,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 6
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 2,
+          "hour": 13,
+          "minute": 30,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 7
+          }
+        },
+        "close": {
+          "day": 2,
+          "hour": 20,
+          "minute": 30,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 7
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 3,
+          "hour": 9,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 8
+          }
+        },
+        "close": {
+          "day": 3,
+          "hour": 17,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 8
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 4,
+          "hour": 9,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 9
+          }
+        },
+        "close": {
+          "day": 4,
+          "hour": 17,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 9
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 5,
+          "hour": 13,
+          "minute": 30,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 10
+          }
+        },
+        "close": {
+          "day": 5,
+          "hour": 20,
+          "minute": 30,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 10
+          }
+        }
+      },
+      {
+        "open": {
+          "day": 6,
+          "hour": 9,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 11
+          }
+        },
+        "close": {
+          "day": 6,
+          "hour": 17,
+          "minute": 0,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 11
+          }
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: 9:00\u201317:00",
+      "martes: 13:30\u201320:30",
+      "mi\u00e9rcoles: 9:00\u201317:00",
+      "jueves: 9:00\u201317:00",
+      "viernes: 13:30\u201320:30",
+      "s\u00e1bado: 9:00\u201317:00",
+      "domingo: Cerrado"
+    ],
+    "nextOpenTime": "2025-10-07T18:30:00Z"
+  },
+  "shortFormattedAddress": "Cl. 42 #63B-35, Laureles - Estadio, Medell\u00edn",
+  "reviews": [
+    {
+      "name": "places/ChIJsdkHvekpRI4Rgn-rJLLQH48/reviews/ChdDSUhNMG9nS0VJQ0FnSURIcE1MdHFnRRAB",
+      "relativePublishTimeDescription": "Hace un a\u00f1o",
+      "rating": 5,
+      "text": {
+        "text": "Cet\u00e1cea Ilustrada m\u00e1s que una academia de arte es una comunidad donde encontr\u00e9 una forma de conectarme con el arte, aqu\u00ed pude aprender diferentes t\u00e9cnicas y conocer sobre diferentes materiales. El lugar es muy c\u00f3modo, acogedor y central.",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Cet\u00e1cea Ilustrada m\u00e1s que una academia de arte es una comunidad donde encontr\u00e9 una forma de conectarme con el arte, aqu\u00ed pude aprender diferentes t\u00e9cnicas y conocer sobre diferentes materiales. El lugar es muy c\u00f3modo, acogedor y central.",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Paola Ortiz",
+        "uri": "https://www.google.com/maps/contrib/113894785397340152472/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWbgto9IZyaHK3sn-1ovF5NM7c2TavSNwhVcqDQMDxsXg9rgGN1=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2024-09-12T16:38:08.172756Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSURIcE1MdHFnRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSURIcE1MdHFnRRAB!2m1!1s0x8e4429e9bd07d9b1:0x8f1fd0b224ab7f82"
+    },
+    {
+      "name": "places/ChIJsdkHvekpRI4Rgn-rJLLQH48/reviews/ChZDSUhNMG9nS0VJQ0FnSUNQc2VIZkVREAE",
+      "relativePublishTimeDescription": "Hace 10 meses",
+      "rating": 5,
+      "text": {
+        "text": "Una hermosa casa, adem\u00e1s atendida por muy buenas personas que te hacen sentir como en tu propia casa. \u00a1Excelentes talleres y mucha arte!",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Una hermosa casa, adem\u00e1s atendida por muy buenas personas que te hacen sentir como en tu propia casa. \u00a1Excelentes talleres y mucha arte!",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Alejandro Restrepo",
+        "uri": "https://www.google.com/maps/contrib/115400067838202452217/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUh2HHPN9L9115XjIWU47KmEYcFHIE5Y_PtWTl9cHtxo8-0UUCs=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2024-11-25T13:08:18.818694Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSUNQc2VIZkVREAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSUNQc2VIZkVREAE!2m1!1s0x8e4429e9bd07d9b1:0x8f1fd0b224ab7f82"
+    },
+    {
+      "name": "places/ChIJsdkHvekpRI4Rgn-rJLLQH48/reviews/ChZDSUhNMG9nS0VJQ0FnSURIaU4yeldnEAE",
+      "relativePublishTimeDescription": "Hace un a\u00f1o",
+      "rating": 5,
+      "text": {
+        "text": "Cet\u00e1cea es un gran lugar para aprender diferentes t\u00e9cnicas con personas muy calificadas, y adem\u00e1s tiene un ambiente \u00fanico que te hace querer regresar una y otra vez.",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Cet\u00e1cea es un gran lugar para aprender diferentes t\u00e9cnicas con personas muy calificadas, y adem\u00e1s tiene un ambiente \u00fanico que te hace querer regresar una y otra vez.",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Estefania Calle",
+        "uri": "https://www.google.com/maps/contrib/114670870767610831689/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL18ZdDSYVvdSKNdvP7tjK7lmx1c1McSRXyN-fwq9eiDpYilg=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2024-09-11T19:24:37.919772Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSURIaU4yeldnEAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSURIaU4yeldnEAE!2m1!1s0x8e4429e9bd07d9b1:0x8f1fd0b224ab7f82"
+    },
+    {
+      "name": "places/ChIJsdkHvekpRI4Rgn-rJLLQH48/reviews/ChdDSUhNMG9nS0VJQ0FnSURwd0txemtnRRAB",
+      "relativePublishTimeDescription": "Hace 2 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Muy agradable el lugar, buenas t\u00e9cnicas de pintura y excelentes profesores. El plus es la nevera de Postobon. Falta es una m\u00e1quina de caf\u00e9.",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Muy agradable el lugar, buenas t\u00e9cnicas de pintura y excelentes profesores. El plus es la nevera de Postobon. Falta es una m\u00e1quina de caf\u00e9.",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Andres Cogollo",
+        "uri": "https://www.google.com/maps/contrib/100949647117594588989/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWnU8tlFZHdQG2UEyCDuLRM4rasuvcZAI7uv7_fF8PynMHfYJc=s128-c0x00000000-cc-rp-mo-ba3"
+      },
+      "publishTime": "2023-08-14T01:35:46.959539Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSURwd0txemtnRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSURwd0txemtnRRAB!2m1!1s0x8e4429e9bd07d9b1:0x8f1fd0b224ab7f82"
+    },
+    {
+      "name": "places/ChIJsdkHvekpRI4Rgn-rJLLQH48/reviews/ChdDSUhNMG9nS0VJQ0FnSURaZ3B2Q25BRRAB",
+      "relativePublishTimeDescription": "Hace 2 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Un lugar m\u00e1gico lleno de buena energ\u00eda y arte por todos lados",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Un lugar m\u00e1gico lleno de buena energ\u00eda y arte por todos lados",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Display En Casa",
+        "uri": "https://www.google.com/maps/contrib/102720396863897477508/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWeystZvogffUbOfPAejSgkRtTh5NGQNHAIMCRjvj5p8W0m-aij3w=s128-c0x00000000-cc-rp-mo-ba3"
+      },
+      "publishTime": "2023-09-27T03:55:31.897890Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSURaZ3B2Q25BRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSURaZ3B2Q25BRRAB!2m1!1s0x8e4429e9bd07d9b1:0x8f1fd0b224ab7f82"
+    }
+  ],
+  "photos": [
+    {
+      "name": "places/ChIJsdkHvekpRI4Rgn-rJLLQH48/photos/AciIO2c-_cDV5Ln47dAxU52s5u--Hmigx-d0EHftJZVylrVO3kCmykCyOdk-KTxrzL4F7ICKWJ0423zjWRxHNfa1sonTo3W25JKyltSzmmeJSpiWgIdWLhYg9MA1PPBlCU9GdplG7_c4Yau8c3DZg3Mjh3iKqktYeCNPHLOVPf7TjSM7JJzwOuBQV9g1kchBHNbqEWxoOCGsqeoK3i8XJ3OkPuQPexL0GfnsArAcvjQmOqq2thq0_ZK1cvB643Q5szLgOMG3S7lvEXD3N55_clCG0yk_GiheNkYxVficZfOmfFU2CQ",
+      "widthPx": 3499,
+      "heightPx": 2984,
+      "authorAttributions": [
+        {
+          "displayName": "Cetacea",
+          "uri": "https://maps.google.com/maps/contrib/101930642898115556696",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocJnOU-r9uX5iUDheCxRzGbuo2XAVW1v7BiD3z7QHYJEHlr7uw=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipMvMJ35BYj1QmKeZ4rpME32oh6mLoCDp79J97q3&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipMvMJ35BYj1QmKeZ4rpME32oh6mLoCDp79J97q3!2e10!4m2!3m1!1s0x8e4429e9bd07d9b1:0x8f1fd0b224ab7f82"
+    },
+    {
+      "name": "places/ChIJsdkHvekpRI4Rgn-rJLLQH48/photos/AciIO2eeu1DCkJbYACRwPIpF11u1lbZ6oXmO-XZBG8HrS8uSV6u1q_Q6-Mej_LRntpKh28gwBotESb4j6cNh0G-h_42xCy3J-D3NXmwutfgvFf25pd-7iBcffeWhUjT7OzHR8A0XMr3fFUfZVW0ye8xCKBSa9aXnwmcIN4k8Ywgx1O-U_ew_aY1K5VZWdeRHaPvOqyYUGR44FscGORtWH3TrT6GTXFzUZg5CewTwjBLGBolksy9m4hVvzcvNRyvx_nNG77OIpwaRWS8h5z9gv379SdYjv5yYf_QVBb2W5PzvUGnXyfvSBJyQMOi8v4k6PHvv9AK8ENvGVyOjKwwxVQHvP2brDAYbAtjebOagtflRn3fROlRTkRmJyEsNvwAJLd8_AEX3ts9FYhMulZsof9Uiht_MJ8DBsUCLOI-1G8sPlGs77A",
+      "widthPx": 2700,
+      "heightPx": 4800,
+      "authorAttributions": [
+        {
+          "displayName": "Paola Ortiz",
+          "uri": "https://maps.google.com/maps/contrib/113894785397340152472",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWbgto9IZyaHK3sn-1ovF5NM7c2TavSNwhVcqDQMDxsXg9rgGN1=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDHpMLDPw&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDHpMLDPw!2e10!4m2!3m1!1s0x8e4429e9bd07d9b1:0x8f1fd0b224ab7f82"
+    },
+    {
+      "name": "places/ChIJsdkHvekpRI4Rgn-rJLLQH48/photos/AciIO2eDqIL49VZmxYLLvKJPBt8Wh31pqHVTLiDZVskTfbax0nRQrr0Jxa8W-bczW-2MWdI-_r_1eJuOm8Rpu_FOwMWkByTf0cXPHr3vZJnLC3QPYfd6-Peaasd8JeD3EgsTLS31ZwzJDqaCZiTakYXkZccoCMeWskVzhqbg60VCsfx8kfr3i3A7qqizXPhF4MtA8DRF-Tarr7sIAcVITppB_ClsX0g5-Z7h3hZ5UUISziC2T2qnpGQvrpKb0MxtNTc5GmaA0xPotxDaCVSJzfRt3N9Qa5oeZD2L9tT8qf0001spzQpT1ZM6TLiFZUjvmloYt1VgzPFkYLz5sBKRu6JrMmXCPFDiZ0c0aJGY38TOEfZHXn1GGMnmzXInJ90sPzQhpoHkFTDv-RR-w-4QxcKTbv8uo0x5QxwU5aQEE1X7YkPCLoe-",
+      "widthPx": 4032,
+      "heightPx": 3024,
+      "authorAttributions": [
+        {
+          "displayName": "Andres Cogollo",
+          "uri": "https://maps.google.com/maps/contrib/100949647117594588989",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWnU8tlFZHdQG2UEyCDuLRM4rasuvcZAI7uv7_fF8PynMHfYJc=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDpwKrYuAE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDpwKrYuAE!2e10!4m2!3m1!1s0x8e4429e9bd07d9b1:0x8f1fd0b224ab7f82"
+    }
+  ],
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJZVE4GawpRI4RkfaYKP0Xf9s",
+        "placeId": "ChIJZVE4GawpRI4RkfaYKP0Xf9s",
+        "displayName": {
+          "text": "Centro Residencial Colseguros",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "DOWN_THE_ROAD",
+        "straightLineDistanceMeters": 170.9709,
+        "travelDistanceMeters": 162.96042
+      },
+      {
+        "name": "places/ChIJYXIu2q4pRI4RZ9gfjv3GGVU",
+        "placeId": "ChIJYXIu2q4pRI4RZ9gfjv3GGVU",
+        "displayName": {
+          "text": "Edificio Marquez De Caceres",
+          "languageCode": "en"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "DOWN_THE_ROAD",
+        "straightLineDistanceMeters": 197.59901,
+        "travelDistanceMeters": 217.46898
+      },
+      {
+        "name": "places/ChIJwXlSTqkpRI4RXhArWz_BQrk",
+        "placeId": "ChIJwXlSTqkpRI4RXhArWz_BQrk",
+        "displayName": {
+          "text": "Edificio torres del rio 1",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "DOWN_THE_ROAD",
+        "straightLineDistanceMeters": 98.067566,
+        "travelDistanceMeters": 95.004074
+      },
+      {
+        "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "placeId": "ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "displayName": {
+          "text": "Parques del R\u00edo",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest",
+          "tourist_attraction"
+        ],
+        "straightLineDistanceMeters": 235.2955,
+        "travelDistanceMeters": 254.96904
+      },
+      {
+        "name": "places/ChIJyZUkPKwpRI4RyIsAZrNTANI",
+        "placeId": "ChIJyZUkPKwpRI4RyIsAZrNTANI",
+        "displayName": {
+          "text": "La Cafebreria Medell\u00edn",
+          "languageCode": "es"
+        },
+        "types": [
+          "cafe",
+          "establishment",
+          "food",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "AROUND_THE_CORNER",
+        "straightLineDistanceMeters": 56.040874,
+        "travelDistanceMeters": 53.17091
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "placeId": "ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "displayName": {
+          "text": "Conquistadores",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "placeId": "ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "displayName": {
+          "text": "Laureles - Estadio",
+          "languageCode": "es"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJSepYS6kpRI4RfopFgSZoOp4",
+        "placeId": "ChIJSepYS6kpRI4RfopFgSZoOp4",
+        "displayName": {
+          "text": "UNICOL P.H",
+          "languageCode": "es"
+        },
+        "containment": "NEAR"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e4429e9bd07d9b1:0x8f1fd0b224ab7f82!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=10313191135239700354&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "writeAReviewUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429e9bd07d9b1:0x8f1fd0b224ab7f82!12e1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e4429e9bd07d9b1:0x8f1fd0b224ab7f82!9m1!1b1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429e9bd07d9b1:0x8f1fd0b224ab7f82!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "postalCode": "050030",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn",
+    "addressLines": [
+      "Cl. 42 #63B-35"
+    ]
+  }
+}

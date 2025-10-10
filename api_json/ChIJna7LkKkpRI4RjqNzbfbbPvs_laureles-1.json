@@ -1,0 +1,222 @@
+{
+  "name": "places/ChIJna7LkKkpRI4RjqNzbfbbPvs",
+  "id": "ChIJna7LkKkpRI4RjqNzbfbbPvs",
+  "types": [
+    "park",
+    "premise",
+    "point_of_interest",
+    "establishment",
+    "street_address"
+  ],
+  "formattedAddress": "Laureles - Estadio, Laureles, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "Laureles",
+      "shortText": "Laureles",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Conquistadores",
+      "shortText": "Conquistadores",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Laureles - Estadio",
+      "shortText": "Laureles - Estadio",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050030",
+      "shortText": "050030",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "location": {
+    "latitude": 6.2471855,
+    "longitude": -75.5811592
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.245652546058188,
+      "longitude": -75.58247814270169
+    },
+    "high": {
+      "latitude": 6.248350506641192,
+      "longitude": -75.57978018211868
+    }
+  },
+  "googleMapsUri": "https://maps.google.com/?cid=18104149403520705422&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"region\">Laureles - Estadio</span>, <span class=\"locality\">Laureles, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050030</span>, <span class=\"country-name\">Colombia</span>",
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet",
+  "iconBackgroundColor": "#4DB546",
+  "displayName": {
+    "text": "Laureles",
+    "languageCode": "es"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Parque",
+    "languageCode": "es"
+  },
+  "primaryType": "park",
+  "shortFormattedAddress": "Laureles - Estadio, Medell\u00edn",
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "placeId": "ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "displayName": {
+          "text": "Parques del R\u00edo",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest",
+          "tourist_attraction"
+        ],
+        "straightLineDistanceMeters": 438.1242,
+        "travelDistanceMeters": 411.56067
+      },
+      {
+        "name": "places/ChIJsWM1L6gpRI4RG70ssTFYa-o",
+        "placeId": "ChIJsWM1L6gpRI4RG70ssTFYa-o",
+        "displayName": {
+          "text": "Dane Medell\u00edn",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 310.2309,
+        "travelDistanceMeters": 452.11465
+      },
+      {
+        "name": "places/ChIJL4lzrqkpRI4RKtZC7p99WV4",
+        "placeId": "ChIJL4lzrqkpRI4RKtZC7p99WV4",
+        "displayName": {
+          "text": "Lavautos Bolivariana",
+          "languageCode": "es"
+        },
+        "types": [
+          "car_wash",
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 160.08997,
+        "travelDistanceMeters": 418.72464
+      },
+      {
+        "name": "places/ChIJY0_dqqkpRI4R_quCjMSoHqo",
+        "placeId": "ChIJY0_dqqkpRI4R_quCjMSoHqo",
+        "displayName": {
+          "text": "Alfa Bolivariana Medell\u00edn",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest",
+          "store"
+        ],
+        "straightLineDistanceMeters": 205.72696,
+        "travelDistanceMeters": 363.932
+      },
+      {
+        "name": "places/ChIJ0xtFtKkpRI4Rmj-m40hSLJ0",
+        "placeId": "ChIJ0xtFtKkpRI4Rmj-m40hSLJ0",
+        "displayName": {
+          "text": "Best Car Wash",
+          "languageCode": "es"
+        },
+        "types": [
+          "car_wash",
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 176.20287,
+        "travelDistanceMeters": 448.39056
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "placeId": "ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "displayName": {
+          "text": "Conquistadores",
+          "languageCode": "en"
+        },
+        "containment": "OUTSKIRTS"
+      },
+      {
+        "name": "places/ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "placeId": "ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "displayName": {
+          "text": "Laureles - Estadio",
+          "languageCode": "es"
+        },
+        "containment": "OUTSKIRTS"
+      },
+      {
+        "name": "places/ChIJ31X2cqYpRI4R5IKUsLcREps",
+        "placeId": "ChIJ31X2cqYpRI4R5IKUsLcREps",
+        "displayName": {
+          "text": "San Joaquin",
+          "languageCode": "en"
+        },
+        "containment": "NEAR"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e4429a990cbae9d:0xfb3edbf66d73a38e!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=18104149403520705422&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429a990cbae9d:0xfb3edbf66d73a38e!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  }
+}

@@ -1,0 +1,597 @@
+{
+  "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+  "id": "ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+  "types": [
+    "park",
+    "tourist_attraction",
+    "point_of_interest",
+    "establishment"
+  ],
+  "nationalPhoneNumber": "44444141",
+  "internationalPhoneNumber": "+57 44444141",
+  "formattedAddress": "Auto. S, Laureles - Estadio, Medell\u00edn, Laureles, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "Autopista Sur",
+      "shortText": "Auto. S",
+      "types": [
+        "route"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Conquistadores",
+      "shortText": "Conquistadores",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Laureles - Estadio",
+      "shortText": "Laureles - Estadio",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Laureles",
+      "shortText": "Laureles",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050030",
+      "shortText": "050030",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "67R66CVC+C5",
+    "compoundCode": "6CVC+C5 Medell\u00edn, Antioquia"
+  },
+  "location": {
+    "latitude": 6.243595699999999,
+    "longitude": -75.5795253
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.242559169708499,
+      "longitude": -75.5809751802915
+    },
+    "high": {
+      "latitude": 6.245257130291503,
+      "longitude": -75.5782772197085
+    }
+  },
+  "rating": 4.7,
+  "googleMapsUri": "https://maps.google.com/?cid=16176617132349094519&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "regularOpeningHours": {
+    "openNow": true,
+    "periods": [
+      {
+        "open": {
+          "day": 0,
+          "hour": 0,
+          "minute": 0
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: Abierto 24 horas",
+      "martes: Abierto 24 horas",
+      "mi\u00e9rcoles: Abierto 24 horas",
+      "jueves: Abierto 24 horas",
+      "viernes: Abierto 24 horas",
+      "s\u00e1bado: Abierto 24 horas",
+      "domingo: Abierto 24 horas"
+    ]
+  },
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"street-address\">Autopista Sur</span>, <span class=\"region\">Laureles - Estadio</span>, <span class=\"locality\">Medell\u00edn, Laureles, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050030</span>, <span class=\"country-name\">Colombia</span>",
+  "businessStatus": "OPERATIONAL",
+  "userRatingCount": 32432,
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet",
+  "iconBackgroundColor": "#4DB546",
+  "displayName": {
+    "text": "Parques del R\u00edo",
+    "languageCode": "es"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Parque",
+    "languageCode": "es"
+  },
+  "currentOpeningHours": {
+    "openNow": true,
+    "periods": [
+      {
+        "open": {
+          "day": 1,
+          "hour": 0,
+          "minute": 0,
+          "truncated": true,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 6
+          }
+        },
+        "close": {
+          "day": 0,
+          "hour": 23,
+          "minute": 59,
+          "truncated": true,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 12
+          }
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: Abierto 24 horas",
+      "martes: Abierto 24 horas",
+      "mi\u00e9rcoles: Abierto 24 horas",
+      "jueves: Abierto 24 horas",
+      "viernes: Abierto 24 horas",
+      "s\u00e1bado: Abierto 24 horas",
+      "domingo: Abierto 24 horas"
+    ]
+  },
+  "primaryType": "park",
+  "shortFormattedAddress": "Auto. S, Laureles - Estadio, Medell\u00edn",
+  "editorialSummary": {
+    "text": "Parque lineal con carril bici y paseos ribere\u00f1os bien cuidados, con \u00e1rboles, flores y obras de arte.",
+    "languageCode": "es"
+  },
+  "reviews": [
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/reviews/Ci9DQUlRQUNvZENodHljRjlvT25GUVlXZFlhVFJ4TldkeWNuQm9MVFJETkZCV1pXYxAB",
+      "relativePublishTimeDescription": "Hace 2 meses",
+      "rating": 5,
+      "text": {
+        "text": "Sin lugar a dudas, creo que es de uno de los espacios p\u00fablicos m\u00e1s hermosos y seguros que he visto en mi vida.\nCuenta con 2 puentes que pasan sobre el r\u00edo Medell\u00edn que act\u00faan como miradores, los cuales regalan unas vistas preciosas de la ciudad. En estos 2 puntos puedes apreciar las diferencias socioecon\u00f3micas de la ciudad.\nSi observas hacia el Norte y al Oeste puedes apreciar las notorias diferencias en las edificaciones a comparaci\u00f3n con el Sur y el Este de la ciudad, que son las zonas donde habitan las personas con mayor poder adquisitivo de la ciudad.\nEsto debido a que el R\u00edo Medell\u00edn actua como un separador de las clases sociales de la ciudad :). Un dato muy interesante que me cont\u00f3 un gu\u00eda que contrat\u00e9.\nEl parque es completamente seguro ya que en todo momento hay presencia policial.\nAdem\u00e1s, est\u00e1 sumamente limpio y la cantidad tan abundante de naturaleza lo vuelve un lugar muy relajante, se respira una paz como en pocos lugares de la ciudad\nLo que lo convierte en un lugar perfecto para realizar actividad f\u00edsica o simplemente dar un paseo en familia o en solitario.\nSi vienes de visita a Medell\u00edn es un lugar que debes visitar de forma obligatoria\ud83d\ude01\ud83c\udde8\ud83c\uddf4",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Sin lugar a dudas, creo que es de uno de los espacios p\u00fablicos m\u00e1s hermosos y seguros que he visto en mi vida.\nCuenta con 2 puentes que pasan sobre el r\u00edo Medell\u00edn que act\u00faan como miradores, los cuales regalan unas vistas preciosas de la ciudad. En estos 2 puntos puedes apreciar las diferencias socioecon\u00f3micas de la ciudad.\nSi observas hacia el Norte y al Oeste puedes apreciar las notorias diferencias en las edificaciones a comparaci\u00f3n con el Sur y el Este de la ciudad, que son las zonas donde habitan las personas con mayor poder adquisitivo de la ciudad.\nEsto debido a que el R\u00edo Medell\u00edn actua como un separador de las clases sociales de la ciudad :). Un dato muy interesante que me cont\u00f3 un gu\u00eda que contrat\u00e9.\nEl parque es completamente seguro ya que en todo momento hay presencia policial.\nAdem\u00e1s, est\u00e1 sumamente limpio y la cantidad tan abundante de naturaleza lo vuelve un lugar muy relajante, se respira una paz como en pocos lugares de la ciudad\nLo que lo convierte en un lugar perfecto para realizar actividad f\u00edsica o simplemente dar un paseo en familia o en solitario.\nSi vienes de visita a Medell\u00edn es un lugar que debes visitar de forma obligatoria\ud83d\ude01\ud83c\udde8\ud83c\uddf4",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Edgar Mart\u00ednez",
+        "uri": "https://www.google.com/maps/contrib/108011589213032705446/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVnOXHVuWICQlRjflqUeNtu14cOyDbY-viSl8VUUxNIe7Z1kFX0=s128-c0x00000000-cc-rp-mo-ba4"
+      },
+      "publishTime": "2025-07-31T20:16:05.439000768Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=Ci9DQUlRQUNvZENodHljRjlvT25GUVlXZFlhVFJ4TldkeWNuQm9MVFJETkZCV1pXYxAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT25GUVlXZFlhVFJ4TldkeWNuQm9MVFJETkZCV1pXYxAB!2m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    },
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/reviews/Ci9DQUlRQUNvZENodHljRjlvT2tGNFNUWkJVblZyUmpKUFdFSTVja1ZCYmxsMFZIYxAB",
+      "relativePublishTimeDescription": "Hace 2 meses",
+      "rating": 5,
+      "text": {
+        "text": "Parques del R\u00edo, es quiz\u00e1s uno de los lugares que m\u00e1s me gusta de Medell\u00edn. Es un parque al aire libre donde se pueden disfrutar de diversas actividades como: caminar, trotar, montar en bicicleta y patines, comer, jugar, hacer picnic, descansar y m\u00e1s actividades.\n\nEl parque cuenta con senderos naturales, bancas, \u00e1reas infantiles, cancha de f\u00fatbol, restaurantes, \u00e1reas verdes, \u00e1rea de agua. Un lugar para disfrutar en familias, en pareja, con amigos o solo, es un un lugar muy vers\u00e1til y muy central.\n\nCerca del edificio inteligente de EPM, el Teatro Metropolitano, el Pueblito Paisa. De f\u00e1cil acceso desde la estaci\u00f3n Alpujarra o Exposiciones del Metro. Desde las v\u00edas como la 33, la avenida Ferrocarril, la Regional y la Autopista sur.\n\nAdicionalmente, es un lugar donde hacen eventos de ciudad como los alumbrados navide\u00f1os, actividades de la Feria de la Flores, Colombia Moda y muchos m\u00e1s.",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Parques del R\u00edo, es quiz\u00e1s uno de los lugares que m\u00e1s me gusta de Medell\u00edn. Es un parque al aire libre donde se pueden disfrutar de diversas actividades como: caminar, trotar, montar en bicicleta y patines, comer, jugar, hacer picnic, descansar y m\u00e1s actividades.\n\nEl parque cuenta con senderos naturales, bancas, \u00e1reas infantiles, cancha de f\u00fatbol, restaurantes, \u00e1reas verdes, \u00e1rea de agua. Un lugar para disfrutar en familias, en pareja, con amigos o solo, es un un lugar muy vers\u00e1til y muy central.\n\nCerca del edificio inteligente de EPM, el Teatro Metropolitano, el Pueblito Paisa. De f\u00e1cil acceso desde la estaci\u00f3n Alpujarra o Exposiciones del Metro. Desde las v\u00edas como la 33, la avenida Ferrocarril, la Regional y la Autopista sur.\n\nAdicionalmente, es un lugar donde hacen eventos de ciudad como los alumbrados navide\u00f1os, actividades de la Feria de la Flores, Colombia Moda y muchos m\u00e1s.",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Juan de Los Rios",
+        "uri": "https://www.google.com/maps/contrib/105695002077564362293/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVoAmGefhEZHdsjRu0Ihm-ZO7NmtsOcLH4dRAyjwl2p72j-4S-8=s128-c0x00000000-cc-rp-mo-ba4"
+      },
+      "publishTime": "2025-07-31T17:27:35.097569943Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=Ci9DQUlRQUNvZENodHljRjlvT2tGNFNUWkJVblZyUmpKUFdFSTVja1ZCYmxsMFZIYxAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT2tGNFNUWkJVblZyUmpKUFdFSTVja1ZCYmxsMFZIYxAB!2m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    },
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/reviews/Ci9DQUlRQUNvZENodHljRjlvT2pBMlFUZHZYell5Y1hFNVQyWlhXVnA2TjNsMU0yYxAB",
+      "relativePublishTimeDescription": "Hace una semana",
+      "rating": 5,
+      "text": {
+        "text": "Realmente me encanta este parque, tiene una energ\u00eda muy bonita, es muy verde, hay lugares para hacer ejercicio para caminar estar en patines, pero al mismo tiempo hay zonas verdes donde uno se puede acostar y relajar, me encanta ese parque",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Realmente me encanta este parque, tiene una energ\u00eda muy bonita, es muy verde, hay lugares para hacer ejercicio para caminar estar en patines, pero al mismo tiempo hay zonas verdes donde uno se puede acostar y relajar, me encanta ese parque",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Amelia Del Castillo",
+        "uri": "https://www.google.com/maps/contrib/112140613420458866180/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIFp6Spq3hAq89XaY82i0a3GjnPk_SRMjDlaB7kMvaSdKBvK8g=s128-c0x00000000-cc-rp-mo-ba5"
+      },
+      "publishTime": "2025-09-25T01:02:54.685820492Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=Ci9DQUlRQUNvZENodHljRjlvT2pBMlFUZHZYell5Y1hFNVQyWlhXVnA2TjNsMU0yYxAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT2pBMlFUZHZYell5Y1hFNVQyWlhXVnA2TjNsMU0yYxAB!2m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    },
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/reviews/ChdDSUhNMG9nS0VOWDV1STJZc3BudV9RRRAB",
+      "relativePublishTimeDescription": "Hace 3 meses",
+      "rating": 5,
+      "text": {
+        "text": "Muy limpio, demasiado limpio , mucha gente disfrutando ,pas\u00e1ndolo bien , patinando , bailando , paseando a sus mascotas , cero vendedores ambulantes , solo carritos con micheladas , todo muy lindo y hermoso",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Muy limpio, demasiado limpio , mucha gente disfrutando ,pas\u00e1ndolo bien , patinando , bailando , paseando a sus mascotas , cero vendedores ambulantes , solo carritos con micheladas , todo muy lindo y hermoso",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Felipe Pujas Briones",
+        "uri": "https://www.google.com/maps/contrib/106644915036118328228/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocLkMJMvM4lKwW9M3Rd4TK7AUE1dO7ClLsr1hApjkxWtr_YumL4=s128-c0x00000000-cc-rp-mo-ba4"
+      },
+      "publishTime": "2025-06-09T16:14:56.755870Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VOWDV1STJZc3BudV9RRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VOWDV1STJZc3BudV9RRRAB!2m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    },
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/reviews/Ci9DQUlRQUNvZENodHljRjlvT21WcFJ5MXBkMUZyUVhScExVYzJWVkZYT0VWTE4xRRAB",
+      "relativePublishTimeDescription": "Hace 3 meses",
+      "rating": 5,
+      "text": {
+        "text": "El Parque del R\u00edo es, sin duda, un lugar fant\u00e1stico para conocer la esencia de la ciudad.\nParque del R\u00edo: Su Escondite Perfecto en Medell\u00edn (5/5)\nEn su primera visita a Medell\u00edn con amigos, se encontrar\u00e1n con un verdadero oasis urbano: el Parque del R\u00edo. Para m\u00ed, es ese rinc\u00f3n especial donde el pulso vibrante de la ciudad da paso a una serena calma, un contraste que valorar\u00e1n enormemente al estar de turismo. Este proyecto magistral ha transformado la antigua Autopista Sur en un espacio de paz y belleza que los cautivar\u00e1.\nLo que m\u00e1s destaca es esa sensaci\u00f3n inmediata de tranquilidad y seguridad. Podr\u00e1n pasear con total libertad, sin el agobiante ruido del tr\u00e1fico, sumergidos en un ambiente relajado y seguro. Es el lugar ideal para desconectar un rato, conversar tranquilamente con sus amigos mientras recorren sus amplios senderos peatonales, o incluso encontrar un banco bajo la creciente sombra de los \u00e1rboles para simplemente observar el fluir de la vida medellinense. Es un respiro necesario despu\u00e9s de un d\u00eda explorando la ciudad.\nEl parque se presta maravillosamente para el turismo en grupo. Ver\u00e1n c\u00f3mo familias, deportistas y otros visitantes locales disfrutan del espacio, creando una atm\u00f3sfera aut\u00e9ntica y acogedora. Pueden tomar fotos incre\u00edbles, relajarse en las zonas verdes o simplemente disfrutar de la compa\u00f1\u00eda mutua en un entorno que invita a la calma. Por la noche, la iluminaci\u00f3n crea un ambiente m\u00e1gico, perfecto para un paseo relajado.\nEl Parque del R\u00edo no es solo un pulm\u00f3n verde; es una declaraci\u00f3n de c\u00f3mo Medell\u00edn se transforma, ofreciendo espacios de calidad para el disfrute de todos. Para ustedes, como turistas, es una ventana a la vida local m\u00e1s tranquila y un recordatorio de que la ciudad tambi\u00e9n tiene sus refugios de paz. \u00a1Una experiencia imperdible y muy recomendable para comenzar su aventura en Medell\u00edn!",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "El Parque del R\u00edo es, sin duda, un lugar fant\u00e1stico para conocer la esencia de la ciudad.\nParque del R\u00edo: Su Escondite Perfecto en Medell\u00edn (5/5)\nEn su primera visita a Medell\u00edn con amigos, se encontrar\u00e1n con un verdadero oasis urbano: el Parque del R\u00edo. Para m\u00ed, es ese rinc\u00f3n especial donde el pulso vibrante de la ciudad da paso a una serena calma, un contraste que valorar\u00e1n enormemente al estar de turismo. Este proyecto magistral ha transformado la antigua Autopista Sur en un espacio de paz y belleza que los cautivar\u00e1.\nLo que m\u00e1s destaca es esa sensaci\u00f3n inmediata de tranquilidad y seguridad. Podr\u00e1n pasear con total libertad, sin el agobiante ruido del tr\u00e1fico, sumergidos en un ambiente relajado y seguro. Es el lugar ideal para desconectar un rato, conversar tranquilamente con sus amigos mientras recorren sus amplios senderos peatonales, o incluso encontrar un banco bajo la creciente sombra de los \u00e1rboles para simplemente observar el fluir de la vida medellinense. Es un respiro necesario despu\u00e9s de un d\u00eda explorando la ciudad.\nEl parque se presta maravillosamente para el turismo en grupo. Ver\u00e1n c\u00f3mo familias, deportistas y otros visitantes locales disfrutan del espacio, creando una atm\u00f3sfera aut\u00e9ntica y acogedora. Pueden tomar fotos incre\u00edbles, relajarse en las zonas verdes o simplemente disfrutar de la compa\u00f1\u00eda mutua en un entorno que invita a la calma. Por la noche, la iluminaci\u00f3n crea un ambiente m\u00e1gico, perfecto para un paseo relajado.\nEl Parque del R\u00edo no es solo un pulm\u00f3n verde; es una declaraci\u00f3n de c\u00f3mo Medell\u00edn se transforma, ofreciendo espacios de calidad para el disfrute de todos. Para ustedes, como turistas, es una ventana a la vida local m\u00e1s tranquila y un recordatorio de que la ciudad tambi\u00e9n tiene sus refugios de paz. \u00a1Una experiencia imperdible y muy recomendable para comenzar su aventura en Medell\u00edn!",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Pablo G",
+        "uri": "https://www.google.com/maps/contrib/108226636800165522021/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWvTrXDZi8N_Atd-mm_K6R8-mRJAyPUK4x6xzDvJm2s1NSMOW35=s128-c0x00000000-cc-rp-mo-ba5"
+      },
+      "publishTime": "2025-06-28T22:48:02.773022875Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=Ci9DQUlRQUNvZENodHljRjlvT21WcFJ5MXBkMUZyUVhScExVYzJWVkZYT0VWTE4xRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sCi9DQUlRQUNvZENodHljRjlvT21WcFJ5MXBkMUZyUVhScExVYzJWVkZYT0VWTE4xRRAB!2m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    }
+  ],
+  "photos": [
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/photos/AciIO2cmwl2X7JgjqXUfGAMVJyPEGCKECpBrziIHJ2AwePV-lRdoCeWALw81ifpcT7WEi4SqfvPEeIhCP22XJEfgSV2eVcER3lH7F303wS2FhVkZBV9sf_y_Pn9vyYZ-6tg_NESTk8dUZ6ulbQraDz3A7bFoduWWOZkGduG6zrQPH2-axyN0Ypfy8AGlFMfI_Q_uFmW-VSFcEly_Nt9tyEutRW1YPvL8eDyJ0wNG29Q97fUcN8RJZMyI2cz8vibiN89K24EE3cm1HNNqa2Q9onpLtuhwxQFU1eNtMW5T0CaJZwst--7fIjoVucHVBM7fMKn6vuptQx7u_bkJYRrmbEyqEBeaGxL8F_eUYR796bPwIX-YAzq7lsvQquyYCcq5qGPPfRm48V1AvwZKANa4uHh3gsB2CZJH3ryJeo4LWQiUxBPk0g",
+      "widthPx": 4800,
+      "heightPx": 2698,
+      "authorAttributions": [
+        {
+          "displayName": "Bladimir Agudelo Salazar",
+          "uri": "https://maps.google.com/maps/contrib/112722588641838955259",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocJQVLtunUwUfBb1YZFHNmTgIEB-0vC5jW2or3kLxiBteVdZSA=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDs6qaOXQ&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDs6qaOXQ!2e10!4m2!3m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    },
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/photos/AciIO2eL0cL3R1zkMxIfvruLDaRxoyigoYh_N61SSjeQ-LpA0IgdTgnH3CXYJ9XSZoExJMMhDi12zoqEtvwIxegWIVN_flLXlOJZRm-ZTlatdrpkuBPQ8bRZtAoD90YqPPudaF2B4dmDbez95FQawmfES3P4GYW53VGBteVEfb8mWzBJZOIefRl5EB-g1mqHqWVG47ZfEHCDnxERfda2QuGEnf9vhv3lt8I8Gev8g9C9GfdRxl2nFpoLuDYB7GCyf7eq7xNytJPk7tetbm8Xhmbz3bPoEqC0LSGwNH7_OWfYP_ECEieTE9Hp4kmNIxy6qNSeGAnnLFt7FpnF6NuUMr9ivo3tIFbW8-qvLqiEeL2DvkGSOY46hoJtl2rYU8oTEO0jZLOvHsw0fGKhx7e5lEcbMTVkm7jgU8LmICzwX43zMGBTvQ",
+      "widthPx": 4032,
+      "heightPx": 3024,
+      "authorAttributions": [
+        {
+          "displayName": "Guillaume Parola",
+          "uri": "https://maps.google.com/maps/contrib/103525018230344192714",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUvoZibT8x1J90ByspS0ANf00EroiFX8BrIIh3q0OLNJ51b8Km-EQ=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICc6s-5Aw&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICc6s-5Aw!2e10!4m2!3m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    },
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/photos/AciIO2eTqq_4GDZGIsaneoF9CIOfvInRYHrmCX9rlGEMXMvczja9dXPUMnL68TDbJzPJtLknQiyRQO2I2Y9Is_qwMXd3WFZs-YL0pvKDrXKgc8tbaZAU8gzZAkk_T_BIiHYkm3nQk7UHi_iUsAozWLjD6gTFYEI8YXAIZQm3_gU6iAa02xSo4THnLrDCFbD9bVU2S7SWUNlTvYswnXhc69F-BbiIcsY-lMsoSHWeqO-UFn_BSJ66Vj-aTdZ1gUZPnL3m-nWw3kyYhwzMmPl6ASB-qx3EsDa14EqboxJo1dMARFErt9QHYnfEDNGbotUxUR04iHVmm2XczUPVL1GV3Oa0HdS6FOMJwbyGFwZuQM97MjNIicIZOyUAoRlz1XA19QcWbyfk0pKJ3Q8bCfIzHsg-LY9jqjgbbVzH64AQUqNBDApzSPSb",
+      "widthPx": 4000,
+      "heightPx": 3000,
+      "authorAttributions": [
+        {
+          "displayName": "Monica Claros",
+          "uri": "https://maps.google.com/maps/contrib/117596277825775982966",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUOEeMpxFhvNvhXV1rcnRUEq9hg_Im5mNdehAbFzrRTOc4mlBOk=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgIDe65eXuAE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgIDe65eXuAE!2e10!4m2!3m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    },
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/photos/AciIO2eOnWeUtWlzj0F69DCyfZLhHhAo44Pcy3Qdxom4ppqFXqWcAxQiCTMFkRsgL40DBUC3W42WSTWK1Qm8NIz0yDOe6bTlNE1wtvl9WucWlWxUkBhx_SJ2QOte0RthFTC1xepwut1yfs-3ShelMdB82S_cTtomAu95DpzOtTgBwoJoXZCt6aDjkWYV012pUVdg0F9kibLiBRlUIdTIrLcxqejqjnXftKCKRYwJyz1xHuWIPNV0HFXDgRs48lI1iTZlsUwHLiU9NhCWCVUmhtnAvqu9NWxZRUDtTh5dRMcO-I4-9jT2D5JWqvDUvNuHVUYA0cwGWUlcj2l4umVgX06I7-5jRrp0u3_JRz43hA0Ab2G3GchIjiz1zuO61s58FRI9Ray6YxaUNeHG3UFfm_YgPnEn6nAZDPbgPpb2I7MctB4p9g",
+      "widthPx": 1620,
+      "heightPx": 1080,
+      "authorAttributions": [
+        {
+          "displayName": "Guillermo Le\u00f3n Atehort\u00faa Garc\u00eda",
+          "uri": "https://maps.google.com/maps/contrib/112304535134050476120",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocKDYoMcMtKYK90odqZJRn-lLkAKd1IR9G2exYsIuiQnMogsrA=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICKotHyNg&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICKotHyNg!2e10!4m2!3m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    },
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/photos/AciIO2fUddGvXTomRHWTshfdKssToCZAED9sLtaQ8ZGfuSLiItC9X5L_XCgOAk31yHy5qxnN0SI269M49XLa6VTXyDozDhPbtTtiK1tOULkBr27l4DIPkQJE5OLl3x9-hRmjesUIx_wl-6yDvrKfjhW-1qE089TEEq0k5Vbxliagp_s2PMY8ZyoTx7VxkdYZv-oZ7j81kBdn0o7f0WuADzZjf00XbKXo15FdPWwY-AJuK73sfYtBWcq-9s9QIi6jgl1--i3upWaKPHXTBgZAdJG0bTgsAvNWaXd0mKgc9-shlcvktViHpLj8azpYX4b4OPQW114kc3e1BPv1NNjTENNzkbAetU_Rm2C3VuH-fHbXUAAZgYQ6TpP8JZ_5uVNDBkaSotfwbYHJxZE7Bl8Txjjc6b-4kHyHZxhVFDptsbCfyXA",
+      "widthPx": 4403,
+      "heightPx": 2916,
+      "authorAttributions": [
+        {
+          "displayName": "Alejandro Perez",
+          "uri": "https://maps.google.com/maps/contrib/107126199565546307594",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjVEbRazodKvsIZq1YAJauT-Ujk9TrF1Xl0HLWZaSc0Xc9lN00zRJQ=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICc9tvFcQ&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICc9tvFcQ!2e10!4m2!3m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    },
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/photos/AciIO2dynR94FygNPuQ6TLKCp5X73Yt-q9cJCx-JdkYRTTNKSzGQJG6iaD7FHhEPwB7mZfIzRcg3KrADBoGtdFwcf_b-IFDu4ig-oVgVbSC0wOD9K0lEZ3hsDxH-ZBXElnk5T8ErT_PWCBcAilCXoyqVqDJCoBkWdqOrdkFo35lXTsn_jGomxruhkBPL_ZqQPFTAzABY5AWNz0zUGra3YVDQKz5dU6r3sH5l5UJJjPnFk0hCS7fXqTX_e_6fSj6pt4Ktn5yOgBcamoWklVanDL5T98EfAMR1xpzp_4RoVmVdu7zgIlsXjS7Dgw7Qf5kuHnLc8x1HS8wQy4_9s7xhgbZPce3xqLzK_lIjAV-fVWLZWzm5oiGrZ1OxBTk49Vtm5q94ehQ6A_A6x80d3hgfcATvPIspRgZWuACfo80E4Gh2ZedcHg",
+      "widthPx": 3472,
+      "heightPx": 4624,
+      "authorAttributions": [
+        {
+          "displayName": "Patricia Rueda",
+          "uri": "https://maps.google.com/maps/contrib/114444920848388779881",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXliC7XeAR4AlkF_JV1Fz8ASN8HzgNmr9YOiP5ujbIJakI5gfGPcA=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICBh6vFLA&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICBh6vFLA!2e10!4m2!3m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    },
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/photos/AciIO2dNPxei_hqBbxE2s8xBSJY8kgOAl-nw9mTeVnWuJNrGc6U1Ovigeu1MlEvk08boeypd1V9F1jQXzofzGE8TZzJUgb7WOIXXa-76Jo5G8dZ3G_W1rVO0vgY3OEDg3sU8mJPiIeNHCCXlMA0GlE7bTabOZz4TThHAMeLLK-pDKhC4cn8BAL4kACeN8-ei2ItNlvddFBpN3V2CntSVRu2S-yfl_0jiMuTSZjUbV8CXVT3dFEHe38JP3mSleQLl-z-stdXpmV1Ykp9WWkex1R2lOy7Jw0nywZ3SQHlP2M4I_7B4ybuQSMVc8-od0dFVGY4ClTDhwyGWJQdaPynaLSIsE4zmg37W1mOLmy6NXMXgUSSp21kRcsNpEyEY6Uoxf0iqZ6yEKhwM7YZKzCO5Wldu63_fA0tnpkYQwOlkuEAF0NY",
+      "widthPx": 4800,
+      "heightPx": 3600,
+      "authorAttributions": [
+        {
+          "displayName": "Javier Enrique",
+          "uri": "https://maps.google.com/maps/contrib/101428113408574145867",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUu6td_0CgwoIfuN8qeT_b_bS2gGCs7mra7zogqZKngVUzpEX-Y_w=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgID-h52pGw&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgID-h52pGw!2e10!4m2!3m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    },
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/photos/AciIO2e05rJDG6T5dHU0Lw3Wg30wHLY0QhBvCfNSvn7etVAWTJlPv7NWD6NgzxRJfm5ZEk9gscJ3g7ny91E7UvBPbEFccr35Wg32ubgOL3ZhtZRS39UvUCTosm3XwEbnQo4qLqC6wM8EtsHVMECwxh6AdJQAZA3Tuo_Nugxab7Z8JXOQyEXp7t8WmLbdnoC9h_SdKF78xtQcrerIMRjaptsR83O2I8Y_gsnXX23LE-gTXzqO8aYopX0GUEgO03VYQSdnyZ6ouJGVnd8U6LzVhTqUlarkLt8NPXToKDN7nvOAiIEcZ5hSong4fzh5kv6sfwSFgbQ_scNd9Ls82fg6kSETXgzPW9kOhV7QjL42tswG_Nj92L3oHAUM97DSTR9oD3VrpEGO37_lEX4uiKRR4AFnw6VpI_TFmxWaj6Fbw04tqR2d4cM",
+      "widthPx": 4000,
+      "heightPx": 3000,
+      "authorAttributions": [
+        {
+          "displayName": "Diego Leon Grisales Valencia",
+          "uri": "https://maps.google.com/maps/contrib/117791473301026819372",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWT4vO1eM2HWje8ltZrqbapH3e4-fU1ehpJJYYZymmziKjAyP8=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICmvbSpswE&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICmvbSpswE!2e10!4m2!3m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    },
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/photos/AciIO2f38Yr8Ft5nwoTYAzCAWmN16wxEWmvJ9IDhhafVGl5I_y8pkxTAPH2iCuO52tR-Fb16ARWXnn2WgnfYDT0D5llrs9JLNdbTc433gn2pVYJonBwQiv4Hmtwfjs38iq7ZpJrQnwFehFSvI_New7mfHcvDILfJQDNsaX3Q58AyXooSOnK-XYA1SgSidAwxydupj6kNCm7pnZ-HBhSWP6f7EfpaHzCb_5CeEe-IKlwynXXEafswANgR-BS9zqtuLOgJKESPo5FYsQBGu8dUj08LHah_lavqQzhhyHCKhss8DHwANNZbIzSNAkxMtXmKxr7FnKyOAyHCfqIdcR2i9F5PVezy1FUTFKag8t09C5i8DfrSBqvgscPWKdb2vgYwK9jHQZuVepCjKfESLiCG1InFMdGtDwOvLtRUm316q3wNdXbBzg",
+      "widthPx": 4800,
+      "heightPx": 3599,
+      "authorAttributions": [
+        {
+          "displayName": "Victor",
+          "uri": "https://maps.google.com/maps/contrib/109284225421506509614",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocJa1AFZyA7BkbOe1UXOk4R6hltcSeDlultclTnKRJGu782OfXs=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICOmNfCag&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICOmNfCag!2e10!4m2!3m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    },
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA/photos/AciIO2c7EG61ETMC5a1Tj4-Mc6OJusadEgkLptephn3XZMMF3VpxGWPjYMQ4MQTBHgOLB2B92sVyeoRy_1XGzqC2GTzcTyCFXG8joo34zMAGsy-9dQTMhrQ5I3OQOWgwX0UPJpVFOTno3_AJBAEdJhZb3Ug8TJrPRP9ICw1shbxKRvVl894p6Bvrg55H1_rqBPd8Yk1gveoJstc1OUa6740xzouRIWKWek2LS47ofk3kRKmpdb6hfa_g50nTXiy1kBTdzcvhuKMKDQiZKYXSr2Wop6NEcSsjUjxcVJVLQpEEW7NOnU28ckdWCAB1YW2I4jUC3DZcUKIgOh4aUAG13ih-5jfGpiTwpc6LDJUIoHtarU41cELzisrA4S1hc2V1sKDRwERWXuDj_SSPije_86tF1RhRXq9CZWsD-3TfRYDT8f04UA",
+      "widthPx": 3599,
+      "heightPx": 4800,
+      "authorAttributions": [
+        {
+          "displayName": "Elizabeth Cardona R.",
+          "uri": "https://maps.google.com/maps/contrib/106307153206704376685",
+          "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjV_ZWX-lWBgEWtOeyc6qWD8v4_zCqWy_tCr40AtNE2GbZzMWUNceA=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sCIHM0ogKEICAgICmy-PhPA&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIHM0ogKEICAgICmy-PhPA!2e10!4m2!3m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77"
+    }
+  ],
+  "goodForChildren": true,
+  "allowsDogs": true,
+  "paymentOptions": {
+    "acceptsCreditCards": true,
+    "acceptsDebitCards": true,
+    "acceptsCashOnly": false,
+    "acceptsNfc": true
+  },
+  "accessibilityOptions": {
+    "wheelchairAccessibleParking": true,
+    "wheelchairAccessibleEntrance": true,
+    "wheelchairAccessibleRestroom": true,
+    "wheelchairAccessibleSeating": true
+  },
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJZVE4GawpRI4RkfaYKP0Xf9s",
+        "placeId": "ChIJZVE4GawpRI4RkfaYKP0Xf9s",
+        "displayName": {
+          "text": "Centro Residencial Colseguros",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 78.587395,
+        "travelDistanceMeters": 150.78186
+      },
+      {
+        "name": "places/ChIJ2-JPY6wpRI4RLkHsAWxVH5Q",
+        "placeId": "ChIJ2-JPY6wpRI4RLkHsAWxVH5Q",
+        "displayName": {
+          "text": "Teatro Metropolitano Jos\u00e9 Guti\u00e9rrez G\u00f3mez",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 237.31021,
+        "travelDistanceMeters": 435.63486
+      },
+      {
+        "name": "places/ChIJJ1buuqspRI4R0mmnMcbmofQ",
+        "placeId": "ChIJJ1buuqspRI4R0mmnMcbmofQ",
+        "displayName": {
+          "text": "Edificio Inteligente de EPM",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 235.19728,
+        "travelDistanceMeters": 321.92972
+      },
+      {
+        "name": "places/ChIJAQBA_6spRI4Rbtr6QgkM-nE",
+        "placeId": "ChIJAQBA_6spRI4Rbtr6QgkM-nE",
+        "displayName": {
+          "text": "Cancha Colseguros",
+          "languageCode": "en"
+        },
+        "types": [
+          "establishment",
+          "gym",
+          "health",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "BESIDE",
+        "straightLineDistanceMeters": 31.180405,
+        "travelDistanceMeters": 19.213001
+      },
+      {
+        "name": "places/ChIJ3xE-CqspRI4RPl8BKzTDilc",
+        "placeId": "ChIJ3xE-CqspRI4RPl8BKzTDilc",
+        "displayName": {
+          "text": "Parque de los Pies Descalzos",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest",
+          "tourist_attraction"
+        ],
+        "straightLineDistanceMeters": 282.08038,
+        "travelDistanceMeters": 423.65573
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "placeId": "ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "displayName": {
+          "text": "Conquistadores",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "placeId": "ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "displayName": {
+          "text": "Laureles - Estadio",
+          "languageCode": "es"
+        },
+        "containment": "OUTSKIRTS"
+      },
+      {
+        "name": "places/ChIJ58qCAKwpRI4RaHsKRvHVNUE",
+        "placeId": "ChIJ58qCAKwpRI4RaHsKRvHVNUE",
+        "displayName": {
+          "text": "Cancha Colseguros",
+          "languageCode": "en"
+        },
+        "containment": "OUTSKIRTS"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e4429ac150efd3b:0xe07ee393112a7a77!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=16176617132349094519&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "writeAReviewUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429ac150efd3b:0xe07ee393112a7a77!12e1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e4429ac150efd3b:0xe07ee393112a7a77!9m1!1b1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429ac150efd3b:0xe07ee393112a7a77!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "reviewSummary": {
+    "text": {
+      "text": "People say this park offers a variety of activities, including walking, skating, picnicking, and enjoying the green spaces. They highlight the tranquil and peaceful atmosphere, and the spacious layout suitable for families, friends, and pets. They also like the clean and well-maintained facilities, and the safe and secure environment. ",
+      "languageCode": "en-US"
+    },
+    "flagContentUri": "https://www.google.com/local/review/rap/report?postId=5%401:CAIQACodChtyc19oOmhLV3RreUpJV2hnTGJpZ29wX3kwUEE%7CCAIQACoqChtyc19oOmhLV3RreUpJV2hnTGJpZ29wX3kwUEESCwjJkYTHBhChwK0g&d=17924085&t=8",
+    "disclosureText": {
+      "text": "Resumen de Gemini",
+      "languageCode": "es"
+    },
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e4429ac150efd3b:0xe07ee393112a7a77!9m1!1b1"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn",
+    "sublocality": "Laureles - Estadio",
+    "addressLines": [
+      "Auto. S"
+    ]
+  }
+}

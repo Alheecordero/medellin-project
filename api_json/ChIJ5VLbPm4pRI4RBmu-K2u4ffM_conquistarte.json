@@ -1,0 +1,508 @@
+{
+  "name": "places/ChIJ5VLbPm4pRI4RBmu-K2u4ffM",
+  "id": "ChIJ5VLbPm4pRI4RBmu-K2u4ffM",
+  "types": [
+    "museum",
+    "point_of_interest",
+    "establishment"
+  ],
+  "nationalPhoneNumber": "300 2008789",
+  "internationalPhoneNumber": "+57 300 2008789",
+  "formattedAddress": "Cl 38 #63-67, Laureles - Estadio, Medell\u00edn, Laureles, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "63-67",
+      "shortText": "63-67",
+      "types": [
+        "street_number"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Calle 38",
+      "shortText": "Cl 38",
+      "types": [
+        "route"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Conquistadores",
+      "shortText": "Conquistadores",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Laureles - Estadio",
+      "shortText": "Laureles - Estadio",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Laureles",
+      "shortText": "Laureles",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050030",
+      "shortText": "050030",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "67R66CRC+W4",
+    "compoundCode": "6CRC+W4 Medell\u00edn, Antioquia"
+  },
+  "location": {
+    "latitude": 6.2423033,
+    "longitude": -75.5796378
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.2410557197084975,
+      "longitude": -75.5809912802915
+    },
+    "high": {
+      "latitude": 6.243753680291502,
+      "longitude": -75.5782933197085
+    }
+  },
+  "rating": 5,
+  "googleMapsUri": "https://maps.google.com/?cid=17545382493740231430&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "websiteUri": "https://www.facebook.com/Conquistarte-1597043033955872",
+  "regularOpeningHours": {
+    "openNow": true,
+    "periods": [
+      {
+        "open": {
+          "day": 0,
+          "hour": 0,
+          "minute": 0
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: Abierto 24 horas",
+      "martes: Abierto 24 horas",
+      "mi\u00e9rcoles: Abierto 24 horas",
+      "jueves: Abierto 24 horas",
+      "viernes: Abierto 24 horas",
+      "s\u00e1bado: Abierto 24 horas",
+      "domingo: Abierto 24 horas"
+    ]
+  },
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"street-address\">Calle 38 #63-67</span>, <span class=\"region\">Laureles - Estadio</span>, <span class=\"locality\">Medell\u00edn, Laureles, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050030</span>, <span class=\"country-name\">Colombia</span>",
+  "businessStatus": "OPERATIONAL",
+  "userRatingCount": 2,
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/museum_pinlet",
+  "iconBackgroundColor": "#13B5C7",
+  "displayName": {
+    "text": "CONQUISTARTE",
+    "languageCode": "es"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Museo",
+    "languageCode": "es"
+  },
+  "currentOpeningHours": {
+    "openNow": true,
+    "periods": [
+      {
+        "open": {
+          "day": 1,
+          "hour": 0,
+          "minute": 0,
+          "truncated": true,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 6
+          }
+        },
+        "close": {
+          "day": 0,
+          "hour": 23,
+          "minute": 59,
+          "truncated": true,
+          "date": {
+            "year": 2025,
+            "month": 10,
+            "day": 12
+          }
+        }
+      }
+    ],
+    "weekdayDescriptions": [
+      "lunes: Abierto 24 horas",
+      "martes: Abierto 24 horas",
+      "mi\u00e9rcoles: Abierto 24 horas",
+      "jueves: Abierto 24 horas",
+      "viernes: Abierto 24 horas",
+      "s\u00e1bado: Abierto 24 horas",
+      "domingo: Abierto 24 horas"
+    ]
+  },
+  "primaryType": "museum",
+  "shortFormattedAddress": "Cl 38 #63-67, Laureles - Estadio, Medell\u00edn",
+  "reviews": [
+    {
+      "name": "places/ChIJ5VLbPm4pRI4RBmu-K2u4ffM/reviews/ChZDSUhNMG9nS0VJQ0FnSUNPNlo3R1dREAE",
+      "relativePublishTimeDescription": "Hace 3 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Un lugar para disfrutar y conocer la creatividad de artistas del colectivo conquistarte \ud83c\udfa8",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Un lugar para disfrutar y conocer la creatividad de artistas del colectivo conquistarte \ud83c\udfa8",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Natalia Giraldo",
+        "uri": "https://www.google.com/maps/contrib/106350168469290544088/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjUOjx2fEFbO1DC7m1Hi0kyhHhIUXX4nhSigXw9ruQsjWKakbdZB=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2022-06-13T19:05:19.969188Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChZDSUhNMG9nS0VJQ0FnSUNPNlo3R1dREAE&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChZDSUhNMG9nS0VJQ0FnSUNPNlo3R1dREAE!2m1!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06"
+    },
+    {
+      "name": "places/ChIJ5VLbPm4pRI4RBmu-K2u4ffM/reviews/ChdDSUhNMG9nS0VJQ0FnSUNPbWVmaDRRRRAB",
+      "relativePublishTimeDescription": "Hace 3 a\u00f1os",
+      "rating": 5,
+      "text": {
+        "text": "Un mundo por descubrir, dale! Soyatela \ud83c\udf0c",
+        "languageCode": "es"
+      },
+      "originalText": {
+        "text": "Un mundo por descubrir, dale! Soyatela \ud83c\udf0c",
+        "languageCode": "es"
+      },
+      "authorAttribution": {
+        "displayName": "Manuel Ramirez",
+        "uri": "https://www.google.com/maps/contrib/100001533570021527678/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXZPqlXTOV_7PcS1JxBJofPwcVb-hSswgQARnc9HLs8N5y70xlL=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2022-06-14T03:10:44.059160Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSUNPbWVmaDRRRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSUNPbWVmaDRRRRAB!2m1!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06"
+    }
+  ],
+  "photos": [
+    {
+      "name": "places/ChIJ5VLbPm4pRI4RBmu-K2u4ffM/photos/AciIO2f59vSWLO9QD-3daGck-qDFAY8z0VXLIO8DxAuWMI8v6FFyVRTSGVhC4gqFw1ni3M5lePUoRTSXP4kzKe3jhrHIDucqduvefuVG_-VOq136JTu1CGHGwc-36B5IqgndJmPy8m5mvGND5d0QiBzAloVcL73qA0fAuJML0ecKzI3WJPk5hzpyT2iVrzeJRL6bAq90HY49119sg1opqV2-I4xAEDTJ6-D-46JvumwdH2XToAG0W_DK0Bv8InV376FheVpyZ133T0oj_k2Ow5FWIT7ZkAWOpsmSEHIJLDz8RPmc8A",
+      "widthPx": 2700,
+      "heightPx": 4800,
+      "authorAttributions": [
+        {
+          "displayName": "CONQUISTARTE",
+          "uri": "https://maps.google.com/maps/contrib/101103569340426420208",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL8ewLyfqkUnZFgvJtljmSSQL_V4x5huZEEj8O4-xOmiTDH8A=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipOe361_DE0lUcPtZxTnx59epXX0ljkF8HtY7ak4&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipOe361_DE0lUcPtZxTnx59epXX0ljkF8HtY7ak4!2e10!4m2!3m1!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06"
+    },
+    {
+      "name": "places/ChIJ5VLbPm4pRI4RBmu-K2u4ffM/photos/AciIO2evZxPaqpDoTiIU29yomEdD14WCwA19bAdgMOmYxzfhQ5JzdVVGoRk-djhqdlHu4TZXA2DdnT5Lm72omhbIyEjlaNUcrRdL9QCl24T-ib0tnuEOvQ9Xp6nPreGNrzT112ShNYkXqub3c-6jzhfGkNoMYlNlbwdOZqGnK0FBwpqpLEpE-zXzhdFJ0hJuEIhGvOTOcx2z2uWaHGZZOVhJxuP1a1j3QFGcdzLmE_UA7dtP43ywP3I3LG5WM2vEzRrrzD08tECfs54Gwe4b-61EL9-aWjh2Wrai1jLq4iy1ZT54pg",
+      "widthPx": 2700,
+      "heightPx": 4800,
+      "authorAttributions": [
+        {
+          "displayName": "CONQUISTARTE",
+          "uri": "https://maps.google.com/maps/contrib/101103569340426420208",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL8ewLyfqkUnZFgvJtljmSSQL_V4x5huZEEj8O4-xOmiTDH8A=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipNoVAsoI2HXMJ7PzRBKPXkmNO1QgIQlWApV_8V-&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipNoVAsoI2HXMJ7PzRBKPXkmNO1QgIQlWApV_8V-!2e10!4m2!3m1!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06"
+    },
+    {
+      "name": "places/ChIJ5VLbPm4pRI4RBmu-K2u4ffM/photos/AciIO2ebdvy2pOIAwffXGXVWuzmQmSqyL5jsdw_tgwZQf3JwdIkHHb_fFWD8x69NXUTeiPDW6eelquytbPFBY0rX6MCgtv9jNKajJ4hTCWUxV98ORipyz2-NQ4PYu9NGiV-H6o-5WOGzVgVxhsFDbHUNDAW_DkYgDj3qXHq3wk8p_hv8o8WevNFcEUxUQ3eAc2GxbpWU3FNf17gxZHdbnQW7HDOLQodDNXgZDMxofILCA0V8NnSIhIJL6vWUGvcF8U_JA7k5UvA09MQWjXEIPiceUFpAFpyn40NzJ658YTsVojNTwA",
+      "widthPx": 4800,
+      "heightPx": 2700,
+      "authorAttributions": [
+        {
+          "displayName": "CONQUISTARTE",
+          "uri": "https://maps.google.com/maps/contrib/101103569340426420208",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL8ewLyfqkUnZFgvJtljmSSQL_V4x5huZEEj8O4-xOmiTDH8A=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipOutFaYC_9EB_cpKnxrcSUvXjl_HKV6ztiBrWLi&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipOutFaYC_9EB_cpKnxrcSUvXjl_HKV6ztiBrWLi!2e10!4m2!3m1!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06"
+    },
+    {
+      "name": "places/ChIJ5VLbPm4pRI4RBmu-K2u4ffM/photos/AciIO2fvRs7NCNOsaos_XAqSTNT6cqvNb0a7KmDOnV_CT_Zv_9sMeuWe6EhiJqWSlTKPdAbtznhaJT4Wy9-GPCPNZom9uDWJYDvp3pb0sgxEI6foZ4e79jUI-phOvKue48pYpMxMlU_e5twKCj1VeTWXmoypxlTPe5-Ji6IhFUxc37JwW-InM_yhd0mx-nbUUL4W1MrAbQVyeT01CIGEqzFokuJUhcPGF-8LPY6lD8pHqbgamBvCd-jtQypsbxUWd2jWPWX9LYqu5g-uF-qUxLDzuyKd3kVjYh_5a0HPO9dsgvtnqA",
+      "widthPx": 2700,
+      "heightPx": 4800,
+      "authorAttributions": [
+        {
+          "displayName": "CONQUISTARTE",
+          "uri": "https://maps.google.com/maps/contrib/101103569340426420208",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL8ewLyfqkUnZFgvJtljmSSQL_V4x5huZEEj8O4-xOmiTDH8A=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipPkNsjNYgMD-sd0WUNjJGW9yWz3WrlOIo4Bpe7p&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipPkNsjNYgMD-sd0WUNjJGW9yWz3WrlOIo4Bpe7p!2e10!4m2!3m1!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06"
+    },
+    {
+      "name": "places/ChIJ5VLbPm4pRI4RBmu-K2u4ffM/photos/AciIO2fqtgKrdaiiKBnpn9zdl1W2EIackcCUnIBB5ORjXBAZ9TXox_ayajN7CBrDo1bvQ1r4MqtPDQ2vi59_zzGua3CbFJsXneEElmykqi0d11CvOnpxOn6XGJfFbMcvKzhpqgvWbciV2Tefi0mYRXdxAsad-7L1GfP7m_0SBh46HDQT9pNY7ARpVrrqs5wxlziL3luFS7WaDRklJweLNxKj4AxyUtqWi1SZCgf2Vu3Yy5E8qVl61boPaJQ4Q2_r5ybdsdvIYBQHzCoeLm5eY0LKTYZlp5T1IFWeUvISKh2u4Yn2ZQ",
+      "widthPx": 2700,
+      "heightPx": 4800,
+      "authorAttributions": [
+        {
+          "displayName": "CONQUISTARTE",
+          "uri": "https://maps.google.com/maps/contrib/101103569340426420208",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL8ewLyfqkUnZFgvJtljmSSQL_V4x5huZEEj8O4-xOmiTDH8A=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipOdvwNtvgMEKtnbZWSw8bfJLu32d2aR1VNRR9jb&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipOdvwNtvgMEKtnbZWSw8bfJLu32d2aR1VNRR9jb!2e10!4m2!3m1!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06"
+    },
+    {
+      "name": "places/ChIJ5VLbPm4pRI4RBmu-K2u4ffM/photos/AciIO2etugcdzXBoR2xPTkaUB-mbhBDZglWRFmFH6F6nNwwD1zpEYzVk44UoexRVJYRbfJPZ9P0GPP8s9ftmj9HDEyYwNzpr4CMCRPGjJyiI-_ANFRSnPSGhRQa4KyADoOiaqSpInr1LTiJ1NHGndTVhuLFv3Ly2YFVjK3IIH2kTckNfc7cEOByLCjw5EP4Y0N0dLO4PWFcZ5NN0E5Z0OVz84_g8RgzNYj-yNvyNzSYYh7w5VoQyT0CwW5yaSYuwSJ0uj4649ntZu32MDkZ6whc1MQi3-745CSySHcoZ_LPp3_7GkQ",
+      "widthPx": 4800,
+      "heightPx": 2700,
+      "authorAttributions": [
+        {
+          "displayName": "CONQUISTARTE",
+          "uri": "https://maps.google.com/maps/contrib/101103569340426420208",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL8ewLyfqkUnZFgvJtljmSSQL_V4x5huZEEj8O4-xOmiTDH8A=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipOadFqwulWZ4YZs90UhA20QY_c7mjsYQnpJfuKp&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipOadFqwulWZ4YZs90UhA20QY_c7mjsYQnpJfuKp!2e10!4m2!3m1!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06"
+    },
+    {
+      "name": "places/ChIJ5VLbPm4pRI4RBmu-K2u4ffM/photos/AciIO2dUUFtrX_L9onbmC3tPkVHMc2n8zbHSHMz9gPKRoHBJZuDs8j0n0d4PV6Ek04WN3T55wty8Kf1WlXP0oubbabqnXXr6xZeITtxhfjjggIhtCXDZhEesy5x0H7tr7fDFh70fTHmz0XlWPMn0ABuGrHMYQE9kMtiv8aqIDSZKXHkGfrWTR2eCUn5DvKFxbgvaRBMgybO8zexwS7ESCGHr3xYKeAFgL5-MADmyPPRA3_mPgm7WBIS24cbXDvHnxMQf5v--_lZbpACL2pIejBRsbAGA_c-LGCPxtd5HdFQHP68j8Q",
+      "widthPx": 1544,
+      "heightPx": 1544,
+      "authorAttributions": [
+        {
+          "displayName": "CONQUISTARTE",
+          "uri": "https://maps.google.com/maps/contrib/101103569340426420208",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL8ewLyfqkUnZFgvJtljmSSQL_V4x5huZEEj8O4-xOmiTDH8A=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipORa11VBxo9TJ9-kcB1Y4FxzF7knetnzqPB5KWS&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipORa11VBxo9TJ9-kcB1Y4FxzF7knetnzqPB5KWS!2e10!4m2!3m1!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06"
+    },
+    {
+      "name": "places/ChIJ5VLbPm4pRI4RBmu-K2u4ffM/photos/AciIO2fBjGc-rYAkfddpT6uWPoTrfYJNz3xsn34WDq5sv31bVMPUgq4bo3X7TztN7Tp-o3Z-aOCwNPIgM00U98ZHs-syQWZ-ol-V4YbPH3qioZlmELJH6Kt1rHJZSI-BgqFhA-ZU4NvyYlJmwkuvbNY94bRhwuMRicYK_JSln-VytWVK-W7bn_1BCFmLwoqA6lFWWVBawuOVi1CrV1FeTY_ZqVgaA6FgsbbG8PTiyQMRlxQvPcbk2L-bZ2JEfBORsoG-HVpS-b79nWICT77j_0uzvjDlL0NRQbm0jraf5maAKbPu5A",
+      "widthPx": 4800,
+      "heightPx": 2700,
+      "authorAttributions": [
+        {
+          "displayName": "CONQUISTARTE",
+          "uri": "https://maps.google.com/maps/contrib/101103569340426420208",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL8ewLyfqkUnZFgvJtljmSSQL_V4x5huZEEj8O4-xOmiTDH8A=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipMM1nkW3YAO5aqZtXwTiuSoDbo-TO5Y183jATSD&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipMM1nkW3YAO5aqZtXwTiuSoDbo-TO5Y183jATSD!2e10!4m2!3m1!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06"
+    },
+    {
+      "name": "places/ChIJ5VLbPm4pRI4RBmu-K2u4ffM/photos/AciIO2cZMipWz-RR0PTu-kL7jOSLUNRApxA4OSKcsEtMP6WP82fCDdzkv3JycrOdKJD0vCw-Kb-nm101QFcSVxBBan0gzHcOuv9Sifo-gcevaPB2mmMKcb5nN3mPoJ9TN6oOU1s_-REZFSY0BDRYuvOCE5JpedNEcC7FU__46wm7eJVFkm2FAD7WEkk9n9S6VBdhQAkHmu7ViblaB3C7C-c66s7Y6Mb192cd5B-ZVrTU_damQEf1xvRXc0e4_Yt9hKGGZLrWJEThnx1-U6cociwUiEJi4d4pqw0qRbE_DcZjEmKl1Q",
+      "widthPx": 4800,
+      "heightPx": 2700,
+      "authorAttributions": [
+        {
+          "displayName": "CONQUISTARTE",
+          "uri": "https://maps.google.com/maps/contrib/101103569340426420208",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL8ewLyfqkUnZFgvJtljmSSQL_V4x5huZEEj8O4-xOmiTDH8A=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipN1PQvJ_CiAsnV9STqwBrKx_Vubh63LVKWVPnDH&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipN1PQvJ_CiAsnV9STqwBrKx_Vubh63LVKWVPnDH!2e10!4m2!3m1!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06"
+    },
+    {
+      "name": "places/ChIJ5VLbPm4pRI4RBmu-K2u4ffM/photos/AciIO2c6dxfseepddFFVcyaPKSxoZWQoeqmx5R8rBnoPvKeQvM6oOEbMEeswz1KD-z3NVU_fgvHfWijOD4nJBuL-Bx8b_Sh_7ApWraPklhqXL39B8svjQ2KnvOWDzztZiSvj3n7tVd628Kmd25AKnKjBpQWdn9kB8B88mystLi_xeKDHNkgUxvDbrZ0FJdLyfeZrdZTgsS7BoADRJ69hg91lCBrdZBrjqWqdmfmNd4l8TxjEm-vJNrLXoURP5rxgn3--zQ_YQ4E9CQKKlL9oPGnzeWXgdT5_50EAAVp9oWBvtkz8mQ",
+      "widthPx": 4800,
+      "heightPx": 2700,
+      "authorAttributions": [
+        {
+          "displayName": "CONQUISTARTE",
+          "uri": "https://maps.google.com/maps/contrib/101103569340426420208",
+          "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocL8ewLyfqkUnZFgvJtljmSSQL_V4x5huZEEj8O4-xOmiTDH8A=s100-p-k-no-mo"
+        }
+      ],
+      "flagContentUri": "https://www.google.com/local/imagery/report/?cb_client=maps_api_places.places_api&image_key=!1e10!2sAF1QipNVW6RRaKp9I6s1KUywhBO5mrS_Q0JmLa6tkelb&hl=es&gl=CO",
+      "googleMapsUri": "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sAF1QipNVW6RRaKp9I6s1KUywhBO5mrS_Q0JmLa6tkelb!2e10!4m2!3m1!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06"
+    }
+  ],
+  "goodForChildren": true,
+  "restroom": true,
+  "accessibilityOptions": {
+    "wheelchairAccessibleRestroom": true
+  },
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "placeId": "ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "displayName": {
+          "text": "Parques del R\u00edo",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest",
+          "tourist_attraction"
+        ],
+        "spatialRelationship": "AROUND_THE_CORNER",
+        "straightLineDistanceMeters": 128.82227,
+        "travelDistanceMeters": 172.21175
+      },
+      {
+        "name": "places/ChIJZVE4GawpRI4RkfaYKP0Xf9s",
+        "placeId": "ChIJZVE4GawpRI4RkfaYKP0Xf9s",
+        "displayName": {
+          "text": "Centro Residencial Colseguros",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 132.72496,
+        "travelDistanceMeters": 217.0931
+      },
+      {
+        "name": "places/ChIJ2-JPY6wpRI4RLkHsAWxVH5Q",
+        "placeId": "ChIJ2-JPY6wpRI4RLkHsAWxVH5Q",
+        "displayName": {
+          "text": "Teatro Metropolitano Jos\u00e9 Guti\u00e9rrez G\u00f3mez",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 250.14174,
+        "travelDistanceMeters": 365.0757
+      },
+      {
+        "name": "places/ChIJyfZHO6wpRI4R0UiIN9prp0g",
+        "placeId": "ChIJyfZHO6wpRI4R0UiIN9prp0g",
+        "displayName": {
+          "text": "Edificio Chenoa",
+          "languageCode": "en"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 90.78677,
+        "travelDistanceMeters": 145.955
+      },
+      {
+        "name": "places/ChIJR8aPoq4pRI4Rlwt1Je0B42g",
+        "placeId": "ChIJR8aPoq4pRI4Rlwt1Je0B42g",
+        "displayName": {
+          "text": "Vilanova Apartamentos",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest",
+          "real_estate_agency"
+        ],
+        "spatialRelationship": "DOWN_THE_ROAD",
+        "straightLineDistanceMeters": 114.1186,
+        "travelDistanceMeters": 114.430954
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "placeId": "ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "displayName": {
+          "text": "Conquistadores",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "placeId": "ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "displayName": {
+          "text": "Laureles - Estadio",
+          "languageCode": "es"
+        },
+        "containment": "OUTSKIRTS"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=17545382493740231430&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "writeAReviewUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06!12e1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06!9m1!1b1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e44296e3edb52e5:0xf37db86b2bbe6b06!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "postalCode": "050030",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn",
+    "addressLines": [
+      "Cl 38 #63-67"
+    ]
+  }
+}

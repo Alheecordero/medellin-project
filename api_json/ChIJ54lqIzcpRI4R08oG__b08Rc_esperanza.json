@@ -1,0 +1,271 @@
+{
+  "name": "places/ChIJ54lqIzcpRI4R08oG__b08Rc",
+  "id": "ChIJ54lqIzcpRI4R08oG__b08Rc",
+  "types": [
+    "park",
+    "point_of_interest",
+    "establishment"
+  ],
+  "formattedAddress": "Autopista Del Sur, Laureles - Estadio, Medell\u00edn, Laureles, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "Autopista Del Sur",
+      "shortText": "Autopista Del Sur",
+      "types": [
+        "route"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Conquistadores",
+      "shortText": "Conquistadores",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Laureles - Estadio",
+      "shortText": "Laureles - Estadio",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Laureles",
+      "shortText": "Laureles",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050030",
+      "shortText": "050030",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "67R66CVC+C5",
+    "compoundCode": "6CVC+C5 Medell\u00edn, Antioquia"
+  },
+  "location": {
+    "latitude": 6.243595699999999,
+    "longitude": -75.5795253
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.242559169708499,
+      "longitude": -75.5809751802915
+    },
+    "high": {
+      "latitude": 6.245257130291503,
+      "longitude": -75.5782772197085
+    }
+  },
+  "rating": 3,
+  "googleMapsUri": "https://maps.google.com/?cid=1725429473937378003&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"street-address\">Autopista Del Sur</span>, <span class=\"region\">Laureles - Estadio</span>, <span class=\"locality\">Medell\u00edn, Laureles, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050030</span>, <span class=\"country-name\">Colombia</span>",
+  "businessStatus": "OPERATIONAL",
+  "userRatingCount": 1,
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/tree_pinlet",
+  "iconBackgroundColor": "#4DB546",
+  "displayName": {
+    "text": "ESPERANZA",
+    "languageCode": "es"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Parque",
+    "languageCode": "es"
+  },
+  "primaryType": "park",
+  "shortFormattedAddress": "Autopista Del Sur, Laureles - Estadio, Medell\u00edn",
+  "reviews": [
+    {
+      "name": "places/ChIJ54lqIzcpRI4R08oG__b08Rc/reviews/ChdDSUhNMG9nS0VJQ0FnSUQ3Ml9Ud3pBRRAB",
+      "relativePublishTimeDescription": "Hace un a\u00f1o",
+      "rating": 3,
+      "authorAttribution": {
+        "displayName": "Terasa Agudelo",
+        "uri": "https://www.google.com/maps/contrib/114798775808715909506/reviews",
+        "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXd7nlRIg1zAM00nSxtMnVr0AuadbTAcCyeC9TdVUHC26Ku3vFB=s128-c0x00000000-cc-rp-mo"
+      },
+      "publishTime": "2024-08-28T21:06:03.187238Z",
+      "flagContentUri": "https://www.google.com/local/review/rap/report?postId=ChdDSUhNMG9nS0VJQ0FnSUQ3Ml9Ud3pBRRAB&d=17924085&t=1",
+      "googleMapsUri": "https://www.google.com/maps/reviews/data=!4m6!14m5!1m4!2m3!1sChdDSUhNMG9nS0VJQ0FnSUQ3Ml9Ud3pBRRAB!2m1!1s0x8e442937236a89e7:0x17f1f4f6ff06cad3"
+    }
+  ],
+  "goodForChildren": true,
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJZVE4GawpRI4RkfaYKP0Xf9s",
+        "placeId": "ChIJZVE4GawpRI4RkfaYKP0Xf9s",
+        "displayName": {
+          "text": "Centro Residencial Colseguros",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 78.587395,
+        "travelDistanceMeters": 150.78186
+      },
+      {
+        "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "placeId": "ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "displayName": {
+          "text": "Parques del R\u00edo",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest",
+          "tourist_attraction"
+        ],
+        "spatialRelationship": "BESIDE",
+        "travelDistanceMeters": 0.0018062592
+      },
+      {
+        "name": "places/ChIJ2-JPY6wpRI4RLkHsAWxVH5Q",
+        "placeId": "ChIJ2-JPY6wpRI4RLkHsAWxVH5Q",
+        "displayName": {
+          "text": "Teatro Metropolitano Jos\u00e9 Guti\u00e9rrez G\u00f3mez",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 237.31021,
+        "travelDistanceMeters": 435.63486
+      },
+      {
+        "name": "places/ChIJJ1buuqspRI4R0mmnMcbmofQ",
+        "placeId": "ChIJJ1buuqspRI4R0mmnMcbmofQ",
+        "displayName": {
+          "text": "Edificio Inteligente de EPM",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 235.19728,
+        "travelDistanceMeters": 321.92972
+      },
+      {
+        "name": "places/ChIJAQBA_6spRI4Rbtr6QgkM-nE",
+        "placeId": "ChIJAQBA_6spRI4Rbtr6QgkM-nE",
+        "displayName": {
+          "text": "Cancha Colseguros",
+          "languageCode": "en"
+        },
+        "types": [
+          "establishment",
+          "gym",
+          "health",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "BESIDE",
+        "straightLineDistanceMeters": 31.180405,
+        "travelDistanceMeters": 19.213001
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "placeId": "ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "displayName": {
+          "text": "Conquistadores",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "placeId": "ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "displayName": {
+          "text": "Laureles - Estadio",
+          "languageCode": "es"
+        },
+        "containment": "OUTSKIRTS"
+      },
+      {
+        "name": "places/ChIJ58qCAKwpRI4RaHsKRvHVNUE",
+        "placeId": "ChIJ58qCAKwpRI4RaHsKRvHVNUE",
+        "displayName": {
+          "text": "Cancha Colseguros",
+          "languageCode": "en"
+        },
+        "containment": "OUTSKIRTS"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e442937236a89e7:0x17f1f4f6ff06cad3!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=1725429473937378003&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "writeAReviewUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e442937236a89e7:0x17f1f4f6ff06cad3!12e1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e442937236a89e7:0x17f1f4f6ff06cad3!9m1!1b1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e442937236a89e7:0x17f1f4f6ff06cad3!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn",
+    "addressLines": [
+      "Autopista Del Sur"
+    ]
+  }
+}

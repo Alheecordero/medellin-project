@@ -1,0 +1,250 @@
+{
+  "name": "places/ChIJsWHr664pRI4RqwpCWC41Dfw",
+  "id": "ChIJsWHr664pRI4RqwpCWC41Dfw",
+  "types": [
+    "art_gallery",
+    "point_of_interest",
+    "establishment"
+  ],
+  "formattedAddress": "Cra 64A #37, Laureles - Estadio, Medell\u00edn, Laureles, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "37",
+      "shortText": "37",
+      "types": [
+        "street_number"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Carrera 64A",
+      "shortText": "Cra 64A",
+      "types": [
+        "route"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Conquistadores",
+      "shortText": "Conquistadores",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "Laureles - Estadio",
+      "shortText": "Laureles - Estadio",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Laureles",
+      "shortText": "Laureles",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050030",
+      "shortText": "050030",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "67R66CR9+R7",
+    "compoundCode": "6CR9+R7 Medell\u00edn, Antioquia"
+  },
+  "location": {
+    "latitude": 6.2421007,
+    "longitude": -75.5818024
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.240754419708498,
+      "longitude": -75.58311073029151
+    },
+    "high": {
+      "latitude": 6.243452380291503,
+      "longitude": -75.5804127697085
+    }
+  },
+  "googleMapsUri": "https://maps.google.com/?cid=18162231345420569259&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"street-address\">Carrera 64A #37</span>, <span class=\"region\">Laureles - Estadio</span>, <span class=\"locality\">Medell\u00edn, Laureles, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050030</span>, <span class=\"country-name\">Colombia</span>",
+  "businessStatus": "OPERATIONAL",
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+  "iconBackgroundColor": "#7B9EB0",
+  "displayName": {
+    "text": "Plecto Galer\u00eda",
+    "languageCode": "es"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Galer\u00eda de arte",
+    "languageCode": "es"
+  },
+  "primaryType": "art_gallery",
+  "shortFormattedAddress": "Cra 64A #37, Laureles - Estadio, Medell\u00edn",
+  "restroom": true,
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJYXIu2q4pRI4RZ9gfjv3GGVU",
+        "placeId": "ChIJYXIu2q4pRI4RZ9gfjv3GGVU",
+        "displayName": {
+          "text": "Edificio Marquez De Caceres",
+          "languageCode": "en"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 123.8302,
+        "travelDistanceMeters": 208.13689
+      },
+      {
+        "name": "places/ChIJK7cYia4pRI4RVYTDKorMMbk",
+        "placeId": "ChIJK7cYia4pRI4RVYTDKorMMbk",
+        "displayName": {
+          "text": "FUNDACI\u00d3N DIVERSIDAD Sede 1",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 108.81916,
+        "travelDistanceMeters": 159.4311
+      },
+      {
+        "name": "places/ChIJQ7enWQApRI4RG51gAh3m_S0",
+        "placeId": "ChIJQ7enWQApRI4RG51gAh3m_S0",
+        "displayName": {
+          "text": "Ariz\u00e1",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 71.013214,
+        "travelDistanceMeters": 95.826126
+      },
+      {
+        "name": "places/ChIJ74ScX64pRI4RKUyuaAVR77w",
+        "placeId": "ChIJ74ScX64pRI4RKUyuaAVR77w",
+        "displayName": {
+          "text": "Parque Conquistadores 3",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 70.46791,
+        "travelDistanceMeters": 36.34207
+      },
+      {
+        "name": "places/ChIJ9cT9C6YpRI4R5_KEvYsF8GI",
+        "placeId": "ChIJ9cT9C6YpRI4R5_KEvYsF8GI",
+        "displayName": {
+          "text": "Edificio Barlovento",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 40.285683,
+        "travelDistanceMeters": 33.630028
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "placeId": "ChIJCSonNqkpRI4Rt7Z57W4Jqp8",
+        "displayName": {
+          "text": "Conquistadores",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "placeId": "ChIJleGmmQ4pRI4R1K1vWfShwJ4",
+        "displayName": {
+          "text": "Laureles - Estadio",
+          "languageCode": "es"
+        },
+        "containment": "WITHIN"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e4429aeebeb61b1:0xfc0d352e58420aab!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=18162231345420569259&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "writeAReviewUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429aeebeb61b1:0xfc0d352e58420aab!12e1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e4429aeebeb61b1:0xfc0d352e58420aab!9m1!1b1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429aeebeb61b1:0xfc0d352e58420aab!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "postalCode": "050030",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn",
+    "addressLines": [
+      "Cra 64A #37"
+    ]
+  }
+}

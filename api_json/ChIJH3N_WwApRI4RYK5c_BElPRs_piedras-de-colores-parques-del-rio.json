@@ -1,0 +1,270 @@
+{
+  "name": "places/ChIJH3N_WwApRI4RYK5c_BElPRs",
+  "id": "ChIJH3N_WwApRI4RYK5c_BElPRs",
+  "types": [
+    "tourist_attraction",
+    "point_of_interest",
+    "establishment"
+  ],
+  "formattedAddress": "Cra. 62 #42-75, La Candelaria, Medell\u00edn, La Candelaria, Medell\u00edn, Antioquia",
+  "addressComponents": [
+    {
+      "longText": "42-75",
+      "shortText": "42-75",
+      "types": [
+        "street_number"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Carrera 62",
+      "shortText": "Cra. 62",
+      "types": [
+        "route"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "La Alpujarra",
+      "shortText": "La Alpujarra",
+      "types": [
+        "neighborhood",
+        "political"
+      ],
+      "languageCode": "en"
+    },
+    {
+      "longText": "La Candelaria",
+      "shortText": "La Candelaria",
+      "types": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "locality",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "La Candelaria",
+      "shortText": "La Candelaria",
+      "types": [
+        "administrative_area_level_3",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Medell\u00edn",
+      "shortText": "Medell\u00edn",
+      "types": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Antioquia",
+      "shortText": "Antioquia",
+      "types": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "Colombia",
+      "shortText": "CO",
+      "types": [
+        "country",
+        "political"
+      ],
+      "languageCode": "es"
+    },
+    {
+      "longText": "050015",
+      "shortText": "050015",
+      "types": [
+        "postal_code"
+      ],
+      "languageCode": "es"
+    }
+  ],
+  "plusCode": {
+    "globalCode": "67R66CVC+GM",
+    "compoundCode": "6CVC+GM Medell\u00edn, Antioquia"
+  },
+  "location": {
+    "latitude": 6.2438215999999995,
+    "longitude": -75.5783257
+  },
+  "viewport": {
+    "low": {
+      "latitude": 6.242485019708497,
+      "longitude": -75.5796397302915
+    },
+    "high": {
+      "latitude": 6.245182980291502,
+      "longitude": -75.5769417697085
+    }
+  },
+  "googleMapsUri": "https://maps.google.com/?cid=1962765771782008416&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+  "utcOffsetMinutes": -300,
+  "adrFormatAddress": "<span class=\"street-address\">Carrera 62 #42-75</span>, <span class=\"region\">La Candelaria</span>, <span class=\"locality\">Medell\u00edn, La Candelaria, Medell\u00edn</span>, <span class=\"region\">Antioquia</span>, <span class=\"postal-code\">050015</span>, <span class=\"country-name\">Colombia</span>",
+  "businessStatus": "OPERATIONAL",
+  "iconMaskBaseUri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+  "iconBackgroundColor": "#13B5C7",
+  "displayName": {
+    "text": "Piedras de Colores Parques del R\u00edo",
+    "languageCode": "es"
+  },
+  "primaryTypeDisplayName": {
+    "text": "Atracci\u00f3n tur\u00edstica",
+    "languageCode": "es"
+  },
+  "primaryType": "tourist_attraction",
+  "shortFormattedAddress": "Cra. 62 #42-75, La Candelaria, Medell\u00edn",
+  "containingPlaces": [
+    {
+      "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+      "id": "ChIJO_0OFawpRI4Rd3oqEZPjfuA"
+    }
+  ],
+  "addressDescriptor": {
+    "landmarks": [
+      {
+        "name": "places/ChIJ2-JPY6wpRI4RLkHsAWxVH5Q",
+        "placeId": "ChIJ2-JPY6wpRI4RLkHsAWxVH5Q",
+        "displayName": {
+          "text": "Teatro Metropolitano Jos\u00e9 Guti\u00e9rrez G\u00f3mez",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "AROUND_THE_CORNER",
+        "straightLineDistanceMeters": 130.2666,
+        "travelDistanceMeters": 215.01678
+      },
+      {
+        "name": "places/ChIJJ1buuqspRI4R0mmnMcbmofQ",
+        "placeId": "ChIJJ1buuqspRI4R0mmnMcbmofQ",
+        "displayName": {
+          "text": "Edificio Inteligente de EPM",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "spatialRelationship": "DOWN_THE_ROAD",
+        "straightLineDistanceMeters": 143.40501,
+        "travelDistanceMeters": 112.75504
+      },
+      {
+        "name": "places/ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "placeId": "ChIJO_0OFawpRI4Rd3oqEZPjfuA",
+        "displayName": {
+          "text": "Parques del R\u00edo",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest",
+          "tourist_attraction"
+        ],
+        "straightLineDistanceMeters": 136.14114,
+        "travelDistanceMeters": 218.87613
+      },
+      {
+        "name": "places/ChIJ3xE-CqspRI4RPl8BKzTDilc",
+        "placeId": "ChIJ3xE-CqspRI4RPl8BKzTDilc",
+        "displayName": {
+          "text": "Parque de los Pies Descalzos",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "park",
+          "point_of_interest",
+          "tourist_attraction"
+        ],
+        "straightLineDistanceMeters": 153.31682,
+        "travelDistanceMeters": 186.50317
+      },
+      {
+        "name": "places/ChIJo4nTYngpRI4RRZeu5o6zsvI",
+        "placeId": "ChIJo4nTYngpRI4RRZeu5o6zsvI",
+        "displayName": {
+          "text": "Centro de Convenciones Plaza Mayor",
+          "languageCode": "es"
+        },
+        "types": [
+          "establishment",
+          "point_of_interest"
+        ],
+        "straightLineDistanceMeters": 230.842,
+        "travelDistanceMeters": 304.39404
+      }
+    ],
+    "areas": [
+      {
+        "name": "places/ChIJi_6YhqspRI4RGMLyvMzQyrI",
+        "placeId": "ChIJi_6YhqspRI4RGMLyvMzQyrI",
+        "displayName": {
+          "text": "La Alpujarra",
+          "languageCode": "en"
+        },
+        "containment": "WITHIN"
+      },
+      {
+        "name": "places/ChIJ-4qLlFYoRI4RADgF_oEFByo",
+        "placeId": "ChIJ-4qLlFYoRI4RADgF_oEFByo",
+        "displayName": {
+          "text": "La Candelaria",
+          "languageCode": "es"
+        },
+        "containment": "OUTSKIRTS"
+      },
+      {
+        "name": "places/ChIJJ1buuqspRI4R7nvl4loGgcQ",
+        "placeId": "ChIJJ1buuqspRI4R7nvl4loGgcQ",
+        "displayName": {
+          "text": "Edificio Inteligente de EPM",
+          "languageCode": "es"
+        },
+        "containment": "NEAR"
+      }
+    ]
+  },
+  "googleMapsLinks": {
+    "directionsUri": "https://www.google.com/maps/dir//''/data=!4m7!4m6!1m1!4e2!1m2!1m1!1s0x8e4429005b7f731f:0x1b3d2511fc5cae60!3e0?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "placeUri": "https://maps.google.com/?cid=1962765771782008416&g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "writeAReviewUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429005b7f731f:0x1b3d2511fc5cae60!12e1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "reviewsUri": "https://www.google.com/maps/place//data=!4m4!3m3!1s0x8e4429005b7f731f:0x1b3d2511fc5cae60!9m1!1b1?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA",
+    "photosUri": "https://www.google.com/maps/place//data=!4m3!3m2!1s0x8e4429005b7f731f:0x1b3d2511fc5cae60!10e5?g_mp=Cilnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaE5lYXJieRACGAQgAA"
+  },
+  "timeZone": {
+    "id": "America/Bogota"
+  },
+  "postalAddress": {
+    "regionCode": "CO",
+    "languageCode": "es",
+    "postalCode": "050015",
+    "administrativeArea": "Antioquia",
+    "locality": "Medell\u00edn",
+    "sublocality": "La Candelaria",
+    "addressLines": [
+      "Cra. 62 #42-75"
+    ]
+  }
+}
