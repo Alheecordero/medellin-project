@@ -1,7 +1,8 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
-<h2 class="text-center my-3">Zonas Cubiertas</h2>
+<h2 class="text-center my-3">{% trans "Zonas Cubiertas" %}</h2>
 <div id="mapa" style="height: 600px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);"></div>
 
 <!-- Leaflet CDN -->

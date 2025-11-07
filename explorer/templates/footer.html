@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 
 <!-- Footer -->
 <footer class="footer mt-5">
@@ -7,19 +8,19 @@
         <div class="row mb-4">
             <div class="col-lg-4 mb-4">
                 <h5 class="mb-3 fw-bold">
-                    <i class="bi bi-geo-alt-fill me-2 text-gradient"></i>Vive Medellín
+                    <i class="bi bi-geo-alt-fill me-2 text-gradient"></i>ViveMedellín
                 </h5>
                 <p class="text-light-muted mb-3">
-                    Descubre los mejores lugares de Medellín, la ciudad de la eterna primavera.
+                    {% trans "Descubre los mejores lugares de Medellín, la ciudad de la eterna primavera." %}
                 </p>
                 <div class="social-links">
-                    <a href="{% url 'explorer:home' %}" class="social-btn me-2" title="Inicio">
+                    <a href="{% url 'explorer:home' %}" class="social-btn me-2" title="{% trans 'Inicio' %}">
                         <i class="bi bi-house-fill"></i>
                     </a>
-                    <a href="{% url 'explorer:lugares_list' %}" class="social-btn me-2" title="Explorar Lugares">
+                    <a href="{% url 'explorer:lugares_list' %}" class="social-btn me-2" title="{% trans 'Explorar Lugares' %}">
                         <i class="bi bi-map"></i>
                     </a>
-                    <a href="{% url 'explorer:lugares_list' %}?tipo=restaurant" class="social-btn" title="Mejores Restaurantes">
+                    <a href="{% url 'explorer:lugares_list' %}?tipo=restaurant" class="social-btn" title="{% trans 'Mejores Restaurantes' %}">
                         <i class="bi bi-cup-hot"></i>
                     </a>
                 </div>
@@ -29,19 +30,19 @@
                 <div class="row">
                     <div class="col-lg-12 mb-4">
                         <h6 class="mb-3 fw-semibold text-white text-center">Newsletter</h6>
-                        <p class="text-light-muted mb-4 text-center">Recibe las mejores recomendaciones de lugares directamente en tu correo</p>
+                        <p class="text-light-muted mb-4 text-center">{% trans "Recibe las mejores recomendaciones de lugares directamente en tu correo" %}</p>
                         <div class="newsletter-container-wide">
                                             <form class="newsletter-form-modern" action="{% url 'explorer:newsletter_subscribe' %}" method="post" onsubmit="return newsletterSubmit(event)">
                     {% csrf_token %}
                     <div class="input-group-modern-wide">
-                        <input type="email" class="form-control-modern" placeholder="Ingresa tu correo electrónico" required name="email" id="newsletter-email">
+                        <input type="email" class="form-control-modern" placeholder="{% trans 'Ingresa tu correo electrónico' %}" required name="email" id="newsletter-email">
                         <button class="btn-modern-wide" type="submit" id="newsletter-btn">
-                            <i class="bi bi-send-fill me-2"></i>Suscribirme
+                            <i class="bi bi-send-fill me-2"></i>{% trans "Suscribirme" %}
                         </button>
                     </div>
                 </form>
                             <small class="text-light-muted mt-3 d-block text-center">
-                                <i class="bi bi-shield-check me-1"></i>100% libre de spam • Cancela cuando quieras
+                                <i class="bi bi-shield-check me-1"></i>{% trans "100% libre de spam • Cancela cuando quieras" %}
                             </small>
                         </div>
                     </div>
@@ -52,31 +53,31 @@
         <!-- Segunda fila: Enlaces rápidos adicionales -->
         <div class="row mt-4 pt-4" style="border-top: 1px solid rgba(255,255,255,0.1);">
             <div class="col-lg-4 mb-3">
-                <h6 class="mb-3 fw-semibold text-white">Experiencias Destacadas</h6>
+                <h6 class="mb-3 fw-semibold text-white">{% trans "Experiencias Destacadas" %}</h6>
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="{% url 'explorer:lugares_list' %}?delivery=true" class="badge bg-gradient text-decoration-none">🚚 Con Delivery</a>
-                    <a href="{% url 'explorer:lugares_list' %}?outdoor_seating=true" class="badge bg-gradient text-decoration-none">🌿 Con Terraza</a>
-                    <a href="{% url 'explorer:lugares_list' %}?live_music=true" class="badge bg-gradient text-decoration-none">🎵 Música en Vivo</a>
-                    <a href="{% url 'explorer:lugares_list' %}?serves_cocktails=true" class="badge bg-gradient text-decoration-none">🍹 Cócteles</a>
+                    <a href="{% url 'explorer:lugares_list' %}?delivery=true" class="badge bg-gradient text-decoration-none">🚚 {% trans "Con Delivery" %}</a>
+                    <a href="{% url 'explorer:lugares_list' %}?outdoor_seating=true" class="badge bg-gradient text-decoration-none">🌿 {% trans "Con Terraza" %}</a>
+                    <a href="{% url 'explorer:lugares_list' %}?live_music=true" class="badge bg-gradient text-decoration-none">🎵 {% trans "Música en Vivo" %}</a>
+                    <a href="{% url 'explorer:lugares_list' %}?serves_cocktails=true" class="badge bg-gradient text-decoration-none">🍹 {% trans "Cócteles" %}</a>
                 </div>
             </div>
             
             <div class="col-lg-4 mb-3">
-                <h6 class="mb-3 fw-semibold text-white">Zonas Premium</h6>
+                <h6 class="mb-3 fw-semibold text-white">{% trans "Zonas Premium" %}</h6>
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="{% url 'explorer:lugares_por_comuna' 'el-poblado' %}?tipo=bar" class="badge bg-gradient text-decoration-none">🍸 Bares El Poblado</a>
-                    <a href="{% url 'explorer:lugares_por_comuna' 'laureles-estadio' %}?tipo=restaurant" class="badge bg-gradient text-decoration-none">🍽️ Restaurantes Laureles</a>
-                    <a href="{% url 'explorer:lugares_por_comuna' 'envigado' %}?tipo=cafe" class="badge bg-gradient text-decoration-none">☕ Cafés Envigado</a>
+                    <a href="{% url 'explorer:lugares_por_comuna' 'el-poblado' %}?tipo=bar" class="badge bg-gradient text-decoration-none">🍸 {% trans "Bares El Poblado" %}</a>
+                    <a href="{% url 'explorer:lugares_por_comuna' 'laureles-estadio' %}?tipo=restaurant" class="badge bg-gradient text-decoration-none">🍽️ {% trans "Restaurantes Laureles" %}</a>
+                    <a href="{% url 'explorer:lugares_por_comuna' 'envigado' %}?tipo=cafe" class="badge bg-gradient text-decoration-none">☕ {% trans "Cafés Envigado" %}</a>
                 </div>
             </div>
             
             <div class="col-lg-4 mb-3">
-                <h6 class="mb-3 fw-semibold text-white">Navegación Rápida</h6>
+                <h6 class="mb-3 fw-semibold text-white">{% trans "Navegación Rápida" %}</h6>
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="{% url 'explorer:home' %}" class="badge bg-gradient text-decoration-none">🏠 Inicio</a>
-                    <a href="{% url 'explorer:lugares_list' %}" class="badge bg-gradient text-decoration-none">🗺️ Explorar Todo</a>
-                    <a href="{% url 'explorer:lugares_list' %}?tipo=night_club" class="badge bg-gradient text-decoration-none">🌙 Vida Nocturna</a>
-                    <a href="{% url 'explorer:lugares_list' %}?good_for_groups=true" class="badge bg-gradient text-decoration-none">👥 Para Grupos</a>
+                    <a href="{% url 'explorer:home' %}" class="badge bg-gradient text-decoration-none">🏠 {% trans "Inicio" %}</a>
+                    <a href="{% url 'explorer:lugares_list' %}" class="badge bg-gradient text-decoration-none">🗺️ {% trans "Explorar Todo" %}</a>
+                    <a href="{% url 'explorer:lugares_list' %}?tipo=night_club" class="badge bg-gradient text-decoration-none">🌙 {% trans "Vida Nocturna" %}</a>
+                    <a href="{% url 'explorer:lugares_list' %}?good_for_groups=true" class="badge bg-gradient text-decoration-none">👥 {% trans "Para Grupos" %}</a>
                 </div>
             </div>
         </div>
@@ -85,12 +86,24 @@
         
         <div class="text-center">
             <p class="mb-2 text-light-muted">
-                <strong>Vive Medellín</strong> - Tu guía definitiva para descubrir los mejores lugares de la Ciudad de la Eterna Primavera
+                <strong>ViveMedellín</strong> - {% trans "Tu guía definitiva para descubrir los mejores lugares de la Ciudad de la Eterna Primavera" %}
             </p>
-            <p class="mb-0 small text-light-muted">&copy; {% now "Y" %} ViveMedellín. Todos los derechos reservados.</p>
+            <p class="mb-0 small text-light-muted">&copy; {% now "Y" %} ViveMedellín. {% trans "Todos los derechos reservados." %}</p>
         </div>
     </div>
 </footer>
+
+<!-- Pre-carga i18n para textos usados solo en JS del newsletter (oculto) -->
+<div class="visually-hidden" aria-hidden="true">
+    {% trans "Por favor, ingresa un email válido" %}
+    {% trans "Enviando..." %}
+    {% trans "¡Suscrito!" %}
+    {% trans "Error al procesar la suscripción" %}
+    {% trans "Error de conexión. Por favor, intenta más tarde." %}
+    {% trans "Intentar de nuevo" %}
+    {% trans "Ver todos los lugares" %}
+    {% trans "Error de Geolocalización" %}
+</div>
 
 <!-- Botón scroll to top -->
 <button id="scrollToTop" class="scroll-to-top">
@@ -424,12 +437,12 @@ function newsletterSubmit(event) {
     
     // Validación básica
     if (!email || !email.includes('@')) {
-        showNewsletterMessage('Por favor, ingresa un email válido', 'error');
+        showNewsletterMessage(gettext('Por favor, ingresa un email válido'), 'error');
         return false;
     }
     
     // Cambiar botón a estado de loading
-    button.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Enviando...';
+    button.innerHTML = `<i class="bi bi-arrow-clockwise"></i> ${gettext('Enviando...')}`;
     button.disabled = true;
     
     // Realizar petición AJAX
@@ -444,7 +457,7 @@ function newsletterSubmit(event) {
     .then(data => {
         if (data.success) {
             // Mostrar mensaje de éxito
-            button.innerHTML = '<i class="bi bi-check-lg"></i> ¡Suscrito!';
+            button.innerHTML = `<i class="bi bi-check-lg"></i> ${gettext('¡Suscrito!')}`;
             button.style.background = 'linear-gradient(135deg, #38ef7d 0%, #11998e 100%)';
             
             // Limpiar input
@@ -462,14 +475,14 @@ function newsletterSubmit(event) {
             
         } else {
             // Mostrar error
-            showNewsletterMessage(data.error || 'Error al procesar la suscripción', 'error');
+            showNewsletterMessage(data.error || gettext('Error al procesar la suscripción'), 'error');
             button.innerHTML = originalText;
             button.disabled = false;
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showNewsletterMessage('Error de conexión. Por favor, intenta más tarde.', 'error');
+        showNewsletterMessage(gettext('Error de conexión. Por favor, intenta más tarde.'), 'error');
         button.innerHTML = originalText;
         button.disabled = false;
     });

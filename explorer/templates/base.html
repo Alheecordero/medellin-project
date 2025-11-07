@@ -1,31 +1,36 @@
 {% load static %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Medellín Explorer - Tu Guía de la Ciudad{% endblock %}</title>
-    
+    <title>{% block title %}{% trans "ViveMedellín - Tu Guía de la Ciudad" %}{% endblock %}</title>
+        
     <!-- Meta SEO -->
-    <meta name="description" content="{% block meta_description %}Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín.{% endblock %}">
+    <meta name="description" content="{% block meta_description %}{% trans "Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín." %}{% endblock %}">
     <meta name="keywords" content="{% block meta_keywords %}Medellín, turismo, lugares, bares, restaurantes, discotecas, que hacer en Medellín{% endblock %}">
-    <meta name="author" content="Medellín Explorer">
+    <meta name="author" content="Vivemedellín">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#667eea">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
-    <meta property="og:title" content="{% block og_title %}Medellín Explorer - Tu Guía de la Ciudad{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín.{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}{% trans "ViveMedellín - Tu Guía de la Ciudad" %}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{% trans "Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín." %}{% endblock %}">
     <meta property="og:image" content="{% block og_image %}{{ request.build_absolute_uri }}{% static 'img/medellin.jpg' %}{% endblock %}">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
-    <meta property="twitter:title" content="{% block twitter_title %}Medellín Explorer - Tu Guía de la Ciudad{% endblock %}">
-    <meta property="twitter:description" content="{% block twitter_description %}Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín.{% endblock %}">
+    <meta property="twitter:title" content="{% block twitter_title %}{% trans "ViveMedellín - Tu Guía de la Ciudad" %}{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}{% trans "Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín." %}{% endblock %}">
     <meta property="twitter:image" content="{% block twitter_image %}{{ request.build_absolute_uri }}{% static 'img/medellin.jpg' %}{% endblock %}">
+
+    <!-- Django JS i18n -->
+    <script src="{% url 'javascript-catalog' %}"></script>
 
     <!-- Preload recursos críticos -->
     <link rel="preload" href="{% static 'css/style.css' %}" as="style">
@@ -68,6 +73,10 @@
       {% endif %}
     {% endif %}
 
+    <!-- Hreflang alternates -->
+    <link rel="alternate" hreflang="es" href="{{ request.build_absolute_uri }}" />
+    <link rel="alternate" hreflang="en" href="/en{{ request.path }}" />
+
     <!-- CSS principal -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -95,5 +104,11 @@
     <script src="{% static 'js/optimizations.js' %}" defer></script>
     
     {% block extra_js %}{% endblock %}
+
+    <!-- Hreflang alternates -->
+    {% if request.resolver_match %}
+    <link rel="alternate" href="{{ request.build_absolute_uri }}" hreflang="es" />
+    <link rel="alternate" href="/en{{ request.path }}" hreflang="en" />
+    {% endif %}
 </body>
 </html>

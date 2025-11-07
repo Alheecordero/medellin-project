@@ -1,9 +1,11 @@
 {% extends "base.html" %}
+{% load i18n %}
+{% load i18n_extras %}
 
-{% block title %}{{ titulo_pagina }} | Medellín Explorer{% endblock %}
+{% block title %}{{ titulo_pagina }} | {% trans "ViveMedellín" %}{% endblock %}
 
 {% block meta_description %}
-  {{ descripcion_pagina }}. Encuentra los lugares mejor valorados en Medellín Explorer.
+  {{ descripcion_pagina }}. {% trans "Encuentra los lugares mejor valorados en ViveMedellín." %}
 {% endblock %}
 
 {% block meta_keywords %}
@@ -19,11 +21,11 @@
 {% endblock %}
 
 {% block og_title %}
-  {{ titulo_pagina }} | Medellín Explorer
+  {{ titulo_pagina }} | ViveMedellín
 {% endblock %}
 
 {% block og_description %}
-  {{ descripcion_pagina }}. Descubre lugares con calificaciones reales en Medellín.
+  {{ descripcion_pagina }}. {% trans "Descubre lugares con calificaciones reales en Medellín." %}
 {% endblock %}
 
 {% block og_image %}
@@ -52,7 +54,7 @@
     {% if busqueda_actual %}
       <div class="mt-3">
         <span class="badge bg-primary bg-opacity-10 text-primary fs-6 px-3 py-2">
-          <i class="bi bi-search me-1"></i>Búsqueda: "{{ busqueda_actual }}"
+          <i class="bi bi-search me-1"></i>{% trans "Búsqueda" %}: "{{ busqueda_actual }}"
         </span>
       </div>
     {% endif %}
@@ -65,10 +67,10 @@
         <div class="row g-3">
           <div class="col-md-3">
             <label class="form-label small text-white fw-semibold">
-              <i class="bi bi-geo-alt me-1 text-white"></i>Área
+              <i class="bi bi-geo-alt me-1 text-white"></i>{% trans "Área" %}
             </label>
                          <select class="form-select form-select-sm rounded-pill" id="filtro-comuna" name="comuna">
-               <option value="">Todas las áreas</option>
+               <option value="">{% trans "Todas las áreas" %}</option>
                {% for region in regiones_filtro %}
                  <option value="{{ region.osm_id }}" 
                          data-slug="{{ region.slug }}"
@@ -81,71 +83,71 @@
           
           <div class="col-md-3">
             <label class="form-label small text-white fw-semibold">
-              <i class="bi bi-grid-3x3-gap me-1 text-white"></i>Tipo
+              <i class="bi bi-grid-3x3-gap me-1 text-white"></i>{% trans "Tipo" %}
             </label>
             <select class="form-select form-select-sm rounded-pill" id="filtro-tipo" name="tipo">
-              <option value="">Todos los tipos</option>
-              <optgroup label="🍽️ Restaurantes">
-                <option value="restaurant" {% if tipo_actual == 'restaurant' %}selected{% endif %}>Restaurante General</option>
-                <option value="fine_dining_restaurant" {% if tipo_actual == 'fine_dining_restaurant' %}selected{% endif %}>Restaurante Gourmet</option>
-                <option value="pizza_restaurant" {% if tipo_actual == 'pizza_restaurant' %}selected{% endif %}>Pizzería</option>
-                <option value="italian_restaurant" {% if tipo_actual == 'italian_restaurant' %}selected{% endif %}>Restaurante Italiano</option>
-                <option value="mexican_restaurant" {% if tipo_actual == 'mexican_restaurant' %}selected{% endif %}>Restaurante Mexicano</option>
-                <option value="chinese_restaurant" {% if tipo_actual == 'chinese_restaurant' %}selected{% endif %}>Restaurante Chino</option>
-                <option value="seafood_restaurant" {% if tipo_actual == 'seafood_restaurant' %}selected{% endif %}>Marisquería</option>
-                <option value="steak_house" {% if tipo_actual == 'steak_house' %}selected{% endif %}>Parrilla de Carnes</option>
-                <option value="fast_food_restaurant" {% if tipo_actual == 'fast_food_restaurant' %}selected{% endif %}>Comida Rápida</option>
+              <option value="">{% trans "Todos los tipos" %}</option>
+              <optgroup label="🍽️ {% trans "Restaurantes" %}">
+                <option value="restaurant" {% if tipo_actual == 'restaurant' %}selected{% endif %}>{% trans "Restaurante General" %}</option>
+                <option value="fine_dining_restaurant" {% if tipo_actual == 'fine_dining_restaurant' %}selected{% endif %}>{% trans "Restaurante Gourmet" %}</option>
+                <option value="pizza_restaurant" {% if tipo_actual == 'pizza_restaurant' %}selected{% endif %}>{% trans "Pizzería" %}</option>
+                <option value="italian_restaurant" {% if tipo_actual == 'italian_restaurant' %}selected{% endif %}>{% trans "Restaurante Italiano" %}</option>
+                <option value="mexican_restaurant" {% if tipo_actual == 'mexican_restaurant' %}selected{% endif %}>{% trans "Restaurante Mexicano" %}</option>
+                <option value="chinese_restaurant" {% if tipo_actual == 'chinese_restaurant' %}selected{% endif %}>{% trans "Restaurante Chino" %}</option>
+                <option value="seafood_restaurant" {% if tipo_actual == 'seafood_restaurant' %}selected{% endif %}>{% trans "Marisquería" %}</option>
+                <option value="steak_house" {% if tipo_actual == 'steak_house' %}selected{% endif %}>{% trans "Parrilla de Carnes" %}</option>
+                <option value="fast_food_restaurant" {% if tipo_actual == 'fast_food_restaurant' %}selected{% endif %}>{% trans "Comida Rápida" %}</option>
               </optgroup>
-              <optgroup label="🍻 Bares & Vida Nocturna">
-                <option value="bar" {% if tipo_actual == 'bar' %}selected{% endif %}>Bar</option>
-                <option value="wine_bar" {% if tipo_actual == 'wine_bar' %}selected{% endif %}>Bar de Vinos</option>
-                <option value="pub" {% if tipo_actual == 'pub' %}selected{% endif %}>Pub</option>
-                <option value="night_club" {% if tipo_actual == 'night_club' %}selected{% endif %}>Discoteca</option>
-                <option value="karaoke" {% if tipo_actual == 'karaoke' %}selected{% endif %}>Karaoke</option>
+              <optgroup label="🍻 {% trans "Bares & Vida Nocturna" %}">
+                <option value="bar" {% if tipo_actual == 'bar' %}selected{% endif %}>{% trans "Bar" %}</option>
+                <option value="wine_bar" {% if tipo_actual == 'wine_bar' %}selected{% endif %}>{% trans "Bar de Vinos" %}</option>
+                <option value="pub" {% if tipo_actual == 'pub' %}selected{% endif %}>{% trans "Pub" %}</option>
+                <option value="night_club" {% if tipo_actual == 'night_club' %}selected{% endif %}>{% trans "Discoteca" %}</option>
+                <option value="karaoke" {% if tipo_actual == 'karaoke' %}selected{% endif %}>{% trans "Karaoke" %}</option>
               </optgroup>
-              <optgroup label="☕ Cafeterías">
-                <option value="cafe" {% if tipo_actual == 'cafe' %}selected{% endif %}>Cafetería</option>
-                <option value="internet_cafe" {% if tipo_actual == 'internet_cafe' %}selected{% endif %}>Cibercafé</option>
-                <option value="breakfast_restaurant" {% if tipo_actual == 'breakfast_restaurant' %}selected{% endif %}>Desayunos</option>
-                <option value="brunch" {% if tipo_actual == 'brunch' %}selected{% endif %}>Brunch</option>
+              <optgroup label="☕ {% trans "Cafeterías" %}">
+                <option value="cafe" {% if tipo_actual == 'cafe' %}selected{% endif %}>{% trans "Cafetería" %}</option>
+                <option value="internet_cafe" {% if tipo_actual == 'internet_cafe' %}selected{% endif %}>{% trans "Cibercafé" %}</option>
+                <option value="breakfast_restaurant" {% if tipo_actual == 'breakfast_restaurant' %}selected{% endif %}>{% trans "Desayunos" %}</option>
+                <option value="brunch" {% if tipo_actual == 'brunch' %}selected{% endif %}>{% trans "Brunch" %}</option>
               </optgroup>
             </select>
           </div>
           
           <div class="col-md-3">
             <label class="form-label small text-white fw-semibold">
-              <i class="bi bi-stars me-1 text-white"></i>Características
+              <i class="bi bi-stars me-1 text-white"></i>{% trans "Características" %}
             </label>
             <select class="form-select form-select-sm rounded-pill" id="filtro-caracteristicas" name="caracteristicas">
-              <option value="">Sin filtro especial</option>
-              <optgroup label="🚚 Servicios de Entrega">
-                <option value="delivery" {% if request.GET.delivery == 'true' %}selected{% endif %}>Delivery</option>
-                <option value="takeout" {% if request.GET.takeout == 'true' %}selected{% endif %}>Para Llevar</option>
-                <option value="dine_in" {% if request.GET.dine_in == 'true' %}selected{% endif %}>Comer en Local</option>
+              <option value="">{% trans "Sin filtro especial" %}</option>
+              <optgroup label="🚚 {% trans "Servicios de Entrega" %}">
+                <option value="delivery" {% if request.GET.delivery == 'true' %}selected{% endif %}>{% trans "Delivery" %}</option>
+                <option value="takeout" {% if request.GET.takeout == 'true' %}selected{% endif %}>{% trans "Para Llevar" %}</option>
+                <option value="dine_in" {% if request.GET.dine_in == 'true' %}selected{% endif %}>{% trans "Comer en Local" %}</option>
               </optgroup>
-              <optgroup label="⭐ Ambiente & Experiencia">
-                <option value="outdoor_seating" {% if request.GET.outdoor_seating == 'true' %}selected{% endif %}>Terraza</option>
-                <option value="live_music" {% if request.GET.live_music == 'true' %}selected{% endif %}>Música en Vivo</option>
-                <option value="good_for_groups" {% if request.GET.good_for_groups == 'true' %}selected{% endif %}>Para Grupos</option>
-                <option value="good_for_children" {% if request.GET.good_for_children == 'true' %}selected{% endif %}>Para Niños</option>
+              <optgroup label="⭐ {% trans "Ambiente & Experiencia" %}">
+                <option value="outdoor_seating" {% if request.GET.outdoor_seating == 'true' %}selected{% endif %}>{% trans "Terraza" %}</option>
+                <option value="live_music" {% if request.GET.live_music == 'true' %}selected{% endif %}>{% trans "Música en Vivo" %}</option>
+                <option value="good_for_groups" {% if request.GET.good_for_groups == 'true' %}selected{% endif %}>{% trans "Para Grupos" %}</option>
+                <option value="good_for_children" {% if request.GET.good_for_children == 'true' %}selected{% endif %}>{% trans "Para Niños" %}</option>
               </optgroup>
-              <optgroup label="🍹 Especialidades">
-                <option value="serves_cocktails" {% if request.GET.serves_cocktails == 'true' %}selected{% endif %}>Cócteles</option>
-                <option value="serves_wine" {% if request.GET.serves_wine == 'true' %}selected{% endif %}>Vinos</option>
-                <option value="serves_coffee" {% if request.GET.serves_coffee == 'true' %}selected{% endif %}>Café Especialidad</option>
-                <option value="serves_dessert" {% if request.GET.serves_dessert == 'true' %}selected{% endif %}>Postres</option>
+              <optgroup label="🍹 {% trans "Especialidades" %}">
+                <option value="serves_cocktails" {% if request.GET.serves_cocktails == 'true' %}selected{% endif %}>{% trans "Cócteles" %}</option>
+                <option value="serves_wine" {% if request.GET.serves_wine == 'true' %}selected{% endif %}>{% trans "Vinos" %}</option>
+                <option value="serves_coffee" {% if request.GET.serves_coffee == 'true' %}selected{% endif %}>{% trans "Café Especialidad" %}</option>
+                <option value="serves_dessert" {% if request.GET.serves_dessert == 'true' %}selected{% endif %}>{% trans "Postres" %}</option>
               </optgroup>
-              <optgroup label="♿ Accesibilidad">
-                <option value="wheelchair_accessible_entrance" {% if request.GET.wheelchair_accessible_entrance == 'true' %}selected{% endif %}>Acceso Accesible</option>
-                <option value="allows_dogs" {% if request.GET.allows_dogs == 'true' %}selected{% endif %}>Pet Friendly</option>
-                <option value="accepts_credit_cards" {% if request.GET.accepts_credit_cards == 'true' %}selected{% endif %}>Tarjetas de Crédito</option>
+              <optgroup label="♿ {% trans "Accesibilidad" %}">
+                <option value="wheelchair_accessible_entrance" {% if request.GET.wheelchair_accessible_entrance == 'true' %}selected{% endif %}>{% trans "Acceso Accesible" %}</option>
+                <option value="allows_dogs" {% if request.GET.allows_dogs == 'true' %}selected{% endif %}>{% trans "Pet Friendly" %}</option>
+                <option value="accepts_credit_cards" {% if request.GET.accepts_credit_cards == 'true' %}selected{% endif %}>{% trans "Tarjetas de Crédito" %}</option>
               </optgroup>
             </select>
           </div>
           
           <div class="col-md-3 d-flex align-items-end">
             <button type="button" class="btn btn-light btn-sm rounded-pill w-100 fw-semibold" id="aplicar-filtros" style="background: rgba(255, 255, 255, 0.9); border: none; color: #667eea;">
-              <i class="bi bi-funnel me-1"></i>Aplicar Filtros
+              <i class="bi bi-funnel me-1"></i>{% trans "Aplicar Filtros" %}
             </button>
           </div>
         </div>
@@ -153,10 +155,10 @@
         <!-- Filtros actuales aplicados -->
         <div id="filtros-aplicados" class="mt-3" style="display: none;">
           <div class="d-flex flex-wrap gap-2">
-            <span class="small text-white me-2">Filtros activos:</span>
+            <span class="small text-white me-2">{% trans "Filtros activos:" %}</span>
             <div id="badges-filtros"></div>
-                          <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-white" id="limpiar-filtros" style="opacity: 0.9;">
-                <i class="bi bi-x-circle me-1"></i>Limpiar todos
+              <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-white" id="limpiar-filtros" style="opacity: 0.9;">
+                <i class="bi bi-x-circle me-1"></i>{% trans "Limpiar todos" %}
               </button>
           </div>
         </div>
@@ -172,7 +174,7 @@
             {% if lugar.get_primera_foto %}
               <img src="{{ lugar.get_primera_foto.imagen }}" 
                    class="card-img-top rounded-top-4" 
-                   alt="Imagen de {{ lugar.nombre }}" 
+                   alt="{% trans "Imagen de" %} {{ lugar.nombre }}"
                    style="height: 200px; object-fit: cover;"
                    loading="lazy">
             {% else %}
@@ -187,7 +189,7 @@
               <!-- Tipo de lugar -->
               <div class="mb-2">
                 <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill">
-                  <i class="bi bi-geo-alt me-1"></i>{{ lugar.get_tipo_display|default:lugar.tipo|title }}
+                  <i class="bi bi-geo-alt me-1"></i>{{ lugar|place_type_label }}
                 </span>
               </div>
 
@@ -195,17 +197,17 @@
               <div class="mb-3">
                 {% if lugar.es_destacado %}
                   <span class="badge bg-warning text-dark me-1">
-                    <i class="bi bi-star-fill me-1"></i>Destacado
+                    <i class="bi bi-star-fill me-1"></i>{% trans "Destacado" %}
                   </span>
                 {% endif %}
                 {% if lugar.es_exclusivo %}
                   <span class="badge bg-success me-1">
-                    <i class="bi bi-gem me-1"></i>Exclusivo
+                    <i class="bi bi-gem me-1"></i>{% trans "Exclusivo" %}
                   </span>
                 {% endif %}
                 {% if lugar.rating and lugar.rating >= 4.5 %}
                   <span class="badge bg-info text-dark">
-                    <i class="bi bi-award me-1"></i>Top Valorado
+                    <i class="bi bi-award me-1"></i>{% trans "Top Valorado" %}
                   </span>
                 {% endif %}
               </div>
@@ -220,10 +222,10 @@
 
               {% if lugar.slug %}
                 <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-purple mt-auto w-100 rounded-pill">
-                  <i class="bi bi-eye me-1"></i>Ver detalles
+                  <i class="bi bi-eye me-1"></i>{% trans "Ver detalles" %}
                 </a>
               {% else %}
-                <span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">Sin detalles</span>
+                <span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">{% trans "Sin detalles" %}</span>
               {% endif %}
             </div>
           </div>
@@ -238,21 +240,21 @@
           {% if page_obj.has_previous %}
             <li class="page-item">
               <a class="page-link rounded-pill me-2" href="?page={{ page_obj.previous_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
-                <i class="bi bi-chevron-left me-1"></i>Anterior
+                <i class="bi bi-chevron-left me-1"></i>{% trans "Anterior" %}
               </a>
             </li>
           {% endif %}
 
           <li class="page-item disabled">
             <span class="page-link border-0 bg-transparent text-muted">
-              Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+              {% trans "Página" %} {{ page_obj.number }} {% trans "de" %} {{ page_obj.paginator.num_pages }}
             </span>
           </li>
 
           {% if page_obj.has_next %}
             <li class="page-item">
               <a class="page-link rounded-pill ms-2" href="?page={{ page_obj.next_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
-                Siguiente<i class="bi bi-chevron-right ms-1"></i>
+                {% trans "Siguiente" %}<i class="bi bi-chevron-right ms-1"></i>
               </a>
             </li>
           {% endif %}
@@ -263,10 +265,10 @@
   {% else %}
     <div class="text-center py-5">
       <i class="bi bi-search display-1 text-muted mb-3"></i>
-      <h3 class="text-muted">No hay lugares disponibles</h3>
-      <p class="text-muted">No se encontraron lugares que coincidan con tu búsqueda.</p>
+      <h3 class="text-muted">{% trans "No hay lugares disponibles" %}</h3>
+      <p class="text-muted">{% trans "No se encontraron lugares que coincidan con tu búsqueda." %}</p>
       <a href="{% url 'explorer:lugares_list' %}" class="btn btn-primary rounded-pill">
-        Ver todos los lugares
+        {% trans "Ver todos los lugares" %}
       </a>
     </div>
   {% endif %}

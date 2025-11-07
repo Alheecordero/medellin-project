@@ -32,9 +32,10 @@ class EnvMock:
     def __init__(self):
         self._env_vars = {}
         # Leer el/los archivo(s) .env
+        # Cargar primero el .env del padre (si existe) y por ÚLTIMO el de BASE_DIR para que éste tenga prioridad
         env_paths = [
-            os.path.join(BASE_DIR, '.env'),
             os.path.join(BASE_DIR.parent, '.env'),  # raíz del repo/deploy
+            os.path.join(BASE_DIR, '.env'),
         ]
         for env_file in env_paths:
             if os.path.exists(env_file):
@@ -60,25 +61,26 @@ class EnvMock:
         # Parsear DATABASE_URL si existe
         database_url = self._env_vars.get('DATABASE_URL', os.environ.get('DATABASE_URL'))
         if database_url:
-            try:
-                import dj_database_url
-                return dj_database_url.parse(database_url)
-            except ImportError:
-                # Fallback manual parsing si dj_database_url no está instalado
-                return self._parse_database_url(database_url)
+            # Usar SIEMPRE el parser propio para soportar postgis:// y asegurar PostGIS
+            return self._parse_database_url(database_url)
         return {}
     
     def _parse_database_url(self, url):
         """Parse DATABASE_URL manually"""
-        # postgres://user:password@host:port/database
+        # Normalizar esquemas conocidos a PostgreSQL/PostGIS
+        # Aceptar: postgres://, postgresql://, postgis://
         if url.startswith('postgres://'):
             url = url.replace('postgres://', 'postgresql://')
+        # Mantener postgis:// para que la decisión de engine sea PostGIS
         
         from urllib.parse import urlparse
         parsed = urlparse(url)
         
-        # SIEMPRE usar PostGIS para PostgreSQL ya que es un proyecto GeoDjango
-        engine = 'django.contrib.gis.db.backends.postgis' if 'postgres' in parsed.scheme else 'django.db.backends.' + parsed.scheme
+        # Usar PostGIS para esquemas postgres/postgresql/postgis (GeoDjango)
+        if parsed.scheme in ('postgres', 'postgresql', 'postgis'):
+            engine = 'django.contrib.gis.db.backends.postgis'
+        else:
+            engine = 'django.db.backends.' + parsed.scheme
         
         return {
             'ENGINE': engine,
@@ -126,6 +128,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     'django.contrib.gis',
     'easy_thumbnails',  # Para manejo de thumbnails
     'rest_framework',
@@ -138,6 +141,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -244,13 +248,23 @@ GOOGLE_API_KEY=env('GOOGLE_API_KEY')
 # Google Analytics 
 GOOGLE_ANALYTICS_ID = env('GOOGLE_ANALYTICS_ID', default=None)
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_TZ = True
+
+# Idiomas soportados y rutas de catálogos de traducción
+LANGUAGES = [
+    ('es', 'Español'),
+    ('en', 'English'),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
 
 
 # Static files (CSS, JavaScript, Images)

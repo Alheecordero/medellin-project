@@ -15,7 +15,16 @@ import json
 import ipaddress
 from pgvector.django import CosineDistance
 from django.views import View
+from django.utils.translation import gettext as _, ngettext, get_language
+from explorer.utils.types import get_localized_place_type
 from django.conf import settings
+from django.urls import reverse
+from django.utils.crypto import salted_hmac
+from hashlib import sha1
+from urllib.parse import urlencode
+import re
+import urllib.request
+import urllib.parse
 import os
 
 from .models import Places, Foto, RegionOSM, Tag, NewsletterSubscription, PLACE_TYPE_CHOICES
@@ -104,8 +113,8 @@ class HomeView(TemplateView):
         # Datos para filtros
         context.update(self._get_filtros_data())
         
-        # Verificar caché
-        cache_key = "home_regiones_osm"
+        # Verificar caché (por idioma)
+        cache_key = f"home_regiones_osm_{(get_language() or 'es').lower()}"
         comuna_con_lugares = cache.get(cache_key)
         
         if comuna_con_lugares is None:
@@ -175,14 +184,14 @@ class HomeView(TemplateView):
                             'slug': lugar.slug,
                             'rating': lugar.rating or 0.0,
                             'total_reviews': lugar.total_reviews,
-                            'tipo': lugar.get_tipo_display(),
+                            'tipo': get_localized_place_type(lugar),
                             'imagen': primera_foto.imagen if primera_foto else None,
                             'es_destacado': lugar.es_destacado,
                             'es_exclusivo': lugar.es_exclusivo
                         })
                     
                     comuna_con_lugares.append({
-                        'nombre': region.name,
+                        'nombre': _(region.name),
                         'slug': region.slug,
                         'lugares': lugares_data,
                         'es_municipio': region.admin_level == '6',
@@ -214,42 +223,42 @@ class HomeView(TemplateView):
         # 2. CATEGORÍAS REALES - Basadas en PLACE_TYPE_CHOICES
         categorias_reales = [
             {
-                'name': 'Restaurantes',
+                'name': _('Restaurantes'),
                 'icon': 'bi-cup-hot',
                 'color': 'success',
                 'subcategorias': [
-                    {'value': 'restaurant', 'name': 'Restaurante General'},
-                    {'value': 'fine_dining_restaurant', 'name': 'Restaurante Gourmet'},
-                    {'value': 'pizza_restaurant', 'name': 'Pizzería'},
-                    {'value': 'italian_restaurant', 'name': 'Restaurante Italiano'},
-                    {'value': 'mexican_restaurant', 'name': 'Restaurante Mexicano'},
-                    {'value': 'chinese_restaurant', 'name': 'Restaurante Chino'},
-                    {'value': 'seafood_restaurant', 'name': 'Marisquería'},
-                    {'value': 'steak_house', 'name': 'Parrilla de Carnes'},
-                    {'value': 'fast_food_restaurant', 'name': 'Comida Rápida'},
+                    {'value': 'restaurant', 'name': _('Restaurante General')},
+                    {'value': 'fine_dining_restaurant', 'name': _('Restaurante Gourmet')},
+                    {'value': 'pizza_restaurant', 'name': _('Pizzería')},
+                    {'value': 'italian_restaurant', 'name': _('Restaurante Italiano')},
+                    {'value': 'mexican_restaurant', 'name': _('Restaurante Mexicano')},
+                    {'value': 'chinese_restaurant', 'name': _('Restaurante Chino')},
+                    {'value': 'seafood_restaurant', 'name': _('Marisquería')},
+                    {'value': 'steak_house', 'name': _('Parrilla de Carnes')},
+                    {'value': 'fast_food_restaurant', 'name': _('Comida Rápida')},
                 ]
             },
             {
-                'name': 'Bares & Vida Nocturna',
+                'name': _('Bares & Vida Nocturna'),
                 'icon': 'bi-cup-straw',
                 'color': 'warning',
                 'subcategorias': [
-                    {'value': 'bar', 'name': 'Bar'},
-                    {'value': 'wine_bar', 'name': 'Bar de Vinos'},
-                    {'value': 'pub', 'name': 'Pub'},
-                    {'value': 'night_club', 'name': 'Discoteca'},
-                    {'value': 'karaoke', 'name': 'Karaoke'},
+                    {'value': 'bar', 'name': _('Bar')},
+                    {'value': 'wine_bar', 'name': _('Bar de Vinos')},
+                    {'value': 'pub', 'name': _('Pub')},
+                    {'value': 'night_club', 'name': _('Discoteca')},
+                    {'value': 'karaoke', 'name': _('Karaoke')},
                 ]
             },
             {
-                'name': 'Cafeterías',
+                'name': _('Cafeterías'),
                 'icon': 'bi-cup',
                 'color': 'info',
                 'subcategorias': [
-                    {'value': 'cafe', 'name': 'Cafetería'},
-                    {'value': 'internet_cafe', 'name': 'Cibercafé'},
-                    {'value': 'breakfast_restaurant', 'name': 'Desayunos'},
-                    {'value': 'brunch_restaurant', 'name': 'Brunch'},
+                    {'value': 'cafe', 'name': _('Cafetería')},
+                    {'value': 'internet_cafe', 'name': _('Cibercafé')},
+                    {'value': 'breakfast_restaurant', 'name': _('Desayunos')},
+                    {'value': 'brunch_restaurant', 'name': _('Brunch')},
                 ]
             }
         ]
@@ -257,41 +266,41 @@ class HomeView(TemplateView):
         # 3. ETIQUETAS ESPECIALES - Características y servicios
         etiquetas_especiales = [
             {
-                'name': 'Servicios de Entrega',
+                'name': _('Servicios de Entrega'),
                 'icon': 'bi-bicycle',
                 'opciones': [
-                    {'field': 'delivery', 'name': 'Delivery', 'icon': 'bi-bicycle'},
-                    {'field': 'takeout', 'name': 'Para Llevar', 'icon': 'bi-bag'},
-                    {'field': 'dine_in', 'name': 'Comer en Local', 'icon': 'bi-house'},
+                    {'field': 'delivery', 'name': _('Delivery'), 'icon': 'bi-bicycle'},
+                    {'field': 'takeout', 'name': _('Para Llevar'), 'icon': 'bi-bag'},
+                    {'field': 'dine_in', 'name': _('Comer en Local'), 'icon': 'bi-house'},
                 ]
             },
             {
-                'name': 'Ambiente & Experiencia',
+                'name': _('Ambiente & Experiencia'),
                 'icon': 'bi-stars',
                 'opciones': [
-                    {'field': 'outdoor_seating', 'name': 'Terraza', 'icon': 'bi-tree'},
-                    {'field': 'live_music', 'name': 'Música en Vivo', 'icon': 'bi-music-note-beamed'},
-                    {'field': 'good_for_groups', 'name': 'Para Grupos', 'icon': 'bi-people'},
-                    {'field': 'good_for_children', 'name': 'Para Niños', 'icon': 'bi-emoji-smile'},
+                    {'field': 'outdoor_seating', 'name': _('Terraza'), 'icon': 'bi-tree'},
+                    {'field': 'live_music', 'name': _('Música en Vivo'), 'icon': 'bi-music-note-beamed'},
+                    {'field': 'good_for_groups', 'name': _('Para Grupos'), 'icon': 'bi-people'},
+                    {'field': 'good_for_children', 'name': _('Para Niños'), 'icon': 'bi-emoji-smile'},
                 ]
             },
             {
-                'name': 'Especialidades',
+                'name': _('Especialidades'),
                 'icon': 'bi-cup-straw',
                 'opciones': [
-                    {'field': 'serves_cocktails', 'name': 'Cócteles', 'icon': 'bi-cup-straw'},
-                    {'field': 'serves_wine', 'name': 'Vinos', 'icon': 'bi-cup'},
-                    {'field': 'serves_coffee', 'name': 'Café Especialidad', 'icon': 'bi-cup-hot'},
-                    {'field': 'serves_dessert', 'name': 'Postres', 'icon': 'bi-cake'},
+                    {'field': 'serves_cocktails', 'name': _('Cócteles'), 'icon': 'bi-cup-straw'},
+                    {'field': 'serves_wine', 'name': _('Vinos'), 'icon': 'bi-cup'},
+                    {'field': 'serves_coffee', 'name': _('Café Especialidad'), 'icon': 'bi-cup-hot'},
+                    {'field': 'serves_dessert', 'name': _('Postres'), 'icon': 'bi-cake'},
                 ]
             },
             {
-                'name': 'Accesibilidad & Comodidades',
+                'name': _('Accesibilidad & Comodidades'),
                 'icon': 'bi-universal-access',
                 'opciones': [
-                    {'field': 'wheelchair_accessible_entrance', 'name': 'Acceso Accesible', 'icon': 'bi-universal-access'},
-                    {'field': 'allows_dogs', 'name': 'Pet Friendly', 'icon': 'bi-heart'},
-                    {'field': 'accepts_credit_cards', 'name': 'Tarjetas de Crédito', 'icon': 'bi-credit-card'},
+                    {'field': 'wheelchair_accessible_entrance', 'name': _('Acceso Accesible'), 'icon': 'bi-universal-access'},
+                    {'field': 'allows_dogs', 'name': _('Pet Friendly'), 'icon': 'bi-heart'},
+                    {'field': 'accepts_credit_cards', 'name': _('Tarjetas de Crédito'), 'icon': 'bi-credit-card'},
                 ]
             }
         ]
@@ -357,18 +366,18 @@ class PlacesListView(ListView):
         # Mapeo de tipos a títulos y descripciones
         tipos_info = {
             'restaurant': {
-                'titulo': 'Mejores Restaurantes en Medellín',
-                'descripcion': 'Descubre los sabores más auténticos de la gastronomía paisa y mundial',
+                'titulo': _('Mejores Restaurantes en Medellín'),
+                'descripcion': _('Descubre los sabores más auténticos de la gastronomía paisa y mundial'),
                 'icono': 'bi-cup-hot'
             },
             'bar': {
-                'titulo': 'Mejores Bares y Discotecas en Medellín', 
-                'descripcion': 'Vive la mejor vida nocturna de la ciudad de la eterna primavera',
+                'titulo': _('Mejores Bares y Discotecas en Medellín'), 
+                'descripcion': _('Vive la mejor vida nocturna de la ciudad de la eterna primavera'),
                 'icono': 'bi-cup-straw'
             },
             'cafe': {
-                'titulo': 'Mejores Cafeterías en Medellín',
-                'descripcion': 'Experimenta la auténtica cultura cafetera paisa',
+                'titulo': _('Mejores Cafeterías en Medellín'),
+                'descripcion': _('Experimenta la auténtica cultura cafetera paisa'),
                 'icono': 'bi-cup'
             }
         }
@@ -376,20 +385,20 @@ class PlacesListView(ListView):
         # Detectar filtros especiales activos
         filtros_activos = []
         filtros_especiales_map = {
-            'delivery': 'con Delivery',
-            'takeout': 'Para Llevar',
-            'dine_in': 'Comer en Local',
-            'outdoor_seating': 'con Terraza',
-            'live_music': 'con Música en Vivo',
-            'allows_dogs': 'Pet Friendly',
-            'good_for_groups': 'Para Grupos',
-            'good_for_children': 'Para Niños',
-            'serves_cocktails': 'con Cócteles',
-            'serves_wine': 'con Vinos',
-            'serves_coffee': 'Café Especialidad',
-            'serves_dessert': 'con Postres',
-            'wheelchair_accessible_entrance': 'Accesibles',
-            'accepts_credit_cards': 'Aceptan Tarjetas',
+            'delivery': _('con Delivery'),
+            'takeout': _('Para Llevar'),
+            'dine_in': _('Comer en Local'),
+            'outdoor_seating': _('con Terraza'),
+            'live_music': _('con Música en Vivo'),
+            'allows_dogs': _('Pet Friendly'),
+            'good_for_groups': _('Para Grupos'),
+            'good_for_children': _('Para Niños'),
+            'serves_cocktails': _('con Cócteles'),
+            'serves_wine': _('con Vinos'),
+            'serves_coffee': _('Café Especialidad'),
+            'serves_dessert': _('con Postres'),
+            'wheelchair_accessible_entrance': _('Accesibles'),
+            'accepts_credit_cards': _('Aceptan Tarjetas'),
         }
         
         for filtro, nombre in filtros_especiales_map.items():
@@ -406,38 +415,38 @@ class PlacesListView(ListView):
 
         # Título y descripción dinámicos
         if busqueda_actual:
-            titulo_pagina = f'Resultados para "{busqueda_actual}"'
-            descripcion_pagina = f'Lugares que coinciden con tu búsqueda en Medellín'
+            titulo_pagina = _("Resultados para \"%(query)s\"") % {"query": busqueda_actual}
+            descripcion_pagina = _('Lugares que coinciden con tu búsqueda en Medellín')
         elif comuna_info and not tipo_actual and not filtros_activos:
             # Cuando viene de "Ver todos" de una comuna específica
-            titulo_pagina = f'Los mejores lugares en {comuna_info.name}'
-            descripcion_pagina = f'Descubre los sitios más destacados de {comuna_info.name}'
+            titulo_pagina = _('Los mejores lugares en %(comuna)s') % {'comuna': comuna_info.name}
+            descripcion_pagina = _('Descubre los sitios más destacados de %(comuna)s') % {'comuna': comuna_info.name}
         elif comuna_info and tipo_actual and tipo_actual in tipos_info:
             # Comuna + tipo específico
             info = tipos_info[tipo_actual]
-            titulo_pagina = f'{info["titulo"].replace("en Medellín", f"en {comuna_info.name}")}'
+            titulo_pagina = _('%(titulo)s').replace(_('en Medellín'), _('en %(comuna)s') % {'comuna': comuna_info.name}) % {'titulo': info['titulo']}
             if filtros_activos:
-                titulo_pagina += f' {" y ".join(filtros_activos[:2])}'
-            descripcion_pagina = f'{info["descripcion"]} en la zona de {comuna_info.name}'
+                titulo_pagina += _(' %(filters)s') % {'filters': _(' y ').join(filtros_activos[:2])}
+            descripcion_pagina = _('%(desc)s en la zona de %(comuna)s') % {'desc': info['descripcion'], 'comuna': comuna_info.name}
         elif comuna_info and filtros_activos:
             # Comuna + filtros especiales
-            titulo_pagina = f'Lugares {" y ".join(filtros_activos[:2])} en {comuna_info.name}'
-            descripcion_pagina = f'Lugares especializados en {comuna_info.name} que cumplen tus criterios'
+            titulo_pagina = _('Lugares %(filters)s en %(comuna)s') % {'filters': _(' y ').join(filtros_activos[:2]), 'comuna': comuna_info.name}
+            descripcion_pagina = _('Lugares especializados en %(comuna)s que cumplen tus criterios') % {'comuna': comuna_info.name}
         elif tipo_actual and tipo_actual in tipos_info:
             # Solo tipo, sin comuna
             info = tipos_info[tipo_actual]
             titulo_pagina = info['titulo']
             if filtros_activos:
-                titulo_pagina += f' {" y ".join(filtros_activos[:2])}'
+                titulo_pagina += _(' %(filters)s') % {'filters': _(' y ').join(filtros_activos[:2])}
             descripcion_pagina = info['descripcion']
         elif filtros_activos:
             # Solo filtros especiales, sin comuna ni tipo
-            titulo_pagina = f'Lugares {" y ".join(filtros_activos[:2])} en Medellín'
-            descripcion_pagina = 'Lugares especializados que cumplen tus criterios de búsqueda'
+            titulo_pagina = _('Lugares %(filters)s en Medellín') % {'filters': _(' y ').join(filtros_activos[:2])}
+            descripcion_pagina = _('Lugares especializados que cumplen tus criterios de búsqueda')
         else:
             # Vista general sin filtros
-            titulo_pagina = 'Todos los Lugares en Medellín'
-            descripcion_pagina = 'Descubre los mejores sitios que ofrece la ciudad'
+            titulo_pagina = _('Todos los Lugares en Medellín')
+            descripcion_pagina = _('Descubre los mejores sitios que ofrece la ciudad')
         
         # Obtener regiones para filtros
         from django.db.models import Case, When, IntegerField
@@ -865,14 +874,14 @@ def lugares_por_comuna(request, comuna_slug):
             # Detectar filtros especiales activos
             filtros_activos = []
             filtros_especiales_map = {
-                'delivery': 'con Delivery', 'takeout': 'Para Llevar', 
-                'dine_in': 'Comer en Local', 'outdoor_seating': 'con Terraza',
-                'live_music': 'con Música en Vivo', 'allows_dogs': 'Pet Friendly',
-                'good_for_groups': 'Para Grupos', 'good_for_children': 'Para Niños',
-                'serves_cocktails': 'con Cócteles', 'serves_wine': 'con Vinos',
-                'serves_coffee': 'Café Especialidad', 'serves_dessert': 'con Postres',
-                'wheelchair_accessible_entrance': 'Accesibles',
-                'accepts_credit_cards': 'Aceptan Tarjetas',
+                'delivery': _('con Delivery'), 'takeout': _('Para Llevar'), 
+                'dine_in': _('Comer en Local'), 'outdoor_seating': _('con Terraza'),
+                'live_music': _('con Música en Vivo'), 'allows_dogs': _('Pet Friendly'),
+                'good_for_groups': _('Para Grupos'), 'good_for_children': _('Para Niños'),
+                'serves_cocktails': _('con Cócteles'), 'serves_wine': _('con Vinos'),
+                'serves_coffee': _('Café Especialidad'), 'serves_dessert': _('con Postres'),
+                'wheelchair_accessible_entrance': _('Accesibles'),
+                'accepts_credit_cards': _('Aceptan Tarjetas'),
             }
             
             for filtro, nombre in filtros_especiales_map.items():
@@ -925,7 +934,7 @@ def filtros_ajax_view(request):
     
     if not all([area_id, categoria]):
         return JsonResponse({
-            'error': 'Se requieren área y categoría. La característica es opcional.'
+            'error': _('Se requieren área y categoría. La característica es opcional.')
         }, status=400)
     
     try:
@@ -954,11 +963,11 @@ def filtros_ajax_view(request):
                 'slug': lugar.slug,
                 'rating': lugar.rating or 0.0,
                 'total_reviews': lugar.total_reviews or 0,
-                'tipo': lugar.get_tipo_display(),
+                'tipo': get_localized_place_type(lugar),
                 'imagen': primera_foto.imagen if primera_foto else None,
                 'es_destacado': lugar.es_destacado,
                 'es_exclusivo': lugar.es_exclusivo,
-                'url': f"/lugar/{lugar.slug}/" if lugar.slug else None
+                'url': reverse('explorer:lugares_detail', args=[lugar.slug]) if lugar.slug else None
             })
         
         # Obtener información del área
@@ -988,7 +997,7 @@ def filtros_ajax_view(request):
         
     except Exception as e:
         return JsonResponse({
-            'error': f'Error en la búsqueda: {str(e)}'
+            'error': _('Error en la búsqueda: %(err)s') % {'err': str(e)}
         }, status=500)
 
 
@@ -1045,34 +1054,42 @@ def lugares_cercanos_ajax_view(request):
                 'slug': lugar.slug,
                 'rating': lugar.rating or 0.0,
                 'total_reviews': lugar.total_reviews or 0,
-                'tipo': lugar.get_tipo_display(),
+                'tipo': get_localized_place_type(lugar),
                 'imagen': primera_foto.imagen if primera_foto else None,
                 'es_destacado': lugar.es_destacado,
                 'es_exclusivo': lugar.es_exclusivo,
-                'url': f"/lugar/{lugar.slug}/" if lugar.slug else None,
+                'url': reverse('explorer:lugares_detail', args=[lugar.slug]) if lugar.slug else None,
                 'distancia': round(lugar.distancia_metros.km, 2) if hasattr(lugar, 'distancia_metros') and lugar.distancia_metros else None,
                 'direccion': lugar.direccion
             })
         
+        count = len(resultados)
+        distancia = f"{int(radio * 1000)}m" if radio < 1 else f"{radio}km"
+        mensaje = ngettext(
+            'Encontramos %(count)s lugar en un radio de %(dist)s',
+            'Encontramos %(count)s lugares en un radio de %(dist)s',
+            count
+        ) % {'count': count, 'dist': distancia}
+
         return JsonResponse({
             'success': True,
-            'total': len(resultados),
+            'total': count,
             'lugares': resultados,
             'ubicacion_usuario': {
                 'lat': lat,
                 'lng': lng,
                 'radio': radio
             },
-            'mensaje': f'Encontramos {len(resultados)} lugares en un radio de {int(radio * 1000)}m' if radio < 1 else f'Encontramos {len(resultados)} lugares en un radio de {radio}km'
+            'mensaje': mensaje
         })
         
     except ValueError:
         return JsonResponse({
-            'error': 'Las coordenadas proporcionadas no son válidas'
+            'error': _('Las coordenadas proporcionadas no son válidas')
         }, status=400)
     except Exception as e:
         return JsonResponse({
-            'error': f'Error al buscar lugares cercanos: {str(e)}'
+            'error': _('Error al buscar lugares cercanos: %(err)s') % {'err': str(e)}
         }, status=500)
 
 
@@ -1128,7 +1145,7 @@ def newsletter_subscribe(request):
             if existing_subscription.activo:
                 return JsonResponse({
                     'success': True,
-                    'message': '¡Ya estás suscrito! Gracias por tu interés en Medellín Explorer.',
+                    'message': '¡Ya estás suscrito! Gracias por tu interés en ViveMedellín.',
                     'status': 'already_subscribed'
                 })
             else:
@@ -1250,7 +1267,7 @@ def lugares_cercanos_ajax(request, slug):
     try:
         lugar = Places.objects.filter(tiene_fotos=True, slug=slug).first()
         if not lugar:
-            return JsonResponse({'error': 'Lugar no encontrado'}, status=404)
+            return JsonResponse({'error': _('Lugar no encontrado')}, status=404)
         
         view = PlaceDetailView()
         lugares_cercanos = view._get_lugares_cercanos(lugar) if lugar.ubicacion else []
@@ -1262,11 +1279,12 @@ def lugares_cercanos_ajax(request, slug):
                 'id': lugar_cercano.id,
                 'nombre': lugar_cercano.nombre,
                 'slug': lugar_cercano.slug,
-                'tipo': lugar_cercano.get_tipo_display(),
+                'tipo': get_localized_place_type(lugar_cercano),
                 'rating': lugar_cercano.rating,
                 'es_destacado': lugar_cercano.es_destacado,
                 'es_exclusivo': lugar_cercano.es_exclusivo,
                 'imagen': lugar_cercano.cached_fotos[0].imagen if lugar_cercano.cached_fotos else None,
+                'url': reverse('explorer:lugares_detail', args=[lugar_cercano.slug]) if lugar_cercano.slug else None,
             })
         
         return JsonResponse({'lugares': data})
@@ -1281,7 +1299,7 @@ def lugares_similares_ajax(request, slug):
     try:
         lugar = Places.objects.filter(tiene_fotos=True, slug=slug).first()
         if not lugar:
-            return JsonResponse({'error': 'Lugar no encontrado'}, status=404)
+            return JsonResponse({'error': _('Lugar no encontrado')}, status=404)
         
         view = PlaceDetailView()
         lugares_similares = view._get_lugares_similares(lugar)
@@ -1293,11 +1311,12 @@ def lugares_similares_ajax(request, slug):
                 'id': lugar_similar.id,
                 'nombre': lugar_similar.nombre,
                 'slug': lugar_similar.slug,
-                'tipo': lugar_similar.get_tipo_display(),
+                'tipo': get_localized_place_type(lugar_similar),
                 'rating': lugar_similar.rating,
                 'es_destacado': lugar_similar.es_destacado,
                 'es_exclusivo': lugar_similar.es_exclusivo,
                 'imagen': lugar_similar.cached_fotos[0].imagen if lugar_similar.cached_fotos else None,
+                'url': reverse('explorer:lugares_detail', args=[lugar_similar.slug]) if lugar_similar.slug else None,
             })
         
         return JsonResponse({'lugares': data})
@@ -1312,7 +1331,7 @@ def lugares_comuna_ajax(request, slug):
     try:
         lugar = Places.objects.filter(tiene_fotos=True, slug=slug).first()
         if not lugar:
-            return JsonResponse({'error': 'Lugar no encontrado'}, status=404)
+            return JsonResponse({'error': _('Lugar no encontrado')}, status=404)
         
         view = PlaceDetailView()
         lugares_comuna = view._get_lugares_misma_comuna(lugar) if lugar.comuna_osm_id else []
@@ -1324,11 +1343,12 @@ def lugares_comuna_ajax(request, slug):
                 'id': lugar_comuna_item.id,
                 'nombre': lugar_comuna_item.nombre,
                 'slug': lugar_comuna_item.slug,
-                'tipo': lugar_comuna_item.get_tipo_display(),
+                'tipo': get_localized_place_type(lugar_comuna_item),
                 'rating': lugar_comuna_item.rating,
                 'es_destacado': lugar_comuna_item.es_destacado,
                 'es_exclusivo': lugar_comuna_item.es_exclusivo,
                 'imagen': lugar_comuna_item.cached_fotos[0].imagen if lugar_comuna_item.cached_fotos else None,
+                'url': reverse('explorer:lugares_detail', args=[lugar_comuna_item.slug]) if lugar_comuna_item.slug else None,
             })
         
         return JsonResponse({'lugares': data, 'comuna_nombre': lugar.comuna.name if hasattr(lugar, 'comuna') and lugar.comuna else 'esta zona'})
@@ -1351,7 +1371,7 @@ def semantic_search_ajax(request):
 	query = request.GET.get('q', '').strip()
 	top_k = int(request.GET.get('top', '12') or 12)
 	if not query:
-		return JsonResponse({'success': False, 'error': 'Parámetro q requerido'}, status=400)
+		return JsonResponse({'success': False, 'error': _('Parámetro q requerido')}, status=400)
 	try:
 		client = vertex_genai.Client(vertexai=True, project='vivemedellin', location='us-central1')
 		result = client.models.embed_content(
@@ -1380,7 +1400,7 @@ def semantic_search_ajax(request):
 		resp.append({
 			'nombre': lugar.nombre,
 			'slug': lugar.slug,
-			'tipo': lugar.get_tipo_display() if hasattr(lugar, 'get_tipo_display') else lugar.tipo,
+			'tipo': get_localized_place_type(lugar),
 			'direccion': lugar.direccion,
 			'rating': lugar.rating or 0.0,
 			'imagen': foto.imagen if foto else None,
@@ -1430,7 +1450,7 @@ class SemanticSearchView(View):
                 resultados = [
                     {
                         "nombre": l.nombre,
-                        "tipo": l.get_tipo_display() if hasattr(l, 'get_tipo_display') else l.tipo,
+                        "tipo": get_localized_place_type(l),
                         "direccion": l.direccion,
                         "rating": l.rating,
                         "score": round(getattr(l, 'score', 0.0), 3),
@@ -1448,6 +1468,141 @@ class SemanticSearchView(View):
                 "resultados": resultados,
                 "error": error
             })
+
+
+# ────────────────────────────────────────────────────────────────────────
+# Traducción de Reseñas (Proxy con caché)
+# ────────────────────────────────────────────────────────────────────────
+
+def _cache_key_translation(text: str, target: str) -> str:
+    digest = sha1((text + "|" + target).encode("utf-8")).hexdigest()
+    return f"review_translation_{target}_{digest}"
+
+
+def _rate_limit_key(ip: str) -> str:
+    return f"translate_rl_{ip}"
+
+
+def _normalize_review_text(text: str) -> str:
+    r"""Normaliza saltos de línea y caracteres de control en reseñas.
+    - Convierte secuencias literales \u000A / \U000A (con o sin espacios) a \n
+    - Elimina CR, normaliza espacios y controla longitud
+    """
+    if not text:
+        return ""
+    s = str(text)
+    # Variantes de secuencias escapadas
+    s = re.sub(r"\\\s*u000a", "\n", s, flags=re.IGNORECASE)
+    s = re.sub(r"\\\s*n", "\n", s)
+    # Normalizar CR y caracteres de control
+    s = s.replace("\r", "")
+    s = re.sub(r"[\t\x00-\x08\x0b\x0c\x0e-\x1f]", " ", s)
+    # Compactar saltos/espacios excesivos
+    s = re.sub(r"\n{3,}", "\n\n", s)
+    s = re.sub(r"\s{3,}", "  ", s)
+    # Limitar tamaño
+    if len(s) > 4500:
+        s = s[:4500]
+    return s.strip()
+
+
+def _guess_lang_es_en(text: str) -> str:
+    """Heurística simple ES/EN para evitar 'AUTO' en MyMemory.
+    Devuelve 'ES' o 'EN'.
+    """
+    if not text:
+        return 'EN'
+    lowered = text.lower()
+    # Señales de español: tildes, eñes, signos de ¿¡, y stopwords comunes
+    if re.search(r"[áéíóúñ¿¡]", lowered):
+        return 'ES'
+    spanish_tokens = {" el ", " la ", " de ", " y ", " en ", " los ", " las ", " una ", " un ", " que ", " con ", " para ", " por "}
+    padded = f" {lowered} "
+    if any(tok in padded for tok in spanish_tokens):
+        return 'ES'
+    return 'EN'
+
+
+def _mymemory_translate(text: str, source: str, target: str) -> str | None:
+    params = {
+        "q": text,
+        "langpair": f"{source}|{target}",
+    }
+    url = "https://api.mymemory.translated.net/get?" + urlencode(params)
+    try:
+        import json as _json
+        with urllib.request.urlopen(url, timeout=8) as resp:
+            data = _json.loads(resp.read().decode("utf-8", errors="ignore"))
+            status = int(data.get("responseStatus", 500))
+            translated = (data.get("responseData") or {}).get("translatedText") or ""
+            # Rechazar mensajes de error como "'AUTO' IS AN INVALID SOURCE LANGUAGE ..."
+            if status == 200 and translated and "INVALID SOURCE LANGUAGE" not in translated and " 'AUTO' " not in translated:
+                return translated
+    except Exception:
+        return None
+    return None
+
+
+def _translate_with_mymemory(text: str, target: str) -> str | None:
+    # Usar MyMemory como fallback sin credenciales (POC). Producción debería usar proveedor de pago.
+    target = (target or 'en').upper()
+    source = _guess_lang_es_en(text)
+    if source == target:
+        return text
+    # Intento 1: con fuente detectada
+    out = _mymemory_translate(text, source, target)
+    if out:
+        return out
+    # Intento 2: invertir fuente común (ES<->EN)
+    alt_source = 'EN' if source == 'ES' else 'ES'
+    out = _mymemory_translate(text, alt_source, target)
+    if out:
+        return out
+    return None
+
+
+@require_POST
+def translate_review_api(request):
+    """Proxy seguro para traducir texto de reseñas con caché y rate limit.
+
+    Body JSON: { text: str, target: 'en' }
+    """
+    try:
+        import json as _json
+        payload = _json.loads(request.body.decode("utf-8")) if request.body else {}
+    except Exception:
+        payload = {}
+
+    text = _normalize_review_text(payload.get("text") or "")
+    target = (payload.get("target") or "en").strip().lower()
+
+    if not text:
+        return JsonResponse({"success": False, "error": _("Texto vacío")}, status=400)
+
+    # Rate limit básico por IP (20 solicitudes / 60s)
+    ip = request.META.get("REMOTE_ADDR", "")
+    rl_key = _rate_limit_key(ip)
+    window = 60
+    limit = 20
+    current = cache.get(rl_key) or 0
+    if current >= limit:
+        return JsonResponse({"success": False, "error": _("Límite de traducciones temporal alcanzado. Intenta más tarde.")}, status=429)
+    cache.set(rl_key, current + 1, window)
+
+    # Cache de traducción
+    ck = _cache_key_translation(text, target)
+    cached = cache.get(ck)
+    if cached:
+        return JsonResponse({"success": True, "text_translated": cached, "cached": True})
+
+    # Traducir (fallback MyMemory)
+    translated = _translate_with_mymemory(text, target)
+    if not translated:
+        # Si falla, devolvemos original con flag
+        return JsonResponse({"success": True, "text_translated": text, "detected_same": True})
+
+    cache.set(ck, translated, 60 * 60 * 24 * 14)  # 14 días
+    return JsonResponse({"success": True, "text_translated": translated, "cached": False})
 
 
 # Funciones de API de reseñas (comentadas - Google solo envía 5 reseñas)

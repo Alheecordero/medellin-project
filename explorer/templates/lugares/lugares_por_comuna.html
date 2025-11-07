@@ -1,21 +1,22 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Explorar por Comuna | Poblado Explorer{% endblock %}
+{% block title %}{% trans "Explorar por Comuna | ViveMedellín" %}{% endblock %}
 
 {% block meta_description %}
-  Descubre los bares, discotecas y restaurantes más destacados en cada comuna de Medellín. Explora el mapa interactivo y encuentra tu próximo destino.
+  {% blocktrans %}Descubre los bares, discotecas y restaurantes más destacados en cada comuna de Medellín. Explora el mapa interactivo y encuentra tu próximo destino.{% endblocktrans %}
 {% endblock %}
 
 {% block meta_keywords %}
-  bares Medellín, discotecas Medellín, restaurantes Medellín, lugares por comuna, mapa interactivo Medellín
+  {% blocktrans %}bares Medellín, discotecas Medellín, restaurantes Medellín, lugares por comuna, mapa interactivo Medellín{% endblocktrans %}
 {% endblock %}
 
 {% block og_title %}
-  Explorar por Comuna | Poblado Explorer
+  {% trans "Explorar por Comuna | ViveMedellín" %}
 {% endblock %}
 
 {% block og_description %}
-  Navega por comunas de Medellín y encuentra los mejores lugares para salir. Mapa interactivo con bares, discotecas y restaurantes.
+  {% blocktrans %}Navega por comunas de Medellín y encuentra los mejores lugares para salir. Mapa interactivo con bares, discotecas y restaurantes.{% endblocktrans %}
 {% endblock %}
 
 {% block og_image %}
@@ -46,15 +47,15 @@
             <h5 class="card-title">{{ lugar.nombre }}</h5>
             <p class="card-text text-muted">{{ lugar.tipo|title }}</p>
             {% if lugar.slug %}
-              <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-outline-primary mt-auto w-100">Ver detalles</a>
+              <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-outline-primary mt-auto w-100">{% trans "Ver detalles" %}</a>
             {% else %}
-              <span class="btn btn-secondary mt-auto w-100 disabled">Sin detalles</span>
+              <span class="btn btn-secondary mt-auto w-100 disabled">{% trans "Sin detalles" %}</span>
             {% endif %}
           </div>
         </div>
       </div>
     {% empty %}
-      <p class="text-center text-muted">No se encontraron lugares en esta página.</p>
+      <p class="text-center text-muted">{% trans "No se encontraron lugares en esta página." %}</p>
     {% endfor %}
   </div>
 
@@ -63,11 +64,11 @@
     <nav class="mt-5 d-flex justify-content-center">
       <ul class="pagination">
         {% if page_obj.has_previous %}
-          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% trans "Anterior" %}</a></li>
         {% endif %}
-        <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+        <li class="page-item disabled"><span class="page-link">{% trans "Página" %} {{ page_obj.number }} {% trans "de" %} {{ page_obj.paginator.num_pages }}</span></li>
         {% if page_obj.has_next %}
-          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a></li>
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{% trans "Siguiente" %}</a></li>
         {% endif %}
       </ul>
     </nav>
@@ -94,24 +95,11 @@
 
       const popupHtml = `
         <div style="max-width:220px; font-size:14px;">
-          <img src="${imagen}" alt="Imagen de ${lugar.nombre}" style="width:100%; height:120px; object-fit:cover; border-radius:4px;">
+          <img src="${imagen}" alt="{% trans "Imagen de" %} ${lugar.nombre}" style="width:100%; height:120px; object-fit:cover; border-radius:4px;">
           <strong class="d-block mt-2">${lugar.nombre}</strong>
           <div class="text-muted small">${lugar.tipo || ''}</div>
           <div class="mt-2">
-            <a href="/lugar/${lugar.slug}/" class="btn btn-sm btn-outline-primary w-100">Ver detalles</a>
+            <a href="/lugar/${lugar.slug}/" class="btn btn-sm btn-outline-primary w-100">${gettext('Ver detalles')}</a>
           </div>
         </div>
-      `;
-
-      marker.bindPopup(popupHtml);
-      bounds.push(latlng);
-    });
-
-    if (bounds.length > 0) {
-      map.fitBounds(bounds, { padding: [30, 30] });
-    } else {
-      map.setView([6.2442, -75.5812], 13);
-    }
-  </script>
-{% endblock %}
-
+      `

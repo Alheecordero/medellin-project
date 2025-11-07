@@ -1,0 +1,14 @@
+DJANGO_SETTINGS_MODULE=Medellin.settings
+DEBUG=False
+ALLOWED_HOSTS=vivemedellin.co,www.vivemedellin.co
+CSRF_TRUSTED_ORIGINS=https://vivemedellin.co,https://www.vivemedellin.co
+GOOGLE_ANALYTICS_ID=G-7T6TJ7020J
+GOOGLE_CLOUD_PROJECT=vivemedellin
+GOOGLE_APPLICATION_CREDENTIALS=/var/www/medellin-project/vertex.json
+DATABASE_URL=postgis://Alhee:Alhee166817502@medellin-db.c94u0qig8wiy.us-east-2.rds.amazonaws.com:5432/colombia-osm
+DB_NAME=colombia-osm
+DB_USER=Alhee
+DB_PASSWORD=Alhee166817502
+DB_HOST=medellin-db.c94u0qig8wiy.us-east-2.rds.amazonaws.com
+DB_PORT=5432
+SECRET_KEY=hVNr3TVNsexO5WhUDUZZkZCmtV6o_ORVA0qRrVQWF57cXsQ27wssukhUspQJN59aNccYwPAVHkLWrETdX7T2mw

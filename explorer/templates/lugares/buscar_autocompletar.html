@@ -1,19 +1,21 @@
 <!-- templates/lugares/buscar_autocompletar.html -->
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
-    <title>Buscar lugar</title>
+    <title>{% trans "Buscar lugar" %}</title>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 </head>
 <body>
 
-<h2>Buscar lugar</h2>
+<h2>{% trans "Buscar lugar" %}</h2>
 
 <form id="form-busqueda" method="get" action="">
-  <input type="text" id="buscar-lugar" placeholder="Escribe un lugar...">
+  <input type="text" id="buscar-lugar" placeholder="{% trans 'Escribe un lugar...' %}">
 </form>
 
 <script>

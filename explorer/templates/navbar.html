@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 
 <!-- Navbar profesional y minimalista -->
 <nav class="navbar navbar-expand-lg navbar-dark shadow-sm fixed-top" id="main-navbar">
@@ -6,24 +7,60 @@
         <!-- Brand/Logo -->
         <a class="navbar-brand d-flex align-items-center" href="{% url 'explorer:home' %}">
             <div class="brand-logo me-3">
-                <img src="{% static 'img/logo.png' %}" alt="Medellín Explorer" class="navbar-logo">
+                <img src="{% static 'img/logo.png' %}" alt="Vivemedellín" class="navbar-logo">
             </div>
             <div class="brand-text">
                 <div class="brand-name fw-bold text-dark">ViveMedellín</div>
-                <div class="brand-subtitle text-muted">Descubre la ciudad</div>
+                <div class="brand-subtitle text-muted">{% trans "Descubre la ciudad" %}</div>
             </div>
         </a>
-
-        <!-- Mobile toggle button -->
-        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <!-- Mobile toggle button (oculto aquí; lo movemos junto a los botones de idioma) -->
+        <button class="navbar-toggler border-0 shadow-none d-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
+        <!-- Mobile actions: toggler + language switcher a la derecha -->
+        <div class="d-flex d-lg-none align-items-center ms-auto gap-2 lang-switcher-mobile">
+            {% get_current_language as LANGUAGE_CODE %}
+            <form action="{% url 'set_language' %}" method="post" class="me-1">
+                {% csrf_token %}
+                <input type="hidden" name="language" value="es">
+                <input type="hidden" name="next" value="{% if LANGUAGE_CODE == 'en' %}{{ request.get_full_path|slice:'3:' }}{% else %}{{ request.get_full_path }}{% endif %}">
+                <button type="submit" class="btn btn-sm btn-lang {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
+            </form>
+            <form action="{% url 'set_language' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="language" value="en">
+                <input type="hidden" name="next" value="{% if LANGUAGE_CODE == 'en' %}{{ request.get_full_path }}{% else %}/en{{ request.get_full_path }}{% endif %}">
+                <button type="submit" class="btn btn-sm btn-lang {% if LANGUAGE_CODE == 'en' %}active{% else %}inactive{% endif %}">EN</button>
+            </form>
+            <button class="navbar-toggler border-0 shadow-none ms-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-expanded="false" aria-label="Toggle navigation" aria-controls="navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
 
         <!-- Navbar content -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <!-- Spacer para centrar el logo y el botón -->
             <div class="flex-grow-1"></div>
-            
+
+            <!-- Selector de idioma como botones estilo CTA (solo desktop) -->
+            <div class="d-none d-lg-flex align-items-center me-3 lang-switcher">
+                {% get_current_language as LANGUAGE_CODE %}
+                <form action="{% url 'set_language' %}" method="post" class="me-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="language" value="es">
+                    <input type="hidden" name="next" value="{% if LANGUAGE_CODE == 'en' %}{{ request.get_full_path|slice:'3:' }}{% else %}{{ request.get_full_path }}{% endif %}">
+                    <button type="submit" class="btn btn-lang {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
+                </form>
+                <form action="{% url 'set_language' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="language" value="en">
+                    <input type="hidden" name="next" value="{% if LANGUAGE_CODE == 'en' %}{{ request.get_full_path }}{% else %}/en{{ request.get_full_path }}{% endif %}">
+                    <button type="submit" class="btn btn-lang {% if LANGUAGE_CODE == 'en' %}active{% else %}inactive{% endif %}">EN</button>
+                </form>
+            </div>
+
             <!-- Botón CTA con Dropdown -->
             <div class="navbar-cta dropdown">
                 <button class="btn btn-primary btn-navbar-cta dropdown-toggle" 
@@ -32,15 +69,15 @@
                         data-bs-toggle="dropdown" 
                         aria-expanded="false">
                     <i class="bi bi-star me-1"></i>
-                    Descubrir
+                    {% trans "Descubrir" %}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom shadow-lg border-0" aria-labelledby="descubrirDropdown">
                     <li>
                         <a class="dropdown-item dropdown-item-custom" href="{% url 'explorer:lugares_list' %}">
                             <i class="bi bi-grid-3x3-gap me-2 text-primary"></i>
                             <div>
-                                <div class="fw-semibold">Todos los Lugares</div>
-                                <small class="text-muted">Explora nuestra colección completa</small>
+                                <div class="fw-semibold">{% trans "Todos los Lugares" %}</div>
+                                <small class="text-muted">{% trans "Explora nuestra colección completa" %}</small>
                             </div>
                         </a>
                     </li>
@@ -49,8 +86,8 @@
                         <a class="dropdown-item dropdown-item-custom" href="{% url 'explorer:lugares_list' %}?tipo=restaurant">
                             <i class="bi bi-cup-hot me-2 text-success"></i>
                             <div>
-                                <div class="fw-semibold">Restaurantes</div>
-                                <small class="text-muted">Los mejores sabores de la ciudad</small>
+                                <div class="fw-semibold">{% trans "Restaurantes" %}</div>
+                                <small class="text-muted">{% trans "Los mejores sabores de la ciudad" %}</small>
                             </div>
                         </a>
                     </li>
@@ -58,8 +95,8 @@
                         <a class="dropdown-item dropdown-item-custom" href="{% url 'explorer:lugares_list' %}?tipo=bar">
                             <i class="bi bi-cup-straw me-2 text-warning"></i>
                             <div>
-                                <div class="fw-semibold">Bares & Discotecas</div>
-                                <small class="text-muted">Vida nocturna en Medellín</small>
+                                <div class="fw-semibold">{% trans "Bares & Discotecas" %}</div>
+                                <small class="text-muted">{% trans "Vida nocturna en Medellín" %}</small>
                             </div>
                         </a>
                     </li>
@@ -67,13 +104,14 @@
                         <a class="dropdown-item dropdown-item-custom" href="{% url 'explorer:lugares_list' %}?tipo=cafe">
                             <i class="bi bi-cup me-2 text-info"></i>
                             <div>
-                                <div class="fw-semibold">Cafeterías</div>
-                                <small class="text-muted">Cultura cafetera paisa</small>
+                                <div class="fw-semibold">{% trans "Cafeterías" %}</div>
+                                <small class="text-muted">{% trans "Cultura cafetera paisa" %}</small>
                             </div>
                         </a>
                     </li>
                 </ul>
             </div>
+        </div>
         </div>
     </div>
 </nav>
@@ -183,6 +221,39 @@
 .navbar-brand:hover .brand-subtitle {
     color: rgba(56, 239, 125, 0.9) !important;
     text-shadow: 0 1px 6px rgba(56, 239, 125, 0.2);
+}
+
+/* Estilo del selector de idioma en header */
+.lang-switcher .btn-lang,
+.lang-switcher-mobile .btn-lang {
+    border: none;
+    border-radius: 30px;
+    padding: 0.4rem 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    transition: var(--navbar-transition);
+}
+.lang-switcher .btn-lang.active,
+.lang-switcher-mobile .btn-lang.active {
+    background: linear-gradient(135deg, var(--navbar-primary) 0%, var(--navbar-secondary) 100%);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+}
+.lang-switcher .btn-lang.inactive,
+.lang-switcher-mobile .btn-lang.inactive {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.lang-switcher .btn-lang.inactive:hover,
+.lang-switcher-mobile .btn-lang.inactive:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
+}
+.lang-switcher-mobile .btn-lang {
+    border-radius: 20px;
+    font-weight: 700;
 }
 
 /* Dropdown menu - diseño más elegante */
@@ -362,6 +433,13 @@
 @media (max-width: 576px) {
     .brand-text {
         display: none;
+    }
+    .lang-switcher-mobile .btn-lang {
+        padding: 0.35rem 0.65rem;
+        font-size: 0.85rem;
+    }
+    .lang-switcher-mobile {
+        padding-right: 4px;
     }
     
     .brand-logo {

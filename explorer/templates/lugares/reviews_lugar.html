@@ -1,7 +1,8 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load static %}
 
-{% block title %}Reseñas de {{ lugar.nombre }} | Vive Medellín{% endblock %}
+{% block title %}{% trans "Reseñas de" %} {{ lugar.nombre }} | ViveMedellín{% endblock %}
 
 {% block meta_description %}
   Opiniones sobre {{ lugar.nombre }} en Medellín. Lee reseñas de visitantes y descubre su calificación general antes de visitarlo.
@@ -11,7 +12,7 @@
   reseñas de {{ lugar.nombre }}, opiniones {{ lugar.nombre }}, calificación {{ lugar.nombre }}, comentarios lugar Medellín
 {% endblock %}
 
-{% block og_title %}Reseñas de {{ lugar.nombre }} | Medellín Explorer{% endblock %}
+{% block og_title %}Reseñas de {{ lugar.nombre }} | ViveMedellín{% endblock %}
 {% block og_description %}
   Explora las opiniones y calificaciones de otros usuarios sobre {{ lugar.nombre }}. Descubre qué dicen antes de tu próxima salida.
 {% endblock %}
@@ -33,13 +34,13 @@
       <div class="col-lg-8">
         <div class="d-flex align-items-center mb-3" style="position: relative; z-index: 1000;">
           <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-purple me-3 rounded-pill">
-            <i class="bi bi-arrow-left me-1"></i>Volver al lugar
+            <i class="bi bi-arrow-left me-1"></i>{% trans "Volver al lugar" %}
           </a>
         </div>
         
         <h1 class="display-5 fw-bold text-white mb-3">{{ lugar.nombre }}</h1>
         <p class="text-white-50 mb-3">
-          <i class="bi bi-chat-quote me-2"></i>Reseñas del lugar
+          <i class="bi bi-chat-quote me-2"></i>{% trans "Reseñas del lugar" %}
         </p>
         
         <div class="rating-summary">
@@ -110,7 +111,7 @@
                       <i class="bi bi-calendar3 me-1"></i>
                       <span>{{ review.fecha }}</span>
                     {% else %}
-                      <span class="text-muted">Fecha no disponible</span>
+                      <span class="text-muted">{% trans "Fecha no disponible" %}</span>
                     {% endif %}
                   </div>
                 </div>
@@ -129,11 +130,17 @@
             
             <div class="review-content">
               {% if review.texto %}
-                <p class="review-text">{{ review.texto|linebreaksbr }}</p>
+                <p class="review-text" data-original="{{ review.texto|escapejs }}">{{ review.texto|linebreaksbr }}</p>
+                <div class="mt-2 d-flex align-items-center gap-2">
+                  <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill btn-translate" data-state="original">
+                    {% trans "Traducir" %}
+                  </button>
+                  <small class="text-muted d-none translated-hint">{% trans "Traducido automáticamente" %}</small>
+                </div>
               {% else %}
                 <p class="review-text text-muted fst-italic">
                   <i class="bi bi-chat-quote me-1"></i>
-                  Sin comentario escrito, solo calificación numérica.
+                  {% trans "Sin comentario escrito, solo calificación numérica." %}
                 </p>
               {% endif %}
             </div>
@@ -150,12 +157,12 @@
         <div class="empty-icon mb-4">
           <i class="bi bi-chat-quote display-1 text-muted"></i>
         </div>
-        <h4 class="fw-bold text-dark mb-3">¡Sé el primero en opinar!</h4>
+        <h4 class="fw-bold text-dark mb-3">{% trans "¡Sé el primero en opinar!" %}</h4>
         <p class="text-muted mb-4">
-          Este lugar aún no tiene reseñas. Comparte tu experiencia para ayudar a otros viajeros.
+          {% trans "Este lugar aún no tiene reseñas. Comparte tu experiencia para ayudar a otros viajeros." %}
         </p>
         <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-purple rounded-pill">
-          <i class="bi bi-arrow-left me-1"></i>Volver al lugar
+          <i class="bi bi-arrow-left me-1"></i>{% trans "Volver al lugar" %}
         </a>
       </div>
     </div>
@@ -403,6 +410,63 @@ document.addEventListener('DOMContentLoaded', function() {
     const reviewItems = document.querySelectorAll('.review-item');
     reviewItems.forEach((item, index) => {
         item.style.animationDelay = `${index * 0.1}s`;
+    });
+
+    // Traducción on-demand
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    const T_TRANSLATE = '{% trans "Traducir" %}';
+    const T_VIEW_ORIGINAL = '{% trans "Ver original" %}';
+    document.querySelectorAll('.btn-translate').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const card = btn.closest('.review-card');
+        if (!card) return;
+        const textEl = card.querySelector('.review-text');
+        const hintEl = card.querySelector('.translated-hint');
+        const state = btn.getAttribute('data-state') || 'original';
+        if (!textEl) return;
+
+        if (state === 'original') {
+          const original = textEl.getAttribute('data-original') || '';
+          if (!original) return;
+          const key = 'tr_' + btoa(unescape(encodeURIComponent(original))).slice(0, 150) + '_en';
+          let translated = localStorage.getItem(key);
+          if (!translated) {
+            try {
+              const resp = await fetch('{% url "explorer:translate_review_api" %}', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': getCookie('csrftoken') || ''
+                },
+                body: JSON.stringify({ text: original, target: 'en' })
+              });
+              const data = await resp.json();
+              if (data && data.success) {
+                translated = data.text_translated || original;
+                localStorage.setItem(key, translated);
+              } else {
+                translated = original;
+              }
+            } catch (e) {
+              translated = original;
+            }
+          }
+          textEl.textContent = translated;
+          btn.textContent = T_VIEW_ORIGINAL;
+          btn.setAttribute('data-state', 'translated');
+          if (hintEl) hintEl.classList.remove('d-none');
+        } else {
+          const original = textEl.getAttribute('data-original') || '';
+          textEl.textContent = original;
+          btn.textContent = T_TRANSLATE;
+          btn.setAttribute('data-state', 'original');
+          if (hintEl) hintEl.classList.add('d-none');
+        }
+      });
     });
 });
 </script>

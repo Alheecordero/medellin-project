@@ -15,6 +15,29 @@ VENV_DIR=${VENV_DIR:-med}
 SERVICE=${SERVICE:-gunicorn}
 GIT_REPO=${GIT_REPO:-https://github.com/Alheecordero/medellin-project.git}
 
+# Flags de despliegue (por defecto: modo rápido, no toca env/credenciales)
+# --full habilita pip+migrate+static
+DO_PIP=false
+DO_MIGRATE=false
+DO_STATIC=false
+DO_RESTART=true
+DO_COMPILE=false
+
+for arg in "$@"; do
+  case "$arg" in
+    --full) DO_PIP=true; DO_MIGRATE=true; DO_STATIC=true ;;
+    --pip) DO_PIP=true ;;
+    --no-pip) DO_PIP=false ;;
+    --migrate) DO_MIGRATE=true ;;
+    --no-migrate) DO_MIGRATE=false ;;
+    --static) DO_STATIC=true ;;
+    --no-static) DO_STATIC=false ;;
+    --restart) DO_RESTART=true ;;
+    --no-restart) DO_RESTART=false ;;
+    --compile) DO_COMPILE=true ;;
+  esac
+done
+
 # Push a GitHub
 echo -e "${GREEN}Verificando cambios locales...${NC}"
 git add -A
@@ -42,22 +65,29 @@ ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc 'set -e; \
   # Do NOT remove untracked files to preserve .env and keys \
   if [ ! -d \"$VENV_DIR\" ]; then python3 -m venv \"$VENV_DIR\"; fi; \
   source \"$VENV_DIR\"/bin/activate; \
-  # Desactivar uso de credenciales de servicio para GenAI y forzar API key \
-  unset GOOGLE_APPLICATION_CREDENTIALS || true; \
-  pip install --upgrade pip; \
-  pip install -r requirements.txt; \
-  python manage.py migrate --noinput; \
-  python manage.py collectstatic --noinput; \
+  # Respetar credenciales/entorno del servidor: NO tocar .env ni keys \
+  if $DO_PIP; then pip install --upgrade pip; pip install -r requirements.txt; fi; \
+  if $DO_MIGRATE; then python manage.py migrate --noinput; fi; \
+  if $DO_COMPILE; then \
+    echo Compilando mensajes i18n...; \
+    python manage.py compilemessages -l en -l es || true; \
+  fi; \
+  if $DO_STATIC; then python manage.py collectstatic --noinput; fi; \
   sudo systemctl daemon-reload || true; \
-  sudo systemctl restart \"$SERVICE\"; \
+  if $DO_RESTART; then sudo systemctl restart \"$SERVICE\"; fi; \
   sleep 2; \
   HC_CODE=$(curl -s -o /dev/null -w \"%{http_code}\" --unix-socket /run/gunicorn.sock http://localhost/ || echo 000); \
-  if [ \"\$HC_CODE\" != \"200\" ] && [ \"\$HC_CODE\" != \"301\" ]; then \
+  if $DO_RESTART && [ \"\$HC_CODE\" != \"200\" ] && [ \"\$HC_CODE\" != \"301\" ]; then \
     echo \"Healthcheck failed (\$HC_CODE). Rolling back to \$PREV_COMMIT\"; \
     git reset --hard \"\$PREV_COMMIT\"; \
     sudo systemctl restart \"$SERVICE\"; \
     exit 1; \
   fi; \
+  # Healthcheck adicional de API semántica (no bloqueante)
+  curl -sS -H \"Accept: application/json\" \"https://vivemedellin.co/api/semantic-search/?q=ping&top=1\" -o /dev/null -w \"API:%{http_code}\\n\" || true; \
+  # Healthcheck de jsi18n para ambos idiomas (no bloqueante)
+  curl -s -o /dev/null -w \"JS:%{http_code}\\n\" http://localhost/jsi18n/ || true; \
+  curl -s -o /dev/null -w \"JS_EN:%{http_code}\\n\" http://localhost/en/jsi18n/ || true; \
   if sudo nginx -t; then sudo systemctl reload nginx || true; else echo \"Skipping nginx reload (config test failed)\"; fi; \
   echo OK'"
 

@@ -1,20 +1,23 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load static %}
+{% load l10n %}
 {% load form_tags %}
+{% load i18n_extras %}
 
-{% block title %}{{ lugar.nombre }} | Vive Medellín{% endblock %}
+{% block title %}{{ lugar.nombre }} | {% trans "ViveMedellín" %}{% endblock %}
 
 {% block meta_description %}
-  {{ lugar.nombre }} en Medellín. Descubre este {{ lugar.get_tipo_display|default:lugar.tipo }} con puntuación de {{ lugar.rating|default:"-" }} estrellas. Dirección: {{ lugar.direccion|default:"no disponible" }}.
+  {% blocktrans %}{{ lugar.nombre }} en Medellín. Descubre este {{ lugar.get_tipo_display|default:lugar.tipo }} con puntuación de {{ lugar.rating|default:"-" }} estrellas. Dirección: {{ lugar.direccion|default:"no disponible" }}.{% endblocktrans %}
 {% endblock %}
 
 {% block meta_keywords %}
-  {{ lugar.nombre }}, {{ lugar.get_tipo_display|default:lugar.tipo }}, lugares Medellín, {{ lugar.get_tipo_display|default:lugar.tipo }} Medellín, mejores lugares en Medellín
+  {% blocktrans %}{{ lugar.nombre }}, {{ lugar.get_tipo_display|default:lugar.tipo }}, lugares Medellín, {{ lugar.get_tipo_display|default:lugar.tipo }} Medellín, mejores lugares en Medellín{% endblocktrans %}
 {% endblock %}
 
-{% block og_title %}{{ lugar.nombre }} | Medellín Explorer{% endblock %}
+{% block og_title %}{{ lugar.nombre }} | {% trans "ViveMedellín" %}{% endblock %}
 {% block og_description %}
-  Conoce {{ lugar.nombre }}, un destacado {{ lugar.get_tipo_display|default:lugar.tipo }} en Medellín con rating de {{ lugar.rating|default:"-" }}.
+  {% blocktrans %}Conoce {{ lugar.nombre }}, un destacado {{ lugar.get_tipo_display|default:lugar.tipo }} en Medellín con rating de {{ lugar.rating|default:"-" }}.{% endblocktrans %}
 {% endblock %}
 
 {% block og_image %}
@@ -36,7 +39,7 @@
             <div class="carousel-item {% if forloop.first %}active{% endif %}">
               <img src="{{ foto.imagen }}"
                    class="d-block w-100 rounded-top cursor-pointer"
-                   alt="Foto de {{ lugar.nombre }}"
+                   alt="{% trans "Foto de" %} {{ lugar.nombre }}"
                    style="height: 400px; object-fit: cover;"
                    data-bs-toggle="modal"
                    data-bs-target="#imagenModal"
@@ -47,25 +50,25 @@
         {% if lugar.get_fotos|length > 1 %}
           <button class="carousel-control-prev" type="button" data-bs-target="#carouselFotos" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Anterior</span>
+            <span class="visually-hidden">{% trans "Anterior" %}</span>
           </button>
           <button class="carousel-control-next" type="button" data-bs-target="#carouselFotos" data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Siguiente</span>
+            <span class="visually-hidden">{% trans "Siguiente" %}</span>
           </button>
         {% endif %}
         
         <!-- Photo counter -->
         <div class="photo-counter">
           <i class="bi bi-camera-fill me-1"></i>
-          {{ lugar.get_fotos|length }} foto{{ lugar.get_fotos|length|pluralize }}
+          {% blocktrans count num=lugar.get_fotos|length %}{{ num }} foto{% plural %}{{ num }} fotos{% endblocktrans %}
         </div>
       </div>
     {% else %}
       <div class="placeholder-image d-flex align-items-center justify-content-center rounded-top" style="height: 400px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
         <div class="text-center text-white">
           <i class="bi bi-image fs-1 mb-3"></i>
-          <p class="fs-5">Sin fotos disponibles</p>
+          <p class="fs-5">{% trans "Sin fotos disponibles" %}</p>
         </div>
       </div>
     {% endif %}
@@ -78,18 +81,18 @@
         <div class="status-badges">
           {% if lugar.es_destacado %}
             <span class="badge badge-destacado me-1">
-              <i class="bi bi-star-fill me-1"></i>Destacado
+              <i class="bi bi-star-fill me-1"></i>{% trans "Destacado" %}
             </span>
           {% endif %}
           {% if lugar.es_exclusivo %}
             <span class="badge badge-exclusivo me-1">
-              <i class="bi bi-gem me-1"></i>Exclusivo
+              <i class="bi bi-gem me-1"></i>{% trans "Exclusivo" %}
             </span>
           {% endif %}
           {% if lugar.abierto_ahora is not None %}
             <span class="badge {% if lugar.abierto_ahora %}badge-abierto{% else %}badge-cerrado{% endif %}">
               <i class="bi bi-clock-fill me-1"></i>
-              {% if lugar.abierto_ahora %}Abierto ahora{% else %}Cerrado{% endif %}
+              {% if lugar.abierto_ahora %}{% trans "Abierto ahora" %}{% else %}{% trans "Cerrado" %}{% endif %}
             </span>
           {% endif %}
         </div>
@@ -103,14 +106,14 @@
             <!-- Tipo de lugar -->
             <li class="mb-3">
               <i class="bi bi-geo-alt-fill text-primary me-2"></i>
-              <strong>Tipo:</strong> {{ lugar.get_tipo_display|default:lugar.tipo }}
+              <strong>{% trans "Tipo:" %}</strong> {{ lugar|place_type_label }}
             </li>
             
             <!-- Dirección -->
             {% if lugar.direccion %}
               <li class="mb-3">
                 <i class="bi bi-map-fill text-primary me-2"></i>
-                <strong>Dirección:</strong> {{ lugar.direccion }}
+                <strong>{% trans "Dirección:" %}</strong> {{ lugar.direccion }}
               </li>
             {% endif %}
             
@@ -118,7 +121,7 @@
             {% if lugar.telefono %}
               <li class="mb-3">
                 <i class="bi bi-telephone-fill text-success me-2"></i>
-                <strong>Teléfono:</strong> 
+                <strong>{% trans "Teléfono:" %}</strong> 
                 <a href="tel:{{ lugar.telefono }}" class="text-decoration-none">{{ lugar.telefono }}</a>
               </li>
             {% endif %}
@@ -127,8 +130,8 @@
             {% if lugar.sitio_web %}
               <li class="mb-3">
                 <i class="bi bi-globe2 text-dark me-2"></i>
-                <strong>Sitio Web:</strong> 
-                <a href="{{ lugar.sitio_web }}" target="_blank" class="text-decoration-none">Visitar sitio web</a>
+                <strong>{% trans "Sitio Web:" %}</strong> 
+                <a href="{{ lugar.sitio_web }}" target="_blank" class="text-decoration-none">{% trans "Visitar sitio web" %}</a>
               </li>
             {% endif %}
             
@@ -136,7 +139,7 @@
             {% if lugar.rating %}
               <li class="mb-3">
                 <i class="bi bi-star-fill text-warning me-2"></i>
-                <strong>Rating:</strong> 
+                <strong>{% trans "Rating:" %}</strong> 
                 <span class="rating-stars">
                   {% for i in "12345" %}
                     {% if lugar.rating >= forloop.counter %}
@@ -156,13 +159,13 @@
             {% if lugar.precio %}
               <li class="mb-3">
                 <i class="bi bi-cash-coin text-info me-2"></i>
-                <strong>Rango de Precios:</strong> 
+                <strong>{% trans "Rango de Precios:" %}</strong> 
                 {{ lugar.precio|format_price_range }}
               </li>
             {% else %}
               <li class="mb-3">
                 <i class="bi bi-cash-coin text-info me-2"></i>
-                <strong>Rango de Precios:</strong> 
+                <strong>{% trans "Rango de Precios:" %}</strong> 
                 {{ None|format_price_range }}
               </li>
             {% endif %}
@@ -171,7 +174,7 @@
             {% if lugar.comuna %}
               <li class="mb-3">
                 <i class="bi bi-map text-secondary me-2"></i>
-                <strong>zona:</strong> 
+                <strong>{% trans "zona:" %}</strong> 
                 <a href="{% url 'explorer:lugares_por_comuna' lugar.comuna.slug %}" class="text-decoration-none">{{ lugar.comuna.name }}</a>
               </li>
             {% endif %}
@@ -181,126 +184,137 @@
         
         <!-- Sidebar con horarios -->
         <div class="col-lg-4">
-          {% if lugar.horario_texto %}
-            <div class="horarios-card p-3 rounded-3 border">
-              <h6 class="fw-bold mb-3">
-                <i class="bi bi-clock-fill text-primary me-2"></i>Horarios
-              </h6>
-              <div class="horarios-list">
+          <div class="horarios-card p-3 rounded-3 border">
+            <h6 class="fw-bold mb-3">
+              <i class="bi bi-clock-fill text-primary me-2"></i>{% trans "Horarios" %}
+            </h6>
+            <div class="horarios-list">
+              {% if horarios %}
+                {% for h in horarios %}
+                  {% with linea=h.dia|add:": "|add:h.horario %}
+                    <div class="horario-item d-flex justify-content-between py-2" data-linea="{{ linea }}">
+                      <span class="dia text-capitalize fw-semibold">{% trans "Cargando..." %}</span>
+                      <span class="horas text-muted">...</span>
+                    </div>
+                  {% endwith %}
+                {% endfor %}
+              {% elif lugar.horario_texto %}
                 {% for linea in lugar.horario_texto.splitlines %}
                   {% if linea and linea != 'None' and linea.strip %}
                     <div class="horario-item d-flex justify-content-between py-2" data-linea="{{ linea }}">
-                      <span class="dia text-capitalize fw-semibold">Cargando...</span>
+                      <span class="dia text-capitalize fw-semibold">{% trans "Cargando..." %}</span>
                       <span class="horas text-muted">...</span>
                     </div>
                   {% endif %}
                 {% endfor %}
-              </div>
+              {% endif %}
             </div>
-          {% endif %}
+            <div id="horario-raw" data-raw="{{ lugar.horario_texto|default_if_none:''|escapejs }}" class="d-none"></div>
+            <div class="horario-empty text-muted small d-none">{% trans "Horario no disponible" %}</div>
+          </div>
         </div>
       </div>
 
       <!-- Badges de servicios y características -->
       {% if lugar.takeout or lugar.dine_in or lugar.delivery or lugar.serves_breakfast or lugar.serves_lunch or lugar.serves_dinner or lugar.serves_beer or lugar.serves_wine or lugar.serves_cocktails or lugar.outdoor_seating or lugar.live_music or lugar.good_for_groups or lugar.good_for_children or lugar.allows_dogs or lugar.wheelchair_accessible_entrance or lugar.accepts_credit_cards or lugar.accepts_cash_only %}
         <div class="servicios-badges mb-4">
-          <h6 class="fw-semibold mb-3 text-muted">Servicios y Características</h6>
+          <h6 class="fw-semibold mb-3 text-muted">{% trans "Servicios y Características" %}</h6>
           <div class="d-flex flex-wrap gap-2">
             
             <!-- Servicios de comida -->
             {% if lugar.takeout %}
               <span class="badge service-badge bg-success bg-opacity-10 text-success">
-                <i class="bi bi-bag-check me-1"></i>Para Llevar
+                <i class="bi bi-bag-check me-1"></i>{% trans "Para Llevar" %}
               </span>
             {% endif %}
             {% if lugar.dine_in %}
               <span class="badge service-badge bg-success bg-opacity-10 text-success">
-                <i class="bi bi-cup-straw me-1"></i>Comer en Local
+                <i class="bi bi-cup-straw me-1"></i>{% trans "Comer en Local" %}
               </span>
             {% endif %}
             {% if lugar.delivery %}
               <span class="badge service-badge bg-success bg-opacity-10 text-success">
-                <i class="bi bi-truck me-1"></i>Delivery
+                <i class="bi bi-truck me-1"></i>{% trans "Delivery" %}
               </span>
             {% endif %}
             
             <!-- Comidas -->
             {% if lugar.serves_breakfast %}
               <span class="badge service-badge bg-warning bg-opacity-10 text-warning">
-                <i class="bi bi-sunrise me-1"></i>Desayuno
+                <i class="bi bi-sunrise me-1"></i>{% trans "Desayuno" %}
               </span>
             {% endif %}
             {% if lugar.serves_lunch %}
               <span class="badge service-badge bg-warning bg-opacity-10 text-warning">
-                <i class="bi bi-sun me-1"></i>Almuerzo
+                <i class="bi bi-sun me-1"></i>{% trans "Almuerzo" %}
               </span>
             {% endif %}
             {% if lugar.serves_dinner %}
               <span class="badge service-badge bg-warning bg-opacity-10 text-warning">
-                <i class="bi bi-moon me-1"></i>Cena
+                <i class="bi bi-moon me-1"></i>{% trans "Cena" %}
               </span>
             {% endif %}
             
             <!-- Bebidas -->
             {% if lugar.serves_beer %}
               <span class="badge service-badge bg-info bg-opacity-10 text-info">
-                <i class="bi bi-cup me-1"></i>Cerveza
+                <i class="bi bi-cup me-1"></i>{% trans "Cerveza" %}
               </span>
             {% endif %}
             {% if lugar.serves_wine %}
               <span class="badge service-badge bg-info bg-opacity-10 text-info">
-                <i class="bi bi-wine-glass me-1"></i>Vinos
+                <i class="bi bi-wine-glass me-1"></i>{% trans "Vinos" %}
               </span>
             {% endif %}
             {% if lugar.serves_cocktails %}
               <span class="badge service-badge bg-info bg-opacity-10 text-info">
-                <i class="bi bi-cocktail me-1"></i>Cócteles
+                <i class="bi bi-cocktail me-1"></i>{% trans "Cócteles" %}
               </span>
             {% endif %}
             
             <!-- Ambiente -->
             {% if lugar.outdoor_seating %}
               <span class="badge service-badge bg-primary bg-opacity-10 text-primary">
-                <i class="bi bi-tree me-1"></i>Terraza
+                <i class="bi bi-tree me-1"></i>{% trans "Terraza" %}
               </span>
             {% endif %}
             {% if lugar.live_music %}
               <span class="badge service-badge bg-primary bg-opacity-10 text-primary">
-                <i class="bi bi-music-note me-1"></i>Música en Vivo
+                <i class="bi bi-music-note me-1"></i>{% trans "Música en Vivo" %}
               </span>
             {% endif %}
             {% if lugar.good_for_groups %}
               <span class="badge service-badge bg-primary bg-opacity-10 text-primary">
-                <i class="bi bi-people me-1"></i>Para Grupos
+                <i class="bi bi-people me-1"></i>{% trans "Para Grupos" %}
               </span>
             {% endif %}
             {% if lugar.good_for_children %}
               <span class="badge service-badge bg-primary bg-opacity-10 text-primary">
-                <i class="bi bi-person-hearts me-1"></i>Para Niños
+                <i class="bi bi-person-hearts me-1"></i>{% trans "Para Niños" %}
               </span>
             {% endif %}
             {% if lugar.allows_dogs %}
               <span class="badge service-badge bg-danger bg-opacity-10 text-danger">
-                <i class="bi bi-heart me-1"></i>Pet Friendly
+                <i class="bi bi-heart me-1"></i>{% trans "Pet Friendly" %}
               </span>
             {% endif %}
             
             <!-- Accesibilidad -->
             {% if lugar.wheelchair_accessible_entrance %}
               <span class="badge service-badge bg-secondary bg-opacity-10 text-secondary">
-                <i class="bi bi-universal-access me-1"></i>Accesible
+                <i class="bi bi-universal-access me-1"></i>{% trans "Accesible" %}
               </span>
             {% endif %}
             
             <!-- Pagos -->
             {% if lugar.accepts_credit_cards %}
               <span class="badge service-badge bg-dark bg-opacity-10 text-dark">
-                <i class="bi bi-credit-card me-1"></i>Tarjetas
+                <i class="bi bi-credit-card me-1"></i>{% trans "Tarjetas" %}
               </span>
             {% endif %}
             {% if lugar.accepts_cash_only %}
               <span class="badge service-badge bg-warning bg-opacity-20 text-warning">
-                <i class="bi bi-cash me-1"></i>Solo Efectivo
+                <i class="bi bi-cash me-1"></i>{% trans "Solo Efectivo" %}
               </span>
             {% endif %}
             
@@ -312,7 +326,7 @@
       {% if lugar.reviews %}
         <div class="reviews-link mb-4">
                         <a href="{% url 'explorer:reviews_lugar' lugar.slug %}" class="btn btn-gradient-green rounded-pill">
-                <i class="bi bi-chat-quote me-1"></i>Ver reseñas
+                <i class="bi bi-chat-quote me-1"></i>{% trans "Ver reseñas" %}
           </a>
         </div>
       {% endif %}
@@ -320,7 +334,7 @@
       <!-- Mapa -->
       <div class="mapa-section mb-4">
         <h6 class="fw-semibold mb-3">
-          <i class="bi bi-map-fill text-primary me-2"></i>Ubicación
+          <i class="bi bi-map-fill text-primary me-2"></i>{% trans "Ubicación" %}
         </h6>
         <div id="mapa" class="shadow-sm rounded-3" style="height:350px;"></div>
         
@@ -328,12 +342,19 @@
         <div class="map-actions mt-3 d-flex gap-2 flex-wrap">
           {% if lugar.google_maps_uri %}
             <a href="{{ lugar.google_maps_uri }}" target="_blank" class="btn btn-google-maps btn-sm">
-              <i class="bi bi-google me-1"></i>Ver en Google Maps
+          <i class="bi bi-google me-1"></i>{% trans "Ver en Google Maps" %}
             </a>
           {% endif %}
-          {% if lugar.directions_uri %}
-            <a href="{{ lugar.directions_uri }}" target="_blank" class="btn btn-primary btn-sm">
-              <i class="bi bi-signpost-2 me-1"></i>Cómo llegar
+          {% if lugar.ubicacion %}
+            <a id="waze-btn" href="#" target="_blank" class="btn btn-primary btn-sm">
+              <span class="waze-icon me-1" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20.5 12c0-4.418-3.582-8-8-8-4.163 0-7.598 3.188-7.973 7.268C3.6 11.093 3 11.982 3 13c0 1.657 1.343 3 3 3h1.25c.414 0 .75.336.75.75 0 1.379 1.121 2.5 2.5 2.5.96 0 1.792-.548 2.206-1.352.128-.245.387-.398.668-.398h1.126c1.287 0 2.5-.556 3.327-1.506.994-1.142 1.173-2.374 1.173-3.494zM8.25 17H8c-2.206 0-4-1.794-4-4 0-.79.457-1.52 1.174-1.86C5.69 6.87 9.584 4 12.5 4c4.69 0 8.5 3.81 8.5 8.5 0 1.36-.22 2.79-1.42 4.15C18.7 18.33 17.17 19 15.62 19h-1.126c-.857 1.03-2.127 1.75-3.494 1.75-2.206 0-4-1.794-4-4 0-.414.336-.75.75-.75.414 0 .75.336.75.75 0 .443.119.859.323 1.25z"/>
+                  <circle cx="9.5" cy="10.5" r="1.5"/>
+                  <circle cx="14.5" cy="10.5" r="1.5"/>
+                </svg>
+              </span>
+              {% trans "Abrir en Waze" %}
             </a>
           {% endif %}
         </div>
@@ -341,13 +362,13 @@
 
       <!-- Compartir -->
       <div class="share-section text-center">
-        <a href="https://wa.me/?text={{ lugar.nombre|urlencode }}%0AExplóralo aquí: {{ request.build_absolute_uri }}"
+        <a href="https://wa.me/?text={{ lugar.nombre|urlencode }}%0A{% trans 'Explóralo aquí:' %} {{ request.build_absolute_uri }}"
            target="_blank"
            class="btn btn-whatsapp rounded-pill me-2">
-          <i class="bi bi-whatsapp me-1"></i> Compartir en WhatsApp
+          <i class="bi bi-whatsapp me-1"></i> {% trans "Compartir en WhatsApp" %}
         </a>
         <button class="btn btn-outline-secondary rounded-pill" onclick="copyToClipboard()">
-          <i class="bi bi-link-45deg me-1"></i> Copiar enlace
+          <i class="bi bi-link-45deg me-1"></i> {% trans "Copiar enlace" %}
         </button>
       </div>
       
@@ -362,7 +383,7 @@
   <section class="mb-5" id="lugares-cercanos-section">
     <div class="d-flex align-items-center mb-4">
       <i class="bi bi-geo-alt-fill text-primary me-2 fs-4"></i>
-      <h3 class="h4 fw-semibold mb-0">Lugares Cercanos</h3>
+      <h3 class="h4 fw-semibold mb-0">{% trans "Lugares Cercanos" %}</h3>
     </div>
     <div class="row g-4" id="lugares-cercanos-container">
       <!-- Skeleton Loaders -->
@@ -406,7 +427,7 @@
   <section class="mb-5" id="lugares-similares-section">
     <div class="d-flex align-items-center mb-4">
       <i class="bi bi-tags-fill text-success me-2 fs-4"></i>
-      <h3 class="h4 fw-semibold mb-0">Lugares Similares</h3>
+      <h3 class="h4 fw-semibold mb-0">{% trans "Lugares Similares" %}</h3>
     </div>
     <div class="row g-4" id="lugares-similares-container">
       <!-- Skeleton Loaders -->
@@ -450,7 +471,7 @@
   <section class="mb-5" id="lugares-comuna-section">
     <div class="d-flex align-items-center mb-4">
       <i class="bi bi-map-fill text-info me-2 fs-4"></i>
-      <h3 class="h4 fw-semibold mb-0">Más lugares en <span id="comuna-name">esta zona</span></h3>
+      <h3 class="h4 fw-semibold mb-0">{% trans "Más lugares en" %} <span id="comuna-name">{% trans "esta zona" %}</span></h3>
     </div>
     <div class="row g-4" id="lugares-comuna-container">
       <!-- Skeleton Loaders -->
@@ -517,29 +538,27 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
+  // Fallbacks i18n por si no carga jsi18n
+  const gettext = (window.gettext) ? window.gettext : (s => s);
+  const ngettext = (window.ngettext) ? window.ngettext : ((s, p, c) => (c === 1 ? s : p));
   // Mapa con estilo oscuro y zoom fijo
   {% if lugar.ubicacion %}
-  const lat = {{ lugar.ubicacion.y }};
-  const lng = {{ lugar.ubicacion.x }};
+  const lat = {{ lugar.ubicacion.y|unlocalize }};
+  const lng = {{ lugar.ubicacion.x|unlocalize }};
   const map = L.map("mapa", {
     center: [lat, lng],
-    zoom: 18,
-    minZoom: 16,
+    zoom: 17,
+    minZoom: 13,
     maxZoom: 20,
     dragging: true,
-    scrollWheelZoom: false,
-    doubleClickZoom: false,
-    zoomControl: true,
-    maxBounds: [
-      [lat - 0.005, lng - 0.005],
-      [lat + 0.005, lng + 0.005]
-    ],
-    maxBoundsViscosity: 1.0
+    scrollWheelZoom: true,
+    doubleClickZoom: true,
+    zoomControl: true
   });
 
   // Estilo oscuro con detalles verdes y morados
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a> | <strong>ViveMedellín</strong>',
     subdomains: 'abcd',
     maxZoom: 20
   }).addTo(map);
@@ -558,7 +577,7 @@
     .bindPopup(`
       <div style="text-align: center; padding: 8px; font-family: Arial, sans-serif;">
         <strong style="color: #667eea; font-size: 14px;">{{ lugar.nombre }}</strong><br>
-        <small style="color: #38ef7d; font-size: 12px;">{{ lugar.get_tipo_display }}</small>
+        <small style="color: #38ef7d; font-size: 12px;">{% with t=lugar.get_tipo_display %}{% trans t %}{% endwith %}</small>
         {% if lugar.direccion %}
           <br><small style="color: #999; font-size: 11px;">{{ lugar.direccion|truncatewords:6 }}</small>
         {% endif %}
@@ -569,28 +588,68 @@
     })
     .openPopup();
 
-  // Deshabilitar zoom con scroll después de un momento
-  setTimeout(() => {
-    map.scrollWheelZoom.enable();
-  }, 1000);
+  // Map interactivo desde el inicio
   {% endif %}
 
   // Función para ordenar horarios
   document.addEventListener("DOMContentLoaded", () => {
     const horariosContainer = document.querySelector('.horarios-list');
     if (horariosContainer) {
-      const horarioItems = Array.from(horariosContainer.children);
+      let horarioItems = Array.from(horariosContainer.children);
+      
+      // Fallback: si no hay items, intentar parsear cadena cruda con \\u000A o \\n
+      if (horarioItems.length === 0) {
+        const rawEl = document.getElementById('horario-raw');
+        const raw = rawEl ? rawEl.getAttribute('data-raw') || '' : '';
+        if (raw) {
+          // Normalizar secuencias a saltos reales
+          const normalized = raw
+            .replace(/\\u000a/gi, '\n')   // secuencias tipo \u000A
+            .replace(/\\n/g, '\n');       // secuencias tipo \n
+          const lineas = normalized.split('\n').map(s => s.trim()).filter(Boolean);
+          lineas.forEach(linea => {
+            const div = document.createElement('div');
+            div.className = 'horario-item d-flex justify-content-between py-2';
+            div.setAttribute('data-linea', linea);
+            div.innerHTML = `<span class="dia text-capitalize fw-semibold">${gettext('Cargando...')}</span><span class="horas text-muted">...</span>`;
+            horariosContainer.appendChild(div);
+          });
+          horarioItems = Array.from(horariosContainer.children);
+        }
+      }
       
       // Orden de días de la semana
       const diasOrden = {
         'lunes': 1, 'monday': 1,
-        'martes': 2, 'tuesday': 2, 'marte': 2,
-        'miércoles': 3, 'miercoles': 3, 'wednesday': 3, 'miérco': 3,
-        'jueves': 4, 'thursday': 4, 'jueve': 4,
-        'viernes': 5, 'friday': 5, 'vierne': 5,
-        'sábado': 6, 'sabado': 6, 'saturday': 6, 'sábad': 6,
-        'domingo': 7, 'sunday': 7, 'doming': 7
+        'martes': 2, 'tuesday': 2,
+        'miércoles': 3, 'miercoles': 3, 'wednesday': 3,
+        'jueves': 4, 'thursday': 4,
+        'viernes': 5, 'friday': 5,
+        'sábado': 6, 'sabado': 6, 'saturday': 6,
+        'domingo': 7, 'sunday': 7
       };
+
+      // Traducción de días (inyectadas desde plantilla, no depende de djangojs)
+      const dayTranslations = {
+        'lunes': '{% trans "Lunes" %}',
+        'martes': '{% trans "Martes" %}',
+        'miércoles': '{% trans "Miércoles" %}',
+        'miercoles': '{% trans "Miércoles" %}',
+        'jueves': '{% trans "Jueves" %}',
+        'viernes': '{% trans "Viernes" %}',
+        'sábado': '{% trans "Sábado" %}',
+        'sabado': '{% trans "Sábado" %}',
+        'domingo': '{% trans "Domingo" %}',
+        // por si vienen ya en inglés
+        'monday': '{% trans "Monday" %}',
+        'tuesday': '{% trans "Tuesday" %}',
+        'wednesday': '{% trans "Wednesday" %}',
+        'thursday': '{% trans "Thursday" %}',
+        'friday': '{% trans "Friday" %}',
+        'saturday': '{% trans "Saturday" %}',
+        'sunday': '{% trans "Sunday" %}'
+      };
+      const CLOSED_T = '{% trans "Cerrado" %}';
       
       // Procesar y ordenar items
       horarioItems.forEach(item => {
@@ -606,8 +665,13 @@
             const horaElement = item.querySelector('.horas');
             
             if (diaElement && horaElement) {
-              diaElement.textContent = partes[0].trim().charAt(0).toUpperCase() + partes[0].trim().slice(1);
-              horaElement.textContent = hora;
+              const originalDia = partes[0].trim();
+              const key = originalDia.toLowerCase();
+              const translated = dayTranslations[key] || originalDia;
+              diaElement.textContent = translated;
+              // Traducir estado "Cerrado" en la hora
+              const horaTraducida = /cerrado/i.test(hora) ? hora.replace(/cerrado/ig, CLOSED_T) : hora;
+              horaElement.textContent = horaTraducida;
             }
             
             // Agregar data attribute para ordenamiento
@@ -624,11 +688,45 @@
       });
       
       // Limpiar contenedor y re-agregar items ordenados
-      horariosContainer.innerHTML = '';
-      horarioItems.forEach(item => {
-        horariosContainer.appendChild(item);
-      });
+      if (horarioItems.length) {
+        horariosContainer.innerHTML = '';
+        horarioItems.forEach(item => {
+          horariosContainer.appendChild(item);
+        });
+      } else {
+        const emptyEl = document.querySelector('.horario-empty');
+        if (emptyEl) emptyEl.classList.remove('d-none');
+      }
     }
+  });
+
+  // Botón Waze: usar geolocalización del usuario si está disponible
+  document.addEventListener("DOMContentLoaded", () => {
+    const wazeBtn = document.getElementById('waze-btn');
+    if (!wazeBtn) return;
+    wazeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const destLat = lat;
+      const destLng = lng;
+      const fallbackUrl = `https://waze.com/ul?ll=${destLat},${destLng}&navigate=yes`;
+      if (!navigator.geolocation) {
+        window.open(fallbackUrl, '_blank');
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const fromLat = pos.coords.latitude;
+          const fromLng = pos.coords.longitude;
+          // Waze usará GPS actual; incluimos from para mayor claridad si es soportado
+          const url = `https://waze.com/ul?ll=${destLat},${destLng}&from=${fromLat},${fromLng}&navigate=yes`;
+          window.open(url, '_blank');
+        },
+        () => {
+          window.open(fallbackUrl, '_blank');
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 300000 }
+      );
+    });
   });
 
   // Modal de imágenes
@@ -666,7 +764,7 @@
   // Copiar enlace
   function copyToClipboard() {
     navigator.clipboard.writeText(window.location.href).then(() => {
-      alert('¡Enlace copiado al portapapeles!');
+      alert(gettext('¡Enlace copiado al portapapeles!'));
     });
   }
 </script>
@@ -779,6 +877,7 @@
   position: relative;
   overflow: hidden;
 }
+.waze-icon svg { display: inline-block; vertical-align: text-bottom; }
 
 #mapa .leaflet-control-zoom {
   border: none;
@@ -1015,6 +1114,8 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const lugarSlug = '{{ lugar.slug }}';
+  const CURRENT_LANG = '{{ LANGUAGE_CODE|default:"es" }}' || 'es';
+  const langPrefix = CURRENT_LANG === 'es' ? '' : '/en';
   
   // Estado de carga para evitar duplicados
   const loadingState = {
@@ -1026,15 +1127,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // Función para crear HTML de lugar
   function createPlaceHTML(lugar) {
     const imageHTML = lugar.imagen 
-      ? `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="Imagen de ${lugar.nombre}" style="height: 180px; object-fit: cover;" loading="lazy">`
+      ? `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${gettext('Imagen de')} ${lugar.nombre}" style="height: 180px; object-fit: cover;" loading="lazy">`
       : `<div class="bg-light d-flex align-items-center justify-content-center rounded-top-4" style="height: 180px;"><i class="bi bi-image text-muted fs-3"></i></div>`;
     
     const destacadoBadge = lugar.es_destacado 
-      ? `<span class="badge bg-warning text-dark me-1 small"><i class="bi bi-star-fill me-1"></i>Destacado</span>`
+      ? `<span class="badge bg-warning text-dark me-1 small"><i class="bi bi-star-fill me-1"></i>${gettext('Destacado')}</span>`
       : '';
     
     const exclusivoBadge = lugar.es_exclusivo 
-      ? `<span class="badge bg-success me-1 small"><i class="bi bi-gem me-1"></i>Exclusivo</span>`
+      ? `<span class="badge bg-success me-1 small"><i class="bi bi-gem me-1"></i>${gettext('Exclusivo')}</span>`
       : '';
     
     const ratingHTML = lugar.rating 
@@ -1057,8 +1158,8 @@ document.addEventListener("DOMContentLoaded", () => {
               ${exclusivoBadge}
             </div>
             ${ratingHTML}
-            <a href="/lugares/${lugar.slug}/" class="btn btn-gradient-purple mt-auto w-100 rounded-pill small">
-              <i class="bi bi-eye me-1"></i>Ver detalles
+            <a href="${lugar.url || `${langPrefix}/lugares/${lugar.slug}/`}" class="btn btn-gradient-purple mt-auto w-100 rounded-pill small">
+              <i class="bi bi-eye me-1"></i>${gettext('Ver detalles')}
             </a>
           </div>
         </div>
@@ -1072,7 +1173,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadingState.cercanos = true;
 
     try {
-      const response = await fetch(`/api/lugares/${lugarSlug}/cercanos/`);
+      const response = await fetch(`${langPrefix}/api/lugares/${lugarSlug}/cercanos/`);
       const data = await response.json();
       
       const container = document.getElementById('lugares-cercanos-container');
@@ -1084,18 +1185,18 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="col-12 text-center py-4">
             <div class="text-muted">
               <i class="bi bi-geo-alt fs-2 mb-2 d-block"></i>
-              <p>No hay lugares cercanos disponibles en este momento.</p>
+              <p>${gettext('No hay lugares cercanos disponibles en este momento.')}</p>
             </div>
           </div>
         `;
       }
     } catch (error) {
-      console.error('Error cargando lugares cercanos:', error);
+      console.error(gettext('Error cargando lugares cercanos:'), error);
       document.getElementById('lugares-cercanos-container').innerHTML = `
         <div class="col-12 text-center py-4">
           <div class="text-danger">
             <i class="bi bi-exclamation-triangle fs-2 mb-2 d-block"></i>
-            <p>Error al cargar lugares cercanos. <button class="btn btn-link p-0" onclick="loadLugaresCercanos()">Reintentar</button></p>
+            <p>${gettext('Error al cargar lugares cercanos.')} <button class="btn btn-link p-0" onclick="loadLugaresCercanos()">${gettext('Reintentar')}</button></p>
           </div>
         </div>
       `;
@@ -1108,7 +1209,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadingState.similares = true;
 
     try {
-      const response = await fetch(`/api/lugares/${lugarSlug}/similares/`);
+      const response = await fetch(`${langPrefix}/api/lugares/${lugarSlug}/similares/`);
       const data = await response.json();
       
       const container = document.getElementById('lugares-similares-container');
@@ -1120,18 +1221,18 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="col-12 text-center py-4">
             <div class="text-muted">
               <i class="bi bi-tags fs-2 mb-2 d-block"></i>
-              <p>No hay lugares similares disponibles en este momento.</p>
+              <p>${gettext('No hay lugares similares disponibles en este momento.')}</p>
             </div>
           </div>
         `;
       }
     } catch (error) {
-      console.error('Error cargando lugares similares:', error);
+      console.error(gettext('Error cargando lugares similares:'), error);
       document.getElementById('lugares-similares-container').innerHTML = `
         <div class="col-12 text-center py-4">
           <div class="text-danger">
             <i class="bi bi-exclamation-triangle fs-2 mb-2 d-block"></i>
-            <p>Error al cargar lugares similares. <button class="btn btn-link p-0" onclick="loadLugaresSimilares()">Reintentar</button></p>
+            <p>${gettext('Error al cargar lugares similares.')} <button class="btn btn-link p-0" onclick="loadLugaresSimilares()">${gettext('Reintentar')}</button></p>
           </div>
         </div>
       `;
@@ -1144,7 +1245,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadingState.comuna = true;
 
     try {
-      const response = await fetch(`/api/lugares/${lugarSlug}/comuna/`);
+      const response = await fetch(`${langPrefix}/api/lugares/${lugarSlug}/comuna/`);
       const data = await response.json();
       
       const container = document.getElementById('lugares-comuna-container');
@@ -1161,18 +1262,18 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="col-12 text-center py-4">
             <div class="text-muted">
               <i class="bi bi-map fs-2 mb-2 d-block"></i>
-              <p>No hay más lugares en esta zona disponibles en este momento.</p>
+              <p>${gettext('No hay más lugares en esta zona disponibles en este momento.')}</p>
             </div>
           </div>
         `;
       }
     } catch (error) {
-      console.error('Error cargando lugares de la comuna:', error);
+      console.error(gettext('Error cargando lugares de la comuna:'), error);
       document.getElementById('lugares-comuna-container').innerHTML = `
         <div class="col-12 text-center py-4">
           <div class="text-danger">
             <i class="bi bi-exclamation-triangle fs-2 mb-2 d-block"></i>
-            <p>Error al cargar lugares de la zona. <button class="btn btn-link p-0" onclick="loadLugaresComuna()">Reintentar</button></p>
+            <p>${gettext('Error al cargar lugares de la zona.')} <button class="btn btn-link p-0" onclick="loadLugaresComuna()">${gettext('Reintentar')}</button></p>
           </div>
         </div>
       `;
@@ -1228,21 +1329,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Cargar inmediatamente si el usuario ya hizo scroll
+  // Cargar inmediatamente si ya son visibles (fallback sin usar APIs internas)
   setTimeout(() => {
     sections.forEach(sectionId => {
       const section = document.getElementById(sectionId);
-      if (section) {
-        const rect = section.getBoundingClientRect();
-        if (rect.top < window.innerHeight + 100) {
-          const event = new IntersectionObserverEntry();
-          event.target = section;
-          event.isIntersecting = true;
-          observer.callback([event]);
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      if (rect.top < window.innerHeight + 100) {
+        switch (sectionId) {
+          case 'lugares-cercanos-section':
+            loadLugaresCercanos();
+            if (observer && observer.unobserve) observer.unobserve(section);
+            break;
+          case 'lugares-similares-section':
+            loadLugaresSimilares();
+            if (observer && observer.unobserve) observer.unobserve(section);
+            break;
+          case 'lugares-comuna-section':
+            loadLugaresComuna();
+            if (observer && observer.unobserve) observer.unobserve(section);
+            break;
         }
       }
     });
-  }, 500);
+  }, 300);
 });
 </script>
 

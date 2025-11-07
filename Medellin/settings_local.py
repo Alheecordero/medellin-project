@@ -16,16 +16,11 @@ SECRET_KEY = 'django-insecure-dev-key-only-for-local-development'
 GOOGLE_API_KEY = 'AIzaSyAyepBu9y5XMYUWsfkxClZ1W2kcLdvIfow'  # Reemplazar con tu key real si la necesitas
 GOOGLE_ANALYTICS_ID = 'G-7T6TJ7020J'
 
-# Base de datos de desarrollo
+# Base de datos de desarrollo (SQLite para pruebas locales rápidas)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'colombia-osm',
-        'USER': 'Alhee',
-        'PASSWORD': 'Alhee166817502',
-        'HOST': 'medellin-db.c94u0qig8wiy.us-east-2.rds.amazonaws.com',
-        'PORT': '5432',
-        'CONN_MAX_AGE': 600,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
