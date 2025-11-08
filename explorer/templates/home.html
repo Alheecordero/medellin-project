@@ -257,9 +257,9 @@
         {% endif %}
       </div>
 
-      <div class="row g-4">
+      <div class="lugares-grid">
         {% for lugar in item.lugares|slice:":3" %}
-          <div class="col-md-4">
+          <div class="lugar-card-wrapper">
             <div class="card h-100 shadow-sm border-0 rounded-4">
               {% if lugar.imagen %}
                 <img src="{{ lugar.imagen }}" class="card-img-top rounded-top-4" alt="{% trans "Imagen de" %} {{ lugar.nombre }}" style="height: 200px; object-fit: cover;" loading="lazy">
@@ -332,10 +332,24 @@
 
 {% block extra_css %}
 <style>
+/* Ocultar espaciador del navbar solo en home */
+.navbar-spacer {
+    display: none;
+}
+
 /* Hero Section with Clean Gradient */
 .hero-section-clean {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
+    margin-top: 0;
+    padding-top: 95px;
+}
+
+/* Hero title centrado */
+.hero-title {
+    text-align: center;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
 }
 
 /* Search Input Styling */
@@ -355,7 +369,80 @@
     font-weight: 500;
 }
 
+/* Grid/Carrusel de lugares */
+.lugares-grid {
+  padding: 0.5rem 0;
+}
+
+/* Móvil: Carrusel horizontal */
+@media (max-width: 767.98px) {
+  .lugares-grid {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
+    padding-bottom: 1rem;
+    margin: 0 -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .lugares-grid::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .lugares-grid::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+  }
+  
+  .lugares-grid::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 3px;
+  }
+  
+  .lugar-card-wrapper {
+    flex: 0 0 auto;
+    width: 85vw;
+    max-width: 400px;
+  }
+}
+
+/* Desktop: Grid estándar */
+@media (min-width: 768px) {
+  .lugares-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .lugar-card-wrapper {
+    width: 100%;
+  }
+}
+
 /* Card Hover Effects */
+.card {
+    position: relative;
+}
+
+/* Badge overlay sobre imagen de card */
+.badge-overlay {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 10;
+}
+
+.badge-overlay .badge {
+    background-color: rgba(13, 110, 253, 0.95) !important;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-weight: 600;
+}
+
 .card:hover {
     transform: translateY(-5px);
     transition: all 0.3s ease;
@@ -412,7 +499,7 @@
     max-height: 350px;
     overflow-y: auto;
     
-    /* Forzar dirección hacia abajo y z-index alto */
+    /* Forzar dirección hacia abajo pero con z-index menor que resultados */
     position: absolute !important;
     top: 100% !important;
     bottom: auto !important;
@@ -421,7 +508,7 @@
     transform: none !important;
     will-change: auto !important;
     inset: auto !important;
-    z-index: 9999 !important;
+    z-index: 100 !important;
 }
 
 /* Dropdown específico para características (más alto por tener más contenido) */
@@ -553,7 +640,7 @@
     padding: 1rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
-    z-index: 1;
+    z-index: 200;
 }
 
 #ajax-results .card:hover {
@@ -569,9 +656,9 @@
     border-width: 0.3em;
 }
 
-/* Asegurar z-index alto para todos los dropdowns de Bootstrap */
+/* Asegurar z-index controlado para dropdowns */
 .dropdown-menu.show {
-    z-index: 9999 !important;
+    z-index: 100 !important;
 }
 
 .dropdown {
@@ -580,7 +667,7 @@
 
 /* Prevenir overflow de contenido detrás de dropdowns */
 .dropdown.show {
-    z-index: 9999 !important;
+    z-index: 100 !important;
 }
 
 /* Search Autocomplete Styling */
@@ -723,6 +810,13 @@ $(document).ready(function() {
     
     // Variable para almacenar ubicación del usuario
     let ubicacionUsuario = null;
+    
+    // Cerrar dropdowns al hacer scroll
+    $(window).on('scroll', function() {
+        $('.dropdown-menu.show').removeClass('show');
+        $('.dropdown.show').removeClass('show');
+        $('[data-bs-toggle="dropdown"][aria-expanded="true"]').attr('aria-expanded', 'false');
+    });
     
     // Configurar dropdowns para que siempre se abran hacia abajo
     document.addEventListener('show.bs.dropdown', function(event) {
@@ -906,11 +1000,33 @@ $(document).ready(function() {
     
     // Función para renderizar resultados
     function renderizarResultados(data) {
+        // Cerrar TODOS los dropdowns de forma agresiva
+        $('.dropdown-menu-filtros').removeClass('show').hide();
+        $('.dropdown-menu').removeClass('show').hide();
+        $('.dropdown').removeClass('show');
+        $('[data-bs-toggle="dropdown"]').attr('aria-expanded', 'false').removeClass('show');
+        
+        // Forzar cierre con Bootstrap API
+        document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
+            const dropdown = bootstrap.Dropdown.getInstance(btn);
+            if (dropdown) dropdown.hide();
+        });
+        
+        // Usar interpolate y ngettext del catálogo JavaScript de Django
+        const msgResultados = interpolate(
+            ngettext(
+                'Encontramos %s lugar que coincide con tus filtros',
+                'Encontramos %s lugares que coinciden con tus filtros',
+                data.total
+            ),
+            [data.total]
+        );
+
         let html = `
             <div class="container py-5">
                 <div class="text-center mb-5 text-white">
                     <h2 class="fw-bold">{% trans "Resultados de tu Búsqueda" %}</h2>
-                    <p class="lead">${interpolate(ngettext('Encontramos %(count)s lugar que coincide con tus filtros', 'Encontramos %(count)s lugares que coinciden con tus filtros', data.total), {count: data.total}, true)}</p>
+                    <p class="lead">${msgResultados}</p>
                     <div class="mt-3">
                         <span class="badge bg-primary bg-opacity-20 text-white fs-6 px-3 py-2 me-2">
                             📍 ${filtrosSeleccionados.area.name}
@@ -1120,6 +1236,18 @@ $(document).ready(function() {
     }
     
     function renderizarResultadosCercanos(data) {
+        // Cerrar TODOS los dropdowns de forma agresiva
+        $('.dropdown-menu-filtros').removeClass('show').hide();
+        $('.dropdown-menu').removeClass('show').hide();
+        $('.dropdown').removeClass('show');
+        $('[data-bs-toggle="dropdown"]').attr('aria-expanded', 'false').removeClass('show');
+        
+        // Forzar cierre con Bootstrap API
+        document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
+            const dropdown = bootstrap.Dropdown.getInstance(btn);
+            if (dropdown) dropdown.hide();
+        });
+        
         // Textos traducidos inyectados desde servidor
         const T_VIEW_DETAILS = '{% trans "Ver detalles" %}';
         const T_NO_DETAILS = '{% trans "Sin detalles" %}';
@@ -1149,18 +1277,20 @@ $(document).ready(function() {
             html += `
                 <div class="col-md-4">
                     <div class="card h-100 shadow-sm border-0 rounded-4">
-                        ${lugar.imagen ? 
-                            `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${lugar.nombre}" style="height: 200px; object-fit: cover;" loading="lazy">` :
-                            `<div class="bg-light d-flex align-items-center justify-content-center rounded-top-4" style="height: 200px;">
-                                <i class="bi bi-image text-muted fs-2"></i>
-                            </div>`
-                        }
-                        
-                        <!-- Badge de distancia -->
-                        <div class="position-absolute top-0 end-0 m-2">
-                            <span class="badge bg-primary rounded-pill">
-                                <i class="bi bi-geo-alt me-1"></i>${lugar.distancia < 1 ? Math.round(lugar.distancia * 1000) + 'm' : lugar.distancia + 'km'}
-                            </span>
+                        <div class="position-relative">
+                            ${lugar.imagen ? 
+                                `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${lugar.nombre}" style="height: 200px; object-fit: cover;" loading="lazy">` :
+                                `<div class="bg-light d-flex align-items-center justify-content-center rounded-top-4" style="height: 200px;">
+                                    <i class="bi bi-image text-muted fs-2"></i>
+                                </div>`
+                            }
+                            
+                            <!-- Badge de distancia -->
+                            <div class="badge-overlay">
+                                <span class="badge bg-primary rounded-pill">
+                                    <i class="bi bi-geo-alt me-1"></i>${lugar.distancia < 1 ? Math.round(lugar.distancia * 1000) + 'm' : lugar.distancia + 'km'}
+                                </span>
+                            </div>
                         </div>
                         
                         <div class="card-body d-flex flex-column">
@@ -1263,6 +1393,18 @@ $(document).ready(function() {
 });
 
     function renderizarResultadosSemanticos(data) {
+        // Cerrar TODOS los dropdowns de forma agresiva
+        $('.dropdown-menu-filtros').removeClass('show').hide();
+        $('.dropdown-menu').removeClass('show').hide();
+        $('.dropdown').removeClass('show');
+        $('[data-bs-toggle="dropdown"]').attr('aria-expanded', 'false').removeClass('show');
+        
+        // Forzar cierre con Bootstrap API
+        document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
+            const dropdown = bootstrap.Dropdown.getInstance(btn);
+            if (dropdown) dropdown.hide();
+        });
+        
         const T_VIEW_DETAILS = '{% trans "Ver detalles" %}';
         const T_NO_DETAILS = '{% trans "Sin detalles" %}';
         let html = `

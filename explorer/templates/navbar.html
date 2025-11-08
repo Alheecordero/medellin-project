@@ -116,8 +116,8 @@
     </div>
 </nav>
 
-<!-- Espaciador para compensar la navbar fixed -->
-<div class="navbar-spacer" style="height: 95px;"></div>
+<!-- Espaciador para compensar navbar fixed (solo en páginas que no sean home) -->
+<div class="navbar-spacer"></div>
 
 <!-- Estilos del Navbar - Version 2024.01.30 -->
 <style>
@@ -463,6 +463,17 @@
     #main-navbar .container {
         padding-left: 2rem;
         padding-right: 2rem;
+    }
+}
+
+/* Navbar spacer - altura dinámica según viewport */
+.navbar-spacer {
+    height: 95px;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-spacer {
+        height: 80px;
     }
 }
 

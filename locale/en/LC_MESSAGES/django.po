@@ -2951,3 +2951,37 @@ msgstr "Empty text"
 #: explorer/views.py:1529
 msgid "Límite de traducciones temporal alcanzado. Intenta más tarde."
 msgstr "Temporary translation limit reached. Please try again later."
+
+#: explorer/templates/home.html:931
+msgid "Encontramos %s lugar que coincide con tus filtros"
+msgid_plural "Encontramos %s lugares que coinciden con tus filtros"
+msgstr[0] "We found %s place that matches your filters"
+msgstr[1] "We found %s places that match your filters"
+
+#: explorer/urls.py:11
+msgctxt "url"
+msgid "lugares/"
+msgstr "places/"
+
+#: explorer/urls.py:12
+msgctxt "url"
+msgid "lugares/<slug:comuna_slug>/"
+msgstr "places/<slug:comuna_slug>/"
+
+#: explorer/urls.py:13
+msgctxt "url"
+msgid "lugar/<slug:slug>/"
+msgstr "place/<slug:slug>/"
+
+#: explorer/urls.py:14
+msgctxt "url"
+msgid "lugar/<slug:slug>/reviews/"
+msgstr "place/<slug:slug>/reviews/"
+
+#: explorer/templates/lugares/places_detail.html:357
+msgid "Abrir en Waze"
+msgstr "Open in Waze"
+
+#: explorer/templates/lugares/places_detail.html:213
+msgid "Horario no disponible"
+msgstr "Schedule not available"

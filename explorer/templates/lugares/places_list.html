@@ -167,9 +167,9 @@
   </div>
 
   {% if lugares %}
-    <div class="row g-4">
+    <div class="lugares-grid">
       {% for lugar in lugares %}
-        <div class="col-md-4">
+        <div class="lugar-card-wrapper">
           <div class="card h-100 shadow-sm border-0 rounded-4">
             {% if lugar.get_primera_foto %}
               <img src="{{ lugar.get_primera_foto.imagen }}" 
@@ -461,4 +461,71 @@ $(document).ready(function() {
     actualizarBadgesFiltros();
 });
 </script>
+
+<style>
+/* Grid/Carrusel de lugares - mismo estilo que home */
+.lugares-grid {
+  padding: 0.5rem 0;
+}
+
+/* Móvil: Carrusel horizontal */
+@media (max-width: 767.98px) {
+  .lugares-grid {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
+    padding-bottom: 1rem;
+    margin: 0 -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .lugares-grid::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .lugares-grid::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+  }
+  
+  .lugares-grid::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 3px;
+  }
+  
+  .lugar-card-wrapper {
+    flex: 0 0 auto;
+    width: 85vw;
+    max-width: 400px;
+  }
+}
+
+/* Desktop: Grid estándar */
+@media (min-width: 768px) {
+  .lugares-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .lugar-card-wrapper {
+    width: 100%;
+  }
+}
+
+/* Card styles */
+.card {
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+</style>
 {% endblock %}

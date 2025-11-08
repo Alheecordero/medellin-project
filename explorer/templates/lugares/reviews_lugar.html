@@ -86,7 +86,7 @@
 </div>
 
 <!-- Reviews List -->
-<div class="container pb-5">
+<div class="container pb-4">
   {% if reviews %}
     <div class="row g-4" id="reviews-container">
       {% for review in reviews %}
@@ -109,7 +109,7 @@
                   <div class="review-date">
                     {% if review.fecha %}
                       <i class="bi bi-calendar3 me-1"></i>
-                      <span>{{ review.fecha }}</span>
+                      <span class="review-date-text" data-date="{{ review.fecha|escapejs }}">{{ review.fecha }}</span>
                     {% else %}
                       <span class="text-muted">{% trans "Fecha no disponible" %}</span>
                     {% endif %}
@@ -276,6 +276,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  margin-bottom: 0;
 }
 
 .review-card:hover {
@@ -401,6 +402,7 @@
     height: 40px;
   }
 }
+
 </style>
 
 <!-- Script simple para reseñas -->
@@ -468,7 +470,136 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
     });
+
+    // Formato de fecha más humano y profesional
+    const locale = document.documentElement.getAttribute('lang') || navigator.language || 'es';
+
+    function decodeUnicodeEscapes(str) {
+      if (!str) return str;
+      // Decodificar \uXXXX a caracteres reales
+      return str.replace(/\\u([0-9a-fA-F]{4})/g, (match, hex) => {
+        return String.fromCharCode(parseInt(hex, 16));
+      });
+    }
+
+    function parseRawDate(raw) {
+      if (!raw) return null;
+      
+      // Decodificar escapes Unicode primero
+      const decoded = decodeUnicodeEscapes(String(raw).trim());
+      
+      // Formato dd/mm/YYYY o d/m/YYYY
+      const dmyMatch = decoded.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (dmyMatch) {
+        const day = parseInt(dmyMatch[1], 10);
+        const month = parseInt(dmyMatch[2], 10) - 1;
+        const year = parseInt(dmyMatch[3], 10);
+        const dt = new Date(year, month, day);
+        if (dt.getFullYear() === year && dt.getMonth() === month && dt.getDate() === day) {
+          return dt;
+        }
+      }
+      
+      // Intentar parsear como ISO o timestamp (funciona con 2024-12-27T01:26:24.562057Z)
+      const tryDate = new Date(decoded);
+      return isNaN(tryDate.getTime()) ? null : tryDate;
+    }
+
+    document.querySelectorAll('.review-date-text').forEach(span => {
+      const raw = span.getAttribute('data-date') || span.textContent || '';
+      const dt = parseRawDate(raw);
+      
+      if (dt) {
+        try {
+          // Formato profesional: "7 nov 2025" en español, "Nov 7, 2025" en inglés
+          const formatted = new Intl.DateTimeFormat(locale, { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+          }).format(dt);
+          
+          span.textContent = formatted;
+          
+          // Tooltip con fecha completa
+          const fullDate = new Intl.DateTimeFormat(locale, { 
+            weekday: 'long',
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric'
+          }).format(dt);
+          
+          span.setAttribute('title', fullDate);
+          span.style.cursor = 'help';
+        } catch (err) {
+          // Fallback simple
+          span.textContent = dt.toLocaleDateString(locale);
+        }
+      }
+    });
 });
+</script>
+
+<script>
+// Fallback inmediato por si DOMContentLoaded ya ocurrió antes de registrar el listener
+(function() {
+  if (document.readyState !== 'loading') {
+    try {
+      const locale = document.documentElement.getAttribute('lang') || navigator.language || 'es';
+      
+      function decodeUnicode(str) {
+        if (!str) return str;
+        return str.replace(/\\u([0-9a-fA-F]{4})/g, (match, hex) => {
+          return String.fromCharCode(parseInt(hex, 16));
+        });
+      }
+      
+      function parseDate(raw) {
+        if (!raw) return null;
+        const decoded = decodeUnicode(String(raw).trim());
+        
+        // Formato dd/mm/YYYY
+        const dmyMatch = decoded.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        if (dmyMatch) {
+          const day = parseInt(dmyMatch[1], 10);
+          const month = parseInt(dmyMatch[2], 10) - 1;
+          const year = parseInt(dmyMatch[3], 10);
+          const dt = new Date(year, month, day);
+          if (dt.getFullYear() === year && dt.getMonth() === month && dt.getDate() === day) {
+            return dt;
+          }
+        }
+        
+        const tryDate = new Date(decoded);
+        return isNaN(tryDate.getTime()) ? null : tryDate;
+      }
+      
+      document.querySelectorAll('.review-date-text').forEach(span => {
+        const raw = span.getAttribute('data-date') || span.textContent || '';
+        const dt = parseDate(raw);
+        
+        if (dt) {
+          const formatted = new Intl.DateTimeFormat(locale, { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+          }).format(dt);
+          
+          span.textContent = formatted;
+          
+          const fullDate = new Intl.DateTimeFormat(locale, { 
+            weekday: 'long',
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric'
+          }).format(dt);
+          
+          span.setAttribute('title', fullDate);
+          span.style.cursor = 'help';
+        }
+      });
+    } catch (_) {}
+  }
+})();
 </script>
 
 <!-- Animación fade-in para nuevas reseñas -->

@@ -76,8 +76,8 @@
     <div class="card-body px-4 py-4">
       
       <!-- Header con badges de estado -->
-      <div class="d-flex justify-content-between align-items-start mb-3">
-        <h2 class="card-title fw-bold mb-0">{{ lugar.nombre }}</h2>
+      <div class="d-flex justify-content-between align-items-start mb-4">
+        <h1 class="place-name mb-0">{{ lugar.nombre }}</h1>
         <div class="status-badges">
           {% if lugar.es_destacado %}
             <span class="badge badge-destacado me-1">
@@ -218,7 +218,9 @@
       <!-- Badges de servicios y características -->
       {% if lugar.takeout or lugar.dine_in or lugar.delivery or lugar.serves_breakfast or lugar.serves_lunch or lugar.serves_dinner or lugar.serves_beer or lugar.serves_wine or lugar.serves_cocktails or lugar.outdoor_seating or lugar.live_music or lugar.good_for_groups or lugar.good_for_children or lugar.allows_dogs or lugar.wheelchair_accessible_entrance or lugar.accepts_credit_cards or lugar.accepts_cash_only %}
         <div class="servicios-badges mb-4">
-          <h6 class="fw-semibold mb-3 text-muted">{% trans "Servicios y Características" %}</h6>
+          <h5 class="section-title mb-3">
+            <i class="bi bi-stars me-2"></i>{% trans "Servicios y Características" %}
+          </h5>
           <div class="d-flex flex-wrap gap-2">
             
             <!-- Servicios de comida -->
@@ -333,22 +335,25 @@
 
       <!-- Mapa -->
       <div class="mapa-section mb-4">
-        <h6 class="fw-semibold mb-3">
-          <i class="bi bi-map-fill text-primary me-2"></i>{% trans "Ubicación" %}
-        </h6>
+        <h5 class="section-title mb-3">
+          <i class="bi bi-map-fill me-2"></i>{% trans "Ubicación" %}
+        </h5>
         <div id="mapa" class="shadow-sm rounded-3" style="height:350px;"></div>
         
-        <!-- Botones de mapa -->
-        <div class="map-actions mt-3 d-flex gap-2 flex-wrap">
+      </div>
+
+      <!-- Botones de acción unificados -->
+      <div class="actions-section mt-4">
+        <div class="d-flex gap-2 flex-wrap justify-content-center">
           {% if lugar.google_maps_uri %}
-            <a href="{{ lugar.google_maps_uri }}" target="_blank" class="btn btn-google-maps btn-sm">
-          <i class="bi bi-google me-1"></i>{% trans "Ver en Google Maps" %}
+            <a href="{{ lugar.google_maps_uri }}" target="_blank" class="btn btn-google-maps rounded-pill">
+              <i class="bi bi-google me-1"></i>{% trans "Ver en Google Maps" %}
             </a>
           {% endif %}
           {% if lugar.ubicacion %}
-            <a id="waze-btn" href="#" target="_blank" class="btn btn-primary btn-sm">
+            <a id="waze-btn" href="#" target="_blank" class="btn btn-waze rounded-pill">
               <span class="waze-icon me-1" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20.5 12c0-4.418-3.582-8-8-8-4.163 0-7.598 3.188-7.973 7.268C3.6 11.093 3 11.982 3 13c0 1.657 1.343 3 3 3h1.25c.414 0 .75.336.75.75 0 1.379 1.121 2.5 2.5 2.5.96 0 1.792-.548 2.206-1.352.128-.245.387-.398.668-.398h1.126c1.287 0 2.5-.556 3.327-1.506.994-1.142 1.173-2.374 1.173-3.494zM8.25 17H8c-2.206 0-4-1.794-4-4 0-.79.457-1.52 1.174-1.86C5.69 6.87 9.584 4 12.5 4c4.69 0 8.5 3.81 8.5 8.5 0 1.36-.22 2.79-1.42 4.15C18.7 18.33 17.17 19 15.62 19h-1.126c-.857 1.03-2.127 1.75-3.494 1.75-2.206 0-4-1.794-4-4 0-.414.336-.75.75-.75.414 0 .75.336.75.75 0 .443.119.859.323 1.25z"/>
                   <circle cx="9.5" cy="10.5" r="1.5"/>
                   <circle cx="14.5" cy="10.5" r="1.5"/>
@@ -357,19 +362,15 @@
               {% trans "Abrir en Waze" %}
             </a>
           {% endif %}
+          <a href="https://wa.me/?text={{ lugar.nombre|urlencode }}%0A{% trans 'Explóralo aquí:' %} {{ request.build_absolute_uri }}"
+             target="_blank"
+             class="btn btn-whatsapp rounded-pill">
+            <i class="bi bi-whatsapp me-1"></i>{% trans "Compartir en WhatsApp" %}
+          </a>
+          <button class="btn btn-outline-secondary rounded-pill" onclick="copyToClipboard()">
+            <i class="bi bi-link-45deg me-1"></i>{% trans "Copiar enlace" %}
+          </button>
         </div>
-      </div>
-
-      <!-- Compartir -->
-      <div class="share-section text-center">
-        <a href="https://wa.me/?text={{ lugar.nombre|urlencode }}%0A{% trans 'Explóralo aquí:' %} {{ request.build_absolute_uri }}"
-           target="_blank"
-           class="btn btn-whatsapp rounded-pill me-2">
-          <i class="bi bi-whatsapp me-1"></i> {% trans "Compartir en WhatsApp" %}
-        </a>
-        <button class="btn btn-outline-secondary rounded-pill" onclick="copyToClipboard()">
-          <i class="bi bi-link-45deg me-1"></i> {% trans "Copiar enlace" %}
-        </button>
       </div>
       
     </div>
@@ -381,11 +382,13 @@
 
   <!-- Lugares Cercanos con Lazy Loading -->
   <section class="mb-5" id="lugares-cercanos-section">
-    <div class="d-flex align-items-center mb-4">
-      <i class="bi bi-geo-alt-fill text-primary me-2 fs-4"></i>
-      <h3 class="h4 fw-semibold mb-0">{% trans "Lugares Cercanos" %}</h3>
+    <div class="mb-3">
+      <h5 class="section-title mb-0">
+        <i class="bi bi-geo-alt-fill me-2"></i>{% trans "Lugares Cercanos" %}
+      </h5>
     </div>
-    <div class="row g-4" id="lugares-cercanos-container">
+    <div class="carousel-wrapper">
+      <div class="carousel-container" id="lugares-cercanos-container">
       <!-- Skeleton Loaders -->
       <div class="col-md-4">
         <div class="card h-100 shadow-sm border-0 rounded-4 skeleton-card">
@@ -421,15 +424,18 @@
         </div>
       </div>
     </div>
+    </div>
   </section>
 
   <!-- Lugares Similares con Lazy Loading -->
   <section class="mb-5" id="lugares-similares-section">
-    <div class="d-flex align-items-center mb-4">
-      <i class="bi bi-tags-fill text-success me-2 fs-4"></i>
-      <h3 class="h4 fw-semibold mb-0">{% trans "Lugares Similares" %}</h3>
+    <div class="mb-3">
+      <h5 class="section-title mb-0">
+        <i class="bi bi-tags-fill me-2"></i>{% trans "Lugares Similares" %}
+      </h5>
     </div>
-    <div class="row g-4" id="lugares-similares-container">
+    <div class="carousel-wrapper">
+      <div class="carousel-container" id="lugares-similares-container">
       <!-- Skeleton Loaders -->
       <div class="col-md-4">
         <div class="card h-100 shadow-sm border-0 rounded-4 skeleton-card">
@@ -465,15 +471,18 @@
         </div>
       </div>
     </div>
+    </div>
   </section>
 
   <!-- Lugares de la Misma Comuna con Lazy Loading -->
   <section class="mb-5" id="lugares-comuna-section">
-    <div class="d-flex align-items-center mb-4">
-      <i class="bi bi-map-fill text-info me-2 fs-4"></i>
-      <h3 class="h4 fw-semibold mb-0">{% trans "Más lugares en" %} <span id="comuna-name">{% trans "esta zona" %}</span></h3>
+    <div class="mb-3">
+      <h5 class="section-title mb-0">
+        <i class="bi bi-map-fill me-2"></i>{% trans "Más lugares en" %} <span id="comuna-name">{% trans "esta zona" %}</span>
+      </h5>
     </div>
-    <div class="row g-4" id="lugares-comuna-container">
+    <div class="carousel-wrapper">
+      <div class="carousel-container" id="lugares-comuna-container">
       <!-- Skeleton Loaders -->
       <div class="col-md-4">
         <div class="card h-100 shadow-sm border-0 rounded-4 skeleton-card">
@@ -508,6 +517,7 @@
           </div>
         </div>
       </div>
+    </div>
     </div>
   </section>
 
@@ -548,12 +558,15 @@
   const map = L.map("mapa", {
     center: [lat, lng],
     zoom: 17,
-    minZoom: 13,
-    maxZoom: 20,
-    dragging: true,
-    scrollWheelZoom: true,
-    doubleClickZoom: true,
-    zoomControl: true
+    minZoom: 17,
+    maxZoom: 17,
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    zoomControl: false,
+    touchZoom: false,
+    boxZoom: false,
+    keyboard: false
   });
 
   // Estilo oscuro con detalles verdes y morados
@@ -775,6 +788,47 @@
   max-width: 1000px !important;
 }
 
+/* Nombre del lugar - título principal */
+.place-name {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .place-name {
+    font-size: 1.8rem;
+  }
+}
+
+/* Títulos de sección */
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2d3748;
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(90deg, #667eea 0%, #764ba2 50%, transparent 50%);
+  border-image-slice: 1;
+  margin-bottom: 1rem;
+}
+
+.section-title i {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 1.5rem;
+}
+
 /* Photo counter */
 .photo-counter {
   position: absolute;
@@ -969,13 +1023,21 @@
   color: white;
 }
 
+/* Actions Section - Botones unificados */
+.actions-section .btn {
+  padding: 0.65rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  min-width: 150px;
+  white-space: nowrap;
+}
+
 /* Google Maps Button */
 .btn-google-maps {
   background: linear-gradient(135deg, #4285f4 0%, #ea4335 100%);
-  border: none;
   color: white;
-  font-weight: 600;
-  transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
 }
 
@@ -986,13 +1048,24 @@
   color: white;
 }
 
+/* Waze Button */
+.btn-waze {
+  background: linear-gradient(135deg, #33ccff 0%, #0088cc 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(51, 204, 255, 0.3);
+}
+
+.btn-waze:hover {
+  background: linear-gradient(135deg, #29b8e8 0%, #006699 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(51, 204, 255, 0.4);
+  color: white;
+}
+
 /* WhatsApp Button */
 .btn-whatsapp {
   background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
-  border: none;
   color: white;
-  font-weight: 600;
-  transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
 }
 
@@ -1001,6 +1074,24 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
   color: white;
+}
+
+/* Copy Link Button */
+.btn-outline-secondary.rounded-pill {
+  padding: 0.65rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 2px solid #6c757d;
+  color: #6c757d;
+  transition: all 0.3s ease;
+  min-width: 150px;
+}
+
+.btn-outline-secondary.rounded-pill:hover {
+  background: #6c757d;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
 }
 
 /* Responsive */
@@ -1022,6 +1113,73 @@
 }
 
 /* Cache buster - Horarios Fixed v2.1 - 2025-01-30 */
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Carrusel/Grid responsivo para lugares relacionados */
+/* ──────────────────────────────────────────────────────────────── */
+
+.carousel-wrapper {
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+/* Móvil: Carrusel horizontal */
+@media (max-width: 991.98px) {
+  .carousel-wrapper {
+    margin: 0 -1rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .carousel-container {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
+    padding-bottom: 1rem;
+    cursor: grab;
+    user-select: none;
+  }
+  
+  .carousel-container:active {
+    cursor: grabbing;
+  }
+  
+  .carousel-container::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .carousel-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+  }
+  
+  .carousel-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 3px;
+  }
+  
+  /* Cards más grandes en móvil */
+  .carousel-container > * {
+    flex: 0 0 auto;
+    width: 85vw;
+    max-width: 400px;
+  }
+}
+
+/* Desktop: Grid estándar 3 columnas */
+@media (min-width: 992px) {
+  .carousel-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .carousel-container > * {
+    width: 100%;
+  }
+}
 
 /* ──────────────────────────────────────────────────────────────── */
 /* Skeleton Loaders para Progressive Loading */
@@ -1124,26 +1282,36 @@ document.addEventListener("DOMContentLoaded", () => {
     comuna: false
   };
 
+  // Constantes traducidas para badges
+  const T_FEATURED = '{% trans "Destacado" %}';
+  const T_EXCLUSIVE = '{% trans "Exclusivo" %}';
+  const T_VIEW_DETAILS = '{% trans "Ver detalles" %}';
+  const T_IMAGE_OF = '{% trans "Imagen de" %}';
+
   // Función para crear HTML de lugar
   function createPlaceHTML(lugar) {
     const imageHTML = lugar.imagen 
-      ? `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${gettext('Imagen de')} ${lugar.nombre}" style="height: 180px; object-fit: cover;" loading="lazy">`
+      ? `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${T_IMAGE_OF} ${lugar.nombre}" style="height: 180px; object-fit: cover;" loading="lazy">`
       : `<div class="bg-light d-flex align-items-center justify-content-center rounded-top-4" style="height: 180px;"><i class="bi bi-image text-muted fs-3"></i></div>`;
     
     const destacadoBadge = lugar.es_destacado 
-      ? `<span class="badge bg-warning text-dark me-1 small"><i class="bi bi-star-fill me-1"></i>${gettext('Destacado')}</span>`
+      ? `<span class="badge bg-warning text-dark me-1 small"><i class="bi bi-star-fill me-1"></i>${T_FEATURED}</span>`
       : '';
     
     const exclusivoBadge = lugar.es_exclusivo 
-      ? `<span class="badge bg-success me-1 small"><i class="bi bi-gem me-1"></i>${gettext('Exclusivo')}</span>`
+      ? `<span class="badge bg-success me-1 small"><i class="bi bi-gem me-1"></i>${T_EXCLUSIVE}</span>`
       : '';
     
     const ratingHTML = lugar.rating 
       ? `<div class="small text-muted mb-3"><i class="bi bi-star-fill text-warning me-1"></i><span class="fw-semibold">${lugar.rating}</span></div>`
       : '';
 
+    // Construir URL correcta según idioma
+    const placeWord = CURRENT_LANG === 'es' ? 'lugar' : 'place';
+    const placeUrl = lugar.url || `${langPrefix}/${placeWord}/${lugar.slug}/`;
+    
     return `
-      <div class="col-md-4 fade-in">
+      <div class="carousel-item-card fade-in">
         <div class="card h-100 shadow-sm border-0 rounded-4">
           ${imageHTML}
           <div class="card-body d-flex flex-column">
@@ -1158,8 +1326,8 @@ document.addEventListener("DOMContentLoaded", () => {
               ${exclusivoBadge}
             </div>
             ${ratingHTML}
-            <a href="${lugar.url || `${langPrefix}/lugares/${lugar.slug}/`}" class="btn btn-gradient-purple mt-auto w-100 rounded-pill small">
-              <i class="bi bi-eye me-1"></i>${gettext('Ver detalles')}
+            <a href="${placeUrl}" class="btn btn-gradient-purple mt-auto w-100 rounded-pill small">
+              <i class="bi bi-eye me-1"></i>${T_VIEW_DETAILS}
             </a>
           </div>
         </div>

@@ -1,4 +1,5 @@
 from django.urls import path
+from django.utils.translation import pgettext_lazy
 from . import views as views
 
 app_name = 'explorer'
@@ -7,10 +8,10 @@ urlpatterns = [
     # Vistas principales
     path('', views.home, name='home'),
     path('semantic-search/', views.SemanticSearchView.as_view(), name='semantic_search_page'),
-    path('lugares/', views.lugares_list, name='lugares_list'),
-    path('lugares/<slug:comuna_slug>/', views.lugares_por_comuna, name='lugares_por_comuna'),
-    path('lugar/<slug:slug>/', views.lugares_detail, name='lugares_detail'),
-    path('lugar/<slug:slug>/reviews/', views.reviews_lugar, name='reviews_lugar'),
+    path(pgettext_lazy('url', 'lugares/'), views.lugares_list, name='lugares_list'),
+    path(pgettext_lazy('url', 'lugares/<slug:comuna_slug>/'), views.lugares_por_comuna, name='lugares_por_comuna'),
+    path(pgettext_lazy('url', 'lugar/<slug:slug>/'), views.lugares_detail, name='lugares_detail'),
+    path(pgettext_lazy('url', 'lugar/<slug:slug>/reviews/'), views.reviews_lugar, name='reviews_lugar'),
     
     # API endpoints
     path('api/filtros-ajax/', views.filtros_ajax_view, name='filtros_ajax'),
