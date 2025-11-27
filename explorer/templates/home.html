@@ -184,6 +184,9 @@
                                     <span id="filtros-count"></span>
                                     <span class="ms-1" id="filtros-optional">+ {% trans "característica opcional" %}</span>
                                     <div class="small mt-1" id="filtros-resumen"></div>
+                                    <button id="limpiar-filtros-btn" class="btn btn-sm btn-outline-light rounded-pill mt-2">
+                                        <i class="bi bi-x-circle me-1"></i>{% trans "Limpiar filtros" %}
+                                    </button>
                                 </div>
                             </div>
                             
@@ -756,6 +759,32 @@ a.btn.btn-gradient-green:focus {
 
 {% block extra_js %}
 <script>
+// Constante de idioma disponible para todo el script
+const CURRENT_LANG = '{{ LANGUAGE_CODE|default:"es" }}' || 'es';
+
+// Helper para construir la URL del detalle de un lugar
+function buildPlaceUrl(slug, backendUrl) {
+    if (backendUrl) return backendUrl;
+    if (!slug) return null;
+    if (CURRENT_LANG === 'es') {
+        return `/lugar/${slug}/`;
+    }
+    return `/en/place/${slug}/`;
+}
+
+// Helper para construir la URL de lista de lugares (con o sin comuna)
+function buildPlacesListUrl(areaSlug) {
+    if (!areaSlug) {
+        // Usa la URL i18n de Django para la lista general
+        return '{% url "explorer:lugares_list" %}';
+    }
+    if (CURRENT_LANG === 'es') {
+        return `/lugares/${areaSlug}/`;
+    }
+    // Versión traducida de "lugares/" -> "places/"
+    return `/en/places/${areaSlug}/`;
+}
+
 // Búsqueda semántica (Enter o botón)
 $(document).ready(function() {
     function ejecutarBusquedaSemantica(texto) {
@@ -811,9 +840,9 @@ $(document).ready(function() {
     // Variable para almacenar ubicación del usuario
     let ubicacionUsuario = null;
     
-    // Cerrar dropdowns al hacer scroll
+    // Cerrar dropdowns al hacer scroll (sin romper futuros clics)
     $(window).on('scroll', function() {
-        $('.dropdown-menu.show').removeClass('show');
+        $('.dropdown-menu.show').removeClass('show').css('display', '');
         $('.dropdown.show').removeClass('show');
         $('[data-bs-toggle="dropdown"][aria-expanded="true"]').attr('aria-expanded', 'false');
     });
@@ -875,6 +904,43 @@ $(document).ready(function() {
             $('#buscar-btn').hide();
         }
     }
+    
+    // Función para limpiar filtros
+    function limpiarFiltros() {
+        filtrosSeleccionados = {
+            area: null,
+            categoria: null,
+            caracteristica: null
+        };
+        
+        // Resetear UI de áreas
+        $('#area-selected-text').text(gettext('Seleccionar Área'));
+        $('#area-check').hide();
+        $('#areasDropdown').removeClass('selected');
+        
+        // Resetear UI de categorías
+        $('#categoria-selected-text').text(gettext('Seleccionar Tipo'));
+        $('#categoria-check').hide();
+        $('#categoriasDropdown').removeClass('selected');
+        
+        // Resetear UI de características
+        $('#caracteristica-selected-text').text(gettext('Características'));
+        $('#caracteristica-check').hide();
+        $('#etiquetasDropdown').removeClass('selected');
+        
+        // Ocultar resultados y estado
+        $('#ajax-results').hide();
+        $('#filtros-estado').hide();
+        $('#buscar-btn').hide();
+        
+        actualizarEstadoFiltros();
+    }
+    
+    // Botón para limpiar filtros
+    $('#limpiar-filtros-btn').on('click', function(e) {
+        e.preventDefault();
+        limpiarFiltros();
+    });
     
     // Manejar selección de área
     $('.area-option').on('click', function(e) {
@@ -974,15 +1040,11 @@ $(document).ready(function() {
             areaSlug = data.area_info.slug;
         }
         
-        // Si hay slug del área, usar URL con slug
-        if (areaSlug) {
-            baseUrl = `/lugares/${areaSlug}/`;
-        } else {
-            // Fallback a URL con parámetros
-            baseUrl = '{% url "explorer:lugares_list" %}';
-            if (filtrosSeleccionados.area) {
-                params.append('comuna', filtrosSeleccionados.area.id);
-            }
+        // Usar helper que respeta el idioma actual
+        baseUrl = buildPlacesListUrl(areaSlug);
+        if (!areaSlug && filtrosSeleccionados.area) {
+            // Cuando no tenemos slug pero sí id de comuna, añadirlo como query param
+            params.append('comuna', filtrosSeleccionados.area.id);
         }
         
         // Agregar otros filtros como parámetros
@@ -1000,9 +1062,9 @@ $(document).ready(function() {
     
     // Función para renderizar resultados
     function renderizarResultados(data) {
-        // Cerrar TODOS los dropdowns de forma agresiva
-        $('.dropdown-menu-filtros').removeClass('show').hide();
-        $('.dropdown-menu').removeClass('show').hide();
+        // Cerrar TODOS los dropdowns de forma agresiva (pero sin dejar inline display:none)
+        $('.dropdown-menu-filtros').removeClass('show').css('display', '');
+        $('.dropdown-menu').removeClass('show').css('display', '');
         $('.dropdown').removeClass('show');
         $('[data-bs-toggle="dropdown"]').attr('aria-expanded', 'false').removeClass('show');
         
@@ -1078,8 +1140,8 @@ $(document).ready(function() {
                                 </div>` : ''
                             }
 
-                            ${lugar.url ? 
-                            `<a href="${lugar.url}" class="btn btn-primary mt-auto w-100 rounded-pill">
+                            ${lugar.slug ? 
+                            `<a href="${buildPlaceUrl(lugar.slug, lugar.url)}" class="btn btn-primary mt-auto w-100 rounded-pill">
                                 <i class="bi bi-eye me-1"></i>${gettext('Ver detalles')}
                                 </a>` :
                                 `<span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">${gettext('Sin detalles')}</span>`
@@ -1236,9 +1298,9 @@ $(document).ready(function() {
     }
     
     function renderizarResultadosCercanos(data) {
-        // Cerrar TODOS los dropdowns de forma agresiva
-        $('.dropdown-menu-filtros').removeClass('show').hide();
-        $('.dropdown-menu').removeClass('show').hide();
+        // Cerrar TODOS los dropdowns de forma agresiva (pero sin forzar display:none permanente)
+        $('.dropdown-menu-filtros').removeClass('show').css('display', '');
+        $('.dropdown-menu').removeClass('show').css('display', '');
         $('.dropdown').removeClass('show');
         $('[data-bs-toggle="dropdown"]').attr('aria-expanded', 'false').removeClass('show');
         
@@ -1321,8 +1383,8 @@ $(document).ready(function() {
                                 </div>` : ''
                             }
 
-                            ${lugar.url ? 
-                                `<a href="${lugar.url}" class="btn btn-primary mt-auto w-100 rounded-pill">
+                            ${lugar.slug ? 
+                                `<a href="${buildPlaceUrl(lugar.slug, lugar.url)}" class="btn btn-primary mt-auto w-100 rounded-pill">
                                     <i class="bi bi-eye me-1"></i>${T_VIEW_DETAILS}
                                 </a>` :
                                 `<span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">${T_NO_DETAILS}</span>`
@@ -1393,9 +1455,9 @@ $(document).ready(function() {
 });
 
     function renderizarResultadosSemanticos(data) {
-        // Cerrar TODOS los dropdowns de forma agresiva
-        $('.dropdown-menu-filtros').removeClass('show').hide();
-        $('.dropdown-menu').removeClass('show').hide();
+        // Cerrar TODOS los dropdowns de forma agresiva (sin bloquear futuros clics)
+        $('.dropdown-menu-filtros').removeClass('show').css('display', '');
+        $('.dropdown-menu').removeClass('show').css('display', '');
         $('.dropdown').removeClass('show');
         $('[data-bs-toggle="dropdown"]').attr('aria-expanded', 'false').removeClass('show');
         
@@ -1422,8 +1484,8 @@ $(document).ready(function() {
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title fw-semibold mb-2">${lugar.nombre}</h5>
                             <div class="small text-muted mb-2">${lugar.tipo || ''}</div>
-                                                        ${lugar.direccion ? `<div class="small text-muted mb-3"><i class="bi bi-map me-1"></i>${lugar.direccion}</div>` : ''}
-                            ${lugar.url ? `<a href="${lugar.url}" class="btn btn-gradient-purple mt-auto w-100 rounded-pill"><i class="bi bi-eye me-1"></i>${T_VIEW_DETAILS}</a>` : `<span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">${T_NO_DETAILS}</span>`}
+                            ${lugar.direccion ? `<div class="small text-muted mb-3"><i class="bi bi-map me-1"></i>${lugar.direccion}</div>` : ''}
+                            ${lugar.slug ? `<a href="${buildPlaceUrl(lugar.slug, lugar.url)}" class="btn btn-gradient-purple mt-auto w-100 rounded-pill"><i class="bi bi-eye me-1"></i>${T_VIEW_DETAILS}</a>` : `<span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">${T_NO_DETAILS}</span>`}
                         </div>
                     </div>
                 </div>`;

@@ -967,7 +967,7 @@ def filtros_ajax_view(request):
                 'imagen': primera_foto.imagen if primera_foto else None,
                 'es_destacado': lugar.es_destacado,
                 'es_exclusivo': lugar.es_exclusivo,
-                'url': reverse('explorer:lugares_detail', args=[lugar.slug]) if lugar.slug else None
+                'url': None  # El frontend construye la URL según el idioma
             })
         
         # Obtener información del área
@@ -1058,7 +1058,7 @@ def lugares_cercanos_ajax_view(request):
                 'imagen': primera_foto.imagen if primera_foto else None,
                 'es_destacado': lugar.es_destacado,
                 'es_exclusivo': lugar.es_exclusivo,
-                'url': reverse('explorer:lugares_detail', args=[lugar.slug]) if lugar.slug else None,
+                'url': None,  # El frontend construye la URL según el idioma
                 'distancia': round(lugar.distancia_metros.km, 2) if hasattr(lugar, 'distancia_metros') and lugar.distancia_metros else None,
                 'direccion': lugar.direccion
             })
@@ -1405,7 +1405,7 @@ def semantic_search_ajax(request):
 			'rating': lugar.rating or 0.0,
 			'imagen': foto.imagen if foto else None,
 			'score': round(getattr(lugar, 'score', 0.0), 4),
-			'url': f"/lugar/{lugar.slug}/" if lugar.slug else None,
+			'url': None,  # El frontend construye la URL según el idioma
 			'es_destacado': bool(getattr(lugar, 'es_destacado', False)),
 			'es_exclusivo': bool(getattr(lugar, 'es_exclusivo', False)),
 			'total_reviews': lugar.total_reviews or 0,

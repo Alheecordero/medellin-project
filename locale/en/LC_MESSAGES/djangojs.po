@@ -23,3 +23,7 @@ msgid_plural "Encontramos %s lugares que coinciden con tus filtros"
 msgstr[0] "We found %s place that matches your filters"
 msgstr[1] "We found %s places that match your filters"
 
+#: explorer/templates/home.html:1081
+msgid "Sin filtro especial"
+msgstr "No special filter"
+
