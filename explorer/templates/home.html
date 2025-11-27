@@ -875,13 +875,14 @@ $(document).ready(function() {
         const requiredCount = (filtrosSeleccionados.area !== null ? 1 : 0) + (filtrosSeleccionados.categoria !== null ? 1 : 0);
         const totalCount = Object.values(filtrosSeleccionados).filter(v => v !== null).length;
         
-        $('#filtros-count').text(
-            interpolate(
-                ngettext('%(n)s/2 obligatorio', '%(n)s/2 obligatorios', requiredCount),
-                { n: requiredCount },
-                true
-            )
-        );
+        // Texto simple y robusto para el contador (evita depender de ngettext en JS)
+        let countLabel;
+        if (CURRENT_LANG === 'en') {
+            countLabel = `${requiredCount}/2 required`;
+        } else {
+            countLabel = `${requiredCount}/2 obligatorios`;
+        }
+        $('#filtros-count').text(countLabel);
         
         if (totalCount > 0) {
             $('#filtros-estado').show();
@@ -1074,15 +1075,28 @@ $(document).ready(function() {
             if (dropdown) dropdown.hide();
         });
         
-        // Usar interpolate y ngettext del catálogo JavaScript de Django
-        const msgResultados = interpolate(
-            ngettext(
-                'Encontramos %s lugar que coincide con tus filtros',
-                'Encontramos %s lugares que coinciden con tus filtros',
-                data.total
-            ),
-            [data.total]
-        );
+        // Mensaje de resultados: usar ngettext si está disponible, si no, fallback simple
+        let msgResultados;
+        if (typeof ngettext === 'function' && typeof interpolate === 'function') {
+            msgResultados = interpolate(
+                ngettext(
+                    'Encontramos %s lugar que coincide con tus filtros',
+                    'Encontramos %s lugares que coinciden con tus filtros',
+                    data.total
+                ),
+                [data.total]
+            );
+        } else {
+            if (CURRENT_LANG === 'en') {
+                msgResultados = data.total === 1
+                    ? `We found ${data.total} place matching your filters`
+                    : `We found ${data.total} places matching your filters`;
+            } else {
+                msgResultados = data.total === 1
+                    ? `Encontramos ${data.total} lugar que coincide con tus filtros`
+                    : `Encontramos ${data.total} lugares que coinciden con tus filtros`;
+            }
+        }
 
         let html = `
             <div class="container py-5">
