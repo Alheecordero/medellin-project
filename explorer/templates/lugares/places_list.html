@@ -48,8 +48,19 @@
         {% endif %}
       </div>
     {% endif %}
-    <h1 class="fw-bold">{{ titulo_pagina }}</h1>
-    <p class="lead text-muted">{{ descripcion_pagina }}</p>
+
+    {% get_current_language as LANGUAGE_CODE %}
+    {% if LANGUAGE_CODE == 'en' and region_actual %}
+      <h1 class="fw-bold">
+        {% blocktrans with comuna=region_actual.name %}Los mejores lugares en {{ comuna }}{% endblocktrans %}
+      </h1>
+      <p class="lead text-muted">
+        {% blocktrans with comuna=region_actual.name %}Descubre los sitios más destacados de {{ comuna }}{% endblocktrans %}
+      </p>
+    {% else %}
+      <h1 class="fw-bold">{{ titulo_pagina }}</h1>
+      <p class="lead text-muted">{{ descripcion_pagina }}</p>
+    {% endif %}
     
     {% if busqueda_actual %}
       <div class="mt-3">
