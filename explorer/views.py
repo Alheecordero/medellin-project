@@ -889,7 +889,8 @@ def lugares_por_comuna(request, comuna_slug):
                     filtros_activos.append(nombre)
 
             # Título dinámico para comuna específica (versión robusta por idioma)
-            lang = get_language() or 'es'
+            # Usar el prefijo de la URL para decidir el idioma, evitando inconsistencias de estado
+            lang = 'en' if self.request.path.startswith('/en/') else (get_language() or 'es')
             if busqueda_actual:
                 if lang.startswith('en'):
                     titulo_pagina = f'Results for "{busqueda_actual}" in {region.name}'
