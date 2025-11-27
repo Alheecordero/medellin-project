@@ -23,6 +23,7 @@
         <!-- Mobile actions: toggler + language switcher a la derecha -->
         <div class="d-flex d-lg-none align-items-center ms-auto gap-2 lang-switcher-mobile">
             {% get_current_language as LANGUAGE_CODE %}
+            {# DEBUG i18n: {{ request.path }} | slice9={{ request.path|slice:':9' }} | slice7={{ request.path|slice:':7' }} #}
             {# Botón ES: siempre mapea desde rutas /en/... a sus equivalentes ES #}
             <form action="{% url 'set_language' %}" method="post" class="me-1">
                 {% csrf_token %}
@@ -75,6 +76,7 @@
             <!-- Selector de idioma como botones estilo CTA (solo desktop) -->
             <div class="d-none d-lg-flex align-items-center me-3 lang-switcher">
                 {% get_current_language as LANGUAGE_CODE %}
+                {# DEBUG i18n desktop: {{ request.path }} | slice9={{ request.path|slice:':9' }} | slice7={{ request.path|slice:':7' }} #}
 
                 {# Botón ES (desktop) #}
                 <form action="{% url 'set_language' %}" method="post" class="me-2">
