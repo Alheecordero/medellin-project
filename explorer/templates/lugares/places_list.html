@@ -52,21 +52,19 @@
     {% get_current_language as LANGUAGE_CODE %}
     {% if LANGUAGE_CODE == 'en' %}
       {% if region_actual %}
-        {# Usar el nombre de la comuna directo si está disponible #}
         <h1 class="fw-bold">
-          {% blocktrans with comuna=region_actual.name %}Los mejores lugares en {{ comuna }}{% endblocktrans %}
+          The best places in {{ region_actual.name }}
         </h1>
         <p class="lead text-muted">
-          {% blocktrans with comuna=region_actual.name %}Descubre los sitios más destacados de {{ comuna }}{% endblocktrans %}
+          Discover the most outstanding places in {{ region_actual.name }}
         </p>
       {% else %}
-        {# Fallback: extraer la comuna desde el título en español #}
         {% with comuna=titulo_pagina|cut:"Los mejores lugares en " %}
           <h1 class="fw-bold">
-            {% blocktrans with comuna=comuna %}Los mejores lugares en {{ comuna }}{% endblocktrans %}
+            The best places in {{ comuna }}
           </h1>
           <p class="lead text-muted">
-            {% blocktrans with comuna=comuna %}Descubre los sitios más destacados de {{ comuna }}{% endblocktrans %}
+            Discover the most outstanding places in {{ comuna }}
           </p>
         {% endwith %}
       {% endif %}
