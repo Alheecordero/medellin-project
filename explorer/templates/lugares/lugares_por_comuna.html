@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load i18n_extras %}
 
 {% block title %}{% trans "Explorar por Comuna | ViveMedellín" %}{% endblock %}
 
@@ -37,15 +38,15 @@
       <div class="col-md-4">
         <div class="card h-100 shadow-sm">
           {% if lugar.fotos.exists %}
-            <img src="{{ lugar.fotos.first.imagen }}" class="card-img-top" alt="{{ lugar.nombre }}" style="height:200px; object-fit:cover;">
+            <img src="{{ lugar.fotos.first.imagen }}" class="card-img-top" alt="{% trans \"Imagen de\" %} {{ lugar.nombre }}" style="height:200px; object-fit:cover;">
           {% else %}
             <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height:200px;">
-              <span class="fw-bold">Sin imagen</span>
+              <span class="fw-bold">{% trans \"Sin imagen\" %}</span>
             </div>
           {% endif %}
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ lugar.nombre }}</h5>
-            <p class="card-text text-muted">{{ lugar.tipo|title }}</p>
+            <p class="card-text text-muted">{{ lugar|place_type_label }}</p>
             {% if lugar.slug %}
               <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-outline-primary mt-auto w-100">{% trans "Ver detalles" %}</a>
             {% else %}

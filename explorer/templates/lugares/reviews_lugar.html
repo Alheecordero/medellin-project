@@ -5,16 +5,19 @@
 {% block title %}{% trans "Reseñas de" %} {{ lugar.nombre }} | ViveMedellín{% endblock %}
 
 {% block meta_description %}
-  Opiniones sobre {{ lugar.nombre }} en Medellín. Lee reseñas de visitantes y descubre su calificación general antes de visitarlo.
+  {% blocktrans with lugar_nombre=lugar.nombre %}Opiniones sobre {{ lugar_nombre }} en Medellín. Lee reseñas de visitantes y descubre su calificación general antes de visitarlo.{% endblocktrans %}
 {% endblock %}
 
 {% block meta_keywords %}
-  reseñas de {{ lugar.nombre }}, opiniones {{ lugar.nombre }}, calificación {{ lugar.nombre }}, comentarios lugar Medellín
+  {% blocktrans with lugar_nombre=lugar.nombre %}reseñas de {{ lugar_nombre }}, opiniones {{ lugar_nombre }}, calificación {{ lugar_nombre }}, comentarios lugar Medellín{% endblocktrans %}
 {% endblock %}
 
-{% block og_title %}Reseñas de {{ lugar.nombre }} | ViveMedellín{% endblock %}
+{% block og_title %}
+  {% blocktrans with lugar_nombre=lugar.nombre %}Reseñas de {{ lugar_nombre }} | ViveMedellín{% endblocktrans %}
+{% endblock %}
+
 {% block og_description %}
-  Explora las opiniones y calificaciones de otros usuarios sobre {{ lugar.nombre }}. Descubre qué dicen antes de tu próxima salida.
+  {% blocktrans with lugar_nombre=lugar.nombre %}Explora las opiniones y calificaciones de otros usuarios sobre {{ lugar_nombre }}. Descubre qué dicen antes de tu próxima salida.{% endblocktrans %}
 {% endblock %}
 
 {% block og_image %}

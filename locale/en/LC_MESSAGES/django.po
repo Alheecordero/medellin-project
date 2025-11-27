@@ -1957,10 +1957,8 @@ msgid "Cargando..."
 msgstr "Loading..."
 
 #: explorer/templates/home.html:185
-#, fuzzy
-#| msgid "Sin característica especial"
 msgid "característica opcional"
-msgstr "No special feature"
+msgstr "optional feature"
 
 #: explorer/templates/home.html:191
 msgid "Buscar Lugares"

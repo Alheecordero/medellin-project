@@ -459,6 +459,8 @@
     border-radius: 20px;
     padding: 2rem;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    z-index: 2; /* por encima del área de resultados */
 }
 
 /* Botones Dropdown de Filtros */
@@ -639,11 +641,11 @@
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
     border-radius: 20px;
-    margin-top: 2rem;
-    padding: 1rem;
+    margin-top: 4.5rem;   /* dejar espacio cómodo bajo los filtros y dropdowns */
+    padding: 1.5rem 1rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-    z-index: 200;
+    position: static;       /* que participe en el flujo normal, sin solaparse con filtros */
+    z-index: auto;
 }
 
 #ajax-results .card:hover {
@@ -653,6 +655,12 @@
 }
 
 /* Loading spinner personalizado */
+#ajax-loading {
+    margin-top: 2.5rem;
+    position: static;   /* evitar solaparse con filtros */
+    z-index: auto;
+}
+
 #ajax-loading .spinner-border {
     width: 3rem;
     height: 3rem;
@@ -839,6 +847,11 @@ $(document).ready(function() {
     
     // Variable para almacenar ubicación del usuario
     let ubicacionUsuario = null;
+
+    // Control de búsquedas: auto-búsqueda con debounce y una sola request activa
+    let currentSearchRequest = null;
+    let searchTimeoutId = null;
+    const SEARCH_DEBOUNCE_MS = 600;
     
     // Cerrar dropdowns al hacer scroll (sin romper futuros clics)
     $(window).on('scroll', function() {
@@ -897,6 +910,8 @@ $(document).ready(function() {
             // Solo requiere área y categoría para habilitar búsqueda
             if (requiredCount === 2) {
                 $('#buscar-btn').show().prop('disabled', false);
+                // Disparar auto-búsqueda con debounce
+                programarBusquedaAuto();
             } else {
                 $('#buscar-btn').prop('disabled', true);
             }
@@ -929,6 +944,16 @@ $(document).ready(function() {
         $('#caracteristica-check').hide();
         $('#etiquetasDropdown').removeClass('selected');
         
+        // Cancelar búsquedas pendientes
+        if (searchTimeoutId) {
+            clearTimeout(searchTimeoutId);
+            searchTimeoutId = null;
+        }
+        if (currentSearchRequest) {
+            currentSearchRequest.abort();
+            currentSearchRequest = null;
+        }
+
         // Ocultar resultados y estado
         $('#ajax-results').hide();
         $('#filtros-estado').hide();
@@ -997,14 +1022,38 @@ $(document).ready(function() {
         actualizarEstadoFiltros();
     });
     
-    // Manejar búsqueda AJAX
-    $('#buscar-btn').on('click', function() {
+    // Programar auto-búsqueda (debounced)
+    function programarBusquedaAuto() {
+        // Solo buscar si tenemos área y categoría
+        if (!filtrosSeleccionados.area || !filtrosSeleccionados.categoria) {
+            return;
+        }
+
+        if (searchTimeoutId) {
+            clearTimeout(searchTimeoutId);
+        }
+
+        searchTimeoutId = setTimeout(ejecutarBusquedaFiltros, SEARCH_DEBOUNCE_MS);
+    }
+
+    // Ejecutar búsqueda AJAX (garantizando una sola request activa)
+    function ejecutarBusquedaFiltros() {
+        searchTimeoutId = null;
+
+        if (!filtrosSeleccionados.area || !filtrosSeleccionados.categoria) {
+            return;
+        }
+
+        // Cancelar request anterior si sigue en curso
+        if (currentSearchRequest && currentSearchRequest.readyState !== 4) {
+            currentSearchRequest.abort();
+        }
+
         // Mostrar loading
         $('#ajax-loading').show();
         $('#ajax-results').hide();
-        
-        // Hacer llamada AJAX
-        $.ajax({
+
+        currentSearchRequest = $.ajax({
             url: "{% url 'explorer:filtros_ajax' %}",
             type: 'GET',
             data: {
@@ -1022,10 +1071,22 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
+                if (status === 'abort') {
+                    // Búsqueda cancelada por una nueva, no mostrar error
+                    return;
+                }
                 $('#ajax-loading').hide();
                 mostrarError('Error de conexión: ' + error);
+            },
+            complete: function() {
+                currentSearchRequest = null;
             }
         });
+    }
+
+    // Botón "Buscar Lugares" como disparador manual adicional (sin debounce)
+    $('#buscar-btn').on('click', function() {
+        ejecutarBusquedaFiltros();
     });
     
     // Función para generar URL completa con slugs

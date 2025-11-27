@@ -10,13 +10,13 @@
 
 {% block meta_keywords %}
   {% if tipo_actual == 'restaurant' %}
-    restaurantes Medellín, mejores restaurantes, gastronomía Medellín, comida paisa
+    {% blocktrans %}restaurantes Medellín, mejores restaurantes, gastronomía Medellín, comida paisa{% endblocktrans %}
   {% elif tipo_actual == 'bar' %}
-    bares Medellín, discotecas Medellín, vida nocturna, rumba Medellín
+    {% blocktrans %}bares Medellín, discotecas Medellín, vida nocturna, rumba Medellín{% endblocktrans %}
   {% elif tipo_actual == 'cafe' %}
-    cafeterías Medellín, café paisa, cultura cafetera, cafés Medellín
+    {% blocktrans %}cafeterías Medellín, café paisa, cultura cafetera, cafés Medellín{% endblocktrans %}
   {% else %}
-    lugares Medellín, bares Medellín, restaurantes Medellín, sitios para salir en Medellín
+    {% blocktrans %}lugares Medellín, bares Medellín, restaurantes Medellín, sitios para salir en Medellín{% endblocktrans %}
   {% endif %}
 {% endblock %}
 

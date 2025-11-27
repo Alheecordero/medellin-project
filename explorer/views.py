@@ -888,22 +888,38 @@ def lugares_por_comuna(request, comuna_slug):
                 if self.request.GET.get(filtro) == 'true':
                     filtros_activos.append(nombre)
 
-            # Título dinámico para comuna específica
+            # Título dinámico para comuna específica (version i18n)
             if busqueda_actual:
-                titulo_pagina = f'Resultados para "{busqueda_actual}" en {region.name}'
-                descripcion_pagina = f'Lugares que coinciden con tu búsqueda en {region.name}'
+                titulo_pagina = _('Resultados para "%(query)s" en %(comuna)s') % {
+                    'query': busqueda_actual,
+                    'comuna': region.name,
+                }
+                descripcion_pagina = _('Lugares que coinciden con tu búsqueda en %(comuna)s') % {
+                    'comuna': region.name,
+                }
             elif tipo_actual and tipo_actual in tipos_info:
                 info = tipos_info[tipo_actual]
                 titulo_pagina = info['titulo']
                 if filtros_activos:
-                    titulo_pagina += f' {" y ".join(filtros_activos[:2])}'
+                    titulo_pagina += _(' %(filters)s') % {
+                        'filters': _(' y ').join(filtros_activos[:2])
+                    }
                 descripcion_pagina = info['descripcion']
             elif filtros_activos:
-                titulo_pagina = f'Lugares {" y ".join(filtros_activos[:2])} en {region.name}'
-                descripcion_pagina = f'Lugares especializados en {region.name} que cumplen tus criterios'
+                titulo_pagina = _('Lugares %(filters)s en %(comuna)s') % {
+                    'filters': _(' y ').join(filtros_activos[:2]),
+                    'comuna': region.name,
+                }
+                descripcion_pagina = _('Lugares especializados en %(comuna)s que cumplen tus criterios') % {
+                    'comuna': region.name,
+                }
             else:
-                titulo_pagina = f'Los mejores lugares en {region.name}'
-                descripcion_pagina = f'Descubre los sitios más destacados de {region.name}'
+                titulo_pagina = _('Los mejores lugares en %(comuna)s') % {
+                    'comuna': region.name,
+                }
+                descripcion_pagina = _('Descubre los sitios más destacados de %(comuna)s') % {
+                    'comuna': region.name,
+                }
             
             # Actualizar contexto
             context.update({
