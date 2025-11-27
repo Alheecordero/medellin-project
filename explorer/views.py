@@ -888,38 +888,57 @@ def lugares_por_comuna(request, comuna_slug):
                 if self.request.GET.get(filtro) == 'true':
                     filtros_activos.append(nombre)
 
-            # Título dinámico para comuna específica (version i18n)
+            # Título dinámico para comuna específica (versión robusta por idioma)
+            lang = get_language() or 'es'
             if busqueda_actual:
-                titulo_pagina = _('Resultados para "%(query)s" en %(comuna)s') % {
-                    'query': busqueda_actual,
-                    'comuna': region.name,
-                }
-                descripcion_pagina = _('Lugares que coinciden con tu búsqueda en %(comuna)s') % {
-                    'comuna': region.name,
-                }
+                if lang.startswith('en'):
+                    titulo_pagina = f'Results for "{busqueda_actual}" in {region.name}'
+                    descripcion_pagina = f'Places that match your search in {region.name}'
+                else:
+                    titulo_pagina = _('Resultados para "%(query)s" en %(comuna)s') % {
+                        'query': busqueda_actual,
+                        'comuna': region.name,
+                    }
+                    descripcion_pagina = _('Lugares que coinciden con tu búsqueda en %(comuna)s') % {
+                        'comuna': region.name,
+                    }
             elif tipo_actual and tipo_actual in tipos_info:
                 info = tipos_info[tipo_actual]
                 titulo_pagina = info['titulo']
                 if filtros_activos:
-                    titulo_pagina += _(' %(filters)s') % {
-                        'filters': _(' y ').join(filtros_activos[:2])
-                    }
+                    # Aquí info['titulo'] ya viene traducido por get_localized_place_type
+                    joiner = ' and ' if lang.startswith('en') else _(' y ')
+                    filtros_txt = joiner.join(filtros_activos[:2])
+                    if lang.startswith('en'):
+                        titulo_pagina += f' {filtros_txt}'
+                    else:
+                        titulo_pagina += _(' %(filters)s') % {'filters': filtros_txt}
                 descripcion_pagina = info['descripcion']
             elif filtros_activos:
-                titulo_pagina = _('Lugares %(filters)s en %(comuna)s') % {
-                    'filters': _(' y ').join(filtros_activos[:2]),
-                    'comuna': region.name,
-                }
-                descripcion_pagina = _('Lugares especializados en %(comuna)s que cumplen tus criterios') % {
-                    'comuna': region.name,
-                }
+                joiner = ' and ' if lang.startswith('en') else _(' y ')
+                filtros_txt = joiner.join(filtros_activos[:2])
+                if lang.startswith('en'):
+                    titulo_pagina = f'Places {filtros_txt} in {region.name}'
+                    descripcion_pagina = f'Specialized places in {region.name} that match your criteria'
+                else:
+                    titulo_pagina = _('Lugares %(filters)s en %(comuna)s') % {
+                        'filters': filtros_txt,
+                        'comuna': region.name,
+                    }
+                    descripcion_pagina = _('Lugares especializados en %(comuna)s que cumplen tus criterios') % {
+                        'comuna': region.name,
+                    }
             else:
-                titulo_pagina = _('Los mejores lugares en %(comuna)s') % {
-                    'comuna': region.name,
-                }
-                descripcion_pagina = _('Descubre los sitios más destacados de %(comuna)s') % {
-                    'comuna': region.name,
-                }
+                if lang.startswith('en'):
+                    titulo_pagina = f'The best places in {region.name}'
+                    descripcion_pagina = f'Discover the most outstanding places in {region.name}'
+                else:
+                    titulo_pagina = _('Los mejores lugares en %(comuna)s') % {
+                        'comuna': region.name,
+                    }
+                    descripcion_pagina = _('Descubre los sitios más destacados de %(comuna)s') % {
+                        'comuna': region.name,
+                    }
             
             # Actualizar contexto
             context.update({
