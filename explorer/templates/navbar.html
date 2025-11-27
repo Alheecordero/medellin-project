@@ -45,7 +45,20 @@
             <form action="{% url 'set_language' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="language" value="en">
-                <input type="hidden" name="next" value="{% if LANGUAGE_CODE == 'en' %}{{ request.get_full_path }}{% else %}/en{{ request.get_full_path }}{% endif %}">
+                {% if LANGUAGE_CODE == 'es' %}
+                    {# Mapear rutas importantes ES -> EN para evitar /en/lugares/... #}
+                    {% if request.path == '/lugares/' %}
+                        <input type="hidden" name="next" value="/en/places/">
+                    {% elif request.path|slice:':9' == '/lugares/' %}
+                        <input type="hidden" name="next" value="/en/places/{{ request.path|slice:'9:' }}">
+                    {% elif request.path|slice:':7' == '/lugar/' %}
+                        <input type="hidden" name="next" value="/en/place/{{ request.path|slice:'7:' }}">
+                    {% else %}
+                        <input type="hidden" name="next" value="/en{{ request.get_full_path }}">
+                    {% endif %}
+                {% else %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                {% endif %}
                 <button type="submit" class="btn btn-sm btn-lang {% if LANGUAGE_CODE == 'en' %}active{% else %}inactive{% endif %}">EN</button>
             </form>
             <button class="navbar-toggler border-0 shadow-none ms-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-expanded="false" aria-label="Toggle navigation" aria-controls="navbarNav">
@@ -82,7 +95,19 @@
                 <form action="{% url 'set_language' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="language" value="en">
-                    <input type="hidden" name="next" value="{% if LANGUAGE_CODE == 'en' %}{{ request.get_full_path }}{% else %}/en{{ request.get_full_path }}{% endif %}">
+                    {% if LANGUAGE_CODE == 'es' %}
+                        {% if request.path == '/lugares/' %}
+                            <input type="hidden" name="next" value="/en/places/">
+                        {% elif request.path|slice:':9' == '/lugares/' %}
+                            <input type="hidden" name="next" value="/en/places/{{ request.path|slice:'9:' }}">
+                        {% elif request.path|slice:':7' == '/lugar/' %}
+                            <input type="hidden" name="next" value="/en/place/{{ request.path|slice:'7:' }}">
+                        {% else %}
+                            <input type="hidden" name="next" value="/en{{ request.get_full_path }}">
+                        {% endif %}
+                    {% else %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    {% endif %}
                     <button type="submit" class="btn btn-lang {% if LANGUAGE_CODE == 'en' %}active{% else %}inactive{% endif %}">EN</button>
                 </form>
             </div>
