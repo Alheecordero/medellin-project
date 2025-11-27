@@ -484,6 +484,35 @@ $(document).ready(function() {
 });
 </script>
 
+<script>
+// Ajuste de título/subtítulo en inglés por si el backend entrega texto base en español
+document.addEventListener('DOMContentLoaded', function() {
+  const lang = document.documentElement.getAttribute('lang') || 'es';
+  if (!lang.toLowerCase().startsWith('en')) return;
+
+  const heading = document.querySelector('.text-center.mb-5 h1.fw-bold');
+  const subtitle = document.querySelector('.text-center.mb-5 p.lead.text-muted');
+
+  if (heading) {
+    const text = heading.textContent.trim();
+    const prefixEs = 'Los mejores lugares en';
+    if (text.startsWith(prefixEs)) {
+      const comuna = text.slice(prefixEs.length).trim();
+      heading.textContent = `The best places in ${comuna}`;
+    }
+  }
+
+  if (subtitle) {
+    const text = subtitle.textContent.trim();
+    const prefixEs = 'Descubre los sitios más destacados de';
+    if (text.startsWith(prefixEs)) {
+      const comuna = text.slice(prefixEs.length).trim();
+      subtitle.textContent = `Discover the most outstanding places in ${comuna}`;
+    }
+  }
+});
+</script>
+
 <style>
 /* Grid/Carrusel de lugares - mismo estilo que home */
 .lugares-grid {
