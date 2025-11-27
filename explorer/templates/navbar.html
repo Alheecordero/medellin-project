@@ -22,42 +22,42 @@
         <!-- Mobile actions: toggler + language switcher a la derecha -->
         <div class="d-flex d-lg-none align-items-center ms-auto gap-2 lang-switcher-mobile">
             {% get_current_language as LANGUAGE_CODE %}
+            {# Botón ES: siempre mapea desde rutas /en/... a sus equivalentes ES #}
             <form action="{% url 'set_language' %}" method="post" class="me-1">
                 {% csrf_token %}
                 <input type="hidden" name="language" value="es">
-                {% if LANGUAGE_CODE == 'en' %}
-                    {# Mapear rutas importantes EN -> ES para evitar 404 #}
-                    {% if request.path == '/en/places/' %}
-                        <input type="hidden" name="next" value="/lugares/">
-                    {% elif request.path|slice:":11" == '/en/places/' %}
-                        <input type="hidden" name="next" value="/lugares/{{ request.path|slice:'11:' }}">
-                    {% elif request.path|slice:":10" == '/en/place/' %}
-                        <input type="hidden" name="next" value="/lugar/{{ request.path|slice:'10:' }}">
-                    {% else %}
-                        {# Fallback: quitar solo el prefijo /en y dejar que resuelva home u otras vistas #}
-                        <input type="hidden" name="next" value="{{ request.get_full_path|slice:'3:' }}">
-                    {% endif %}
+                {% if request.path|slice:":11" == '/en/places/' %}
+                    {# /en/places/ o /en/places/<comuna>/ #}
+                    <input type="hidden" name="next" value="/lugares/{{ request.path|slice:'11:' }}">
+                {% elif request.path|slice:":10" == '/en/place/' %}
+                    {# /en/place/<slug>/... #}
+                    <input type="hidden" name="next" value="/lugar/{{ request.path|slice:'10:' }}">
+                {% elif request.path|slice:":4" == '/en/' %}
+                    {# Cualquier otra ruta /en/... -> quitar prefijo /en #}
+                    <input type="hidden" name="next" value="{{ request.get_full_path|slice:'3:' }}">
                 {% else %}
+                    {# Ya estamos en ruta ES #}
                     <input type="hidden" name="next" value="{{ request.get_full_path }}">
                 {% endif %}
                 <button type="submit" class="btn btn-sm btn-lang {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
             </form>
+
+            {# Botón EN: siempre mapea desde /lugares/ y /lugar/ a /en/places y /en/place #}
             <form action="{% url 'set_language' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="language" value="en">
-                {% if LANGUAGE_CODE == 'es' %}
-                    {# Mapear rutas importantes ES -> EN para evitar /en/lugares/... #}
-                    {% if request.path == '/lugares/' %}
-                        <input type="hidden" name="next" value="/en/places/">
-                    {% elif request.path|slice:':9' == '/lugares/' %}
-                        <input type="hidden" name="next" value="/en/places/{{ request.path|slice:'9:' }}">
-                    {% elif request.path|slice:':7' == '/lugar/' %}
-                        <input type="hidden" name="next" value="/en/place/{{ request.path|slice:'7:' }}">
-                    {% else %}
-                        <input type="hidden" name="next" value="/en{{ request.get_full_path }}">
-                    {% endif %}
-                {% else %}
+                {% if request.path|slice:':9' == '/lugares/' %}
+                    {# /lugares/ o /lugares/<comuna>/ #}
+                    <input type="hidden" name="next" value="/en/places/{{ request.path|slice:'9:' }}">
+                {% elif request.path|slice:':7' == '/lugar/' %}
+                    {# /lugar/<slug>/... #}
+                    <input type="hidden" name="next" value="/en/place/{{ request.path|slice:'7:' }}">
+                {% elif request.path|slice:':4' == '/en/' %}
+                    {# Ya estamos en ruta EN correcta #}
                     <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                {% else %}
+                    {# Cualquier otra ruta ES -> prefijar /en #}
+                    <input type="hidden" name="next" value="/en{{ request.get_full_path }}">
                 {% endif %}
                 <button type="submit" class="btn btn-sm btn-lang {% if LANGUAGE_CODE == 'en' %}active{% else %}inactive{% endif %}">EN</button>
             </form>
@@ -74,39 +74,35 @@
             <!-- Selector de idioma como botones estilo CTA (solo desktop) -->
             <div class="d-none d-lg-flex align-items-center me-3 lang-switcher">
                 {% get_current_language as LANGUAGE_CODE %}
+
+                {# Botón ES (desktop) #}
                 <form action="{% url 'set_language' %}" method="post" class="me-2">
                     {% csrf_token %}
                     <input type="hidden" name="language" value="es">
-                    {% if LANGUAGE_CODE == 'en' %}
-                        {% if request.path == '/en/places/' %}
-                            <input type="hidden" name="next" value="/lugares/">
-                        {% elif request.path|slice:":11" == '/en/places/' %}
-                            <input type="hidden" name="next" value="/lugares/{{ request.path|slice:'11:' }}">
-                        {% elif request.path|slice:":10" == '/en/place/' %}
-                            <input type="hidden" name="next" value="/lugar/{{ request.path|slice:'10:' }}">
-                        {% else %}
-                            <input type="hidden" name="next" value="{{ request.get_full_path|slice:'3:' }}">
-                        {% endif %}
+                    {% if request.path|slice:":11" == '/en/places/' %}
+                        <input type="hidden" name="next" value="/lugares/{{ request.path|slice:'11:' }}">
+                    {% elif request.path|slice:":10" == '/en/place/' %}
+                        <input type="hidden" name="next" value="/lugar/{{ request.path|slice:'10:' }}">
+                    {% elif request.path|slice:":4" == '/en/' %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path|slice:'3:' }}">
                     {% else %}
                         <input type="hidden" name="next" value="{{ request.get_full_path }}">
                     {% endif %}
                     <button type="submit" class="btn btn-lang {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
                 </form>
+
+                {# Botón EN (desktop) #}
                 <form action="{% url 'set_language' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="language" value="en">
-                    {% if LANGUAGE_CODE == 'es' %}
-                        {% if request.path == '/lugares/' %}
-                            <input type="hidden" name="next" value="/en/places/">
-                        {% elif request.path|slice:':9' == '/lugares/' %}
-                            <input type="hidden" name="next" value="/en/places/{{ request.path|slice:'9:' }}">
-                        {% elif request.path|slice:':7' == '/lugar/' %}
-                            <input type="hidden" name="next" value="/en/place/{{ request.path|slice:'7:' }}">
-                        {% else %}
-                            <input type="hidden" name="next" value="/en{{ request.get_full_path }}">
-                        {% endif %}
-                    {% else %}
+                    {% if request.path|slice:':9' == '/lugares/' %}
+                        <input type="hidden" name="next" value="/en/places/{{ request.path|slice:'9:' }}">
+                    {% elif request.path|slice:':7' == '/lugar/' %}
+                        <input type="hidden" name="next" value="/en/place/{{ request.path|slice:'7:' }}">
+                    {% elif request.path|slice:':4' == '/en/' %}
                         <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    {% else %}
+                        <input type="hidden" name="next" value="/en{{ request.get_full_path }}">
                     {% endif %}
                     <button type="submit" class="btn btn-lang {% if LANGUAGE_CODE == 'en' %}active{% else %}inactive{% endif %}">EN</button>
                 </form>
