@@ -23,3 +23,5 @@ easy-thumbnails
 django-extensions
 google-genai==1.2.0
 google-generativeai==0.8.3
+Pillow>=10.0.0
+google-cloud-storage>=2.10.0

@@ -168,6 +168,11 @@ class Places(models.Model):
     es_destacado = models.BooleanField(default=False, help_text="Lugares con mejor rating y más reviews")
     es_exclusivo = models.BooleanField(default=False, help_text="Lugares especiales o VIP")
     show_in_home = models.BooleanField(default=False, db_index=True, help_text="Mostrar en página de inicio para máximo rendimiento")
+    imagenes_optimizadas = models.BooleanField(
+        default=False,
+        db_index=True,
+        help_text="Indica si ya se generaron variantes optimizadas de imágenes para este lugar",
+    )
 
     # Sistema de etiquetas
     tags = TaggableManager(
@@ -319,6 +324,9 @@ class Foto(models.Model):
         Places, on_delete=models.CASCADE, related_name="fotos", db_index=True
     )
     imagen = models.URLField(max_length=1000)
+    # Variantes optimizadas (URLs generadas en batch, no obligatorias)
+    imagen_mediana = models.URLField(max_length=1000, null=True, blank=True)
+    imagen_miniatura = models.URLField(max_length=1000, null=True, blank=True)
     descripcion = models.CharField(max_length=255, blank=True, null=True)
     fecha_subida = models.DateTimeField(auto_now_add=True, null=True)
 
