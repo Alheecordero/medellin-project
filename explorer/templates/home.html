@@ -435,48 +435,27 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* Grid/Carrusel de lugares */
+/* Grid de lugares: vertical en mobile, múltiple en desktop */
 .lugares-grid {
   padding: 0.5rem 0;
 }
 
-/* Móvil: Carrusel horizontal */
+/* Mobile: lista vertical (sin scroll horizontal) */
 @media (max-width: 767.98px) {
   .lugares-grid {
     display: flex;
-    gap: 1rem;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
+    flex-direction: column;
+    gap: 1.25rem;
     padding-bottom: 1rem;
-    margin: 0 -1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    margin: 0;
   }
-  
-  .lugares-grid::-webkit-scrollbar {
-    height: 6px;
-  }
-  
-  .lugares-grid::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 3px;
-  }
-  
-  .lugares-grid::-webkit-scrollbar-thumb {
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    border-radius: 3px;
-  }
-  
+
   .lugar-card-wrapper {
-    flex: 0 0 auto;
-    width: 85vw;
-    max-width: 400px;
+    width: 100%;
   }
 }
 
-/* Desktop: Grid estándar */
+/* Desktop: grid de 3 columnas */
 @media (min-width: 768px) {
   .lugares-grid {
     display: grid;
@@ -771,56 +750,16 @@
     color: #a5f3fc;
 }
 
-/* Reutilizar grid/carrusel de list view */
+/* Grid de resultados semánticos: lista vertical (sin scroll horizontal) */
 .semantic-home-grid {
   padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-@media (max-width: 767.98px) {
-  .semantic-home-grid {
-    display: flex;
-    gap: 1.25rem;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
-    padding-bottom: 1.25rem;
-    margin: 0 -1.25rem;
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-  }
-
-  .semantic-home-grid::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  .semantic-home-grid::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 3px;
-  }
-
-  .semantic-home-grid::-webkit-scrollbar-thumb {
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    border-radius: 3px;
-  }
-
-  .semantic-home-item {
-    flex: 0 0 auto;
-    width: 88vw;
-    max-width: 420px;
-  }
-}
-
-@media (min-width: 768px) {
-  .semantic-home-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-  }
-
-  .semantic-home-item {
-    width: 100%;
-  }
+.semantic-home-item {
+  width: 100%;
 }
 
 /* Layout horizontal de place-card (copiado del list view) */
@@ -855,6 +794,19 @@
 .place-card-placeholder {
     height: 190px;
     background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
+}
+
+/* Acciones de resultados cercanos (Actualizar ubicación / Ver todos los lugares) */
+.nearby-actions {
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 767.98px) {
+    .nearby-actions .btn {
+        width: 100%;
+    }
 }
 
 .place-card-rating {
@@ -1728,8 +1680,8 @@ $(document).ready(function() {
         html += `
                 </div>
                 
-                <div class="text-center mt-4">
-                    <button class="btn btn-outline-light btn-lg rounded-pill px-4 me-3" onclick="obtenerUbicacionYBuscar()">
+                <div class="nearby-actions mt-4 d-flex flex-column flex-md-row align-items-stretch justify-content-center gap-3">
+                    <button class="btn btn-outline-light btn-lg rounded-pill px-4" onclick="obtenerUbicacionYBuscar()">
                         <i class="bi bi-arrow-clockwise me-2"></i>{% trans "Actualizar Ubicación" %}
                     </button>
                     <a href="{% url 'explorer:lugares_list' %}" 

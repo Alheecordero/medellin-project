@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load form_tags %}
 
 {% block navbar %}{% endblock %}
 
@@ -113,7 +114,7 @@
                         <div class="d-flex flex-wrap align-items-center gap-3 mb-2 small place-card-meta">
                           {% if r.precio %}
                             <span class="text-muted">
-                              <i class="bi bi-cash-stack me-1"></i>{{ r.precio }}
+                              <i class="bi bi-cash-stack me-1"></i>{{ r.precio|format_price_range }}
                             </span>
                           {% endif %}
                           {% if r.abierto_ahora %}
@@ -323,56 +324,16 @@
     border-color: rgba(17, 153, 142, 0.5);
 }
 
-/* Grid/Carrusel de lugares - mismo estilo que list view */
+/* Grid de lugares en resultados semánticos: lista vertical */
 .lugares-grid {
   padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-@media (max-width: 767.98px) {
-  .lugares-grid {
-    display: flex;
-    gap: 1.25rem;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
-    padding-bottom: 1.25rem;
-    margin: 0 -1.25rem;
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-  }
-
-  .lugares-grid::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  .lugares-grid::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 3px;
-  }
-
-  .lugares-grid::-webkit-scrollbar-thumb {
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    border-radius: 3px;
-  }
-
-  .lugar-card-wrapper {
-    flex: 0 0 auto;
-    width: 88vw;
-    max-width: 420px;
-  }
-}
-
-@media (min-width: 768px) {
-  .lugares-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-  }
-
-  .lugar-card-wrapper {
-    width: 100%;
-  }
+.lugar-card-wrapper {
+  width: 100%;
 }
 
 @media (min-width: 992px) {
