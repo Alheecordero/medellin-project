@@ -5,6 +5,7 @@ from django.views.i18n import JavaScriptCatalog
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import RedirectView
 from explorer.sitemaps import StaticViewSitemap, PlacesSitemap, ComunasSitemap
+from explorer import views as explorer_views
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -52,7 +53,12 @@ urlpatterns += i18n_patterns(
     path('admin/', admin.site.urls),
     # Catálogo JS por idioma (sirve /en/jsi18n/ en inglés)
     path('jsi18n/', JavaScriptCatalog.as_view(domain='djangojs', packages=['explorer']), name='javascript-catalog'),
-    
+
+    # Rutas principales de Explorer sin namespace para compatibilidad con templates antiguos
+    # Nota: también están registradas dentro de explorer.urls con namespace 'explorer'
+    path('nosotros/', explorer_views.about, name='about_es'),
+    path('about-us/', explorer_views.about, name='about'),
+
     # Explorer app (prefija /en/ para inglés; español queda sin prefijo)
     path('', include(('explorer.urls', 'explorer'))),
     prefix_default_language=False,
