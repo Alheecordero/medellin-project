@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load static %}
 
+{% block navbar %}{% endblock %}
 {% block title %}{% trans "Reseñas de" %} {{ lugar.nombre }} | ViveMedellín{% endblock %}
 
 {% block meta_description %}
@@ -29,72 +30,108 @@
 {% endblock %}
 
 {% block content %}
+<section class="reviews-section">
 
-<!-- Hero Header -->
-<div class="reviews-hero">
-  <div class="container py-5">
-    <div class="row align-items-center">
-      <div class="col-lg-8">
-        <div class="d-flex align-items-center mb-3" style="position: relative; z-index: 1000;">
-          <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-purple me-3 rounded-pill">
+<div class="container py-5">
+  <div class="reviews-main-card">
+    {% get_current_language as LANGUAGE_CODE %}
+    <div class="reviews-main-header">
+      <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
+        <div>
+          <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-purple me-2 rounded-pill">
             <i class="bi bi-arrow-left me-1"></i>{% trans "Volver al lugar" %}
           </a>
         </div>
-        
-        <h1 class="display-5 fw-bold text-white mb-3">{{ lugar.nombre }}</h1>
-        <p class="text-white-50 mb-3">
-          <i class="bi bi-chat-quote me-2"></i>{% trans "Reseñas del lugar" %}
-        </p>
-        
-        <div class="rating-summary">
-          <div class="d-flex align-items-center">
-            <div class="rating-number">
-              <span class="display-6 fw-bold text-white">{{ lugar.rating|default:"?" }}</span>
-              <small class="text-white-50">/5</small>
-            </div>
-            <div class="ms-3">
-              <div class="stars-display mb-1">
-                {% if lugar.rating %}
-                  {% for i in "12345" %}
-                    {% if lugar.rating >= forloop.counter %}
-                      <i class="bi bi-star-fill text-warning fs-4"></i>
-                    {% elif lugar.rating >= forloop.counter|add:"-0.5" %}
-                      <i class="bi bi-star-half text-warning fs-4"></i>
-                    {% else %}
+        <div class="home-lang-switch d-flex flex-wrap gap-2">
+          <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">
+            {% trans "Home" %}
+          </a>
+          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+            <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">
+              {% trans "About us" %}
+            </a>
+          {% else %}
+            <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">
+              {% trans "Nosotros" %}
+            </a>
+          {% endif %}
+          <form action="{% url 'set_language' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="language" value="es">
+            {% if request.path|slice:":4" == "/en/" %}
+              <input type="hidden" name="next" value="{{ request.path|slice:'3:' }}">
+            {% else %}
+              <input type="hidden" name="next" value="{{ request.path }}">
+            {% endif %}
+            <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
+          </form>
+          <form action="{% url 'set_language' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="language" value="en">
+            {% if request.path|slice:":4" == "/en/" %}
+              <input type="hidden" name="next" value="{{ request.path }}">
+            {% else %}
+              <input type="hidden" name="next" value="/en{{ request.path }}">
+            {% endif %}
+            <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE|slice:":2" == 'en' %}active{% else %}inactive{% endif %}">EN</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+          <h1 class="display-5 fw-bold text-white mb-3">{{ lugar.nombre }}</h1>
+          <p class="text-white-50 mb-3">
+            <i class="bi bi-chat-quote me-2"></i>{% trans "Reseñas del lugar" %}
+          </p>
+          
+          <div class="rating-summary">
+            <div class="d-flex align-items-center">
+              <div class="rating-number">
+                <span class="display-6 fw-bold text-white">{{ lugar.rating|default:"?" }}</span>
+                <small class="text-white-50">/5</small>
+              </div>
+              <div class="ms-3">
+                <div class="stars-display mb-1">
+                  {% if lugar.rating %}
+                    {% for i in "12345" %}
+                      {% if lugar.rating >= forloop.counter %}
+                        <i class="bi bi-star-fill text-warning fs-4"></i>
+                      {% elif lugar.rating >= forloop.counter|add:"-0.5" %}
+                        <i class="bi bi-star-half text-warning fs-4"></i>
+                      {% else %}
+                        <i class="bi bi-star text-white-50 fs-4"></i>
+                      {% endif %}
+                    {% endfor %}
+                  {% else %}
+                    {% for i in "12345" %}
                       <i class="bi bi-star text-white-50 fs-4"></i>
-                    {% endif %}
-                  {% endfor %}
-                {% else %}
-                  {% for i in "12345" %}
-                    <i class="bi bi-star text-white-50 fs-4"></i>
-                  {% endfor %}
-                {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <div class="col-lg-4">
-        {% if lugar.get_primera_foto %}
-          <div class="place-preview">
-            <img src="{{ lugar.get_primera_foto.imagen }}" 
-                 alt="{{ lugar.nombre }}" 
-                 class="img-fluid rounded-4 shadow-lg">
-          </div>
-        {% endif %}
+        
+        <div class="col-lg-4">
+          {% if lugar.get_primera_foto %}
+            <div class="place-preview">
+              <img src="{{ lugar.get_primera_foto.imagen }}" 
+                   alt="{{ lugar.nombre }}" 
+                   class="img-fluid rounded-4 shadow-lg">
+            </div>
+          {% endif %}
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- Reviews List -->
-<div class="container pb-4">
-  {% if reviews %}
-    <div class="row g-4" id="reviews-container">
+    <div class="reviews-list-wrapper">
+    {% if reviews %}
+      <div class="reviews-track" id="reviews-container">
       {% for review in reviews %}
-        <div class="col-lg-6 review-item">
-          <div class="review-card">
+        <div class="review-item">
+          <div class="review-card {% if review.rating >= 4 %}review-card-good{% elif review.rating >= 3 %}review-card-medium{% else %}review-card-bad{% endif %}">
             <div class="review-header">
               <div class="reviewer-info">
                 {% if review.foto_perfil %}
@@ -170,41 +207,99 @@
       </div>
     </div>
   {% endif %}
+  </div>
 </div>
-
+  
+</section>
 {% endblock %}
 
 {% block extra_js %}
 <!-- Cache buster - Button Fix v1.0 - 2025-01-30 -->
 <style>
-/* Hero Section */
-.reviews-hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+/* Fondo general de la página de reseñas */
+.reviews-section {
+  background:
+    radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
+    linear-gradient(135deg, #020617 0%, #022c22 35%, #064e3b 100%);
+  min-height: 100vh;
   position: relative;
-  overflow: hidden;
-  min-height: 400px;
-  z-index: auto;
 }
 
-.reviews-hero::before {
+.reviews-section::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-  opacity: 0.3;
+  background: none;
+  opacity: 0;
   z-index: 1;
   pointer-events: none;
 }
 
+/* Card principal que contiene header + reseñas (una sola gran card) */
+.reviews-main-card {
+  position: relative;
+  z-index: 2;
+  max-width: 1120px;
+  margin: 0 auto 3.5rem;
+  background: rgba(4, 20, 12, 0.9);
+  border-radius: 28px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  overflow: hidden;
+}
+
+.reviews-main-header {
+  margin-bottom: 2rem;
+}
+
 .rating-summary {
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 42, 0.95) 100%);
   backdrop-filter: blur(10px);
-  padding: 20px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1.75rem;
+  border-radius: 20px;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  box-shadow: 
+    0 20px 50px rgba(15, 23, 42, 0.8),
+    0 6px 16px rgba(16, 185, 129, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.rating-number .display-6 {
+  font-size: 2.6rem;
+}
+
+.rating-summary .stars-display i {
+  text-shadow: 0 0 8px rgba(250, 204, 21, 0.5);
+}
+
+/* Botones de idioma estilo home/detail */
+.home-lang-switch .btn-lang-home {
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.9);
+  color: rgba(226, 232, 240, 0.96);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.home-lang-switch .btn-lang-home.active {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border-color: transparent;
+  color: #03120a;
+}
+
+.home-lang-switch .btn-lang-home.inactive:hover {
+  background: rgba(148, 163, 184, 0.35);
 }
 
 .place-preview img {
@@ -213,14 +308,38 @@
   object-fit: cover;
 }
 
+/* Lista de reseñas dentro de la card principal */
+.reviews-list-wrapper {
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .reviews-main-card {
+    padding: 1.75rem 1.25rem;
+    border-radius: 24px;
+    margin-bottom: 2.5rem;
+  }
+
+  .reviews-main-header {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Track de reseñas: columna por defecto */
+.reviews-track {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
 /* Button gradients */
 .btn-gradient-purple {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
   border: none;
   color: white;
   font-weight: 600;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);
   position: relative;
   z-index: 999;
   pointer-events: auto;
@@ -228,9 +347,9 @@
 }
 
 .btn-gradient-purple:hover {
-  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
   color: white;
 }
 
@@ -270,28 +389,35 @@
 
 /* Review Cards */
 .review-card {
-  background: white;
+  /* Mismo look & feel que las cards de places list */
+  background: #ffffff;
   border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1.25rem 1.5rem;
+  border: 2px solid rgba(17, 153, 142, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100%;
   display: flex;
   flex-direction: column;
   margin-bottom: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .review-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(17, 153, 142, 0.25);
+  border-color: rgba(17, 153, 142, 0.5);
 }
 
 .review-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 16px;
+  margin-bottom: 0.75rem;
+  padding: 0 0 0.75rem 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
 }
 
 .reviewer-info {
@@ -301,70 +427,120 @@
 }
 
 .reviewer-avatar {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 12px;
-  border: 2px solid #e2e8f0;
+  margin-right: 1rem;
+  border: 3px solid rgba(16, 185, 129, 0.2);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
 }
 
 .reviewer-avatar-placeholder {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 12px;
+  margin-right: 1rem;
   color: white;
-  font-size: 20px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
 .reviewer-name {
-  font-weight: 600;
-  color: #2d3748;
-  margin-bottom: 4px;
-  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.35rem;
+  font-size: 1.05rem;
 }
 
 .review-date {
-  font-size: 0.8rem;
-  color: #718096;
+  font-size: 0.85rem;
+  color: #64748b;
   display: flex;
   align-items: center;
+  font-weight: 500;
 }
 
 .review-rating {
-  font-size: 1.1rem;
-  letter-spacing: 1px;
+  font-size: 1.25rem;
+  letter-spacing: 2px;
 }
 
 .review-content {
   flex: 1;
   margin-bottom: 0;
+  background: transparent;
+  padding: 0.75rem 0 0;
 }
 
 .review-text {
-  color: #4a5568;
-  line-height: 1.6;
+  color: #475569;
+  line-height: 1.75;
   font-size: 0.95rem;
   margin: 0;
   white-space: pre-line;
 }
 
+/* Variantes por sentimiento (según rating) */
+.review-card-good {
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.review-card-good:hover {
+  border-color: rgba(34, 197, 94, 0.6);
+}
+
+.review-card-medium {
+  border-color: rgba(250, 204, 21, 0.45);
+}
+
+.review-card-medium:hover {
+  border-color: rgba(250, 204, 21, 0.75);
+}
+
+.review-card-bad {
+  border-color: rgba(248, 113, 113, 0.55);
+}
+
+.review-card-bad:hover {
+  border-color: rgba(248, 113, 113, 0.9);
+}
+
+.btn-translate {
+  border-color: rgba(148, 163, 184, 0.5);
+  color: #4b5563;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.85rem;
+}
+
+.btn-translate:hover {
+  border-color: #22c55e;
+  color: #16a34a;
+  background: rgba(34, 197, 94, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+}
+
 /* Empty State */
 .empty-reviews {
-  background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
   border-radius: 20px;
-  border: 1px solid rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  box-shadow: 
+    0 8px 28px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .empty-icon {
   width: 120px;
   height: 120px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -373,20 +549,50 @@
   color: white;
 }
 
+/* Versión móvil: carrusel horizontal dentro de la card grande */
+@media (max-width: 768px) {
+  .reviews-track {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    gap: 0.75rem;
+    padding: 0;
+  }
+
+  .reviews-track::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .reviews-track::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.35);
+    border-radius: 3px;
+  }
+
+  .reviews-track::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+    border-radius: 3px;
+  }
+
+  .review-item {
+    flex: 0 0 100%;
+    max-width: 100%;
+    scroll-snap-align: start;
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
-  .reviews-hero {
-    min-height: 300px;
-  }
-  
   .rating-summary {
-    margin-top: 20px;
+    margin-top: 12px;
   }
-  
+
   .place-preview {
-    margin-top: 20px;
+    margin-top: 16px;
   }
-  
+
   .stat-item {
     padding: 10px 5px;
   }
@@ -396,7 +602,8 @@
   }
   
   .review-card {
-    padding: 20px;
+    padding: 1rem 1.1rem;
+    border-radius: 18px;
   }
   
   .reviewer-avatar,

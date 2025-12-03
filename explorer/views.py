@@ -27,7 +27,7 @@ import urllib.request
 import urllib.parse
 import os
 
-from .models import Places, Foto, RegionOSM, Tag, NewsletterSubscription, PLACE_TYPE_CHOICES
+from .models import Places, Foto, RegionOSM, Tag, PLACE_TYPE_CHOICES
 
 # ────────────────────────────────────────────────────────────────────────
 # Mixins Optimizados
@@ -544,36 +544,52 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         return result
     
     def _get_lugares_similares(self, lugar, limit=3):
-        """Obtener lugares relacionados por tags compartidos."""
-        cache_key = f"related_tags_optimized_{lugar.id}_{limit}"
+        """
+        Obtener lugares similares:
+        - Siempre del MISMO tipo de lugar
+        - Preferiblemente en la MISMA zona (misma comuna_osm_id cuando exista)
+        - Priorizando destacados y mejor rating
+        """
+        comuna_id = getattr(lugar, "comuna_osm_id", None)
+        cache_key = f"related_similares_{lugar.id}_{comuna_id}_{limit}"
         result = cache.get(cache_key)
         
         if result is None:
-            # Optimización: Usar select_related y limitar las consultas de tags
-            tags = list(lugar.tags.values_list('id', flat=True)[:5])  # Máximo 5 tags
-            if not tags:
-                # Si no hay tags, buscar por tipo similar
-                result = list(Places.objects.filter(
-                    tiene_fotos=True,
-                    tipo=lugar.tipo
-                                 ).exclude(
-                     id=lugar.id
-                 ).only(
-                     'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo'
-                 ).prefetch_related(
-                     Prefetch('fotos', queryset=Foto.objects.only('imagen')[:1], to_attr='cached_fotos')
-                 ).order_by('-es_destacado', '-rating')[:limit])
-            else:
-                result = list(Places.objects.filter(
-                    tiene_fotos=True,
-                    tags__id__in=tags
-                ).exclude(
-                    id=lugar.id
-                ).only(
-                    'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo'
-                ).prefetch_related(
-                    Prefetch('fotos', queryset=Foto.objects.only('imagen')[:1], to_attr='cached_fotos')
-                ).distinct().order_by('-es_destacado', '-rating')[:limit])
+            # Filtro base: mismo tipo y siempre con fotos
+            base_filter = {
+                "tiene_fotos": True,
+                "tipo": lugar.tipo,
+            }
+            # Si conocemos la comuna, restringimos a la misma zona
+            if comuna_id:
+                base_filter["comuna_osm_id"] = comuna_id
+
+            # Opcional: usar tags para afinar, pero siempre dentro del mismo tipo/zona
+            tags = list(lugar.tags.values_list('id', flat=True)[:5])  # Máx 5 tags
+            qs = Places.objects.filter(**base_filter).exclude(id=lugar.id)
+
+            if tags:
+                qs = qs.filter(tags__id__in=tags).distinct()
+
+            result = list(
+                qs.only(
+                    "id",
+                    "nombre",
+                    "slug",
+                    "tipo",
+                    "rating",
+                    "es_destacado",
+                    "es_exclusivo",
+                )
+                .prefetch_related(
+                    Prefetch(
+                        "fotos",
+                        queryset=Foto.objects.only("imagen")[:1],
+                        to_attr="cached_fotos",
+                    )
+                )
+                .order_by("-es_destacado", "-rating")[:limit]
+            )
             
             cache.set(cache_key, result, 3600)  # 1 hora de caché
         
@@ -759,6 +775,25 @@ def home(request):
     """Vista de inicio que usa HomeView OPTIMIZADA."""
     view = HomeView.as_view()
     return view(request)
+
+
+def about(request):
+    """Página About/Manual de uso de ViveMedellín."""
+    total_lugares = Places.objects.filter(tiene_fotos=True).count()
+    total_comunas = RegionOSM.objects.filter(admin_level='8').count()
+    tipos_unicos = (
+        Places.objects.exclude(tipo__isnull=True)
+        .exclude(tipo__exact='')
+        .values_list('tipo', flat=True)
+        .distinct()
+        .count()
+    )
+    context = {
+        "total_lugares": total_lugares,
+        "total_comunas": total_comunas,
+        "total_tipos": tipos_unicos,
+    }
+    return render(request, "about.html", context)
 
 
 def lugares_list(request):
@@ -1142,161 +1177,6 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
-@require_POST
-def newsletter_subscribe(request):
-    """Vista para manejar suscripciones al newsletter."""
-    try:
-        # Obtener datos del POST
-        if request.content_type == 'application/json':
-            data = json.loads(request.body)
-        else:
-            data = request.POST
-
-        email = data.get('email', '').strip().lower()
-        nombre = data.get('nombre', '').strip()
-
-        # Validar email
-        if not email:
-            return JsonResponse({
-                'success': False,
-                'error': 'El email es requerido'
-            }, status=400)
-
-        try:
-            validate_email(email)
-        except ValidationError:
-            return JsonResponse({
-                'success': False,
-                'error': 'El formato del email no es válido'
-            }, status=400)
-
-        # Obtener información adicional
-        ip_address = get_client_ip(request)
-        user_agent = request.META.get('HTTP_USER_AGENT', '')[:255]  # Limitar tamaño
-
-        # Verificar si ya existe
-        existing_subscription = NewsletterSubscription.objects.filter(email=email).first()
-        
-        if existing_subscription:
-            if existing_subscription.activo:
-                return JsonResponse({
-                    'success': True,
-                    'message': '¡Ya estás suscrito! Gracias por tu interés en ViveMedellín.',
-                    'status': 'already_subscribed'
-                })
-            else:
-                # Reactivar suscripción
-                existing_subscription.reactivar()
-                return JsonResponse({
-                    'success': True,
-                    'message': '¡Hemos reactivado tu suscripción! Pronto recibirás nuestras recomendaciones.',
-                    'status': 'reactivated'
-                })
-
-        # Crear nueva suscripción
-        subscription = NewsletterSubscription.objects.create(
-            email=email,
-            nombre=nombre,
-            ip_address=ip_address,
-            user_agent=user_agent,
-            fuente='website_footer'
-        )
-
-        # En un entorno de producción, aquí enviarías un email de confirmación
-        # send_confirmation_email(subscription)
-
-        return JsonResponse({
-            'success': True,
-            'message': '¡Gracias por suscribirte! Te mantendremos informado sobre los mejores lugares de Medellín.',
-            'status': 'new_subscription',
-            'subscription_id': subscription.id
-        })
-
-    except json.JSONDecodeError:
-        return JsonResponse({
-            'success': False,
-            'error': 'Datos JSON inválidos'
-        }, status=400)
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'error': f'Error interno del servidor: {str(e)}'
-        }, status=500)
-
-@require_GET
-def newsletter_confirm(request, token):
-    """Vista para confirmar suscripción via email."""
-    try:
-        subscription = get_object_or_404(
-            NewsletterSubscription, 
-            token_confirmacion=token,
-            activo=True
-        )
-        
-        if subscription.confirmado:
-            return render(request, 'newsletter/already_confirmed.html', {
-                'subscription': subscription
-            })
-        
-        subscription.confirmar_suscripcion()
-        
-        return render(request, 'newsletter/confirmation_success.html', {
-            'subscription': subscription
-        })
-        
-    except Exception as e:
-        return render(request, 'newsletter/confirmation_error.html', {
-            'error': str(e)
-        })
-
-@require_GET
-def newsletter_unsubscribe(request, token):
-    """Vista para dar de baja del newsletter."""
-    try:
-        subscription = get_object_or_404(
-            NewsletterSubscription, 
-            token_confirmacion=token
-        )
-        
-        subscription.desactivar()
-        
-        return render(request, 'newsletter/unsubscribe_success.html', {
-            'subscription': subscription
-        })
-        
-    except Exception as e:
-        return render(request, 'newsletter/unsubscribe_error.html', {
-            'error': str(e)
-        })
-
-@require_GET
-def newsletter_stats(request):
-    """Vista para estadísticas del newsletter (solo para staff)."""
-    if not request.user.is_staff:
-        return JsonResponse({
-            'error': 'Acceso denegado'
-        }, status=403)
-    
-    stats = {
-        'total_suscriptores': NewsletterSubscription.total_suscriptores(),
-        'suscriptores_activos': NewsletterSubscription.objects.filter(activo=True).count(),
-        'suscriptores_confirmados': NewsletterSubscription.objects.filter(confirmado=True).count(),
-        'suscriptores_pendientes': NewsletterSubscription.objects.filter(
-            activo=True, 
-            confirmado=False
-        ).count(),
-        'suscripciones_hoy': NewsletterSubscription.objects.filter(
-            fecha_suscripcion__date=timezone.now().date()
-        ).count(),
-    }
-    
-    return JsonResponse(stats)
-
-
-# ────────────────────────────────────────────────────────────────────────
-# AJAX Views para Progressive Loading de Lugares Relacionados
-# ────────────────────────────────────────────────────────────────────────
-
 @require_GET
 def lugares_cercanos_ajax(request, slug):
     """AJAX endpoint para cargar lugares cercanos."""
@@ -1474,25 +1354,36 @@ class SemanticSearchView(View):
                 )
                 query_embedding = result.embeddings[0].values
 
-                lugares = (
-                    Places.objects.extra(
-                        select={"score": "1 - (embedding <=> %s::vector)"},
-                        select_params=[query_embedding]
-                    )
-                    .filter(embedding__isnull=False, tiene_fotos=True)
-                    .order_by("-score")[:10]
-                )
+                lugares_qs = Places.objects.extra(
+                    select={"score": "1 - (embedding <=> %s::vector)"},
+                    select_params=[query_embedding]
+                ).filter(
+                    embedding__isnull=False,
+                    tiene_fotos=True
+                ).order_by("-score")
 
-                resultados = [
-                    {
+                lugares = lugares_qs.prefetch_related("fotos")[:10]
+
+                resultados = []
+                for l in lugares:
+                    primera_foto = l.get_primera_foto()
+                    comuna_nombre = l.comuna.name if hasattr(l, "comuna") and l.comuna else None
+                    resultados.append({
                         "nombre": l.nombre,
                         "tipo": get_localized_place_type(l),
                         "direccion": l.direccion,
                         "rating": l.rating,
-                        "score": round(getattr(l, 'score', 0.0), 3),
-                    }
-                    for l in lugares
-                ]
+                        "score": round(getattr(l, "score", 0.0), 3),
+                        "slug": l.slug,
+                        "imagen": primera_foto.imagen if primera_foto else None,
+                        "es_destacado": bool(getattr(l, "es_destacado", False)),
+                        "es_exclusivo": bool(getattr(l, "es_exclusivo", False)),
+                        "precio": getattr(l, "precio", None),
+                        "abierto_ahora": getattr(l, "abierto_ahora", None),
+                        "comuna_nombre": comuna_nombre,
+                        "telefono": getattr(l, "telefono", None),
+                        "sitio_web": getattr(l, "sitio_web", None),
+                    })
             except Exception as e:
                 error = str(e)
 

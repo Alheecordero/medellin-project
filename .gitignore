@@ -1,5 +1,6 @@
-# Archivos de entorno de Python
+# Archivos de entorno de Python / virtualenv
 /med/
+/.venv/
 /staticfiles/
 __pycache__/
 *.pyc
@@ -8,10 +9,14 @@ __pycache__/
 settings_dev.py
 *.sqlite3
 
-# Archivos de datos y media (si no se quieren en el repo)
+# Archivos de datos y media grandes que viven en GCS (no en el repo)
 coordenadas_guardadas.json
 medellin_grid_500m.geojson
+/tourism/
 
 # Archivos de sistema operativo
 .DS_Store
-Thumbs.db vivemedellin-06af8b99d965.json
+Thumbs.db
+
+# Credenciales GCP (nunca versionar)
+vivemedellin-*.json

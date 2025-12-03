@@ -2,78 +2,52 @@
 {% load i18n %}
 
 <!-- Footer -->
-<footer class="footer mt-5">
+<footer class="footer">
     <div class="container-custom">
-        <!-- Primera fila: Navegación principal -->
-        <div class="row mb-4">
-            <div class="col-lg-4 mb-4">
-                <h5 class="mb-3 fw-bold">
-                    <i class="bi bi-geo-alt-fill me-2 text-gradient"></i>ViveMedellín
-                </h5>
-                <p class="text-light-muted mb-3">
-                    {% trans "Descubre los mejores lugares de Medellín, la ciudad de la eterna primavera." %}
-                </p>
-                <div class="social-links">
-                    <a href="{% url 'explorer:home' %}" class="social-btn me-2" title="{% trans 'Inicio' %}">
-                        <i class="bi bi-house-fill"></i>
-                    </a>
-                    <a href="{% url 'explorer:lugares_list' %}" class="social-btn me-2" title="{% trans 'Explorar Lugares' %}">
-                        <i class="bi bi-map"></i>
-                    </a>
-                    <a href="{% url 'explorer:lugares_list' %}?tipo=restaurant" class="social-btn" title="{% trans 'Mejores Restaurantes' %}">
-                        <i class="bi bi-cup-hot"></i>
-                    </a>
-                </div>
-            </div>
-            
-            <div class="col-lg-8">
-                <div class="row">
-                    <div class="col-lg-12 mb-4">
-                        <h6 class="mb-3 fw-semibold text-white text-center">Newsletter</h6>
-                        <p class="text-light-muted mb-4 text-center">{% trans "Recibe las mejores recomendaciones de lugares directamente en tu correo" %}</p>
-                        <div class="newsletter-container-wide">
-                                            <form class="newsletter-form-modern" action="{% url 'explorer:newsletter_subscribe' %}" method="post" onsubmit="return newsletterSubmit(event)">
-                    {% csrf_token %}
-                    <div class="input-group-modern-wide">
-                        <input type="email" class="form-control-modern" placeholder="{% trans 'Ingresa tu correo electrónico' %}" required name="email" id="newsletter-email">
-                        <button class="btn-modern-wide" type="submit" id="newsletter-btn">
-                            <i class="bi bi-send-fill me-2"></i>{% trans "Suscribirme" %}
-                        </button>
+        <!-- Primera fila: Marca, tagline y accesos principales -->
+        <div class="row mb-2 justify-content-center">
+            <div class="col-lg-10 mb-2">
+                <div class="footer-brand text-center">
+                    <h5 class="mb-2 fw-bold">
+                        <i class="bi bi-geo-alt-fill me-2 text-gradient"></i>ViveMedellín
+                    </h5>
+                    <p class="text-light-muted mb-3 small footer-tagline">
+                        {% trans "Descubre los mejores lugares de Medellín, la ciudad de la eterna primavera." %}
+                    </p>
+                    <div class="social-links mb-2">
+                        <a href="{% url 'explorer:home' %}" class="social-btn me-2" title="{% trans 'Inicio' %}">
+                            <i class="bi bi-house-fill"></i>
+                        </a>
+                        <a href="{% url 'explorer:lugares_list' %}" class="social-btn me-2" title="{% trans 'Explorar Lugares' %}">
+                            <i class="bi bi-map"></i>
+                        </a>
+                        <a href="{% url 'explorer:lugares_list' %}?tipo=restaurant" class="social-btn" title="{% trans 'Mejores Restaurantes' %}">
+                            <i class="bi bi-cup-hot"></i>
+                        </a>
                     </div>
-                </form>
-                            <small class="text-light-muted mt-3 d-block text-center">
-                                <i class="bi bi-shield-check me-1"></i>{% trans "100% libre de spam • Cancela cuando quieras" %}
-                            </small>
-                        </div>
-                    </div>
+                    <p class="text-light-muted mb-0 small footer-subtagline">
+                        {% trans "Hecho con cariño para locales y viajeros que quieren vivir la ciudad a profundidad." %}
+                    </p>
                 </div>
             </div>
         </div>
         
-        <!-- Segunda fila: Enlaces rápidos adicionales -->
-        <div class="row mt-4 pt-4" style="border-top: 1px solid rgba(255,255,255,0.1);">
-            <div class="col-lg-4 mb-3">
-                <h6 class="mb-3 fw-semibold text-white">{% trans "Experiencias Destacadas" %}</h6>
-                <div class="d-flex flex-wrap gap-2">
+        <!-- Segunda fila: chips de enlaces rápidos centrados -->
+        <div class="row mt-2 pt-2 justify-content-center" style="border-top: 1px solid rgba(255,255,255,0.1);">
+            <div class="col-lg-10">
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <!-- Experiencias destacadas -->
                     <a href="{% url 'explorer:lugares_list' %}?delivery=true" class="badge bg-gradient text-decoration-none">🚚 {% trans "Con Delivery" %}</a>
                     <a href="{% url 'explorer:lugares_list' %}?outdoor_seating=true" class="badge bg-gradient text-decoration-none">🌿 {% trans "Con Terraza" %}</a>
                     <a href="{% url 'explorer:lugares_list' %}?live_music=true" class="badge bg-gradient text-decoration-none">🎵 {% trans "Música en Vivo" %}</a>
                     <a href="{% url 'explorer:lugares_list' %}?serves_cocktails=true" class="badge bg-gradient text-decoration-none">🍹 {% trans "Cócteles" %}</a>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 mb-3">
-                <h6 class="mb-3 fw-semibold text-white">{% trans "Zonas Premium" %}</h6>
-                <div class="d-flex flex-wrap gap-2">
+
+                    <!-- Zonas premium -->
                     <a href="{% url 'explorer:lugares_por_comuna' 'el-poblado' %}?tipo=bar" class="badge bg-gradient text-decoration-none">🍸 {% trans "Bares El Poblado" %}</a>
                     <a href="{% url 'explorer:lugares_por_comuna' 'laureles-estadio' %}?tipo=restaurant" class="badge bg-gradient text-decoration-none">🍽️ {% trans "Restaurantes Laureles" %}</a>
                     <a href="{% url 'explorer:lugares_por_comuna' 'envigado' %}?tipo=cafe" class="badge bg-gradient text-decoration-none">☕ {% trans "Cafés Envigado" %}</a>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 mb-3">
-                <h6 class="mb-3 fw-semibold text-white">{% trans "Navegación Rápida" %}</h6>
-                <div class="d-flex flex-wrap gap-2">
+
+                    <!-- Navegación rápida -->
                     <a href="{% url 'explorer:home' %}" class="badge bg-gradient text-decoration-none">🏠 {% trans "Inicio" %}</a>
                     <a href="{% url 'explorer:lugares_list' %}" class="badge bg-gradient text-decoration-none">🗺️ {% trans "Explorar Todo" %}</a>
                     <a href="{% url 'explorer:lugares_list' %}?tipo=night_club" class="badge bg-gradient text-decoration-none">🌙 {% trans "Vida Nocturna" %}</a>
@@ -82,28 +56,12 @@
             </div>
         </div>
         
-        <hr class="my-4">
-        
+        <hr class="my-2">
         <div class="text-center">
-            <p class="mb-2 text-light-muted">
-                <strong>ViveMedellín</strong> - {% trans "Tu guía definitiva para descubrir los mejores lugares de la Ciudad de la Eterna Primavera" %}
-            </p>
             <p class="mb-0 small text-light-muted">&copy; {% now "Y" %} ViveMedellín. {% trans "Todos los derechos reservados." %}</p>
         </div>
     </div>
 </footer>
-
-<!-- Pre-carga i18n para textos usados solo en JS del newsletter (oculto) -->
-<div class="visually-hidden" aria-hidden="true">
-    {% trans "Por favor, ingresa un email válido" %}
-    {% trans "Enviando..." %}
-    {% trans "¡Suscrito!" %}
-    {% trans "Error al procesar la suscripción" %}
-    {% trans "Error de conexión. Por favor, intenta más tarde." %}
-    {% trans "Intentar de nuevo" %}
-    {% trans "Ver todos los lugares" %}
-    {% trans "Error de Geolocalización" %}
-</div>
 
 <!-- Botón scroll to top -->
 <button id="scrollToTop" class="scroll-to-top">
@@ -112,11 +70,12 @@
 
 <!-- Estilos del Footer -->
 <style>
-/* Footer - Morado Oscuro Sofisticado */
+/* Footer - Fondo oscuro con acentos verdes (coherente con el home) */
 .footer {
-    background: linear-gradient(135deg,rgb(22, 9, 56) 0%,rgb(16, 9, 39) 100%);
+    background: radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 55%),
+                linear-gradient(135deg, rgb(5, 16, 12) 0%, rgb(3, 10, 8) 100%);
     color: white;
-    padding: 4rem 0 2rem;
+    padding: 1.8rem 0 1.1rem;
     position: relative;
     overflow: hidden;
 }
@@ -128,11 +87,11 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, 
-        transparent, 
-        rgba(102, 126, 234, 0.6) 20%, 
-        rgba(118, 75, 162, 0.8) 50%, 
-        rgba(102, 126, 234, 0.6) 80%, 
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(56, 239, 125, 0.7) 20%,
+        rgba(17, 153, 142, 0.9) 50%,
+        rgba(56, 239, 125, 0.7) 80%,
         transparent);
 }
 
@@ -161,8 +120,8 @@
 }
 
 .footer h5 {
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
 }
 
 .footer h6 {
@@ -174,6 +133,29 @@
 .footer .text-light-muted {
     color: rgba(255, 255, 255, 0.8) !important;
     line-height: 1.6;
+}
+
+.footer-brand {
+    max-width: 540px;
+    margin: 0 auto;
+}
+
+.footer-tagline {
+    font-size: 0.9rem;
+}
+
+.footer-subtagline {
+    font-size: 0.85rem;
+}
+
+@media (min-width: 992px) {
+    .footer-tagline,
+    .footer-subtagline {
+        max-width: 420px;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
 }
 
 .footer a {
@@ -214,78 +196,14 @@
     box-shadow: 0 8px 25px rgba(56, 239, 125, 0.4);
 }
 
-/* Newsletter amplio y mejorado */
-.newsletter-container-wide {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.newsletter-form-modern {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 2rem;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.input-group-modern-wide {
-    display: flex;
-    border-radius: 15px;
-    overflow: hidden;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.input-group-modern-wide:focus-within {
-    border-color: #38ef7d;
-    box-shadow: 0 0 0 4px rgba(56, 239, 125, 0.2);
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.form-control-modern {
-    flex: 1;
-    padding: 1.2rem 1.5rem;
-    border: none;
-    background: transparent;
-    color: white;
-    font-weight: 500;
-    outline: none;
-    font-size: 1rem;
-}
-
-.form-control-modern::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 400;
-}
-
-.btn-modern-wide {
-    padding: 1.2rem 2rem;
-    background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
-    border: none;
-    color: #2d1b69;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    font-size: 1rem;
-    white-space: nowrap;
-    min-width: 160px;
-}
-
-.btn-modern-wide:hover {
-    background: linear-gradient(135deg, #32d86a 0%, #0e8678 100%);
-    transform: scale(1.02);
-    box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);
-}
-
-/* Botón scroll to top - rediseñado */
+/* Botón scroll to top - coherente con acentos verdes */
 .scroll-to-top {
     position: fixed;
     bottom: 30px;
     right: 30px;
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #553c9a 0%, #2d1b69 100%);
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
     color: white;
     border: 2px solid rgba(56, 239, 125, 0.3);
     border-radius: 50%;
@@ -293,16 +211,16 @@
     display: none;
     z-index: 1000;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 8px 25px rgba(85, 60, 154, 0.4);
+    box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
     backdrop-filter: blur(10px);
 }
 
 .scroll-to-top:hover {
-    background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+    background: linear-gradient(135deg, #0f8a7f 0%, #32d86a 100%);
     border-color: #38ef7d;
     transform: translateY(-5px) scale(1.1);
     box-shadow: 0 12px 35px rgba(56, 239, 125, 0.5);
-    color: #2d1b69;
+    color: #04140c;
 }
 
 .scroll-to-top i {
@@ -386,24 +304,6 @@
         font-size: 0.8rem;
         padding: 0.4rem 0.8rem;
     }
-    
-    .newsletter-form-modern {
-        padding: 1.5rem;
-    }
-    
-    .input-group-modern-wide {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .btn-modern-wide {
-        min-width: 100%;
-        text-align: center;
-    }
-    
-    .form-control-modern {
-        text-align: center;
-    }
 }
 </style>
 
@@ -425,100 +325,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Newsletter functionality
-function newsletterSubmit(event) {
-    event.preventDefault();
-    
-    const form = event.target;
-    const formData = new FormData(form);
-    const email = formData.get('email');
-    const button = form.querySelector('#newsletter-btn');
-    const originalText = button.innerHTML;
-    
-    // Validación básica
-    if (!email || !email.includes('@')) {
-        showNewsletterMessage(gettext('Por favor, ingresa un email válido'), 'error');
-        return false;
-    }
-    
-    // Cambiar botón a estado de loading
-    button.innerHTML = `<i class="bi bi-arrow-clockwise"></i> ${gettext('Enviando...')}`;
-    button.disabled = true;
-    
-    // Realizar petición AJAX
-    fetch(form.action, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Mostrar mensaje de éxito
-            button.innerHTML = `<i class="bi bi-check-lg"></i> ${gettext('¡Suscrito!')}`;
-            button.style.background = 'linear-gradient(135deg, #38ef7d 0%, #11998e 100%)';
-            
-            // Limpiar input
-            document.getElementById('newsletter-email').value = '';
-            
-            // Mostrar mensaje personalizado
-            showNewsletterMessage(data.message, 'success');
-            
-            // Restaurar botón después de 4 segundos
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-                button.style.background = '';
-            }, 4000);
-            
-        } else {
-            // Mostrar error
-            showNewsletterMessage(data.error || gettext('Error al procesar la suscripción'), 'error');
-            button.innerHTML = originalText;
-            button.disabled = false;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNewsletterMessage(gettext('Error de conexión. Por favor, intenta más tarde.'), 'error');
-        button.innerHTML = originalText;
-        button.disabled = false;
-    });
-    
-    return false;
-}
-
-function showNewsletterMessage(message, type) {
-    // Remover mensaje anterior si existe
-    const existingMessage = document.querySelector('.newsletter-message');
-    if (existingMessage) {
-        existingMessage.remove();
-    }
-    
-    // Crear nuevo mensaje
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'newsletter-message mt-3 text-center';
-    
-    const icon = type === 'success' ? 'bi-check-circle' : 'bi-exclamation-triangle';
-    const colorClass = type === 'success' ? 'text-light' : 'text-warning';
-    
-    messageDiv.innerHTML = `
-        <small class="${colorClass}">
-            <i class="bi ${icon} me-1"></i>${message}
-        </small>
-    `;
-    
-    // Agregar mensaje al contenedor del newsletter
-    const newsletterContainer = document.querySelector('.newsletter-container-wide');
-    newsletterContainer.appendChild(messageDiv);
-    
-    // Remover mensaje después de 6 segundos
-    setTimeout(() => {
-        if (messageDiv.parentNode) {
-            messageDiv.remove();
-        }
-    }, 6000);
-}
 </script> 

@@ -2,6 +2,8 @@
 {% load i18n %}
 {% load i18n_extras %}
 
+{% block navbar %}{% endblock %}
+
 {% block title %}{% trans "Explorar por Comuna | ViveMedellín" %}{% endblock %}
 
 {% block meta_description %}
@@ -25,55 +27,407 @@
 {% endblock %}
 
 {% block content %}
-  <!-- Mapa -->
-  <div class="card shadow mb-5">
-    <div class="card-body p-0">
-      <div id="mapa" style="height: 350px;"></div>
-    </div>
-  </div>
+<section class="places-section">
+  <div class="container py-5">
+    <div class="places-main-wrapper">
+      <!-- Card Superior: Top bar + Mapa -->
+      <div class="places-header-card mb-4">
+        {% get_current_language as LANGUAGE_CODE %}
+        <div class="d-flex justify-content-end align-items-center mb-3 px-1 flex-wrap gap-2">
+          <div class="home-lang-switch d-flex flex-wrap gap-2">
+            <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">
+              {% trans "Home" %}
+            </a>
+            {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+              <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">
+                {% trans "About us" %}
+              </a>
+            {% else %}
+              <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">
+                {% trans "Nosotros" %}
+              </a>
+            {% endif %}
+            <form action="{% url 'set_language' %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="language" value="es">
+              {% if request.path|slice:":4" == "/en/" %}
+                <input type="hidden" name="next" value="{{ request.path|slice:'3:' }}">
+              {% else %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+              {% endif %}
+              <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
+            </form>
+            <form action="{% url 'set_language' %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="language" value="en">
+              {% if request.path|slice:":4" == "/en/" %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+              {% else %}
+                <input type="hidden" name="next" value="/en{{ request.path }}">
+              {% endif %}
+              <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE|slice:":2" == 'en' %}active{% else %}inactive{% endif %}">EN</button>
+            </form>
+          </div>
+        </div>
 
+        <div class="text-center mb-4">
+          <h1 class="places-title fw-bold text-white">{% trans "Lugares por Comuna" %}</h1>
+          <p class="lead text-white-50">{% trans "Explora el mapa interactivo y encuentra tu próximo destino" %}</p>
+        </div>
+        <div class="card shadow border-0 places-filters-card">
+          <div class="card-body p-0 places-filters-card-inner">
+            <div id="mapa" style="height: 400px; border-radius: 20px; overflow: hidden;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Inferior: Grid de Lugares -->
+      <div class="places-grid-card">
   <!-- Lista de lugares -->
-  <div class="row g-4">
+  <div class="row g-4 lugares-grid">
     {% for lugar in lugares %}
       <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          {% if lugar.fotos.exists %}
-            <img src="{{ lugar.fotos.first.imagen }}" class="card-img-top" alt="{% trans \"Imagen de\" %} {{ lugar.nombre }}" style="height:200px; object-fit:cover;">
-          {% else %}
-            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height:200px;">
-              <span class="fw-bold">{% trans \"Sin imagen\" %}</span>
-            </div>
-          {% endif %}
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">{{ lugar.nombre }}</h5>
-            <p class="card-text text-muted">{{ lugar|place_type_label }}</p>
-            {% if lugar.slug %}
-              <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-outline-primary mt-auto w-100">{% trans "Ver detalles" %}</a>
+        <div class="card h-100 shadow-sm border-0 rounded-4 place-card">
+          <div class="place-card-media position-relative">
+            {% if lugar.fotos.exists %}
+              <img src="{{ lugar.fotos.first.imagen }}" class="card-img-top rounded-top-4" alt="{% trans "Imagen de" %} {{ lugar.nombre }}" loading="lazy">
             {% else %}
-              <span class="btn btn-secondary mt-auto w-100 disabled">{% trans "Sin detalles" %}</span>
+              <div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
+                <i class="bi bi-image text-muted fs-2"></i>
+              </div>
+            {% endif %}
+            {% if lugar.rating %}
+            <div class="place-card-rating badge rounded-pill">
+              <i class="bi bi-star-fill me-1"></i>
+              <span class="fw-semibold">{{ lugar.rating|floatformat:1 }}</span>
+            </div>
+            {% endif %}
+          </div>
+          <div class="card-body d-flex flex-column place-card-body">
+            <h5 class="card-title fw-semibold mb-2 place-card-title">{{ lugar.nombre }}</h5>
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+              <span class="badge place-type-pill">
+                <i class="bi bi-geo-alt me-1"></i>{{ lugar|place_type_label }}
+              </span>
+            </div>
+            {% if lugar.direccion %}
+            <div class="small text-muted mb-2 place-card-address">
+              <i class="bi bi-map me-1"></i>{{ lugar.direccion }}
+            </div>
+            {% endif %}
+            {% if lugar.slug %}
+              <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn mt-auto w-100 rounded-pill place-card-cta">{% trans "Ver detalles" %}</a>
+            {% else %}
+              <span class="btn btn-outline-secondary mt-auto w-100 disabled rounded-pill">{% trans "Sin detalles" %}</span>
             {% endif %}
           </div>
         </div>
       </div>
     {% empty %}
-      <p class="text-center text-muted">{% trans "No se encontraron lugares en esta página." %}</p>
+      <div class="col-12">
+        <div class="text-center py-5">
+          <i class="bi bi-search display-1 mb-3 text-white-50"></i>
+          <h3 class="text-white">{% trans "No se encontraron lugares en esta página." %}</h3>
+        </div>
+      </div>
     {% endfor %}
   </div>
 
   <!-- ✅ Paginador -->
   {% if is_paginated %}
-    <nav class="mt-5 d-flex justify-content-center">
+    <!-- Desktop: paginación clásica -->
+    <nav class="mt-5 d-none d-md-flex justify-content-center">
       <ul class="pagination">
         {% if page_obj.has_previous %}
-          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{% trans "Anterior" %}</a></li>
+          <li class="page-item">
+            <a class="page-link rounded-pill me-2" href="?page={{ page_obj.previous_page_number }}">
+              <i class="bi bi-chevron-left me-1"></i>{% trans "Anterior" %}
+            </a>
+          </li>
         {% endif %}
-        <li class="page-item disabled"><span class="page-link">{% trans "Página" %} {{ page_obj.number }} {% trans "de" %} {{ page_obj.paginator.num_pages }}</span></li>
+        <li class="page-item disabled">
+          <span class="page-link border-0 bg-transparent text-white-50">
+            {% trans "Página" %} {{ page_obj.number }} {% trans "de" %} {{ page_obj.paginator.num_pages }}
+          </span>
+        </li>
         {% if page_obj.has_next %}
-          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{% trans "Siguiente" %}</a></li>
+          <li class="page-item">
+            <a class="page-link rounded-pill ms-2" href="?page={{ page_obj.next_page_number }}">
+              {% trans "Siguiente" %}<i class="bi bi-chevron-right ms-1"></i>
+            </a>
+          </li>
         {% endif %}
       </ul>
     </nav>
+
+    <!-- Mobile: botones grandes Anterior / Cargar más -->
+    <div class="mt-4 d-flex d-md-none flex-column align-items-stretch gap-2">
+      {% if page_obj.has_previous %}
+        <a class="btn btn-gradient-purple rounded-pill w-100"
+           href="?page={{ page_obj.previous_page_number }}">
+          <i class="bi bi-chevron-left me-1"></i>{% trans "Anterior" %}
+        </a>
+      {% endif %}
+      {% if page_obj.has_next %}
+        <a class="btn btn-gradient-green rounded-pill w-100"
+           href="?page={{ page_obj.next_page_number }}">
+          {% trans "Cargar más lugares" %}
+        </a>
+      {% endif %}
+      <div class="text-center text-white-50 small mt-1">
+        {% trans "Página" %} {{ page_obj.number }} {% trans "de" %} {{ page_obj.paginator.num_pages }}
+      </div>
+    </div>
   {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Fondo general de la página de listados – mismo degradado verde que el home */
+.places-section {
+    background:
+        radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
+        linear-gradient(135deg, #020617 0%, #022c22 35%, #064e3b 100%);
+    min-height: 100vh;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+
+.places-section .container {
+    max-width: 1200px;
+}
+
+/* Wrapper principal */
+.places-main-wrapper {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+/* Card Superior: Mapa */
+.places-header-card {
+    background: rgba(4, 20, 12, 0.75);
+    border-radius: 28px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+@media (min-width: 992px) {
+    .places-header-card {
+        padding: 3rem 2.5rem;
+    }
+}
+
+/* Título principal con estilo del home */
+.places-title {
+    font-size: 2.5rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+}
+
+@media (min-width: 992px) {
+    .places-title {
+        font-size: 3rem;
+    }
+}
+
+.text-white-50 {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Card de mapa con glassmorphism oscuro */
+.places-filters-card {
+    background: rgba(3, 30, 20, 0.85);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.places-filters-card-inner {
+    background: transparent;
+    padding: 0;
+}
+
+/* Card Inferior: Grid de Lugares */
+.places-grid-card {
+    background: rgba(4, 20, 12, 0.75);
+    border-radius: 28px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+@media (min-width: 992px) {
+    .places-grid-card {
+        padding: 2.5rem 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .places-section {
+        padding-top: 1.5rem;
+        padding-bottom: 2.5rem;
+    }
+}
+
+/* Cards de lugares en tonos blancos con detalles verdes */
+.places-section .card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 2px solid rgba(17, 153, 142, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.places-section .card-body {
+    background: transparent;
+}
+
+.places-section .card-title {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.places-section .card-text {
+    color: #64748b !important;
+}
+
+.places-section .card:hover {
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+    box-shadow: 0 12px 32px rgba(17, 153, 142, 0.25) !important;
+    border-color: rgba(17, 153, 142, 0.5);
+}
+
+/* Place card refinements */
+.place-card-media img {
+    height: 190px;
+    object-fit: cover;
+}
+
+.place-card-placeholder {
+    height: 190px;
+    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
+}
+
+.place-card-rating {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    background: #ffffff;
+    color: #11998e;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.75rem;
+    box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
+    border: 1px solid rgba(17, 153, 142, 0.2);
+    font-weight: 600;
+}
+
+.place-card-body {
+    padding-top: 0.9rem;
+}
+
+.place-card-title {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.place-type-pill {
+    background: rgba(17, 153, 142, 0.1);
+    border-radius: 999px;
+    color: #11998e;
+    border: 1px solid rgba(17, 153, 142, 0.3);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.place-card-address {
+    color: #64748b !important;
+}
+
+.place-card-cta {
+    font-weight: 600;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.place-card-cta:hover {
+    background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
+    color: white;
+}
+
+/* Botón principal verde reutilizable (volver / CTAs secundarios) */
+.btn-gradient-purple {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+}
+
+.btn-gradient-purple:hover {
+  background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
+  color: white;
+}
+
+/* Botones de idioma (mismo estilo que en otras vistas) */
+.home-lang-switch .btn-lang-home {
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.home-lang-switch .btn-lang-home.active {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border-color: transparent;
+  color: #03120a;
+}
+
+.home-lang-switch .btn-lang-home.inactive:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Pagination styling con acentos verdes */
+.pagination .page-link {
+    border: 1px solid rgba(17, 153, 142, 0.3);
+    color: #11998e;
+    font-weight: 500;
+    background: white;
+}
+
+.pagination .page-link:hover {
+    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
+    border-color: rgba(17, 153, 142, 0.5);
+    color: #0e8678;
+}
+
+.lugares-grid {
+  margin-top: 0;
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}

@@ -1,0 +1,687 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{# En About NO usamos navbar fijo; seguimos el patrón del home con botones internos #}
+{% block navbar %}{% endblock %}
+
+{% block title %}
+  {% get_current_language as LANGUAGE_CODE %}
+  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+    About | ViveMedellín
+  {% else %}
+    Nosotros | ViveMedellín
+  {% endif %}
+{% endblock %}
+
+{% block meta_description %}
+  {% blocktrans %}Aprende cómo usar ViveMedellín paso a paso: filtros por zona, tipos de lugares, búsqueda semántica, reseñas reales y mapas interactivos.{% endblocktrans %}
+{% endblock %}
+
+{% block content %}
+<section class="about-section">
+  <div class="container py-5">
+    <div class="about-main-card mx-auto">
+      {% get_current_language as LANGUAGE_CODE %}
+      <!-- Barra superior: Home / About us / ES / EN (mismo lenguaje que home/detail) -->
+      <div class="d-flex justify-content-end mb-3 home-lang-switch gap-2 flex-wrap">
+        <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">
+          {% trans "Home" %}
+        </a>
+        {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+          <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">
+            {% trans "About us" %}
+          </a>
+        {% else %}
+          <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">
+            {% trans "Nosotros" %}
+          </a>
+        {% endif %}
+        <form action="{% url 'set_language' %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="language" value="es">
+          {% if request.path|slice:":4" == "/en/" %}
+            <input type="hidden" name="next" value="{{ request.path|slice:'3:' }}">
+          {% else %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+          {% endif %}
+          <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
+        </form>
+        <form action="{% url 'set_language' %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="language" value="en">
+          {% if request.path|slice:":4" == "/en/" %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+          {% else %}
+            <input type="hidden" name="next" value="/en{{ request.path }}">
+          {% endif %}
+          <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE|slice:":2" == 'en' %}active{% else %}inactive{% endif %}">EN</button>
+        </form>
+      </div>
+
+      <!-- Hero / Intro -->
+      <header class="about-hero text-center mb-4">
+        <p class="about-badge text-uppercase mb-2">
+          <i class="bi bi-compass me-1"></i>
+          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+            How it works
+          {% else %}
+            {% trans "Manual de uso" %}
+          {% endif %}
+        </p>
+        <h1 class="about-title mb-3">
+          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+            Explore Medellín like a local with ViveMedellín
+          {% else %}
+            {% trans "Explora Medellín como un local con ViveMedellín" %}
+          {% endif %}
+        </h1>
+        <p class="about-subtitle mb-0">
+          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+            ViveMedellín is your curated map of restaurants, bars and plans in the city. Here we show you, in minutes, how to get the most out of it.
+          {% else %}
+            {% trans "ViveMedellín es tu mapa curado de restaurantes, bares y planes en la ciudad. Aquí te mostramos, en minutos, cómo sacarle el máximo provecho." %}
+          {% endif %}
+        </p>
+      </header>
+
+      <!-- Métricas rápidas -->
+      <section class="about-metrics row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="metric-pill">
+            <div class="metric-label">
+              {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                Places with real photos
+              {% else %}
+                {% trans "Lugares con fotos reales" %}
+              {% endif %}
+            </div>
+            <div class="metric-value">{{ total_lugares|default:"+" }}+</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="metric-pill">
+            <div class="metric-label">
+              {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                City areas
+              {% else %}
+                {% trans "Zonas de la ciudad" %}
+              {% endif %}
+            </div>
+            <div class="metric-value">{{ total_comunas|default:"+" }}</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="metric-pill">
+            <div class="metric-label">
+              {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                Types of experiences
+              {% else %}
+                {% trans "Tipos de experiencias" %}
+              {% endif %}
+            </div>
+            <div class="metric-value">{{ total_tipos|default:"10" }}+</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Paso a paso principal -->
+      <section class="about-steps mb-5">
+        <h2 class="section-title mb-3">
+          <i class="bi bi-lightning-charge me-2"></i>
+          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+            How to use ViveMedellín in 4 steps
+          {% else %}
+            {% trans "Cómo usar ViveMedellín en 4 pasos" %}
+          {% endif %}
+        </h2>
+        <div class="row g-4">
+          <!-- Paso 1 -->
+          <div class="col-md-6">
+            <article class="step-card">
+              <div class="step-icon">
+                <span>1</span>
+              </div>
+              <div class="step-body">
+                <h3 class="step-title">
+                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                    Choose the area you want to explore
+                  {% else %}
+                    {% trans "Elige la zona que quieres explorar" %}
+                  {% endif %}
+                </h3>
+                <p class="step-text">
+                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                    From the home screen, use the commune bubbles (El Poblado, Laureles, Centro, etc.) or the “Area” filter to focus on the part of the city you care about.
+                  {% else %}
+                    {% trans "Desde la pantalla de inicio, usa las burbujas de comunas (El Poblado, Laureles, Centro, etc.) o el filtro de “Área” para centrarte en la parte de la ciudad que te interesa." %}
+                  {% endif %}
+                </p>
+                <ul class="step-list">
+                  <li>
+                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                      On desktop you will see chip-style filters and a main card for each area.
+                    {% else %}
+                      {% trans "En desktop, verás filtros tipo “chips” y una tarjeta principal por comuna." %}
+                    {% endif %}
+                  </li>
+                  <li>
+                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                      On mobile, swipe cards horizontally to discover more areas.
+                    {% else %}
+                      {% trans "En móvil, desliza horizontalmente las cards para descubrir más zonas." %}
+                    {% endif %}
+                  </li>
+                </ul>
+              </div>
+            </article>
+          </div>
+
+          <!-- Paso 2 -->
+          <div class="col-md-6">
+            <article class="step-card">
+              <div class="step-icon">
+                <span>2</span>
+              </div>
+              <div class="step-body">
+                <h3 class="step-title">
+                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                    Filter by place type and features
+                  {% else %}
+                    {% trans "Filtra por tipo de lugar y características" %}
+                  {% endif %}
+                </h3>
+                <p class="step-text">
+                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                    Combine “Place type” (restaurants, rooftops, cafés, bars…) with special features such as “pet‑friendly”, “terrace”, “cash only” or “open now”.
+                  {% else %}
+                    {% trans "Combina “Tipo de lugar” (restaurantes, rooftops, cafés, bares…) con características especiales como “pet friendly”, “terraza”, “solo efectivo” o “abierto ahora”." %}
+                  {% endif %}
+                </p>
+                <ul class="step-list">
+                  <li>
+                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                      ViveMedellín only shows places with photos and curated data.
+                    {% else %}
+                      {% trans "ViveMedellín solo muestra lugares con fotos y datos curados." %}
+                    {% endif %}
+                  </li>
+                  <li>
+                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                      The more filters you use, the more precise the results list will be.
+                    {% else %}
+                      {% trans "Cuantos más filtros uses, más precisa será la lista de resultados." %}
+                    {% endif %}
+                  </li>
+                </ul>
+              </div>
+            </article>
+          </div>
+
+          <!-- Paso 3 -->
+          <div class="col-md-6">
+            <article class="step-card">
+              <div class="step-icon">
+                <span>3</span>
+              </div>
+              <div class="step-body">
+                <h3 class="step-title">
+                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                    Run a semantic search (in natural language)
+                  {% else %}
+                    {% trans "Haz una búsqueda semántica (en lenguaje natural)" %}
+                  {% endif %}
+                </h3>
+                <p class="step-text">
+                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                    Type what you have in mind: “romantic Italian restaurant in Laureles”, “rooftop with a great view in El Poblado” or “quiet bar to work with coffee”.
+                  {% else %}
+                    {% trans "Escribe lo que tengas en mente: “restaurante italiano romántico en Laureles”, “rooftop con buena vista en El Poblado” o “bar tranquilo para trabajar con café”." %}
+                  {% endif %}
+                </p>
+                <ul class="step-list">
+                  <li>
+                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                      Our semantic engine understands context, not just individual words.
+                    {% else %}
+                      {% trans "Nuestro motor semántico entiende el contexto, no solo palabras sueltas." %}
+                    {% endif %}
+                  </li>
+                  <li>
+                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                      You will get a grid of cards with recommendations ordered by relevance.
+                    {% else %}
+                      {% trans "Obtendrás una grilla de cards con recomendaciones ordenadas según afinidad." %}
+                    {% endif %}
+                  </li>
+                </ul>
+              </div>
+            </article>
+          </div>
+
+          <!-- Paso 4 -->
+          <div class="col-md-6">
+            <article class="step-card">
+              <div class="step-icon">
+                <span>4</span>
+              </div>
+              <div class="step-body">
+                <h3 class="step-title">
+                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                    Open the detail page and decide
+                  {% else %}
+                    {% trans "Abre la ficha de detalle y decide" %}
+                  {% endif %}
+                </h3>
+                <p class="step-text">
+                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                    On each card, click “View details” to open a view with photos, reviews, map and services. From there you can open Google Maps or Waze in one tap.
+                  {% else %}
+                    {% trans "En cada card, haz clic en “Ver detalles” para entrar a una vista con fotos, reseñas, mapa y servicios. Desde ahí puedes abrir Google Maps o Waze con un solo toque." %}
+                  {% endif %}
+                </p>
+                <ul class="step-list">
+                  <li>
+                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                      Review rating, services (terrace, live music, etc.) and price range.
+                    {% else %}
+                      {% trans "Revisa el rating, servicios (terraza, música en vivo, etc.) y rango de precios." %}
+                    {% endif %}
+                  </li>
+                  <li>
+                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                      Explore nearby or similar places without leaving the detail view.
+                    {% else %}
+                      {% trans "Explora lugares cercanos o similares sin salir del detalle." %}
+                    {% endif %}
+                  </li>
+                </ul>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección: Cómo se ve en Desktop vs Móvil -->
+      <section class="about-layouts mb-5">
+        <h2 class="section-title mb-3">
+          <i class="bi bi-display me-2"></i>
+          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+            Designed for desktop and mobile
+          {% else %}
+            {% trans "Pensado para desktop y móvil" %}
+          {% endif %}
+        </h2>
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="layout-card">
+              <div class="layout-chip">
+                <i class="bi bi-laptop me-1"></i>
+                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                  On desktop
+                {% else %}
+                  {% trans "En desktop" %}
+                {% endif %}
+              </div>
+              <p class="mb-2">
+                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                  On large screens, ViveMedellín works like a visual control panel: filters at the top and horizontal lists of places with detailed cards.
+                {% else %}
+                  {% trans "En pantallas grandes, ViveMedellín se comporta como un panel de control visual: filtros en la parte superior y listados horizontales de lugares con cards detalladas." %}
+                {% endif %}
+              </p>
+              <ul class="step-list">
+                <li>
+                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                    Horizontal cards with image on the left and content on the right.
+                  {% else %}
+                    {% trans "Cards horizontales con imagen a la izquierda y contenido a la derecha." %}
+                  {% endif %}
+                </li>
+                <li>
+                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                    Clearly separated sections: filters, results, detail and related places.
+                  {% else %}
+                    {% trans "Secciones bien separadas: filtros, resultados, detalle y lugares relacionados." %}
+                  {% endif %}
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="layout-card">
+              <div class="layout-chip">
+                <i class="bi bi-phone me-1"></i>
+                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                  On mobile
+                {% else %}
+                  {% trans "En móvil" %}
+                {% endif %}
+              </div>
+              <p class="mb-2">
+                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                  On your phone, everything becomes carousels and full‑screen cards so you can decide quickly with your thumb.
+                {% else %}
+                  {% trans "En tu teléfono, todo se convierte en carruseles y cards a pantalla completa para que puedas decidir rápido con el pulgar." %}
+                {% endif %}
+              </p>
+              <ul class="step-list">
+                <li>
+                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                    Horizontal carousels to explore areas and places without losing context.
+                  {% else %}
+                    {% trans "Carruseles horizontales para explorar zonas y lugares sin perder el contexto." %}
+                  {% endif %}
+                </li>
+                <li>
+                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                    Large, legible buttons to call, open maps or share via WhatsApp.
+                  {% else %}
+                    {% trans "Botones grandes y legibles para llamar, abrir mapas o compartir por WhatsApp." %}
+                  {% endif %}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Preguntas rápidas -->
+      <section class="about-faq mb-4">
+        <h2 class="section-title mb-3">
+          <i class="bi bi-question-circle me-2"></i>
+          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+            Quick questions
+          {% else %}
+            {% trans "Preguntas rápidas" %}
+          {% endif %}
+        </h2>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="faq-item">
+              <h3 class="faq-title">
+                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                  Which places appear on ViveMedellín?
+                {% else %}
+                  {% trans "¿Qué lugares aparecen en ViveMedellín?" %}
+                {% endif %}
+              </h3>
+              <p class="faq-text">
+                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                  We mainly show restaurants, bars, cafés and experiences that have photos, a clear location and enough information for you to decide.
+                {% else %}
+                  {% trans "Mostramos principalmente restaurantes, bares, cafés y experiencias que tienen fotos, ubicación clara y datos suficientes para que puedas decidir." %}
+                {% endif %}
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="faq-item">
+              <h3 class="faq-title">
+                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                  Where do the ratings come from?
+                {% else %}
+                  {% trans "¿De dónde salen las calificaciones?" %}
+                {% endif %}
+              </h3>
+              <p class="faq-text">
+                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                  Scores and reviews are based on verified external sources (such as Google Maps) and are updated periodically.
+                {% else %}
+                  {% trans "Las puntuaciones y reseñas se basan en fuentes externas verificadas (como Google Maps) y se actualizan de forma periódica." %}
+                {% endif %}
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="faq-item">
+              <h3 class="faq-title">
+                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                  Can I save my favorite places?
+                {% else %}
+                  {% trans "¿Puedo guardar mis lugares favoritos?" %}
+                {% endif %}
+              </h3>
+              <p class="faq-text">
+                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                  In this version we focus on discovery and decision. Features like personal lists or favorites will arrive in future updates.
+                {% else %}
+                  {% trans "En esta versión nos centramos en descubrir y decidir. Funciones como listas personales o favoritos llegarán en futuras actualizaciones." %}
+                {% endif %}
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="faq-item">
+              <h3 class="faq-title">
+                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                  How do I change the language?
+                {% else %}
+                  {% trans "¿Cómo cambio de idioma?" %}
+                {% endif %}
+              </h3>
+              <p class="faq-text">
+                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+                  You can switch between Spanish and English using the ES / EN buttons in the top corner of the home page, listings and each detail page.
+                {% else %}
+                  {% trans "Puedes alternar entre español e inglés desde los botones ES / EN en la esquina superior del home, del listado y de cada ficha de detalle." %}
+                {% endif %}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.about-section {
+  background:
+    radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
+    linear-gradient(135deg, #020617 0%, #022c22 35%, #064e3b 100%);
+  min-height: 100vh;
+}
+
+.about-main-card {
+  max-width: 960px;
+  background: rgba(4, 20, 12, 0.9);
+  border-radius: 28px;
+  padding: 2.5rem 2rem 2.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: #e5e7eb;
+}
+
+/* Botones de idioma estilo home/detail */
+.home-lang-switch .btn-lang-home {
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.85);
+  color: rgba(226, 232, 240, 0.96);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.home-lang-switch .btn-lang-home.active {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border-color: transparent;
+  color: #03120a;
+}
+
+.home-lang-switch .btn-lang-home.inactive:hover {
+  background: rgba(148, 163, 184, 0.35);
+}
+
+.about-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  color: rgba(148, 163, 184, 0.95);
+}
+
+.about-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #e5e7eb 0%, #a5f3fc 40%, #4ade80 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.about-subtitle {
+  max-width: 640px;
+  margin: 0 auto;
+  color: #cbd5f5;
+}
+
+.metric-pill {
+  border-radius: 999px;
+  padding: 0.75rem 1.25rem;
+  background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.18), transparent 50%),
+              rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(34, 197, 94, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #9ca3af;
+}
+
+.metric-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #bbf7d0;
+}
+
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(90deg, #22c55e 0%, #38bdf8 45%, transparent 60%);
+  border-image-slice: 1;
+  margin-bottom: 1rem;
+}
+
+.section-title i {
+  background: linear-gradient(135deg, #22c55e 0%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 1.4rem;
+}
+
+.step-card {
+  display: flex;
+  gap: 0.9rem;
+  padding: 0.9rem 1rem;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.98);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.step-icon span {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #22c55e 0%, #4ade80 40%, #2dd4bf 100%);
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.step-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.step-text {
+  font-size: 0.93rem;
+  color: #cbd5f5;
+  margin-bottom: 0.35rem;
+}
+
+.step-list {
+  padding-left: 1.1rem;
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  color: #e5e7eb;
+}
+
+.layout-card {
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  background: rgba(15, 23, 42, 0.98);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.layout-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #bbf7d0;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.faq-item {
+  border-radius: 16px;
+  padding: 0.9rem 1rem;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.faq-title {
+  font-size: 0.98rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.faq-text {
+  font-size: 0.9rem;
+  color: #cbd5f5;
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .about-main-card {
+    padding: 2rem 1.4rem 2rem;
+  }
+
+  .about-title {
+    font-size: 1.9rem;
+  }
+}
+</style>
+{% endblock %}
+
+

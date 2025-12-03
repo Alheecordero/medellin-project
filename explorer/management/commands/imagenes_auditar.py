@@ -49,12 +49,17 @@ class Command(BaseCommand):
             imagen_miniatura__isnull=True
         ).exclude(imagen_miniatura="").count()
 
+        # Métrica de lugares con flag de imágenes optimizadas (si existe el campo)
         try:
             lugares_optimizados = Places.objects.filter(
                 imagenes_optimizadas=True
             ).count()
+            lugares_pendientes_opt = Places.objects.filter(
+                tiene_fotos=True, imagenes_optimizadas=False
+            ).count()
         except Exception:
             lugares_optimizados = None
+            lugares_pendientes_opt = None
 
         self.stdout.write(self.style.SUCCESS("Resumen global de imágenes"))
         self.stdout.write("-" * 50)
@@ -64,8 +69,18 @@ class Command(BaseCommand):
         self.stdout.write(f"Fotos totales             : {total_fotos}")
         self.stdout.write(f"Fotos con imagen_mediana  : {fotos_con_mediana}")
         self.stdout.write(f"Fotos con imagen_miniatura: {fotos_con_miniatura}")
+        self.stdout.write(
+            f"Fotos SIN imagen_mediana  : {total_fotos - fotos_con_mediana}"
+        )
+        self.stdout.write(
+            f"Fotos SIN imagen_miniatura: {total_fotos - fotos_con_miniatura}"
+        )
         if lugares_optimizados is not None:
             self.stdout.write(f"Lugares optimizados       : {lugares_optimizados}")
+        if lugares_pendientes_opt is not None:
+            self.stdout.write(
+                f"Lugares pendientes        : {lugares_pendientes_opt}"
+            )
 
     def _audit_single(self, slug: str | None, place_id: str | None):
         qs = Places.objects.all()

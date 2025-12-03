@@ -2,6 +2,8 @@
 {% load i18n %}
 {% load i18n_extras %}
 
+{% block navbar %}{% endblock %}
+
 {% block title %}{{ titulo_pagina }} | {% trans "ViveMedellín" %}{% endblock %}
 
 {% block meta_description %}
@@ -33,217 +35,343 @@
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-  <div class="text-center mb-5">
+<section class="places-section">
+  <div class="container py-5">
+    <div class="places-main-wrapper">
+      <!-- Card Superior: Top bar + Título y Filtros -->
+      <div class="places-header-card mb-4">
+        {% get_current_language as LANGUAGE_CODE %}
+        <div class="d-flex justify-content-end align-items-center mb-3 px-1 flex-wrap gap-2">
+          <div class="home-lang-switch d-flex flex-wrap gap-2">
+            <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">
+              {% trans "Home" %}
+            </a>
+            {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+              <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">
+                {% trans "About us" %}
+              </a>
+            {% else %}
+              <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">
+                {% trans "Nosotros" %}
+              </a>
+            {% endif %}
+            <form action="{% url 'set_language' %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="language" value="es">
+              {% if request.path|slice:":4" == "/en/" %}
+                <input type="hidden" name="next" value="{{ request.path|slice:'3:' }}">
+              {% else %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+              {% endif %}
+              <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
+            </form>
+            <form action="{% url 'set_language' %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="language" value="en">
+              {% if request.path|slice:":4" == "/en/" %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+              {% else %}
+                <input type="hidden" name="next" value="/en{{ request.path }}">
+              {% endif %}
+              <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE|slice:":2" == 'en' %}active{% else %}inactive{% endif %}">EN</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="text-center mb-4">
     {% if tipo_actual %}
       <div class="mb-3">
         {% if tipo_actual == 'restaurant' %}
-          <i class="bi bi-cup-hot text-success fs-1"></i>
+                <i class="bi bi-cup-hot text-white fs-1"></i>
         {% elif tipo_actual == 'bar' %}
-          <i class="bi bi-cup-straw text-warning fs-1"></i>
+                <i class="bi bi-cup-straw text-white fs-1"></i>
         {% elif tipo_actual == 'cafe' %}
-          <i class="bi bi-cup text-info fs-1"></i>
+                <i class="bi bi-cup text-white fs-1"></i>
         {% else %}
-          <i class="bi bi-grid-3x3-gap text-primary fs-1"></i>
+                <i class="bi bi-grid-3x3-gap text-white fs-1"></i>
         {% endif %}
       </div>
     {% endif %}
 
-    {% get_current_language as LANGUAGE_CODE %}
-    {% if LANGUAGE_CODE == 'en' %}
+    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
       {% if region_actual %}
-        <h1 class="fw-bold">
+              <h1 class="places-title fw-bold text-white">
           The best places in {{ region_actual.name }}
         </h1>
-        <p class="lead text-muted">
+              <p class="lead text-white-50">
           Discover the most outstanding places in {{ region_actual.name }}
         </p>
       {% else %}
         {% with comuna=titulo_pagina|cut:"Los mejores lugares en " %}
-          <h1 class="fw-bold">
+                <h1 class="places-title fw-bold text-white">
             The best places in {{ comuna }}
           </h1>
-          <p class="lead text-muted">
+                <p class="lead text-white-50">
             Discover the most outstanding places in {{ comuna }}
           </p>
         {% endwith %}
       {% endif %}
     {% else %}
-      <h1 class="fw-bold">{{ titulo_pagina }}</h1>
-      <p class="lead text-muted">{{ descripcion_pagina }}</p>
+            <h1 class="places-title fw-bold text-white">{{ titulo_pagina }}</h1>
+            <p class="lead text-white-50">{{ descripcion_pagina }}</p>
     {% endif %}
     
     {% if busqueda_actual %}
       <div class="mt-3">
-        <span class="badge bg-primary bg-opacity-10 text-primary fs-6 px-3 py-2">
+              <span class="badge fs-6 px-3 py-2 places-search-badge">
           <i class="bi bi-search me-1"></i>{% trans "Búsqueda" %}: "{{ busqueda_actual }}"
         </span>
       </div>
     {% endif %}
   </div>
 
-  <!-- Filtros de la Lista -->
-  <div class="container mb-5">
-    <div class="card shadow border-0 rounded-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
-      <div class="card-body" style="background: rgba(255, 255, 255, 0.1); border-radius: 16px; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);">
-        <div class="row g-3">
-          <div class="col-md-3">
-            <label class="form-label small text-white fw-semibold">
-              <i class="bi bi-geo-alt me-1 text-white"></i>{% trans "Área" %}
-            </label>
-                         <select class="form-select form-select-sm rounded-pill" id="filtro-comuna" name="comuna">
-               <option value="">{% trans "Todas las áreas" %}</option>
+        <!-- Filtros tipo Burbujas/Chips -->
+        <div class="card shadow border-0 places-filters-card">
+          <div class="card-body places-filters-card-inner">
+            <div class="places-filters-bubbles">
+              <!-- Filtro por Área/Comuna -->
+              <div class="filter-section mb-4">
+                <div class="filter-bubbles-container">
+                  {% if region_actual %}
+                    <a href="{% url 'explorer:lugares_list' %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}" 
+                       class="filter-bubble" 
+                       data-filter="area" 
+                       data-value="">
+                      <span class="bubble-dot"></span>
+                      <span class="bubble-label">{% trans "Todas las áreas" %}</span>
+                    </a>
+                  {% else %}
+                    <a href="{% url 'explorer:lugares_list' %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}" 
+                       class="filter-bubble active" 
+                       data-filter="area" 
+                       data-value="">
+                      <span class="bubble-dot"></span>
+                      <span class="bubble-label">{% trans "Todas las áreas" %}</span>
+                    </a>
+                  {% endif %}
                {% for region in regiones_filtro %}
-                 <option value="{{ region.osm_id }}" 
+                    {% if region_actual and region_actual.osm_id == region.osm_id %}
+                      <a href="{% url 'explorer:lugares_por_comuna' region.slug %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}" 
+                         class="filter-bubble active" 
+                         data-filter="area" 
                          data-slug="{{ region.slug }}"
-                         {% if request.GET.comuna == region.osm_id|stringformat:'s' or region_actual.osm_id == region.osm_id %}selected{% endif %}>
-                   {{ region.name }}
-                 </option>
+                         data-value="{{ region.osm_id }}">
+                        <span class="bubble-dot"></span>
+                        <span class="bubble-label">{{ region.name }}</span>
+                      </a>
+                    {% else %}
+                      <a href="{% url 'explorer:lugares_por_comuna' region.slug %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}" 
+                         class="filter-bubble" 
+                         data-filter="area" 
+                         data-slug="{{ region.slug }}"
+                         data-value="{{ region.osm_id }}">
+                        <span class="bubble-dot"></span>
+                        <span class="bubble-label">{{ region.name }}</span>
+                      </a>
+                    {% endif %}
                {% endfor %}
-             </select>
-          </div>
-          
-          <div class="col-md-3">
-            <label class="form-label small text-white fw-semibold">
-              <i class="bi bi-grid-3x3-gap me-1 text-white"></i>{% trans "Tipo" %}
-            </label>
-            <select class="form-select form-select-sm rounded-pill" id="filtro-tipo" name="tipo">
-              <option value="">{% trans "Todos los tipos" %}</option>
-              <optgroup label="🍽️ {% trans "Restaurantes" %}">
-                <option value="restaurant" {% if tipo_actual == 'restaurant' %}selected{% endif %}>{% trans "Restaurante General" %}</option>
-                <option value="fine_dining_restaurant" {% if tipo_actual == 'fine_dining_restaurant' %}selected{% endif %}>{% trans "Restaurante Gourmet" %}</option>
-                <option value="pizza_restaurant" {% if tipo_actual == 'pizza_restaurant' %}selected{% endif %}>{% trans "Pizzería" %}</option>
-                <option value="italian_restaurant" {% if tipo_actual == 'italian_restaurant' %}selected{% endif %}>{% trans "Restaurante Italiano" %}</option>
-                <option value="mexican_restaurant" {% if tipo_actual == 'mexican_restaurant' %}selected{% endif %}>{% trans "Restaurante Mexicano" %}</option>
-                <option value="chinese_restaurant" {% if tipo_actual == 'chinese_restaurant' %}selected{% endif %}>{% trans "Restaurante Chino" %}</option>
-                <option value="seafood_restaurant" {% if tipo_actual == 'seafood_restaurant' %}selected{% endif %}>{% trans "Marisquería" %}</option>
-                <option value="steak_house" {% if tipo_actual == 'steak_house' %}selected{% endif %}>{% trans "Parrilla de Carnes" %}</option>
-                <option value="fast_food_restaurant" {% if tipo_actual == 'fast_food_restaurant' %}selected{% endif %}>{% trans "Comida Rápida" %}</option>
-              </optgroup>
-              <optgroup label="🍻 {% trans "Bares & Vida Nocturna" %}">
-                <option value="bar" {% if tipo_actual == 'bar' %}selected{% endif %}>{% trans "Bar" %}</option>
-                <option value="wine_bar" {% if tipo_actual == 'wine_bar' %}selected{% endif %}>{% trans "Bar de Vinos" %}</option>
-                <option value="pub" {% if tipo_actual == 'pub' %}selected{% endif %}>{% trans "Pub" %}</option>
-                <option value="night_club" {% if tipo_actual == 'night_club' %}selected{% endif %}>{% trans "Discoteca" %}</option>
-                <option value="karaoke" {% if tipo_actual == 'karaoke' %}selected{% endif %}>{% trans "Karaoke" %}</option>
-              </optgroup>
-              <optgroup label="☕ {% trans "Cafeterías" %}">
-                <option value="cafe" {% if tipo_actual == 'cafe' %}selected{% endif %}>{% trans "Cafetería" %}</option>
-                <option value="internet_cafe" {% if tipo_actual == 'internet_cafe' %}selected{% endif %}>{% trans "Cibercafé" %}</option>
-                <option value="breakfast_restaurant" {% if tipo_actual == 'breakfast_restaurant' %}selected{% endif %}>{% trans "Desayunos" %}</option>
-                <option value="brunch" {% if tipo_actual == 'brunch' %}selected{% endif %}>{% trans "Brunch" %}</option>
-              </optgroup>
-            </select>
-          </div>
-          
-          <div class="col-md-3">
-            <label class="form-label small text-white fw-semibold">
-              <i class="bi bi-stars me-1 text-white"></i>{% trans "Características" %}
-            </label>
-            <select class="form-select form-select-sm rounded-pill" id="filtro-caracteristicas" name="caracteristicas">
-              <option value="">{% trans "Sin filtro especial" %}</option>
-              <optgroup label="🚚 {% trans "Servicios de Entrega" %}">
-                <option value="delivery" {% if request.GET.delivery == 'true' %}selected{% endif %}>{% trans "Delivery" %}</option>
-                <option value="takeout" {% if request.GET.takeout == 'true' %}selected{% endif %}>{% trans "Para Llevar" %}</option>
-                <option value="dine_in" {% if request.GET.dine_in == 'true' %}selected{% endif %}>{% trans "Comer en Local" %}</option>
-              </optgroup>
-              <optgroup label="⭐ {% trans "Ambiente & Experiencia" %}">
-                <option value="outdoor_seating" {% if request.GET.outdoor_seating == 'true' %}selected{% endif %}>{% trans "Terraza" %}</option>
-                <option value="live_music" {% if request.GET.live_music == 'true' %}selected{% endif %}>{% trans "Música en Vivo" %}</option>
-                <option value="good_for_groups" {% if request.GET.good_for_groups == 'true' %}selected{% endif %}>{% trans "Para Grupos" %}</option>
-                <option value="good_for_children" {% if request.GET.good_for_children == 'true' %}selected{% endif %}>{% trans "Para Niños" %}</option>
-              </optgroup>
-              <optgroup label="🍹 {% trans "Especialidades" %}">
-                <option value="serves_cocktails" {% if request.GET.serves_cocktails == 'true' %}selected{% endif %}>{% trans "Cócteles" %}</option>
-                <option value="serves_wine" {% if request.GET.serves_wine == 'true' %}selected{% endif %}>{% trans "Vinos" %}</option>
-                <option value="serves_coffee" {% if request.GET.serves_coffee == 'true' %}selected{% endif %}>{% trans "Café Especialidad" %}</option>
-                <option value="serves_dessert" {% if request.GET.serves_dessert == 'true' %}selected{% endif %}>{% trans "Postres" %}</option>
-              </optgroup>
-              <optgroup label="♿ {% trans "Accesibilidad" %}">
-                <option value="wheelchair_accessible_entrance" {% if request.GET.wheelchair_accessible_entrance == 'true' %}selected{% endif %}>{% trans "Acceso Accesible" %}</option>
-                <option value="allows_dogs" {% if request.GET.allows_dogs == 'true' %}selected{% endif %}>{% trans "Pet Friendly" %}</option>
-                <option value="accepts_credit_cards" {% if request.GET.accepts_credit_cards == 'true' %}selected{% endif %}>{% trans "Tarjetas de Crédito" %}</option>
-              </optgroup>
-            </select>
-          </div>
-          
-          <div class="col-md-3 d-flex align-items-end">
-            <button type="button" class="btn btn-light btn-sm rounded-pill w-100 fw-semibold" id="aplicar-filtros" style="background: rgba(255, 255, 255, 0.9); border: none; color: #667eea;">
-              <i class="bi bi-funnel me-1"></i>{% trans "Aplicar Filtros" %}
-            </button>
           </div>
         </div>
         
-        <!-- Filtros actuales aplicados -->
-        <div id="filtros-aplicados" class="mt-3" style="display: none;">
-          <div class="d-flex flex-wrap gap-2">
-            <span class="small text-white me-2">{% trans "Filtros activos:" %}</span>
-            <div id="badges-filtros"></div>
-              <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-white" id="limpiar-filtros" style="opacity: 0.9;">
-                <i class="bi bi-x-circle me-1"></i>{% trans "Limpiar todos" %}
-              </button>
+              <!-- Filtro por Tipo de Lugar -->
+              <div class="filter-section">
+                <div class="filter-bubbles-container">
+                  {% if region_actual %}
+                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}" 
+                       class="filter-bubble {% if not tipo_actual %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="">
+                      <span class="bubble-label">{% trans "Todos los tipos" %}</span>
+                    </a>
+                  {% else %}
+                    <a href="{% url 'explorer:lugares_list' %}" 
+                       class="filter-bubble {% if not tipo_actual %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="">
+                      <span class="bubble-label">{% trans "Todos los tipos" %}</span>
+                    </a>
+                  {% endif %}
+                  <!-- Restaurantes -->
+                  {% if region_actual %}
+                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo=restaurant" 
+                       class="filter-bubble {% if tipo_actual == 'restaurant' %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="restaurant">
+                      <span class="bubble-label">🍽️ {% trans "Restaurante" %}</span>
+                    </a>
+                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo=pizza_restaurant" 
+                       class="filter-bubble {% if tipo_actual == 'pizza_restaurant' %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="pizza_restaurant">
+                      <span class="bubble-label">🍕 {% trans "Pizzería" %}</span>
+                    </a>
+                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo=fast_food_restaurant" 
+                       class="filter-bubble {% if tipo_actual == 'fast_food_restaurant' %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="fast_food_restaurant">
+                      <span class="bubble-label">🍔 {% trans "Comida Rápida" %}</span>
+                    </a>
+                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo=bar" 
+                       class="filter-bubble {% if tipo_actual == 'bar' %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="bar">
+                      <span class="bubble-label">🍻 {% trans "Bar" %}</span>
+                    </a>
+                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo=night_club" 
+                       class="filter-bubble {% if tipo_actual == 'night_club' %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="night_club">
+                      <span class="bubble-label">🎵 {% trans "Discoteca" %}</span>
+                    </a>
+                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo=cafe" 
+                       class="filter-bubble {% if tipo_actual == 'cafe' %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="cafe">
+                      <span class="bubble-label">☕ {% trans "Cafetería" %}</span>
+                    </a>
+                  {% else %}
+                    <a href="{% url 'explorer:lugares_list' %}?tipo=restaurant" 
+                       class="filter-bubble {% if tipo_actual == 'restaurant' %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="restaurant">
+                      <span class="bubble-label">🍽️ {% trans "Restaurante" %}</span>
+                    </a>
+                    <a href="{% url 'explorer:lugares_list' %}?tipo=pizza_restaurant" 
+                       class="filter-bubble {% if tipo_actual == 'pizza_restaurant' %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="pizza_restaurant">
+                      <span class="bubble-label">🍕 {% trans "Pizzería" %}</span>
+                    </a>
+                    <a href="{% url 'explorer:lugares_list' %}?tipo=fast_food_restaurant" 
+                       class="filter-bubble {% if tipo_actual == 'fast_food_restaurant' %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="fast_food_restaurant">
+                      <span class="bubble-label">🍔 {% trans "Comida Rápida" %}</span>
+                    </a>
+                    <a href="{% url 'explorer:lugares_list' %}?tipo=bar" 
+                       class="filter-bubble {% if tipo_actual == 'bar' %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="bar">
+                      <span class="bubble-label">🍻 {% trans "Bar" %}</span>
+                    </a>
+                    <a href="{% url 'explorer:lugares_list' %}?tipo=night_club" 
+                       class="filter-bubble {% if tipo_actual == 'night_club' %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="night_club">
+                      <span class="bubble-label">🎵 {% trans "Discoteca" %}</span>
+                    </a>
+                    <a href="{% url 'explorer:lugares_list' %}?tipo=cafe" 
+                       class="filter-bubble {% if tipo_actual == 'cafe' %}active{% endif %}" 
+                       data-filter="tipo" 
+                       data-value="cafe">
+                      <span class="bubble-label">☕ {% trans "Cafetería" %}</span>
+                    </a>
+                  {% endif %}
           </div>
         </div>
       </div>
     </div>
   </div>
 
+      <!-- Card Inferior: Grid de Lugares -->
+      <div class="places-grid-card">
   {% if lugares %}
     <div class="lugares-grid">
       {% for lugar in lugares %}
         <div class="lugar-card-wrapper">
-          <div class="card h-100 shadow-sm border-0 rounded-4">
+          <div class="card h-100 shadow-sm border-0 rounded-4 place-card">
+            <div class="place-card-media position-relative">
             {% if lugar.get_primera_foto %}
               <img src="{{ lugar.get_primera_foto.imagen }}" 
                    class="card-img-top rounded-top-4" 
                    alt="{% trans "Imagen de" %} {{ lugar.nombre }}"
-                   style="height: 200px; object-fit: cover;"
                    loading="lazy">
             {% else %}
-              <div class="bg-light d-flex align-items-center justify-content-center rounded-top-4" style="height: 200px;">
+                <div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
                 <i class="bi bi-image text-muted fs-2"></i>
+                </div>
+              {% endif %}
+              {% if lugar.rating %}
+              <div class="place-card-rating badge rounded-pill">
+                <i class="bi bi-star-fill me-1"></i>
+                <span class="fw-semibold">{{ lugar.rating|floatformat:1 }}</span>
               </div>
             {% endif %}
+            </div>
 
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title fw-semibold mb-2">{{ lugar.nombre }}</h5>
+            <div class="card-body d-flex flex-column place-card-body">
+              <h5 class="card-title fw-semibold mb-2 place-card-title">{{ lugar.nombre }}</h5>
               
-              <!-- Tipo de lugar -->
-              <div class="mb-2">
-                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill">
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <span class="badge place-type-pill">
                   <i class="bi bi-geo-alt me-1"></i>{{ lugar|place_type_label }}
                 </span>
-              </div>
-
-              <!-- Badges de estado -->
-              <div class="mb-3">
                 {% if lugar.es_destacado %}
-                  <span class="badge bg-warning text-dark me-1">
+                  <span class="badge place-flag-pill place-flag-featured">
                     <i class="bi bi-star-fill me-1"></i>{% trans "Destacado" %}
                   </span>
                 {% endif %}
                 {% if lugar.es_exclusivo %}
-                  <span class="badge bg-success me-1">
+                  <span class="badge place-flag-pill place-flag-exclusive">
                     <i class="bi bi-gem me-1"></i>{% trans "Exclusivo" %}
-                  </span>
-                {% endif %}
-                {% if lugar.rating and lugar.rating >= 4.5 %}
-                  <span class="badge bg-info text-dark">
-                    <i class="bi bi-award me-1"></i>{% trans "Top Valorado" %}
                   </span>
                 {% endif %}
               </div>
 
-              <!-- Rating -->
-                            {% if lugar.rating %}
-                <div class="small text-muted mb-3">
-                  <i class="bi bi-star-fill text-warning me-1"></i>
-                  <span class="fw-semibold">{{ lugar.rating|floatformat:1 }}</span> / 5
+              {% if lugar.precio or lugar.abierto_ahora is not None %}
+              <div class="d-flex flex-wrap align-items-center gap-3 mb-2 small place-card-meta">
+                {% if lugar.precio %}
+                  <span class="text-muted">
+                    <i class="bi bi-cash-stack me-1"></i>{{ lugar.precio }}
+                  </span>
+                {% endif %}
+                {% if lugar.abierto_ahora %}
+                  <span class="badge rounded-pill place-open-badge">
+                    <i class="bi bi-circle-fill me-1"></i>{% trans "Abierto ahora" %}
+                  </span>
+                {% elif lugar.abierto_ahora is not None %}
+                  <span class="badge rounded-pill place-closed-badge">
+                    <i class="bi bi-moon-stars me-1"></i>{% trans "Cerrado en este momento" %}
+                  </span>
+                {% endif %}
+              </div>
+              {% endif %}
+
+              {% if lugar.direccion %}
+              <div class="small text-muted mb-2 place-card-address">
+                <i class="bi bi-map me-1"></i>{{ lugar.direccion }}
+              </div>
+              {% endif %}
+
+              {% if lugar.comuna_nombre %}
+              <div class="small text-muted mb-2">
+                <i class="bi bi-building me-1"></i>{{ lugar.comuna_nombre }}
+              </div>
+              {% endif %}
+
+              {% if lugar.descripcion %}
+              <p class="small mb-3 place-card-description">
+                {{ lugar.descripcion|truncatechars:160 }}
+              </p>
+              {% endif %}
+
+              {% if lugar.telefono or lugar.sitio_web %}
+              <div class="d-flex flex-wrap align-items-center gap-3 small place-card-contact mb-3">
+                {% if lugar.telefono %}
+                  <span class="text-muted">
+                    <i class="bi bi-telephone me-1"></i>{{ lugar.telefono }}
+                  </span>
+                {% endif %}
+                {% if lugar.sitio_web %}
+                  <a href="{{ lugar.sitio_web }}" target="_blank" rel="noopener" class="place-card-link">
+                    <i class="bi bi-globe2 me-1"></i>{% trans "Sitio web" %}
+                  </a>
+                {% endif %}
                 </div>
               {% endif %}
 
               {% if lugar.slug %}
-                <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-purple mt-auto w-100 rounded-pill">
+                <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn mt-auto w-100 rounded-pill place-card-cta">
                   <i class="bi bi-eye me-1"></i>{% trans "Ver detalles" %}
                 </a>
               {% else %}
@@ -257,7 +385,8 @@
 
     <!-- Paginación -->
     {% if is_paginated %}
-      <nav class="mt-5 d-flex justify-content-center">
+      <!-- Desktop: paginación clásica -->
+      <nav class="mt-5 d-none d-md-flex justify-content-center">
         <ul class="pagination">
           {% if page_obj.has_previous %}
             <li class="page-item">
@@ -282,205 +411,486 @@
           {% endif %}
         </ul>
       </nav>
+
+      <!-- Mobile: botones grandes Anterior / Cargar más -->
+      <div class="mt-4 d-flex d-md-none flex-column align-items-stretch gap-2">
+        {% if page_obj.has_previous %}
+          <a class="btn btn-gradient-purple rounded-pill w-100"
+             href="?page={{ page_obj.previous_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
+            <i class="bi bi-chevron-left me-1"></i>{% trans "Anterior" %}
+          </a>
+        {% endif %}
+        {% if page_obj.has_next %}
+          <a class="btn btn-gradient-green rounded-pill w-100"
+             href="?page={{ page_obj.next_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
+            {% trans "Cargar más lugares" %}
+          </a>
+        {% endif %}
+        <div class="text-center text-white-50 small mt-1">
+          {% trans "Página" %} {{ page_obj.number }} {% trans "de" %} {{ page_obj.paginator.num_pages }}
+        </div>
+      </div>
     {% endif %}
 
   {% else %}
     <div class="text-center py-5">
-      <i class="bi bi-search display-1 text-muted mb-3"></i>
-      <h3 class="text-muted">{% trans "No hay lugares disponibles" %}</h3>
-      <p class="text-muted">{% trans "No se encontraron lugares que coincidan con tu búsqueda." %}</p>
-      <a href="{% url 'explorer:lugares_list' %}" class="btn btn-primary rounded-pill">
+      <i class="bi bi-search display-1 mb-3 text-white-50"></i>
+      <h3 class="text-white">{% trans "No hay lugares disponibles" %}</h3>
+      <p class="text-white-50">{% trans "No se encontraron lugares que coincidan con tu búsqueda." %}</p>
+      <a href="{% url 'explorer:lugares_list' %}" class="btn rounded-pill" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; color: white; font-weight: 600;">
         {% trans "Ver todos los lugares" %}
       </a>
     </div>
   {% endif %}
 </div>
+    </div>
+  </div>
+</section>
 {% endblock %}
 
 {% block extra_css %}
 <style>
-/* Card Hover Effects */
-.card:hover {
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+/* Fondo general de la página de listados – mismo degradado verde que el home */
+.places-section {
+    background:
+        radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
+        linear-gradient(135deg, #020617 0%, #022c22 35%, #064e3b 100%);
+    min-height: 100vh;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
 }
 
-/* Pagination styling */
-.pagination .page-link {
-    border: 1px solid #dee2e6;
-    color: #6c757d;
+.places-section .container {
+    max-width: 1200px;
+}
+
+/* Wrapper principal */
+.places-main-wrapper {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+/* Card Superior: Título y Filtros */
+.places-header-card {
+    background: rgba(4, 20, 12, 0.75);
+    border-radius: 28px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+@media (min-width: 992px) {
+    .places-header-card {
+        padding: 3rem 2.5rem;
+    }
+}
+
+/* Título principal con estilo del home */
+.places-title {
+    font-size: 2.5rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+}
+
+@media (min-width: 992px) {
+    .places-title {
+        font-size: 3rem;
+    }
+}
+
+.text-white-50 {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.places-search-badge {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(10px);
+}
+
+/* Card de filtros con glassmorphism oscuro mejorado */
+.places-filters-card {
+    background: rgba(3, 30, 20, 0.88);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.places-filters-card-inner {
+    background: transparent;
+    padding: 2rem 1.75rem;
+}
+
+@media (min-width: 992px) {
+    .places-filters-card-inner {
+        padding: 2.25rem 2rem;
+    }
+}
+
+/* Contenedor de burbujas dentro de la card de filtros */
+.places-filters-bubbles {
+    padding: 0;
+}
+
+/* Card Inferior: Grid de Lugares */
+.places-grid-card {
+    background: rgba(4, 20, 12, 0.75);
+    border-radius: 28px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+@media (min-width: 992px) {
+    .places-grid-card {
+        padding: 2.5rem 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .places-section {
+        padding-top: 1.5rem;
+        padding-bottom: 2.5rem;
+    }
+}
+
+/* Cards de lugares en tonos blancos con detalles verdes */
+.places-section .card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 2px solid rgba(17, 153, 142, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.places-section .card-body {
+    background: transparent;
+}
+
+.places-section .card-title {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.places-section .card-text,
+.places-section .small.text-muted {
+    color: #64748b !important;
+}
+
+/* Card Hover Effects */
+.places-section .card:hover {
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+    box-shadow: 0 12px 32px rgba(17, 153, 142, 0.25) !important;
+    border-color: rgba(17, 153, 142, 0.5);
+}
+
+/* Place card refinements */
+.place-card-media img {
+    height: 190px;
+    object-fit: cover;
+}
+
+.place-card-placeholder {
+    height: 190px;
+    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
+}
+
+.place-card-rating {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    background: #ffffff;
+    color: #11998e;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.75rem;
+    box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
+    border: 1px solid rgba(17, 153, 142, 0.2);
+    font-weight: 600;
+}
+
+.place-card-body {
+    padding-top: 0.9rem;
+}
+
+.place-card-title {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.place-type-pill {
+    background: rgba(17, 153, 142, 0.1);
+    border-radius: 999px;
+    color: #11998e;
+    border: 1px solid rgba(17, 153, 142, 0.3);
+    font-size: 0.8rem;
     font-weight: 500;
 }
 
-.pagination .page-link:hover {
-    background-color: #f8f9fa;
-    border-color: #6c757d;
+.place-flag-pill {
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
 }
 
-/* Estilos para la sección de filtros con glassmorphism */
-#aplicar-filtros:hover {
-    background: rgba(255, 255, 255, 1) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
+.place-flag-featured {
+    background: rgba(250, 204, 21, 0.15);
+    color: #ca8a04;
+    border: 1px solid rgba(250, 204, 21, 0.4);
 }
 
-.form-select.rounded-pill {
-    backdrop-filter: blur(5px);
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+.place-flag-exclusive {
+    background: rgba(17, 153, 142, 0.15);
+    color: #11998e;
+    border: 1px solid rgba(17, 153, 142, 0.4);
 }
 
-.form-select.rounded-pill:focus {
-    background: rgba(255, 255, 255, 0.95);
-    border-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+.place-card-address {
+    color: #64748b !important;
 }
 
-/* Efecto hover para el botón limpiar filtros */
-#limpiar-filtros:hover {
-    opacity: 1 !important;
-    text-decoration: underline !important;
+.place-card-meta .place-open-badge {
+    background: rgba(22, 163, 74, 0.12);
+    color: #16a34a;
+    border: 1px solid rgba(22, 163, 74, 0.4);
 }
 
-/* Degradados para botones */
-.btn-gradient-purple {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.place-card-meta .place-closed-badge {
+    background: rgba(15, 23, 42, 0.9);
+    color: #e5e7eb;
+    border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.place-card-description {
+    color: #4b5563;
+}
+
+.place-card-link {
+    color: #0f766e;
+    text-decoration: none;
+}
+
+.place-card-link:hover {
+    color: #22c55e;
+    text-decoration: underline;
+}
+
+.place-card-cta {
+    font-weight: 600;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
     border: none;
     color: white;
-    font-weight: 600;
     transition: all 0.3s ease;
 }
 
-.btn-gradient-purple:hover {
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+.place-card-cta:hover {
+    background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
     color: white;
 }
 
-.btn-gradient-green {
+/* Botón principal verde reutilizable (volver / CTAs secundarios) */
+.btn-gradient-purple {
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
     border: none;
     color: white;
     font-weight: 600;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
 }
 
-.btn-gradient-green:hover {
+.btn-gradient-purple:hover {
     background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
     color: white;
 }
 
+/* Pagination styling con acentos verdes */
+.pagination .page-link {
+    border: 1px solid rgba(17, 153, 142, 0.3);
+    color: #11998e;
+    font-weight: 500;
+    background: white;
+}
 
+.pagination .page-link:hover {
+    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
+    border-color: rgba(17, 153, 142, 0.5);
+    color: #0e8678;
+}
+
+/* Filtros tipo Burbujas/Chips - alto contraste y scroll horizontal */
+.places-filters-bubbles {
+    padding: 0.75rem 0;
+}
+
+.filter-section {
+    margin-bottom: 1.25rem;
+}
+
+.filter-section:last-child {
+    margin-bottom: 0;
+}
+
+/* Cada sección de filtros ocupa 1 sola fila con scroll horizontal */
+.filter-bubbles-container {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.25rem 0.25rem 0.75rem 0.25rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(17, 153, 142, 0.6) transparent;
+    -webkit-overflow-scrolling: touch;
+}
+
+.filter-bubbles-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.filter-bubbles-container::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.35);
+    border-radius: 3px;
+}
+
+.filter-bubbles-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+    border-radius: 3px;
+}
+
+.filter-bubbles-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(90deg, #0f766e 0%, #22c55e 100%);
+}
+
+.filter-bubble {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    gap: 0.45rem;
+    padding: 0.55rem 1.25rem;
+    border-radius: 999px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    background: rgba(255, 255, 255, 0.96);
+    color: #0f172a;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.22s ease;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+}
+
+.filter-bubble:hover {
+    background: #f1f5f9;
+    border-color: rgba(15, 23, 42, 0.25);
+    color: #0f172a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
+    text-decoration: none;
+}
+
+.filter-bubble.active {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border-color: rgba(22, 163, 74, 0.9);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(15, 118, 110, 0.55);
+}
+
+.filter-bubble.active:hover {
+    background: linear-gradient(135deg, #0f766e 0%, #22c55e 100%);
+    border-color: rgba(22, 163, 74, 1);
+    box-shadow: 0 8px 22px rgba(15, 118, 110, 0.65);
+    transform: translateY(-2px);
+}
+
+.bubble-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    flex-shrink: 0;
+}
+
+.filter-bubble.active .bubble-dot {
+    background: #facc15;
+}
+
+.bubble-label {
+    line-height: 1.3;
+    position: relative;
+    z-index: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .filter-bubble {
+        padding: 0.5rem 1.1rem;
+        font-size: 0.85rem;
+    }
+    
+    .filter-bubbles-container {
+        gap: 0.4rem;
+        padding-bottom: 0.65rem;
+    }
+}
+        
+/* Botones de idioma y navegación superior (mismo estilo que en el home) */
+.home-lang-switch .btn-lang-home {
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(0, 0, 0, 0.25);
+    color: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.home-lang-switch .btn-lang-home.active {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border-color: transparent;
+    color: #03120a;
+}
+
+.home-lang-switch .btn-lang-home.inactive:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
 </style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-$(document).ready(function() {
-    // Aplicar filtros
-    $('#aplicar-filtros').on('click', function() {
-        aplicarFiltros();
+// Los filtros ahora funcionan directamente con los enlaces de las burbujas
+// No se necesita JavaScript adicional ya que cada burbuja tiene su href configurado
+document.addEventListener('DOMContentLoaded', function() {
+    // Agregar efecto de click suave a las burbujas
+    const bubbles = document.querySelectorAll('.filter-bubble');
+    bubbles.forEach(bubble => {
+        bubble.addEventListener('click', function(e) {
+            // El enlace ya maneja la navegación, solo agregamos feedback visual
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
+        });
     });
-    
-    // Limpiar filtros
-    $('#limpiar-filtros').on('click', function() {
-        $('#filtro-comuna').val('');
-        $('#filtro-tipo').val('');
-        $('#filtro-caracteristicas').val('');
-        aplicarFiltros();
-    });
-    
-    // Cambio de filtros automático (opcional)
-    $('#filtro-comuna, #filtro-tipo, #filtro-caracteristicas').on('change', function() {
-        actualizarBadgesFiltros();
-    });
-    
-    function aplicarFiltros() {
-        const params = new URLSearchParams();
-        
-        // Obtener valores de filtros
-        const comuna = $('#filtro-comuna').val();
-        const tipo = $('#filtro-tipo').val();
-        const caracteristica = $('#filtro-caracteristicas').val();
-        
-        console.log('=== DEBUG aplicarFiltros ===');
-        console.log('Comuna ID:', comuna);
-        console.log('Tipo:', tipo);
-        console.log('Característica:', caracteristica);
-        
-        // Mantener búsqueda si existe
-        const busqueda = '{{ busqueda_actual|escapejs }}';
-        if (busqueda) params.append('q', busqueda);
-        
-        // Construir URL según si hay comuna seleccionada
-        let baseUrl = '{% url "explorer:lugares_list" %}';
-        
-        // Si hay comuna, usar URL con slug
-        if (comuna) {
-            // Obtener el slug real de la opción seleccionada
-            const comunaSlug = $('#filtro-comuna option:selected').data('slug');
-            console.log('Slug encontrado:', comunaSlug);
-            
-            if (comunaSlug) {
-                // Usar URL con slug para comunas
-                baseUrl = `/lugares/${comunaSlug}/`;
-                console.log('Usando URL con slug:', baseUrl);
-            } else {
-                // Fallback a URL con parámetros si no hay slug
-                baseUrl = '{% url "explorer:lugares_list" %}';
-                params.append('comuna', comuna);
-                console.log('Fallback a URL con parámetros, comuna ID:', comuna);
-            }
-        } else {
-            // Sin comuna, usar URL base
-            baseUrl = '{% url "explorer:lugares_list" %}';
-            console.log('Sin comuna, URL base:', baseUrl);
-        }
-        
-        // Agregar filtros adicionales como parámetros
-        if (tipo) params.append('tipo', tipo);
-        if (caracteristica) params.append(caracteristica, 'true');
-        
-        // Redireccionar
-        const finalUrl = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
-        console.log('URL final:', finalUrl);
-        console.log('=== FIN DEBUG ===');
-        
-        window.location.href = finalUrl;
-    }
-    
-    function actualizarBadgesFiltros() {
-        const comuna = $('#filtro-comuna option:selected').text();
-        const tipo = $('#filtro-tipo option:selected').text();
-        const caracteristica = $('#filtro-caracteristicas option:selected').text();
-        
-        let badges = [];
-        
-        if ($('#filtro-comuna').val()) {
-            badges.push(`<span class="badge bg-primary me-1">📍 ${comuna}</span>`);
-        }
-        if ($('#filtro-tipo').val()) {
-            badges.push(`<span class="badge bg-success me-1">🏢 ${tipo}</span>`);
-        }
-        if ($('#filtro-caracteristicas').val()) {
-            badges.push(`<span class="badge bg-info me-1">⭐ ${caracteristica}</span>`);
-        }
-        
-        if (badges.length > 0) {
-            $('#badges-filtros').html(badges.join(''));
-            $('#filtros-aplicados').show();
-        } else {
-            $('#filtros-aplicados').hide();
-        }
-    }
-    
-    // Inicializar badges al cargar la página
-    actualizarBadgesFiltros();
 });
 </script>
 
@@ -514,12 +924,12 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-/* Grid/Carrusel de lugares - mismo estilo que home */
+/* Grid/Carrusel de lugares - congruente con home */
 .lugares-grid {
   padding: 0.5rem 0;
 }
 
-/* Móvil: Carrusel horizontal */
+/* Móvil: carrusel horizontal con cards grandes (mismas dimensiones que en el home) */
 @media (max-width: 767.98px) {
   .lugares-grid {
     display: flex;
@@ -549,22 +959,71 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   .lugar-card-wrapper {
-    flex: 0 0 auto;
-    width: 85vw;
-    max-width: 400px;
+    flex: 0 0 100%;
+    max-width: 430px;
+  }
+
+  .place-card {
+    display: block;
+  }
+
+  .place-card-body {
+    padding: 1rem 1.1rem 1.15rem;
+  }
+
+  .place-card-meta {
+    gap: 0.75rem !important;
+  }
+
+  /* Paginación más compacta y táctil en mobile */
+  .pagination {
+    flex-wrap: nowrap;
+  }
+
+  .pagination .page-link {
+    padding: 0.55rem 0.85rem;
+    font-size: 0.85rem;
+  }
+
+  .pagination .page-link.border-0.bg-transparent {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 }
 
-/* Desktop: Grid estándar */
+/* Desktop: una columna con cards horizontales (igual que home / semantic) */
 @media (min-width: 768px) {
   .lugares-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
   
   .lugar-card-wrapper {
     width: 100%;
+  }
+}
+
+@media (min-width: 992px) {
+  .place-card {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+
+  .place-card-media img,
+  .place-card-placeholder {
+    height: 100%;
+    min-height: 190px;
+    max-height: 220px;
+    border-radius: 1.25rem 0 0 1.25rem;
+  }
+
+  .place-card-media {
+    height: 100%;
+  }
+
+  .place-card-body {
+    padding: 1.25rem 1.5rem;
   }
 }
 

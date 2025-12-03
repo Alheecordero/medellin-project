@@ -7,6 +7,11 @@ app_name = 'explorer'
 urlpatterns = [
     # Vistas principales
     path('', views.home, name='home'),
+    # About: español y inglés con slugs separados
+    # ES: /nosotros/        | EN: /en/nosotros/   (alias)
+    path('nosotros/', views.about, name='about_es'),
+    # EN principal: /en/about-us/
+    path('about-us/', views.about, name='about'),
     path('semantic-search/', views.SemanticSearchView.as_view(), name='semantic_search_page'),
     path(pgettext_lazy('url', 'lugares/'), views.lugares_list, name='lugares_list'),
     path(pgettext_lazy('url', 'lugares/<slug:comuna_slug>/'), views.lugares_por_comuna, name='lugares_por_comuna'),
@@ -19,12 +24,6 @@ urlpatterns = [
     path('api/semantic-search/', views.semantic_search_ajax, name='semantic_search_ajax'),
     path('api/translate_review', views.translate_review_api, name='translate_review_api'),
     # path('api/lugar/<slug:slug>/reviews/', views.reviews_lugar_ajax, name='reviews_lugar_ajax'),  # No necesario con solo 5 reseñas
-    
-    # Newsletter endpoints
-    path('api/newsletter/suscribir/', views.newsletter_subscribe, name='newsletter_subscribe'),
-    path('newsletter/confirmar/<str:token>/', views.newsletter_confirm, name='newsletter_confirm'),
-    path('newsletter/cancelar/<str:token>/', views.newsletter_unsubscribe, name='newsletter_unsubscribe'),
-    path('api/newsletter/estadisticas/', views.newsletter_stats, name='newsletter_stats'),
     
     # Progressive Loading AJAX endpoints
     path('api/lugares/<slug:slug>/cercanos/', views.lugares_cercanos_ajax, name='lugares_cercanos_ajax'),

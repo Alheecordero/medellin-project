@@ -1722,7 +1722,7 @@ msgstr "Wine Bar"
 
 #: explorer/i18n_catalog.py:89
 msgid "Otros"
-msgstr ""
+msgstr "Others"
 
 #: explorer/templates/base.html:9 explorer/templates/base.html:21
 #: explorer/templates/base.html:28
@@ -1989,19 +1989,19 @@ msgstr "Location found"
 msgid ""
 "Permiso de ubicación denegado. Por favor, habilita la ubicación en tu "
 "navegador."
-msgstr ""
+msgstr "Location permission denied. Please enable location services in your browser."
 
 #: explorer/templates/home.html:225
 msgid "No se pudo determinar tu ubicación. Intenta de nuevo."
-msgstr ""
+msgstr "Your location could not be determined. Please try again."
 
 #: explorer/templates/home.html:226
 msgid "La solicitud de ubicación tardó demasiado. Intenta de nuevo."
-msgstr ""
+msgstr "The location request took too long. Please try again."
 
 #: explorer/templates/home.html:227
 msgid "Error desconocido al obtener la ubicación."
-msgstr ""
+msgstr "Unknown error obtaining location."
 
 #: explorer/templates/home.html:228
 #, fuzzy
@@ -2029,7 +2029,7 @@ msgstr "Error searching for nearby places: %(err)s"
 
 #: explorer/templates/home.html:232
 msgid "Reintentar"
-msgstr ""
+msgstr "Retry"
 
 #: explorer/templates/home.html:233
 #, fuzzy
@@ -2045,7 +2045,7 @@ msgstr "Error searching for nearby places: %(err)s"
 
 #: explorer/templates/home.html:235
 msgid "No hay más lugares en esta zona disponibles en este momento."
-msgstr ""
+msgstr "There are no more places available in this area at this time."
 
 #: explorer/templates/home.html:236
 #, fuzzy
@@ -2956,22 +2956,27 @@ msgid_plural "Encontramos %s lugares que coinciden con tus filtros"
 msgstr[0] "We found %s place that matches your filters"
 msgstr[1] "We found %s places that match your filters"
 
-#: explorer/urls.py:11
+#: explorer/urls.py:10
+msgctxt "url"
+msgid "nosotros/"
+msgstr "about-us/"
+
+#: explorer/urls.py:12
 msgctxt "url"
 msgid "lugares/"
 msgstr "places/"
 
-#: explorer/urls.py:12
+#: explorer/urls.py:13
 msgctxt "url"
 msgid "lugares/<slug:comuna_slug>/"
 msgstr "places/<slug:comuna_slug>/"
 
-#: explorer/urls.py:13
+#: explorer/urls.py:14
 msgctxt "url"
 msgid "lugar/<slug:slug>/"
 msgstr "place/<slug:slug>/"
 
-#: explorer/urls.py:14
+#: explorer/urls.py:15
 msgctxt "url"
 msgid "lugar/<slug:slug>/reviews/"
 msgstr "place/<slug:slug>/reviews/"
@@ -2983,3 +2988,133 @@ msgstr "Open in Waze"
 #: explorer/templates/lugares/places_detail.html:213
 msgid "Horario no disponible"
 msgstr "Schedule not available"
+
+# ---------------------------------------------------------------------------
+# About page (explorer/templates/about.html)
+# ---------------------------------------------------------------------------
+
+msgid "About | ViveMedellín"
+msgstr "About | ViveMedellín"
+
+msgid "Manual de uso"
+msgstr "How it works"
+
+msgid "Explora Medellín como un local con ViveMedellín"
+msgstr "Explore Medellín like a local with ViveMedellín"
+
+msgid "ViveMedellín es tu mapa curado de restaurantes, bares y planes en la ciudad. Aquí te mostramos, en minutos, cómo sacarle el máximo provecho."
+msgstr "ViveMedellín is your curated map of restaurants, bars and plans in the city. Here we show you, in minutes, how to get the most out of it."
+
+msgid "Lugares con fotos reales"
+msgstr "Places with real photos"
+
+msgid "Zonas de la ciudad"
+msgstr "City areas"
+
+msgid "Tipos de experiencias"
+msgstr "Types of experiences"
+
+msgid "Cómo usar ViveMedellín en 4 pasos"
+msgstr "How to use ViveMedellín in 4 steps"
+
+msgid "Elige la zona que quieres explorar"
+msgstr "Choose the area you want to explore"
+
+msgid "Desde la pantalla de inicio, usa las burbujas de comunas (El Poblado, Laureles, Centro, etc.) o el filtro de “Área” para centrarte en la parte de la ciudad que te interesa."
+msgstr "From the home screen, use the commune bubbles (El Poblado, Laureles, Centro, etc.) or the “Area” filter to focus on the part of the city you care about."
+
+msgid "En desktop, verás filtros tipo “chips” y una tarjeta principal por comuna."
+msgstr "On desktop you will see chip-style filters and a main card for each area."
+
+msgid "En móvil, desliza horizontalmente las cards para descubrir más zonas."
+msgstr "On mobile, swipe cards horizontally to discover more areas."
+
+msgid "Filtra por tipo de lugar y características"
+msgstr "Filter by place type and features"
+
+msgid "Combina “Tipo de lugar” (restaurantes, rooftops, cafés, bares…) con características especiales como “pet friendly”, “terraza”, “solo efectivo” o “abierto ahora”."
+msgstr "Combine “Place type” (restaurants, rooftops, cafés, bars…) with special features such as “pet‑friendly”, “terrace”, “cash only” or “open now”."
+
+msgid "ViveMedellín solo muestra lugares con fotos y datos curados."
+msgstr "ViveMedellín only shows places with photos and curated data."
+
+msgid "Cuantos más filtros uses, más precisa será la lista de resultados."
+msgstr "The more filters you use, the more precise the results list will be."
+
+msgid "Haz una búsqueda semántica (en lenguaje natural)"
+msgstr "Run a semantic search (in natural language)"
+
+msgid "Escribe lo que tengas en mente: “restaurante italiano romántico en Laureles”, “rooftop con buena vista en El Poblado” o “bar tranquilo para trabajar con café”."
+msgstr "Type what you have in mind: “romantic Italian restaurant in Laureles”, “rooftop with a great view in El Poblado” or “quiet bar to work with coffee”."
+
+msgid "Nuestro motor semántico entiende el contexto, no solo palabras sueltas."
+msgstr "Our semantic engine understands context, not just individual words."
+
+msgid "Obtendrás una grilla de cards con recomendaciones ordenadas según afinidad."
+msgstr "You will get a grid of cards with recommendations ordered by relevance."
+
+msgid "Abre la ficha de detalle y decide"
+msgstr "Open the detail page and decide"
+
+msgid "En cada card, haz clic en “Ver detalles” para entrar a una vista con fotos, reseñas, mapa y servicios. Desde ahí puedes abrir Google Maps o Waze con un solo toque."
+msgstr "On each card, click “View details” to open a view with photos, reviews, map and services. From there you can open Google Maps or Waze in one tap."
+
+msgid "Revisa el rating, servicios (terraza, música en vivo, etc.) y rango de precios."
+msgstr "Review rating, services (terrace, live music, etc.) and price range."
+
+msgid "Explora lugares cercanos o similares sin salir del detalle."
+msgstr "Explore nearby or similar places without leaving the detail view."
+
+msgid "Pensado para desktop y móvil"
+msgstr "Designed for desktop and mobile"
+
+msgid "En desktop"
+msgstr "On desktop"
+
+msgid "En pantallas grandes, ViveMedellín se comporta como un panel de control visual: filtros en la parte superior y listados horizontales de lugares con cards detalladas."
+msgstr "On large screens, ViveMedellín behaves like a visual control panel: filters at the top and horizontal lists of places with rich cards."
+
+msgid "Cards horizontales con imagen a la izquierda y contenido a la derecha."
+msgstr "Horizontal cards with the image on the left and content on the right."
+
+msgid "Secciones bien separadas: filtros, resultados, detalle y lugares relacionados."
+msgstr "Clearly separated sections: filters, results, detail and related places."
+
+msgid "En móvil"
+msgstr "On mobile"
+
+msgid "En tu teléfono, todo se convierte en carruseles y cards a pantalla completa para que puedas decidir rápido con el pulgar."
+msgstr "On your phone, everything becomes carousels and full‑screen cards so you can decide quickly with your thumb."
+
+msgid "Carruseles horizontales para explorar zonas y lugares sin perder el contexto."
+msgstr "Horizontal carousels to explore areas and places without losing context."
+
+msgid "Botones grandes y legibles para llamar, abrir mapas o compartir por WhatsApp."
+msgstr "Large, legible buttons to call, open maps or share via WhatsApp."
+
+msgid "Preguntas rápidas"
+msgstr "Quick questions"
+
+msgid "¿Qué lugares aparecen en ViveMedellín?"
+msgstr "What places appear in ViveMedellín?"
+
+msgid "Mostramos principalmente restaurantes, bares, cafés y experiencias que tienen fotos, ubicación clara y datos suficientes para que puedas decidir."
+msgstr "We mainly show restaurants, bars, cafés and experiences that have photos, clear location and enough data to help you decide."
+
+msgid "¿De dónde salen las calificaciones?"
+msgstr "Where do the ratings come from?"
+
+msgid "Las puntuaciones y reseñas se basan en fuentes externas verificadas (como Google Maps) y se actualizan de forma periódica."
+msgstr "Ratings and reviews are based on verified external sources (such as Google Maps) and are updated periodically."
+
+msgid "¿Puedo guardar mis lugares favoritos?"
+msgstr "Can I save my favourite places?"
+
+msgid "En esta versión nos centramos en descubrir y decidir. Funciones como listas personales o favoritos llegarán en futuras actualizaciones."
+msgstr "In this version we focus on discovery and decision. Features such as personal lists or favourites will come in future updates."
+
+msgid "¿Cómo cambio de idioma?"
+msgstr "How do I change the language?"
+
+msgid "Puedes alternar entre español e inglés desde los botones ES / EN en la esquina superior del home, del listado y de cada ficha de detalle."
+msgstr "You can switch between Spanish and English using the ES / EN buttons in the top corner of the home, list and each detail page."
