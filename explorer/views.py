@@ -209,7 +209,7 @@ class HomeView(TemplateView):
         # 1. ÁREAS - Obtener regiones principales (priorizando Poblado y Laureles)
         from django.db.models import Case, When, IntegerField
         
-        regiones_areas = RegionOSM.objects.filter(
+        regiones_areas_qs = RegionOSM.objects.filter(
             osm_id__in=Places.objects.filter(tiene_fotos=True).values_list('comuna_osm_id', flat=True).distinct()
         ).annotate(
             orden_area=Case(
@@ -218,7 +218,14 @@ class HomeView(TemplateView):
                 default=3,
                 output_field=IntegerField()
             )
-        ).order_by('orden_area', 'name')[:22]
+        ).order_by('orden_area', 'name')
+
+        # Importante: el template `home.html` espera `comunas_medellin` y `otras_regiones`
+        # para renderizar los chips/burbujas (y el dropdown de áreas). Mantener estas keys
+        # evita que se "desaparezcan" cuando el queryset cambia.
+        regiones_areas = list(regiones_areas_qs[:22])
+        comunas_medellin = [r for r in regiones_areas if getattr(r, "admin_level", None) == "8"]
+        otras_regiones = [r for r in regiones_areas if getattr(r, "admin_level", None) != "8"]
         
         # 2. CATEGORÍAS REALES - Basadas en PLACE_TYPE_CHOICES
         categorias_reales = [
@@ -307,6 +314,8 @@ class HomeView(TemplateView):
         
         return {
             'regiones_areas': regiones_areas,
+            'comunas_medellin': comunas_medellin,
+            'otras_regiones': otras_regiones,
             'categorias_reales': categorias_reales,
             'etiquetas_especiales': etiquetas_especiales,
         }
