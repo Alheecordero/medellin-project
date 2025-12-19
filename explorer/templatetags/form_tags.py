@@ -32,3 +32,22 @@ def format_price_range(value: str | None) -> str:
     if all(ch == '$' for ch in val) and 1 <= len(val) <= 4:
         return mapping.get('$' * len(val), _('No especificado'))
     return _('No especificado')
+
+
+@register.filter(name="ensure_absolute_url")
+def ensure_absolute_url(url: str | None, request) -> str:
+    """
+    Devuelve una URL absoluta para usar en meta tags (og:image/twitter:image).
+
+    - Si `url` ya es absoluta (http/https), se devuelve tal cual.
+    - Si `url` es relativa (empieza con '/'), se prefija con scheme://host usando `request`.
+    - Si `url` es falsy o `request` no existe, devuelve string vacío o el string original.
+    """
+    if not url:
+        return ""
+    s = str(url).strip()
+    if s.startswith("http://") or s.startswith("https://"):
+        return s
+    if s.startswith("/") and request:
+        return f"{request.scheme}://{request.get_host()}{s}"
+    return s
