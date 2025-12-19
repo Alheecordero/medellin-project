@@ -21,7 +21,7 @@
 {% endblock %}
 
 {% block og_image %}
-  {{ request.build_absolute_uri }}static/img/og-image.jpg
+  {{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}
 {% endblock %}
 
 {% block navbar %}{% endblock %}
@@ -39,11 +39,11 @@
                         <div class="d-flex justify-content-end mb-3 home-lang-switch gap-2 flex-wrap">
                             <!-- Home / About us con mismo estilo que ES / EN -->
                             <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">
-                                {% trans "Home" %}
+                                {% trans "Inicio" %}
                             </a>
                             {% if LANGUAGE_CODE|slice:":2" == 'en' %}
                               <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">
-                                {% trans "About us" %}
+                                {% trans "Nosotros" %}
                               </a>
                             {% else %}
                               <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">
@@ -75,8 +75,8 @@
                                 <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE|slice:":2" == 'en' %}active{% else %}inactive{% endif %}">EN</button>
                             </form>
                         </div>                    
-                        <h1 class="hero-title display-2 mb-4 text-white fw-bold">
-                            {% blocktrans %}Descubre <span class="text-white">Medellín</span><br>Como Nunca Antes{% endblocktrans %}
+                        <h1 class="hero-title display-2 mb-4 fw-bold">
+                            {% blocktrans trimmed %}Descubre Medellín<br><span class="title-accent">como nunca antes</span>{% endblocktrans %}
                         </h1>
                         
                         <!-- Search Bar -->
@@ -105,21 +105,48 @@
                                         <span id="area-check" class="ms-2" style="display: none;">✓</span>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="areasDropdown">
-                                        {% for area in regiones_areas %}
+                                        {% if comunas_medellin %}
+                                          <li class="dropdown-header">
+                                            <i class="bi bi-building me-2 text-success"></i>{% trans "Medellín (Áreas)" %}
+                                          </li>
+                                          {% for area in comunas_medellin %}
                                         <li>
                                             <a class="dropdown-item dropdown-item-filtro area-option" 
                                                href="javascript:void(0)" 
                                                data-area-id="{{ area.osm_id }}" 
                                                data-area-name="{{ area.name }}"
                                                data-area-slug="{{ area.slug }}">
-                                                <i class="bi bi-map me-2 text-primary"></i>
+                                                <i class="bi bi-geo-alt me-2 text-primary"></i>
                                                 <div>
                                                     <div class="fw-semibold">{{ area.name }}</div>
-                                                    <small class="text-muted">{% trans "Explorar esta zona" %}</small>
+                                                    <small class="text-muted">{% trans "Explorar esta comuna" %}</small>
                                                 </div>
                                             </a>
                                         </li>
                                         {% endfor %}
+                                        {% endif %}
+
+                                        {% if otras_regiones %}
+                                          <li><hr class="dropdown-divider"></li>
+                                          <li class="dropdown-header">
+                                            <i class="bi bi-map me-2 text-info"></i>{% trans "Otras áreas de Antioquia" %}
+                                          </li>
+                                          {% for area in otras_regiones %}
+                                          <li>
+                                            <a class="dropdown-item dropdown-item-filtro area-option" 
+                                               href="javascript:void(0)" 
+                                               data-area-id="{{ area.osm_id }}" 
+                                               data-area-name="{{ area.name }}"
+                                               data-area-slug="{{ area.slug }}">
+                                                <i class="bi bi-geo-alt me-2 text-primary"></i>
+                                                <div>
+                                                    <div class="fw-semibold">{{ area.name }}</div>
+                                                    <small class="text-muted">{% trans "Explorar esta área" %}</small>
+                                                </div>
+                                            </a>
+                                          </li>
+                                          {% endfor %}
+                                        {% endif %}
                                     </ul>
                                 </div>
                             </div>
@@ -205,37 +232,11 @@
 
                         </div>
                         
-                        <!-- Botón Cerca de Mí -->
-                        <div class="row justify-content-center mt-4" style="position: relative; z-index: 1;">
-                            <div class="col-lg-4 col-md-6">
-                                <button id="cerca-de-mi-btn" class="btn btn-filtro-dropdown w-100" type="button">
-                                    <i class="bi bi-geo-fill me-2"></i>
+                        <!-- Botones principales -->
+                        <div class="text-center mt-4 d-flex flex-wrap justify-content-center gap-3">
+                            <button id="cerca-de-mi-btn" class="btn btn-near-me-toggle" type="button">
+                                <i id="ubicacion-icon" class="bi bi-geo-fill me-2"></i>
                                     <span id="ubicacion-text">{% trans "Cerca de Mí" %}</span>
-                                    <span id="ubicacion-loading" class="ms-2" style="display: none;">
-                                        <div class="spinner-border spinner-border-sm" role="status">
-                                            <span class="visually-hidden">{% trans "Cargando..." %}</span>
-                                        </div>
-                                    </span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Estado de Filtros y Botón de Búsqueda -->
-                        <div class="text-center mt-4">
-                            <div id="filtros-estado" class="mb-3" style="display: none;">
-                                <div class="alert alert-info d-inline-block">
-                                    <i class="bi bi-funnel me-2"></i>
-                                    <span id="filtros-count"></span>
-                                    <span class="ms-1" id="filtros-optional">+ {% trans "característica opcional" %}</span>
-                                    <div class="small mt-1" id="filtros-resumen"></div>
-                                    <button id="limpiar-filtros-btn" class="btn btn-sm btn-outline-light rounded-pill mt-2">
-                                        <i class="bi bi-x-circle me-1"></i>{% trans "Limpiar filtros" %}
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <button id="buscar-btn" class="btn btn-success btn-lg rounded-pill px-4 me-3" style="display: none;" disabled>
-                                <i class="bi bi-search me-2"></i>{% trans "Buscar Lugares" %}
                             </button>
                             
                             <a href="{% url 'explorer:lugares_list' %}" class="btn btn-gradient-green btn-lg rounded-pill px-4">
@@ -247,7 +248,7 @@
                     <!-- Loading y Resultados AJAX -->
                     <div id="ajax-loading" class="text-center py-5" style="display: none; position: relative; z-index: 1;">
                         <div class="spinner-border text-light" role="status">
-                            <span class="visually-hidden">Cargando...</span>
+                            <span class="visually-hidden">{% trans "Cargando..." %}</span>
                         </div>
                         <div class="text-white mt-3">
                             <h5>{% trans "Buscando lugares..." %}</h5>
@@ -258,18 +259,48 @@
                     <!-- Contenedor de resultados principal se define fuera del hero para no afectar el fondo -->
 
                     <!-- Burbujas de áreas de Medellín (en la parte inferior de la card) -->
-                    {% if regiones_areas %}
-                    <div class="areas-burbujas mt-2">
-                        {% for area in regiones_areas %}
+                    {% if comunas_medellin or otras_regiones %}
+                    <div class="areas-burbujas mt-2 flex-column">
+                        {% if comunas_medellin %}
+                        <div class="areas-group">
+                            <div class="areas-group-label">
+                                {% trans "Medellín (Áreas)" %}
+                            </div>
+                            <div class="areas-group-bubbles">
+                                {% for area in comunas_medellin %}
                             <a href="{% url 'explorer:lugares_por_comuna' area.slug %}" class="area-bubble">
                                 <span class="dot"></span>
                                 <span class="label">{{ area.name }}</span>
                             </a>
                         {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if otras_regiones %}
+                        <div class="areas-group mt-2">
+                            <div class="areas-group-label">
+                                {% trans "Otras áreas de Antioquia" %}
+                            </div>
+                            <div class="areas-group-bubbles">
+                                {% for area in otras_regiones %}
+                                    <a href="{% url 'explorer:lugares_por_comuna' area.slug %}" class="area-bubble">
+                                        <span class="dot"></span>
+                                        <span class="label">{{ area.name }}</span>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="areas-group mt-2">
+                            <div class="areas-group-bubbles">
                         <a href="{% url 'explorer:lugares_list' %}" class="area-bubble area-bubble-all">
                             <span class="dot"></span>
                             <span class="label">{% trans "Ver todas las áreas" %}</span>
                         </a>
+                            </div>
+                        </div>
                     </div>
                     {% endif %}
                 </div>
@@ -363,8 +394,18 @@
 /* Hero title centrado y más compacto, tipo landing moderna */
 .hero-title {
     text-align: center;
-    line-height: 1.15;
+    line-height: 1.1;
     letter-spacing: -0.03em;
+    color: #f8fafc;
+    font-size: clamp(2rem, 6vw, 4rem);
+}
+
+.title-accent {
+    background: linear-gradient(135deg, #4ade80 0%, #22d3ee 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
 }
 
 /* Search Input Styling */
@@ -397,10 +438,11 @@
 /* Burbujas de áreas (chips de zonas de Medellín) al fondo de la card */
 .areas-burbujas {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: 0.4rem;
     padding: 0.5rem 0 0.25rem 0;
     justify-content: center;
+    align-items: stretch;
 }
 
 .area-bubble {
@@ -429,6 +471,27 @@
     background: #ffca28;
 }
 
+.areas-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.areas-group-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgba(226, 232, 240, 0.8);
+    text-align: center;
+}
+
+.areas-group-bubbles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
 .area-bubble:hover {
     background: rgba(0, 0, 0, 0.45);
     transform: translateY(-1px);
@@ -449,7 +512,7 @@
     padding-bottom: 1rem;
     margin: 0;
   }
-
+  
   .lugar-card-wrapper {
     width: 100%;
   }
@@ -644,38 +707,288 @@
     border-color: rgba(40, 167, 69, 0.6);
 }
 
-/* Botón de ubicación "Cerca de Mí" */
-#cerca-de-mi-btn {
+/* ═══════════════════════════════════════════════════════════════
+   NEAR ME TOGGLE - DISEÑO PROFESIONAL
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Botón Near Me Toggle */
+.btn-near-me-toggle {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.75rem 1.75rem;
+    border-radius: 999px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     position: relative;
     overflow: hidden;
 }
 
-#cerca-de-mi-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
+.btn-near-me-toggle::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-near-me-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+    color: white;
 }
 
-#cerca-de-mi-btn.locating {
-    background: rgba(34, 139, 34, 0.3);
-    border-color: rgba(34, 139, 34, 0.5);
-    animation: pulse 2s infinite;
+.btn-near-me-toggle:hover::before {
+    left: 100%;
 }
 
-#cerca-de-mi-btn.success {
-    background: rgba(40, 167, 69, 0.4);
-    border-color: rgba(40, 167, 69, 0.6);
+.btn-near-me-toggle.locating {
+    background: rgba(17, 153, 142, 0.3);
+    border-color: rgba(17, 153, 142, 0.6);
+    pointer-events: none;
 }
 
-#cerca-de-mi-btn.error {
-    background: rgba(220, 53, 69, 0.3);
-    border-color: rgba(220, 53, 69, 0.5);
+.btn-near-me-toggle.locating #ubicacion-icon {
+    animation: spin 1s linear infinite;
 }
 
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(34, 139, 34, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(34, 139, 34, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(34, 139, 34, 0); }
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.btn-near-me-toggle.active {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border-color: transparent;
+    color: #0f172a;
+    box-shadow: 0 6px 25px rgba(17, 153, 142, 0.4);
+}
+
+.btn-near-me-toggle.error {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: rgba(239, 68, 68, 0.5);
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+/* Filtros en resultados Near Me - estilo dropdown */
+.filtros-nearme-results {
+    background: rgba(3, 30, 20, 0.6);
+    border-radius: 18px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.filtros-nearme-results .btn-filtro-dropdown {
+    font-size: 0.85rem;
+    padding: 0.55rem 0.9rem;
+}
+
+.filtros-nearme-results .btn-filtro-dropdown.selected {
+    background: rgba(17, 153, 142, 0.35);
+    border-color: rgba(17, 153, 142, 0.6);
+}
+
+.filtros-nearme-results .dropdown-menu-filtros {
+    min-width: 220px;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+/* Near Me Section responsive */
+.near-me-section {
+    position: relative;
+    z-index: 1;
+}
+
+/* Mobile optimizations for Near Me */
+@media (max-width: 768px) {
+    .btn-near-me-toggle {
+        font-size: 0.9rem;
+        padding: 0.65rem 1.5rem;
+    }
+    
+    .filtros-nearme-results {
+        padding: 1rem;
+        border-radius: 14px;
+    }
+    
+    .filtros-nearme-results .row {
+        gap: 0.5rem !important;
+    }
+    
+    .filtros-nearme-results .col-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    .filtros-nearme-results .btn-filtro-dropdown {
+        font-size: 0.85rem;
+        padding: 0.6rem 0.85rem;
+    }
+    
+    .nearby-actions {
+        padding: 0 1rem;
+    }
+    
+    .nearby-actions .btn {
+        font-size: 0.9rem;
+        padding: 0.65rem 1.25rem;
+    }
+}
+
+/* Smooth transitions for results */
+#ajax-results,
+#search-results-section {
+    transition: opacity 0.3s ease;
+}
+
+#ajax-loading {
+    transition: opacity 0.2s ease;
+}
+
+/* Grid de lugares con transiciones */
+.semantic-home-grid {
+    transition: opacity 0.25s ease;
+    min-height: 200px;
+}
+
+.semantic-home-grid.loading {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* Loading overlay para el grid */
+.grid-loading-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.semantic-home-wrapper {
+    position: relative;
+}
+
+/* Botón cerrar Near Me */
+.btn-close-nearme {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+    font-size: 1rem;
+}
+
+.btn-close-nearme:hover {
+    background: rgba(239, 68, 68, 0.8);
+    border-color: rgba(239, 68, 68, 0.9);
+    color: white;
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .btn-close-nearme {
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Animación de entrada para cards */
+.lugar-card-wrapper {
+    animation: cardFadeIn 0.3s ease forwards;
+    opacity: 0;
+}
+
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Stagger animation para cards */
+.lugar-card-wrapper:nth-child(1) { animation-delay: 0.05s; }
+.lugar-card-wrapper:nth-child(2) { animation-delay: 0.1s; }
+.lugar-card-wrapper:nth-child(3) { animation-delay: 0.15s; }
+.lugar-card-wrapper:nth-child(4) { animation-delay: 0.2s; }
+.lugar-card-wrapper:nth-child(5) { animation-delay: 0.25s; }
+.lugar-card-wrapper:nth-child(6) { animation-delay: 0.3s; }
+.lugar-card-wrapper:nth-child(7) { animation-delay: 0.35s; }
+.lugar-card-wrapper:nth-child(8) { animation-delay: 0.4s; }
+.lugar-card-wrapper:nth-child(9) { animation-delay: 0.45s; }
+.lugar-card-wrapper:nth-child(10) { animation-delay: 0.5s; }
+
+/* Título con transición */
+.semantic-home-title {
+    transition: opacity 0.2s ease;
+}
+
+.semantic-home-title.updating {
+    opacity: 0.6;
+}
+
+/* Mensaje de estado */
+.filtro-mensaje {
+    animation: fadeInUp 0.3s ease;
+}
+
+.mensaje-pill {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(17, 153, 142, 0.25);
+    border: 1px solid rgba(17, 153, 142, 0.5);
+    color: #a7f3d0;
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.btn-limpiar {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 0 0.25rem;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.btn-limpiar:hover {
+    color: #ef4444;
+    transform: scale(1.2);
 }
 
 /* Área de resultados AJAX envuelta en sección separada */
@@ -753,13 +1066,13 @@
 /* Grid de resultados semánticos: lista vertical (sin scroll horizontal) */
 .semantic-home-grid {
   padding: 0.5rem 0;
-  display: flex;
+    display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-}
+    gap: 1.25rem;
+  }
 
-.semantic-home-item {
-  width: 100%;
+  .semantic-home-item {
+    width: 100%;
 }
 
 /* Layout horizontal de place-card (copiado del list view) */
@@ -882,7 +1195,19 @@
 /* Mobile Optimizations */
 @media (max-width: 768px) {
     .hero-title {
-        font-size: 2.5rem !important;
+        font-size: clamp(1.75rem, 8vw, 2.5rem) !important;
+        line-height: 1.15;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .hero-title br {
+        display: inline;
+        content: ' ';
+    }
+    
+    .title-accent {
+        display: block;
+        margin-top: 0.25rem;
     }
     
     .search-modern-clean .form-control {
@@ -967,6 +1292,25 @@ a.btn.btn-gradient-green:focus {
 const CURRENT_LANG = '{{ LANGUAGE_CODE|default:"es" }}' || 'es';
 // Helper seguro para traducciones en JS (usa djangojs si está disponible)
 const gettext = (window.gettext) ? window.gettext : (s => s);
+
+// Helper global para rango de precios (coherente con form_tags.format_price_range)
+function formatPriceRangeJs(raw) {
+    if (!raw) return '';
+    const val = String(raw).toUpperCase();
+    const map = {
+        '$': '$',
+        '$$': '$$',
+        '$$$': '$$$',
+        '$$$$': '$$$$',
+        'PRICE_LEVEL_INEXPENSIVE': '$',
+        'PRICE_LEVEL_MODERATE': '$$',
+        'PRICE_LEVEL_EXPENSIVE': '$$$',
+        'PRICE_LEVEL_VERY_EXPENSIVE': '$$$$',
+    };
+    if (map[val]) return map[val];
+    if (/^\$+$/.test(val) && val.length <= 4) return val;
+    return '';
+}
 
 // Helper para construir la URL del detalle de un lugar
 function buildPlaceUrl(slug, backendUrl) {
@@ -1337,7 +1681,7 @@ $(document).ready(function() {
             if (dropdown) dropdown.hide();
         });
         
-        // Mensaje de resultados: usar ngettext si está disponible, si no, fallback simple
+        // Mensaje de resultados: usar ngettext si está disponible, si no, fallback simple (ES)
         let msgResultados;
         if (typeof ngettext === 'function' && typeof interpolate === 'function') {
             msgResultados = interpolate(
@@ -1349,15 +1693,9 @@ $(document).ready(function() {
                 [data.total]
             );
         } else {
-            if (CURRENT_LANG === 'en') {
-                msgResultados = data.total === 1
-                    ? `We found ${data.total} place matching your filters`
-                    : `We found ${data.total} places matching your filters`;
-            } else {
-                msgResultados = data.total === 1
-                    ? `Encontramos ${data.total} lugar que coincide con tus filtros`
-                    : `Encontramos ${data.total} lugares que coinciden con tus filtros`;
-            }
+            msgResultados = data.total === 1
+                ? `Encontramos ${data.total} lugar que coincide con tus filtros`
+                : `Encontramos ${data.total} lugares que coinciden con tus filtros`;
         }
 
         let html = `
@@ -1418,6 +1756,14 @@ $(document).ready(function() {
                                     <span class="fw-semibold">${lugar.rating.toFixed(1)}</span>/5
                                 </div>` : ''
                             }
+                            
+                            ${(() => {
+                                const price = formatPriceRangeJs(lugar.precio);
+                                if (!price) return '';
+                                return `<div class="d-flex flex-wrap align-items-center gap-3 mb-2 small place-card-meta">
+                                    <span class="text-muted"><i class="bi bi-cash-stack me-1"></i>${price}</span>
+                                </div>`;
+                            })()}
 
                             ${lugar.direccion ? `
                                 <div class="small text-muted mb-2 place-card-address">
@@ -1474,114 +1820,257 @@ $(document).ready(function() {
         `).show();
     }
     
-    // GEOLOCALIZACIÓN - Botón "Cerca de mí"
+    // ═══════════════════════════════════════════════════════════════
+    // NEAR ME - GEOLOCALIZACIÓN PROFESIONAL
+    // ═══════════════════════════════════════════════════════════════
+    
+    // Estado global de Near Me
+    let nearMeActivo = false;
+    let tipoNearMe = null;
+    let featureNearMe = null;
+    let radioDistancia = 2;
+    
+    // Labels traducidos - TODOS los tipos
+    const TIPOS_LABELS = {
+        'restaurant': '{% trans "Restaurantes" %}',
+        'bar': '{% trans "Bares" %}',
+        'cafe': '{% trans "Cafés" %}',
+        'bakery': '{% trans "Panaderías" %}',
+        'night_club': '{% trans "Discotecas" %}',
+        'rooftop_bar': '{% trans "Rooftops" %}',
+        'karaoke': '{% trans "Karaokes" %}',
+        'sports_bar': '{% trans "Bares Deportivos" %}',
+        'casino': '{% trans "Casinos" %}',
+        'bowling_alley': '{% trans "Boleras" %}',
+        'spa': '{% trans "Spas" %}',
+        'art_gallery': '{% trans "Galerías de Arte" %}',
+        'museum': '{% trans "Museos" %}',
+        'tourist_attraction': '{% trans "Atracciones Turísticas" %}',
+        'all': '{% trans "Todos" %}'
+    };
+    
+    // Labels traducidos - TODAS las características
+    const FEATURES_LABELS = {
+        'outdoor_seating': '{% trans "Terraza" %}',
+        'live_music': '{% trans "Música en Vivo" %}',
+        'good_for_groups': '{% trans "Para Grupos" %}',
+        'good_for_children': '{% trans "Para Niños" %}',
+        'delivery': '{% trans "Delivery" %}',
+        'takeout': '{% trans "Para Llevar" %}',
+        'dine_in': '{% trans "Comer en Local" %}',
+        'reservable': '{% trans "Reservaciones" %}',
+        'serves_cocktails': '{% trans "Cócteles" %}',
+        'serves_wine': '{% trans "Vinos" %}',
+        'serves_coffee': '{% trans "Café Especialidad" %}',
+        'serves_dessert': '{% trans "Postres" %}',
+        'allows_dogs': '{% trans "Pet Friendly" %}',
+        'wheelchair_accessible_entrance': '{% trans "Acceso Accesible" %}',
+        'accepts_credit_cards': '{% trans "Tarjetas de Crédito" %}'
+    };
+    
+    // Textos
+    const T_NEAR_ME = '{% trans "Cerca de Mí" %}';
+    const T_LOCATING = '{% trans "Localizando..." %}';
+    const T_ACTIVE = '{% trans "GPS Activo" %}';
+    
+    // Click handler para Near Me
     $('#cerca-de-mi-btn').on('click', function() {
-        obtenerUbicacionYBuscar();
+        if (nearMeActivo) {
+            desactivarNearMe();
+        } else {
+            activarNearMe();
+        }
     });
     
-    // Constantes traducidas para geolocalización (inyectadas desde plantilla)
-    const T_GETTING_LOCATION = '{% trans "Obteniendo ubicación..." %}';
-    const T_LOCATION_FOUND = '{% trans "Ubicación encontrada" %}';
-    const T_LOCATION_ERROR = '{% trans "Error de ubicación" %}';
+    // Exponer funciones globalmente
+    window.activarNearMe = activarNearMe;
+    window.desactivarNearMe = desactivarNearMe;
 
-    function obtenerUbicacionYBuscar() {
-        const btn = $('#cerca-de-mi-btn');
-        const textSpan = $('#ubicacion-text');
-        const loadingSpan = $('#ubicacion-loading');
+    function activarNearMe() {
+        const $btn = $('#cerca-de-mi-btn');
+        const $text = $('#ubicacion-text');
+        const $icon = $('#ubicacion-icon');
         
-        // Verificar soporte de geolocalización
+        // Verificar soporte
         if (!navigator.geolocation) {
-            mostrarErrorUbicacion(gettext('Tu navegador no soporta geolocalización'));
+            mostrarErrorNearMe('{% trans "Tu navegador no soporta geolocalización" %}');
             return;
         }
         
-        // Estado: obteniendo ubicación
-        btn.removeClass('success error').addClass('locating');
-        textSpan.text(T_GETTING_LOCATION);
-        loadingSpan.show();
+        // Estado: localizando
+        $btn.addClass('locating').removeClass('active error');
+        $text.text(T_LOCATING);
         
-        // Opciones de geolocalización
-        const options = {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 300000 // 5 minutos de cache
-        };
-        
+        // Solicitar ubicación
         navigator.geolocation.getCurrentPosition(
-            function(position) {
-                // Éxito al obtener ubicación
+            // Éxito
+            function(pos) {
                 ubicacionUsuario = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                    accuracy: position.coords.accuracy
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude,
+                    accuracy: pos.coords.accuracy
                 };
+                nearMeActivo = true;
                 
-                // Actualizar UI
-                btn.removeClass('locating').addClass('success');
-                textSpan.text(T_LOCATION_FOUND);
-                loadingSpan.hide();
+                // UI: activo
+                $btn.removeClass('locating').addClass('active');
+                $text.text(T_ACTIVE + ' ✓');
                 
-                // Buscar lugares cercanos
+                // Deshabilitar área y buscar
+                deshabilitarSelectArea();
                 buscarLugaresCercanos();
             },
-            function(error) {
-                // Error al obtener ubicación
-                let mensaje;
-                switch(error.code) {
-                    case error.PERMISSION_DENIED:
-                        mensaje = 'Permiso de ubicación denegado. Por favor, habilita la ubicación en tu navegador.';
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        mensaje = 'No se pudo determinar tu ubicación. Intenta de nuevo.';
-                        break;
-                    case error.TIMEOUT:
-                        mensaje = 'La solicitud de ubicación tardó demasiado. Intenta de nuevo.';
-                        break;
-                    default:
-                        mensaje = 'Error desconocido al obtener la ubicación.';
-                        break;
-                }
+            // Error
+            function(err) {
+                $btn.removeClass('locating').addClass('error');
+                let msg = '{% trans "Error de ubicación" %}';
                 
-                mostrarErrorUbicacion(mensaje);
+                if (err.code === 1) msg = '{% trans "Permiso denegado. Habilita la ubicación." %}';
+                else if (err.code === 2) msg = '{% trans "Ubicación no disponible" %}';
+                else if (err.code === 3) msg = '{% trans "Tiempo de espera agotado" %}';
+                
+                $text.text(msg);
+                
+                // Reset después de 3s
+                setTimeout(() => {
+                    $btn.removeClass('error');
+                    $text.text(T_NEAR_ME);
+                }, 3000);
             },
-            options
+            // Opciones
+            { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
         );
     }
     
-    function buscarLugaresCercanos() {
+    function desactivarNearMe() {
+        nearMeActivo = false;
+        nearMeResultsVisible = false;
+        tipoNearMe = null;
+        featureNearMe = null;
+        ubicacionUsuario = null;
+        
+        const $btn = $('#cerca-de-mi-btn');
+        $btn.removeClass('active locating error');
+        $('#ubicacion-text').text(T_NEAR_ME);
+        
+        habilitarSelectArea();
+        $('#ajax-results').fadeOut(200);
+        $('#search-results-section').fadeOut(200);
+        
+        // Scroll suave de vuelta al hero
+        $('html, body').animate({
+            scrollTop: $('.hero-section-clean').offset().top
+        }, 400);
+    }
+    
+    function mostrarErrorNearMe(msg) {
+        const $btn = $('#cerca-de-mi-btn');
+        $btn.removeClass('locating active').addClass('error');
+        $('#ubicacion-text').text(msg);
+        
+        setTimeout(() => {
+            $btn.removeClass('error');
+            $('#ubicacion-text').text(T_NEAR_ME);
+        }, 3000);
+    }
+    
+    // Exclusividad: Near Me vs Select Area
+    function deshabilitarSelectArea() {
+        // Limpiar selección de área
+        filtrosSeleccionados.area = null;
+        $('#area-selected-text').text('{% trans "Usando Near Me" %}');
+        $('#area-check').hide();
+        $('#areasDropdown').addClass('disabled').prop('disabled', true);
+        
+        // Deshabilitar visualmente el dropdown
+        $('#areasDropdown').css({
+            'opacity': '0.5',
+            'pointer-events': 'none'
+        });
+    }
+    
+    function habilitarSelectArea() {
+        $('#areasDropdown').removeClass('disabled').prop('disabled', false);
+        $('#area-selected-text').text(gettext('Seleccionar Área'));
+        $('#areasDropdown').css({
+            'opacity': '1',
+            'pointer-events': 'auto'
+        });
+                }
+                
+    // Si el usuario selecciona un área, desactivar Near Me
+    $('.area-option').on('click', function() {
+        if (nearMeActivo) {
+            desactivarNearMe();
+        }
+    });
+    
+    // Flag para saber si es una actualización de filtros
+    let nearMeResultsVisible = false;
+    
+    function buscarLugaresCercanos(esActualizacion = false) {
         if (!ubicacionUsuario) {
-            mostrarErrorUbicacion('No se ha obtenido la ubicación del usuario');
+            mostrarErrorNearMe('{% trans "Ubicación no disponible" %}');
             return;
         }
         
-        // Mostrar loading
+        // Si ya hay resultados visibles, solo mostrar loading en el grid
+        if (esActualizacion && nearMeResultsVisible) {
+            $('.semantic-home-grid').addClass('loading');
+            $('.semantic-home-title').addClass('updating');
+        } else {
         $('#ajax-loading').show();
         $('#ajax-results').hide();
+            $('#search-results-section').hide();
+        }
+        
+        // Construir datos de la petición
+        const requestData = {
+            lat: ubicacionUsuario.lat,
+            lng: ubicacionUsuario.lng,
+            radio: radioDistancia
+        };
+        
+        // Agregar tipo si está seleccionado
+        if (tipoNearMe) {
+            requestData.tipo = tipoNearMe;
+        }
+        
+        // Agregar característica si está seleccionada (desde chips o dropdown)
+        if (featureNearMe) {
+            requestData.caracteristica = featureNearMe;
+        } else if (filtrosSeleccionados.caracteristica && filtrosSeleccionados.caracteristica.id !== 'none') {
+            requestData.caracteristica = filtrosSeleccionados.caracteristica.id;
+        }
         
         // Llamada AJAX
         $.ajax({
             url: "{% url 'explorer:lugares_cercanos_ajax' %}",
             type: 'GET',
-            data: {
-                lat: ubicacionUsuario.lat,
-                lng: ubicacionUsuario.lng,
-                radio: 0.8 // 800m por defecto
-            },
+            data: requestData,
             success: function(response) {
                 $('#ajax-loading').hide();
-                
                 if (response.success) {
                     renderizarResultadosCercanos(response);
                 } else {
-                    mostrarError('Error en la búsqueda: ' + response.error);
+                    mostrarError(response.error || '{% trans "Error en la búsqueda" %}');
                 }
             },
             error: function(xhr, status, error) {
                 $('#ajax-loading').hide();
-                mostrarError('Error de conexión: ' + error);
+                mostrarError('{% trans "Error de conexión" %}');
             }
         });
     }
+    
+    // Botón buscar (unificado)
+    $('#buscar-btn').on('click', function() {
+        if (nearMeActivo && ubicacionUsuario) {
+            buscarLugaresCercanos();
+        } else if (filtrosSeleccionados.area && filtrosSeleccionados.categoria) {
+            ejecutarBusquedaFiltros();
+        }
+    });
     
     function renderizarResultadosCercanos(data) {
         // Cerrar TODOS los dropdowns de forma agresiva (pero sin forzar display:none permanente)
@@ -1602,19 +2091,243 @@ $(document).ready(function() {
         const T_FEATURED = '{% trans "Destacado" %}';
         const T_EXCLUSIVE = '{% trans "Exclusivo" %}';
         const T_TOP_RATED = '{% trans "Top Valorado" %}';
-        const T_RADIUS = '{% trans "Radio:" %}';
+        const T_RADIUS = '{% trans "Radio" %}';
+        const T_PLACES_NEAR = '{% trans "Lugares cerca de mí" %}';
+        const T_NEAR_ME = '{% trans "cerca de mí" %}';
+        const T_WITH = '{% trans "con" %}';
+        const T_PLACES_WITH = '{% trans "Lugares con" %}';
+        
+        // Título dinámico según el tipo seleccionado
+        const tipoLabel = tipoNearMe ? TIPOS_LABELS[tipoNearMe] : '';
+        const featureLabel = featureNearMe ? FEATURES_LABELS[featureNearMe] : '';
+        
+        // Construir título descriptivo
+        let titulo = T_PLACES_NEAR;
+        if (tipoLabel && featureLabel) {
+            titulo = `${tipoLabel} ${T_WITH} ${featureLabel} ${T_NEAR_ME}`;
+        } else if (tipoLabel) {
+            titulo = `${tipoLabel} ${T_NEAR_ME}`;
+        } else if (featureLabel) {
+            titulo = `${T_PLACES_WITH} ${featureLabel} ${T_NEAR_ME}`;
+        }
+        
+        // Construir subtítulo con filtros activos
+        let subtitulo = data.mensaje;
+        const filtrosActivos = [];
+        if (tipoLabel) filtrosActivos.push(`<span class="badge bg-success bg-opacity-25 text-white me-1">${tipoLabel}</span>`);
+        if (featureLabel) filtrosActivos.push(`<span class="badge bg-info bg-opacity-25 text-white me-1">${featureLabel}</span>`);
+        filtrosActivos.push(`<span class="badge bg-warning bg-opacity-25 text-white">${radioDistancia} km</span>`);
+        
+        const filtrosHtml = filtrosActivos.length > 0 
+            ? `<div class="mt-2">${filtrosActivos.join('')}</div>` 
+            : '';
+        
+        // Labels para dropdowns
+        const tipoSelectedLabel = tipoNearMe ? tipoLabel : '{% trans "Tipo" %}';
+        const featureSelectedLabel = featureNearMe ? featureLabel : '{% trans "Características" %}';
+        
         let html = `
             <div class="semantic-home-wrapper">
+                <!-- Botón cerrar -->
+                <button class="btn-close-nearme" onclick="window.desactivarNearMe()" title="{% trans 'Cerrar' %}">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+                
                 <div class="semantic-home-header text-center mb-4 text-white">
-                    <h2 class="fw-bold semantic-home-title">{% trans "Lugares Cerca de Ti" %}</h2>
-                    <p class="lead mb-0">${data.mensaje}</p>
-                    <div class="mt-3">
-                        <span class="badge bg-success bg-opacity-20 text-white fs-6 px-3 py-2">
-                            <i class="bi bi-geo-fill me-2"></i>${T_RADIUS} ${data.ubicacion_usuario.radio < 1 ? (data.ubicacion_usuario.radio * 1000) + 'm' : data.ubicacion_usuario.radio + 'km'}
-                        </span>
-                        <span class="badge bg-info bg-opacity-20 text-white fs-6 px-3 py-2 ms-2">
-                            <i class="bi bi-bullseye me-2"></i>{% trans "Precisión GPS activa" %}
-                        </span>
+                    <h2 class="fw-bold semantic-home-title">${titulo}</h2>
+                    <p class="lead mb-0">${subtitulo}</p>
+                    ${filtrosHtml}
+                    
+                    <!-- Filtros completos -->
+                    <div class="filtros-nearme-results mt-4">
+                        <div class="row g-2 justify-content-center">
+                            
+                            <!-- Dropdown: Tipo (COMPLETO) -->
+                            <div class="col-lg-3 col-md-4 col-6">
+                                <div class="dropdown">
+                                    <button class="btn btn-filtro-dropdown w-100 dropdown-toggle ${tipoNearMe ? 'selected' : ''}" type="button"
+                                            id="tipoNearMeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-grid-3x3-gap me-2"></i>
+                                        <span>${tipoSelectedLabel}</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="tipoNearMeDropdown">
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="">
+                                            <i class="bi bi-grid me-2 text-primary"></i>{% trans "Todos los tipos" %}
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Comida & Bebida -->
+                                        <li class="dropdown-header"><i class="bi bi-cup-straw me-2"></i>{% trans "Comida & Bebida" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="restaurant">
+                                            <i class="bi bi-egg-fried me-2 text-warning"></i>{% trans "Restaurantes" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="bar">
+                                            <i class="bi bi-cup-straw me-2 text-info"></i>{% trans "Bares" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="cafe">
+                                            <i class="bi bi-cup-hot me-2 text-success"></i>{% trans "Cafés" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="bakery">
+                                            <i class="bi bi-cake me-2 text-warning"></i>{% trans "Panaderías" %}
+                                        </a></li>
+                                        
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Vida Nocturna -->
+                                        <li class="dropdown-header"><i class="bi bi-moon-stars me-2"></i>{% trans "Vida Nocturna" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="night_club">
+                                            <i class="bi bi-moon-stars me-2 text-purple"></i>{% trans "Discotecas" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="rooftop_bar">
+                                            <i class="bi bi-building me-2 text-primary"></i>{% trans "Rooftops" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="karaoke">
+                                            <i class="bi bi-mic me-2 text-info"></i>{% trans "Karaokes" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="sports_bar">
+                                            <i class="bi bi-controller me-2 text-success"></i>{% trans "Bares Deportivos" %}
+                                        </a></li>
+                                        
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Entretenimiento -->
+                                        <li class="dropdown-header"><i class="bi bi-controller me-2"></i>{% trans "Entretenimiento" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="casino">
+                                            <i class="bi bi-dice-5 me-2 text-danger"></i>{% trans "Casinos" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="bowling_alley">
+                                            <i class="bi bi-circle me-2 text-primary"></i>{% trans "Boleras" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="spa">
+                                            <i class="bi bi-droplet me-2 text-info"></i>{% trans "Spas" %}
+                                        </a></li>
+                                        
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Cultura -->
+                                        <li class="dropdown-header"><i class="bi bi-palette me-2"></i>{% trans "Cultura & Arte" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="art_gallery">
+                                            <i class="bi bi-palette me-2 text-warning"></i>{% trans "Galerías de Arte" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="museum">
+                                            <i class="bi bi-bank me-2 text-secondary"></i>{% trans "Museos" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="tourist_attraction">
+                                            <i class="bi bi-camera me-2 text-success"></i>{% trans "Atracciones Turísticas" %}
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Dropdown: Características (COMPLETO) -->
+                            <div class="col-lg-3 col-md-4 col-6">
+                                <div class="dropdown">
+                                    <button class="btn btn-filtro-dropdown w-100 dropdown-toggle ${featureNearMe ? 'selected' : ''}" type="button"
+                                            id="featureNearMeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-stars me-2"></i>
+                                        <span>${featureSelectedLabel}</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="featureNearMeDropdown">
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="">
+                                            <i class="bi bi-x-circle me-2 text-muted"></i>{% trans "Sin filtro especial" %}
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Ambiente -->
+                                        <li class="dropdown-header"><i class="bi bi-stars me-2"></i>{% trans "Ambiente" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="outdoor_seating">
+                                            <i class="bi bi-tree me-2 text-success"></i>{% trans "Terraza" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="live_music">
+                                            <i class="bi bi-music-note-beamed me-2 text-warning"></i>{% trans "Música en Vivo" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="good_for_groups">
+                                            <i class="bi bi-people me-2 text-info"></i>{% trans "Para Grupos" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="good_for_children">
+                                            <i class="bi bi-emoji-smile me-2 text-success"></i>{% trans "Para Niños" %}
+                                        </a></li>
+                                        
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Servicios -->
+                                        <li class="dropdown-header"><i class="bi bi-bicycle me-2"></i>{% trans "Servicios" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="delivery">
+                                            <i class="bi bi-bicycle me-2 text-primary"></i>{% trans "Delivery" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="takeout">
+                                            <i class="bi bi-bag me-2 text-success"></i>{% trans "Para Llevar" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="dine_in">
+                                            <i class="bi bi-house me-2 text-info"></i>{% trans "Comer en Local" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="reservable">
+                                            <i class="bi bi-calendar-check me-2 text-warning"></i>{% trans "Reservaciones" %}
+                                        </a></li>
+                                        
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Especialidades -->
+                                        <li class="dropdown-header"><i class="bi bi-cup-straw me-2"></i>{% trans "Especialidades" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="serves_cocktails">
+                                            <i class="bi bi-cup-straw me-2 text-danger"></i>{% trans "Cócteles" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="serves_wine">
+                                            <i class="bi bi-cup me-2 text-purple"></i>{% trans "Vinos" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="serves_coffee">
+                                            <i class="bi bi-cup-hot me-2 text-warning"></i>{% trans "Café Especialidad" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="serves_dessert">
+                                            <i class="bi bi-cake me-2 text-pink"></i>{% trans "Postres" %}
+                                        </a></li>
+                                        
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Accesibilidad -->
+                                        <li class="dropdown-header"><i class="bi bi-universal-access me-2"></i>{% trans "Accesibilidad" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="allows_dogs">
+                                            <i class="bi bi-heart me-2 text-danger"></i>{% trans "Pet Friendly" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="wheelchair_accessible_entrance">
+                                            <i class="bi bi-universal-access me-2 text-primary"></i>{% trans "Acceso Accesible" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="accepts_credit_cards">
+                                            <i class="bi bi-credit-card me-2 text-success"></i>{% trans "Tarjetas de Crédito" %}
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Dropdown: Distancia -->
+                            <div class="col-lg-3 col-md-4 col-6">
+                                <div class="dropdown">
+                                    <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button"
+                                            id="distanceNearMeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-rulers me-2"></i>
+                                        <span id="distance-label-result">${radioDistancia} km</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="distanceNearMeDropdown">
+                                        <li><a class="dropdown-item dropdown-item-filtro distance-nearme-option" href="javascript:void(0)" data-distance="1">
+                                            <i class="bi bi-geo me-2"></i>1 km
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro distance-nearme-option" href="javascript:void(0)" data-distance="2">
+                                            <i class="bi bi-geo me-2"></i>2 km
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro distance-nearme-option" href="javascript:void(0)" data-distance="3">
+                                            <i class="bi bi-geo me-2"></i>3 km
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro distance-nearme-option" href="javascript:void(0)" data-distance="5">
+                                            <i class="bi bi-geo me-2"></i>5 km
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro distance-nearme-option" href="javascript:void(0)" data-distance="10">
+                                            <i class="bi bi-geo me-2"></i>10 km
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                        </div>
                     </div>
                 </div>
                 
@@ -1658,6 +2371,14 @@ $(document).ready(function() {
                                     <span class="fw-semibold">${lugar.rating.toFixed(1)}</span>/5
                                 </div>` : ''
                             }
+
+                            ${(() => {
+                                const price = formatPriceRangeJs(lugar.precio);
+                                if (!price) return '';
+                                return '<div class="d-flex flex-wrap align-items-center gap-3 mb-2 small place-card-meta">' +
+                                         '<span class="text-muted"><i class="bi bi-cash-stack me-1"></i>' + price + '</span>' +
+                                       '</div>';
+                            })()}
                             
                             ${lugar.direccion ? `
                                 <div class="small text-muted mb-3 place-card-address">
@@ -1680,62 +2401,134 @@ $(document).ready(function() {
         html += `
                 </div>
                 
-                <div class="nearby-actions mt-4 d-flex flex-column flex-md-row align-items-stretch justify-content-center gap-3">
-                    <button class="btn btn-outline-light btn-lg rounded-pill px-4" onclick="obtenerUbicacionYBuscar()">
-                        <i class="bi bi-arrow-clockwise me-2"></i>{% trans "Actualizar Ubicación" %}
+                <div class="nearby-actions mt-4 d-flex flex-wrap justify-content-center gap-2">
+                    <button class="btn btn-outline-light rounded-pill px-3" onclick="window.activarNearMe()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Actualizar Ubicación" %}
                     </button>
-                    <a href="{% url 'explorer:lugares_list' %}" 
-                       class="btn btn-gradient-green btn-lg rounded-pill px-4">
-                        <i class="bi bi-arrow-right me-2"></i>{% trans "Ver Todos los Lugares" %}
+                    <a href="{% url 'explorer:lugares_list' %}" class="btn btn-gradient-green rounded-pill px-3">
+                        <i class="bi bi-compass me-1"></i>{% trans "Ver Todos los Lugares" %}
                     </a>
                 </div>
             </div>
         `;
         
-        $('#ajax-results').html(html).show();
-        $('#search-results-section').show();
+        // Detectar si es una actualización (ya hay resultados)
+        const $container = $('#ajax-results');
+        const isUpdate = nearMeResultsVisible && $container.find('.semantic-home-wrapper').length > 0;
         
-        // Scroll suave a los resultados
+        if (isUpdate) {
+            // Solo actualizar el título, mensaje, badges y grid (sin recargar los filtros)
+            $('.semantic-home-title').removeClass('updating').text(titulo);
+            $('.semantic-home-header .lead').first().text(subtitulo);
+            
+            // Actualizar badges de filtros activos
+            $('.semantic-home-header .mt-2').first().html(filtrosActivos.join(''));
+            
+            // Actualizar labels de los dropdowns
+            $('#tipoNearMeDropdown span').text(tipoSelectedLabel);
+            $('#featureNearMeDropdown span').text(featureSelectedLabel);
+            $('#distance-label-result').text(radioDistancia + ' km');
+            
+            // Actualizar clases selected de los dropdowns
+            $('#tipoNearMeDropdown').toggleClass('selected', !!tipoNearMe);
+            $('#featureNearMeDropdown').toggleClass('selected', !!featureNearMe);
+        
+            // Generar solo el grid
+            let gridHtml = '';
+            data.lugares.forEach((lugar, index) => {
+                gridHtml += generarCardHtml(lugar, T_VIEW_DETAILS, T_NO_DETAILS, T_FEATURED, T_EXCLUSIVE, T_TOP_RATED);
+            });
+            
+            // Actualizar grid con transición
+            const $grid = $('.semantic-home-grid');
+            $grid.removeClass('loading');
+            $grid.fadeOut(150, function() {
+                $(this).html(gridHtml).fadeIn(200);
+            });
+        } else {
+            // Primera vez: renderizar todo
+            $container.html(html).hide().fadeIn(300);
+            $('#search-results-section').fadeIn(300);
+            nearMeResultsVisible = true;
+            
+            // Scroll suave solo la primera vez
         $('html, body').animate({
-            scrollTop: $('#ajax-results').offset().top - 100
-        }, 800);
+                scrollTop: $container.offset().top - 100
+            }, 600);
     }
     
-    function mostrarErrorUbicacion(mensaje) {
-        const btn = $('#cerca-de-mi-btn');
-        const textSpan = $('#ubicacion-text');
-        const loadingSpan = $('#ubicacion-loading');
+        // Event handlers (usar delegación para que funcionen siempre)
+        $(document).off('click', '.tipo-nearme-option').on('click', '.tipo-nearme-option', function(e) {
+            e.preventDefault();
+            tipoNearMe = $(this).data('tipo') || null;
+            buscarLugaresCercanos(true);
+        });
         
-        btn.removeClass('locating success').addClass('error');
-        textSpan.text(T_LOCATION_ERROR);
-        loadingSpan.hide();
+        $(document).off('click', '.feature-nearme-option').on('click', '.feature-nearme-option', function(e) {
+            e.preventDefault();
+            featureNearMe = $(this).data('feature') || null;
+            buscarLugaresCercanos(true);
+        });
         
-        // Mostrar error en resultados
-        $('#ajax-results').html(`
-            <div class="container py-5">
-                <div class="text-center text-white">
-                    <i class="bi bi-geo-alt-fill fs-1 text-danger mb-3"></i>
-                    <h3>${gettext('Error de Geolocalización')}</h3>
-                    <p class="lead">${mensaje}</p>
-                    <div class="mt-4">
-                        <button class="btn btn-outline-light me-3" onclick="obtenerUbicacionYBuscar();">
-                            <i class="bi bi-arrow-clockwise me-2"></i>${gettext('Intentar de nuevo')}
-                        </button>
-                        <a href="{% url 'explorer:lugares_list' %}" class="btn btn-gradient-green">
-                            <i class="bi bi-compass me-2"></i>${gettext('Ver todos los lugares')}
-                        </a>
+        $(document).off('click', '.distance-nearme-option').on('click', '.distance-nearme-option', function(e) {
+            e.preventDefault();
+            radioDistancia = parseInt($(this).data('distance'));
+            buscarLugaresCercanos(true);
+        });
+    }
+    
+    // Helper para generar HTML de una card
+    function generarCardHtml(lugar, T_VIEW_DETAILS, T_NO_DETAILS, T_FEATURED, T_EXCLUSIVE, T_TOP_RATED) {
+        const price = formatPriceRangeJs(lugar.precio);
+        return `
+            <div class="semantic-home-item lugar-card-wrapper">
+                <div class="card h-100 shadow-sm border-0 rounded-4 place-card semantic-home-card">
+                    <div class="place-card-media position-relative">
+                        ${lugar.imagen ? 
+                            `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${lugar.nombre}" loading="lazy">` :
+                            `<div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
+                                <i class="bi bi-image text-muted fs-2"></i>
+                            </div>`
+                        }
+                        <div class="badge-overlay">
+                            <span class="badge bg-primary rounded-pill">
+                                <i class="bi bi-geo-alt me-1"></i>${lugar.distancia < 1 ? Math.round(lugar.distancia * 1000) + 'm' : lugar.distancia + 'km'}
+                            </span>
+                    </div>
+                </div>
+                    <div class="card-body d-flex flex-column place-card-body">
+                        <h5 class="card-title fw-semibold mb-2 place-card-title">${lugar.nombre}</h5>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2 small">
+                            <span class="badge place-type-pill"><i class="bi bi-geo-alt me-1"></i>${lugar.tipo}</span>
+                            ${lugar.es_destacado ? `<span class="badge place-flag-pill place-flag-featured"><i class="bi bi-star-fill me-1"></i>${T_FEATURED}</span>` : ''}
+                            ${lugar.es_exclusivo ? `<span class="badge place-flag-pill place-flag-exclusive"><i class="bi bi-gem me-1"></i>${T_EXCLUSIVE}</span>` : ''}
+                            ${lugar.rating >= 4.5 ? `<span class="badge place-flag-pill place-flag-featured"><i class="bi bi-award me-1"></i>${T_TOP_RATED}</span>` : ''}
+            </div>
+                        ${typeof lugar.rating === 'number' ? `
+                            <div class="small text-muted mb-2">
+                                <i class="bi bi-star-fill text-warning me-1"></i>
+                                <span class="fw-semibold">${lugar.rating.toFixed(1)}</span>/5
+                            </div>` : ''
+                        }
+                        ${price ? `<div class="d-flex flex-wrap align-items-center gap-3 mb-2 small place-card-meta">
+                            <span class="text-muted"><i class="bi bi-cash-stack me-1"></i>${price}</span>
+                        </div>` : ''}
+                        ${lugar.direccion ? `
+                            <div class="small text-muted mb-3 place-card-address">
+                                <i class="bi bi-map me-1"></i>${lugar.direccion}
+                            </div>` : ''
+                        }
+                        ${lugar.slug ? 
+                            `<a href="${buildPlaceUrl(lugar.slug, lugar.url)}" class="btn mt-auto w-100 rounded-pill place-card-cta">
+                                <i class="bi bi-eye me-1"></i>${T_VIEW_DETAILS}
+                            </a>` :
+                            `<span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">${T_NO_DETAILS}</span>`
+                        }
                     </div>
                 </div>
             </div>
-        `).show();
-        
-        // Reset del botón después de 3 segundos
-        setTimeout(() => {
-            btn.removeClass('error');
-            textSpan.text(gettext('Cerca de Mí'));
-        }, 3000);
+        `;
     }
-});
 
     function renderizarResultadosSemanticos(data) {
         // Cerrar TODOS los dropdowns de forma agresiva (sin bloquear futuros clics)
@@ -1795,6 +2588,14 @@ $(document).ready(function() {
                                 </div>` : ''
                             }
 
+                            ${(() => {
+                                const price = formatPriceRangeJs(lugar.precio);
+                                if (!price) return '';
+                                return '<div class="d-flex flex-wrap align-items-center gap-3 mb-2 small place-card-meta">' +
+                                         '<span class="text-muted"><i class="bi bi-cash-stack me-1"></i>' + price + '</span>' +
+                                       '</div>';
+                            })()}
+
                             ${lugar.direccion ? `
                                 <div class="small text-muted mb-3 place-card-address">
                                     <i class="bi bi-map me-1"></i>${lugar.direccion}
@@ -1822,5 +2623,6 @@ $(document).ready(function() {
         $('#search-results-section').show();
         $('html, body').animate({ scrollTop: $('#ajax-results').offset().top - 100 }, 800);
     }
+});
 </script>
 {% endblock %}

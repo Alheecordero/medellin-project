@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load i18n_extras %}
 {% load form_tags %}
+{% load static %}
 
 {% block navbar %}{% endblock %}
 
@@ -12,49 +13,36 @@
 {% endblock %}
 
 {% block meta_keywords %}
-  {% if tipo_actual == 'restaurant' %}
-    {% blocktrans %}restaurantes Medellín, mejores restaurantes, gastronomía Medellín, comida paisa{% endblocktrans %}
-  {% elif tipo_actual == 'bar' %}
-    {% blocktrans %}bares Medellín, discotecas Medellín, vida nocturna, rumba Medellín{% endblocktrans %}
-  {% elif tipo_actual == 'cafe' %}
-    {% blocktrans %}cafeterías Medellín, café paisa, cultura cafetera, cafés Medellín{% endblocktrans %}
-  {% else %}
-    {% blocktrans %}lugares Medellín, bares Medellín, restaurantes Medellín, sitios para salir en Medellín{% endblocktrans %}
-  {% endif %}
+  {% blocktrans %}lugares Medellín, bares Medellín, restaurantes Medellín, sitios para salir en Medellín{% endblocktrans %}
 {% endblock %}
 
-{% block og_title %}
-  {{ titulo_pagina }} | ViveMedellín
-{% endblock %}
+{% block og_title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
 
 {% block og_description %}
   {{ descripcion_pagina }}. {% trans "Descubre lugares con calificaciones reales en Medellín." %}
 {% endblock %}
 
 {% block og_image %}
-  {{ request.build_absolute_uri }}static/img/og-image.jpg
+  {{ '/static/img/og-image.jpg'|ensure_absolute_url:request }}
 {% endblock %}
 
 {% block content %}
 <section class="places-section">
   <div class="container py-5">
     <div class="places-main-wrapper">
-      <!-- Card Superior: Top bar + Título y Filtros -->
+
+      <!-- Card Superior: Navegación + Título + Filtros -->
       <div class="places-header-card mb-4">
         {% get_current_language as LANGUAGE_CODE %}
+
+        <!-- Navegación superior -->
         <div class="d-flex justify-content-end align-items-center mb-3 px-1 flex-wrap gap-2">
           <div class="home-lang-switch d-flex flex-wrap gap-2">
-            <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">
-              {% trans "Home" %}
-            </a>
+            <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">{% trans "Inicio" %}</a>
             {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-              <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">
-                {% trans "About us" %}
-              </a>
+              <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">{% trans "Nosotros" %}</a>
             {% else %}
-              <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">
-                {% trans "Nosotros" %}
-              </a>
+              <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">{% trans "Nosotros" %}</a>
             {% endif %}
             <form action="{% url 'set_language' %}" method="post">
               {% csrf_token %}
@@ -79,371 +67,263 @@
           </div>
         </div>
 
+        <!-- Título -->
         <div class="text-center mb-4">
-    {% if tipo_actual %}
-      <div class="mb-3">
-        {% if tipo_actual == 'restaurant' %}
-                <i class="bi bi-cup-hot text-white fs-1"></i>
-        {% elif tipo_actual == 'bar' %}
-                <i class="bi bi-cup-straw text-white fs-1"></i>
-        {% elif tipo_actual == 'cafe' %}
-                <i class="bi bi-cup text-white fs-1"></i>
-        {% else %}
-                <i class="bi bi-grid-3x3-gap text-white fs-1"></i>
-        {% endif %}
-      </div>
-    {% endif %}
-
-    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-      {% if region_actual %}
-              <h1 class="places-title fw-bold text-white">
-          The best places in {{ region_actual.name }}
-        </h1>
-              <p class="lead text-white-50">
-          Discover the most outstanding places in {{ region_actual.name }}
-        </p>
-      {% else %}
-        {% with comuna=titulo_pagina|cut:"Los mejores lugares en " %}
-                <h1 class="places-title fw-bold text-white">
-            The best places in {{ comuna }}
+          <h1 class="places-title fw-bold">
+            <span class="title-main">{{ titulo_pagina }}</span>
           </h1>
-                <p class="lead text-white-50">
-            Discover the most outstanding places in {{ comuna }}
-          </p>
-        {% endwith %}
-      {% endif %}
-    {% else %}
-            <h1 class="places-title fw-bold text-white">{{ titulo_pagina }}</h1>
-            <p class="lead text-white-50">{{ descripcion_pagina }}</p>
-    {% endif %}
-    
-    {% if busqueda_actual %}
-      <div class="mt-3">
-              <span class="badge fs-6 px-3 py-2 places-search-badge">
-          <i class="bi bi-search me-1"></i>{% trans "Búsqueda" %}: "{{ busqueda_actual }}"
-        </span>
-      </div>
-    {% endif %}
-  </div>
+          <p class="lead text-white-50">{{ descripcion_pagina }}</p>
+        </div>
 
-        <!-- Filtros tipo Burbujas/Chips -->
-        <div class="card shadow border-0 places-filters-card">
-          <div class="card-body places-filters-card-inner">
-            <div class="places-filters-bubbles">
-              <!-- Filtro por Área/Comuna -->
-              <div class="filter-section mb-4">
-                <div class="filter-bubbles-container">
-                  {% if region_actual %}
-                    <a href="{% url 'explorer:lugares_list' %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}" 
-                       class="filter-bubble" 
-                       data-filter="area" 
-                       data-value="">
-                      <span class="bubble-dot"></span>
-                      <span class="bubble-label">{% trans "Todas las áreas" %}</span>
+        <!-- Filtros estilo HOME -->
+        <div class="filtros-home-style">
+          <div class="row g-3 justify-content-center">
+
+            <!-- DROPDOWN: Áreas -->
+            <div class="col-lg-4 col-md-6">
+              <div class="dropdown">
+                <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button"
+                        id="areasDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-geo-alt me-2"></i>
+                  <span>{% if region_actual %}{{ region_actual.name }}{% else %}{% trans "Seleccionar Área" %}{% endif %}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="areasDropdown">
+                  <li>
+                    <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_list' %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}">
+                      <i class="bi bi-globe me-2 text-primary"></i>
+                      <div>
+                        <div class="fw-semibold">{% trans "Todas las áreas" %}</div>
+                        <small class="text-muted">{% trans "Ver todo Medellín" %}</small>
+                      </div>
                     </a>
-                  {% else %}
-                    <a href="{% url 'explorer:lugares_list' %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}" 
-                       class="filter-bubble active" 
-                       data-filter="area" 
-                       data-value="">
-                      <span class="bubble-dot"></span>
-                      <span class="bubble-label">{% trans "Todas las áreas" %}</span>
-                    </a>
+                  </li>
+                  {% if comunas_medellin %}
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="dropdown-header"><i class="bi bi-building me-2 text-success"></i>{% trans "Medellín (Áreas)" %}</li>
+                    {% for area in comunas_medellin %}
+                      <li>
+                        <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_por_comuna' area.slug %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}">
+                          <i class="bi bi-geo-alt me-2 text-primary"></i>
+                          <div class="fw-semibold">{{ area.name }}</div>
+                        </a>
+                      </li>
+                    {% endfor %}
                   {% endif %}
-               {% for region in regiones_filtro %}
-                    {% if region_actual and region_actual.osm_id == region.osm_id %}
-                      <a href="{% url 'explorer:lugares_por_comuna' region.slug %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}" 
-                         class="filter-bubble active" 
-                         data-filter="area" 
-                         data-slug="{{ region.slug }}"
-                         data-value="{{ region.osm_id }}">
-                        <span class="bubble-dot"></span>
-                        <span class="bubble-label">{{ region.name }}</span>
-                      </a>
+                  {% if otras_regiones %}
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="dropdown-header"><i class="bi bi-map me-2 text-info"></i>{% trans "Otras áreas de Antioquia" %}</li>
+                    {% for area in otras_regiones %}
+                      <li>
+                        <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_por_comuna' area.slug %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}">
+                          <i class="bi bi-geo-alt me-2 text-primary"></i>
+                          <div class="fw-semibold">{{ area.name }}</div>
+                        </a>
+                      </li>
+                    {% endfor %}
+                  {% endif %}
+                </ul>
+              </div>
+            </div>
+
+            <!-- DROPDOWN: Tipos -->
+            <div class="col-lg-4 col-md-6">
+              <div class="dropdown">
+                <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button"
+                        id="tiposDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-grid-3x3-gap me-2"></i>
+                  <span id="tipo-label">{% if tipo_actual_label %}{{ tipo_actual_label }}{% else %}{% trans "Seleccionar Tipo" %}{% endif %}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="tiposDropdown">
+                  <li>
+                    {% if region_actual %}
+                      <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}">
                     {% else %}
-                      <a href="{% url 'explorer:lugares_por_comuna' region.slug %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}" 
-                         class="filter-bubble" 
-                         data-filter="area" 
-                         data-slug="{{ region.slug }}"
-                         data-value="{{ region.osm_id }}">
-                        <span class="bubble-dot"></span>
-                        <span class="bubble-label">{{ region.name }}</span>
-                      </a>
+                      <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_list' %}">
                     {% endif %}
-               {% endfor %}
-          </div>
-        </div>
-        
-              <!-- Filtro por Tipo de Lugar -->
-              <div class="filter-section">
-                <div class="filter-bubbles-container">
-                  {% if region_actual %}
-                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}" 
-                       class="filter-bubble {% if not tipo_actual %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="">
-                      <span class="bubble-label">{% trans "Todos los tipos" %}</span>
+                      <i class="bi bi-grid me-2 text-primary"></i>
+                      <div class="fw-semibold">{% trans "Todos los tipos" %}</div>
                     </a>
-                  {% else %}
-                    <a href="{% url 'explorer:lugares_list' %}" 
-                       class="filter-bubble {% if not tipo_actual %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="">
-                      <span class="bubble-label">{% trans "Todos los tipos" %}</span>
-                    </a>
-                  {% endif %}
-                  <!-- Restaurantes -->
-                  {% if region_actual %}
-                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo=restaurant" 
-                       class="filter-bubble {% if tipo_actual == 'restaurant' %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="restaurant">
-                      <span class="bubble-label">🍽️ {% trans "Restaurante" %}</span>
-                    </a>
-                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo=pizza_restaurant" 
-                       class="filter-bubble {% if tipo_actual == 'pizza_restaurant' %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="pizza_restaurant">
-                      <span class="bubble-label">🍕 {% trans "Pizzería" %}</span>
-                    </a>
-                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo=fast_food_restaurant" 
-                       class="filter-bubble {% if tipo_actual == 'fast_food_restaurant' %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="fast_food_restaurant">
-                      <span class="bubble-label">🍔 {% trans "Comida Rápida" %}</span>
-                    </a>
-                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo=bar" 
-                       class="filter-bubble {% if tipo_actual == 'bar' %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="bar">
-                      <span class="bubble-label">🍻 {% trans "Bar" %}</span>
-                    </a>
-                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo=night_club" 
-                       class="filter-bubble {% if tipo_actual == 'night_club' %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="night_club">
-                      <span class="bubble-label">🎵 {% trans "Discoteca" %}</span>
-                    </a>
-                    <a href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo=cafe" 
-                       class="filter-bubble {% if tipo_actual == 'cafe' %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="cafe">
-                      <span class="bubble-label">☕ {% trans "Cafetería" %}</span>
-                    </a>
-                  {% else %}
-                    <a href="{% url 'explorer:lugares_list' %}?tipo=restaurant" 
-                       class="filter-bubble {% if tipo_actual == 'restaurant' %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="restaurant">
-                      <span class="bubble-label">🍽️ {% trans "Restaurante" %}</span>
-                    </a>
-                    <a href="{% url 'explorer:lugares_list' %}?tipo=pizza_restaurant" 
-                       class="filter-bubble {% if tipo_actual == 'pizza_restaurant' %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="pizza_restaurant">
-                      <span class="bubble-label">🍕 {% trans "Pizzería" %}</span>
-                    </a>
-                    <a href="{% url 'explorer:lugares_list' %}?tipo=fast_food_restaurant" 
-                       class="filter-bubble {% if tipo_actual == 'fast_food_restaurant' %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="fast_food_restaurant">
-                      <span class="bubble-label">🍔 {% trans "Comida Rápida" %}</span>
-                    </a>
-                    <a href="{% url 'explorer:lugares_list' %}?tipo=bar" 
-                       class="filter-bubble {% if tipo_actual == 'bar' %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="bar">
-                      <span class="bubble-label">🍻 {% trans "Bar" %}</span>
-                    </a>
-                    <a href="{% url 'explorer:lugares_list' %}?tipo=night_club" 
-                       class="filter-bubble {% if tipo_actual == 'night_club' %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="night_club">
-                      <span class="bubble-label">🎵 {% trans "Discoteca" %}</span>
-                    </a>
-                    <a href="{% url 'explorer:lugares_list' %}?tipo=cafe" 
-                       class="filter-bubble {% if tipo_actual == 'cafe' %}active{% endif %}" 
-                       data-filter="tipo" 
-                       data-value="cafe">
-                      <span class="bubble-label">☕ {% trans "Cafetería" %}</span>
-                    </a>
-                  {% endif %}
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  {% for grupo in tipo_grupos_ui %}
+                    <li class="dropdown-header"><span class="me-2">{{ grupo.emoji }}</span>{{ grupo.name }}</li>
+                    {% for item in grupo.items %}
+                      <li>
+                        {% if region_actual %}
+                          <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo={{ item.code }}">
+                        {% else %}
+                          <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_list' %}?tipo={{ item.code }}">
+                        {% endif %}
+                          <i class="bi bi-arrow-right me-2 text-muted"></i>
+                          <div class="fw-semibold">{{ item.label }}</div>
+                        </a>
+                      </li>
+                    {% endfor %}
+                    {% if not forloop.last %}<li><hr class="dropdown-divider"></li>{% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+
+            <!-- DROPDOWN: Características -->
+            <div class="col-lg-4 col-md-6">
+              <div class="dropdown">
+                <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button"
+                        id="featuresDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-stars me-2"></i>
+                  <span>{% trans "Características" %}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="featuresDropdown">
+                  {% with base=request.path %}
+                    <!-- Servicios de Entrega -->
+                    <li class="dropdown-header"><i class="bi bi-bicycle me-2 text-primary"></i>{% trans "Servicios de Entrega" %}</li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?delivery=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-bicycle me-2 text-success"></i><div class="fw-semibold">{% trans "Delivery" %}</div></a></li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?takeout=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-bag me-2 text-success"></i><div class="fw-semibold">{% trans "Para Llevar" %}</div></a></li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?dine_in=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-house me-2 text-success"></i><div class="fw-semibold">{% trans "Comer en Local" %}</div></a></li>
+                    
+                    <li><hr class="dropdown-divider"></li>
+                    
+                    <!-- Ambiente & Experiencia -->
+                    <li class="dropdown-header"><i class="bi bi-stars me-2 text-warning"></i>{% trans "Ambiente & Experiencia" %}</li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?outdoor_seating=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-tree me-2 text-success"></i><div class="fw-semibold">{% trans "Terraza" %}</div></a></li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?live_music=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-music-note-beamed me-2 text-success"></i><div class="fw-semibold">{% trans "Música en Vivo" %}</div></a></li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?good_for_groups=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-people me-2 text-success"></i><div class="fw-semibold">{% trans "Para Grupos" %}</div></a></li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?good_for_children=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-emoji-smile me-2 text-success"></i><div class="fw-semibold">{% trans "Para Niños" %}</div></a></li>
+                    
+                    <li><hr class="dropdown-divider"></li>
+                    
+                    <!-- Especialidades -->
+                    <li class="dropdown-header"><i class="bi bi-cup-straw me-2 text-info"></i>{% trans "Especialidades" %}</li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?serves_cocktails=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-cup-straw me-2 text-success"></i><div class="fw-semibold">{% trans "Cócteles" %}</div></a></li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?serves_wine=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-cup me-2 text-success"></i><div class="fw-semibold">{% trans "Vinos" %}</div></a></li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?serves_coffee=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-cup-hot me-2 text-success"></i><div class="fw-semibold">{% trans "Café Especialidad" %}</div></a></li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?serves_dessert=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-cake me-2 text-success"></i><div class="fw-semibold">{% trans "Postres" %}</div></a></li>
+                    
+                    <li><hr class="dropdown-divider"></li>
+                    
+                    <!-- Accesibilidad & Comodidades -->
+                    <li class="dropdown-header"><i class="bi bi-universal-access me-2 text-secondary"></i>{% trans "Accesibilidad & Comodidades" %}</li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?wheelchair_accessible_entrance=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-universal-access me-2 text-success"></i><div class="fw-semibold">{% trans "Acceso Accesible" %}</div></a></li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?allows_dogs=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-heart me-2 text-danger"></i><div class="fw-semibold">{% trans "Pet Friendly" %}</div></a></li>
+                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?accepts_credit_cards=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-credit-card me-2 text-success"></i><div class="fw-semibold">{% trans "Tarjetas de Crédito" %}</div></a></li>
+                  {% endwith %}
+                </ul>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
       <!-- Card Inferior: Grid de Lugares -->
       <div class="places-grid-card">
-  {% if lugares %}
-    <div class="lugares-grid">
-      {% for lugar in lugares %}
-        <div class="lugar-card-wrapper">
-          <div class="card h-100 shadow-sm border-0 rounded-4 place-card">
-            <div class="place-card-media position-relative">
-            {% if lugar.get_primera_foto %}
-              <img src="{{ lugar.get_primera_foto.imagen }}" 
-                   class="card-img-top rounded-top-4" 
-                   alt="{% trans "Imagen de" %} {{ lugar.nombre }}"
-                   loading="lazy">
-            {% else %}
-                <div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
-                <i class="bi bi-image text-muted fs-2"></i>
+        {% if lugares %}
+          <div class="lugares-grid">
+            {% for lugar in lugares %}
+              <div class="lugar-card-wrapper">
+                <div class="card h-100 shadow-sm border-0 rounded-4 place-card">
+                  <div class="place-card-media position-relative">
+                    {% if lugar.get_primera_foto %}
+                      <img src="{{ lugar.get_primera_foto.imagen }}" 
+                           class="card-img-top rounded-top-4" 
+                           alt="{{ lugar.nombre }}"
+                           loading="lazy">
+                    {% else %}
+                      <div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-image text-muted fs-2"></i>
+                      </div>
+                    {% endif %}
+                    {% if lugar.rating %}
+                      <div class="place-card-rating badge rounded-pill">
+                        <i class="bi bi-star-fill me-1"></i>
+                        <span class="fw-semibold">{{ lugar.rating|floatformat:1 }}</span>
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="card-body d-flex flex-column place-card-body">
+                    <h5 class="card-title fw-semibold mb-2 place-card-title">{{ lugar.nombre }}</h5>
+                    
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                      <span class="badge place-type-pill">
+                        <i class="bi bi-geo-alt me-1"></i>{{ lugar|place_type_label }}
+                      </span>
+                      {% if lugar.es_destacado %}
+                        <span class="badge place-flag-pill place-flag-featured">
+                          <i class="bi bi-star-fill me-1"></i>{% trans "Destacado" %}
+                        </span>
+                      {% endif %}
+                      {% if lugar.es_exclusivo %}
+                        <span class="badge place-flag-pill place-flag-exclusive">
+                          <i class="bi bi-gem me-1"></i>{% trans "Exclusivo" %}
+                        </span>
+                      {% endif %}
+                    </div>
+
+                    {% if lugar.precio %}
+                      <div class="small text-muted mb-2">
+                        <i class="bi bi-cash-stack me-1"></i>{{ lugar.precio|format_price_range }}
+                      </div>
+                    {% endif %}
+
+                    {% if lugar.direccion %}
+                      <div class="small text-muted mb-2 place-card-address">
+                        <i class="bi bi-map me-1"></i>{{ lugar.direccion|truncatechars:50 }}
+                      </div>
+                    {% endif %}
+
+                    {% if lugar.slug %}
+                      <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn mt-auto w-100 rounded-pill place-card-cta">
+                        <i class="bi bi-eye me-1"></i>{% trans "Ver detalles" %}
+                      </a>
+                    {% endif %}
+                  </div>
                 </div>
-              {% endif %}
-              {% if lugar.rating %}
-              <div class="place-card-rating badge rounded-pill">
-                <i class="bi bi-star-fill me-1"></i>
-                <span class="fw-semibold">{{ lugar.rating|floatformat:1 }}</span>
               </div>
-            {% endif %}
-            </div>
-
-            <div class="card-body d-flex flex-column place-card-body">
-              <h5 class="card-title fw-semibold mb-2 place-card-title">{{ lugar.nombre }}</h5>
-              
-              <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                <span class="badge place-type-pill">
-                  <i class="bi bi-geo-alt me-1"></i>{{ lugar|place_type_label }}
-                </span>
-                {% if lugar.es_destacado %}
-                  <span class="badge place-flag-pill place-flag-featured">
-                    <i class="bi bi-star-fill me-1"></i>{% trans "Destacado" %}
-                  </span>
-                {% endif %}
-                {% if lugar.es_exclusivo %}
-                  <span class="badge place-flag-pill place-flag-exclusive">
-                    <i class="bi bi-gem me-1"></i>{% trans "Exclusivo" %}
-                  </span>
-                {% endif %}
-              </div>
-
-              {% if lugar.precio or lugar.abierto_ahora is not None %}
-              <div class="d-flex flex-wrap align-items-center gap-3 mb-2 small place-card-meta">
-                {% if lugar.precio %}
-                  <span class="text-muted">
-                    <i class="bi bi-cash-stack me-1"></i>{{ lugar.precio|format_price_range }}
-                  </span>
-                {% endif %}
-                {% if lugar.abierto_ahora %}
-                  <span class="badge rounded-pill place-open-badge">
-                    <i class="bi bi-circle-fill me-1"></i>{% trans "Abierto ahora" %}
-                  </span>
-                {% elif lugar.abierto_ahora is not None %}
-                  <span class="badge rounded-pill place-closed-badge">
-                    <i class="bi bi-moon-stars me-1"></i>{% trans "Cerrado en este momento" %}
-                  </span>
-                {% endif %}
-              </div>
-              {% endif %}
-
-              {% if lugar.direccion %}
-              <div class="small text-muted mb-2 place-card-address">
-                <i class="bi bi-map me-1"></i>{{ lugar.direccion }}
-              </div>
-              {% endif %}
-
-              {% if lugar.comuna_nombre %}
-              <div class="small text-muted mb-2">
-                <i class="bi bi-building me-1"></i>{{ lugar.comuna_nombre }}
-              </div>
-              {% endif %}
-
-              {% if lugar.descripcion %}
-              <p class="small mb-3 place-card-description">
-                {{ lugar.descripcion|truncatechars:160 }}
-              </p>
-              {% endif %}
-
-              {% if lugar.telefono or lugar.sitio_web %}
-              <div class="d-flex flex-wrap align-items-center gap-3 small place-card-contact mb-3">
-                {% if lugar.telefono %}
-                  <span class="text-muted">
-                    <i class="bi bi-telephone me-1"></i>{{ lugar.telefono }}
-                  </span>
-                {% endif %}
-                {% if lugar.sitio_web %}
-                  <a href="{{ lugar.sitio_web }}" target="_blank" rel="noopener" class="place-card-link">
-                    <i class="bi bi-globe2 me-1"></i>{% trans "Sitio web" %}
-                  </a>
-                {% endif %}
-                </div>
-              {% endif %}
-
-              {% if lugar.slug %}
-                <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn mt-auto w-100 rounded-pill place-card-cta">
-                  <i class="bi bi-eye me-1"></i>{% trans "Ver detalles" %}
-                </a>
-              {% else %}
-                <span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">{% trans "Sin detalles" %}</span>
-              {% endif %}
-            </div>
+            {% endfor %}
           </div>
-        </div>
-      {% endfor %}
-    </div>
 
-    <!-- Paginación -->
-    {% if is_paginated %}
-      <!-- Desktop: paginación clásica -->
-      <nav class="mt-5 d-none d-md-flex justify-content-center">
-        <ul class="pagination">
-          {% if page_obj.has_previous %}
-            <li class="page-item">
-              <a class="page-link rounded-pill me-2" href="?page={{ page_obj.previous_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
-                <i class="bi bi-chevron-left me-1"></i>{% trans "Anterior" %}
-              </a>
-            </li>
+          <!-- Paginación -->
+          {% if is_paginated %}
+            <nav class="mt-5 d-flex justify-content-center">
+              <ul class="pagination">
+                {% if page_obj.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link rounded-pill me-2" href="?page={{ page_obj.previous_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
+                      <i class="bi bi-chevron-left me-1"></i>{% trans "Anterior" %}
+                    </a>
+                  </li>
+                {% endif %}
+
+                <li class="page-item disabled">
+                  <span class="page-link border-0 bg-transparent text-muted">
+                    {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                  </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                  <li class="page-item">
+                    <a class="page-link rounded-pill ms-2" href="?page={{ page_obj.next_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
+                      {% trans "Siguiente" %}<i class="bi bi-chevron-right ms-1"></i>
+                    </a>
+                  </li>
+                {% endif %}
+              </ul>
+            </nav>
           {% endif %}
 
-          <li class="page-item disabled">
-            <span class="page-link border-0 bg-transparent text-muted">
-              {% trans "Página" %} {{ page_obj.number }} {% trans "de" %} {{ page_obj.paginator.num_pages }}
-            </span>
-          </li>
-
-          {% if page_obj.has_next %}
-            <li class="page-item">
-              <a class="page-link rounded-pill ms-2" href="?page={{ page_obj.next_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
-                {% trans "Siguiente" %}<i class="bi bi-chevron-right ms-1"></i>
-              </a>
-            </li>
-          {% endif %}
-        </ul>
-      </nav>
-
-      <!-- Mobile: botones grandes Anterior / Cargar más -->
-      <div class="mt-4 d-flex d-md-none flex-column align-items-stretch gap-2">
-        {% if page_obj.has_previous %}
-          <a class="btn btn-gradient-purple rounded-pill w-100"
-             href="?page={{ page_obj.previous_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
-            <i class="bi bi-chevron-left me-1"></i>{% trans "Anterior" %}
-          </a>
+        {% else %}
+          <div class="text-center py-5">
+            <i class="bi bi-search display-1 mb-3 text-white-50"></i>
+            <h3 class="text-white">{% trans "No hay lugares disponibles" %}</h3>
+            <p class="text-white-50">{% trans "No se encontraron lugares que coincidan con tu búsqueda." %}</p>
+            <a href="{% url 'explorer:lugares_list' %}" class="btn btn-gradient-green rounded-pill px-4">
+              {% trans "Ver todos los lugares" %}
+            </a>
+          </div>
         {% endif %}
-        {% if page_obj.has_next %}
-          <a class="btn btn-gradient-green rounded-pill w-100"
-             href="?page={{ page_obj.next_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
-            {% trans "Cargar más lugares" %}
-          </a>
-        {% endif %}
-        <div class="text-center text-white-50 small mt-1">
-          {% trans "Página" %} {{ page_obj.number }} {% trans "de" %} {{ page_obj.paginator.num_pages }}
-        </div>
       </div>
-    {% endif %}
 
-  {% else %}
-    <div class="text-center py-5">
-      <i class="bi bi-search display-1 mb-3 text-white-50"></i>
-      <h3 class="text-white">{% trans "No hay lugares disponibles" %}</h3>
-      <p class="text-white-50">{% trans "No se encontraron lugares que coincidan con tu búsqueda." %}</p>
-      <a href="{% url 'explorer:lugares_list' %}" class="btn rounded-pill" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; color: white; font-weight: 600;">
-        {% trans "Ver todos los lugares" %}
-      </a>
-    </div>
-  {% endif %}
-</div>
     </div>
   </div>
 </section>
@@ -451,531 +331,558 @@
 
 {% block extra_css %}
 <style>
-/* Fondo general de la página de listados – mismo degradado verde que el home */
+/* ═══════════════════════════════════════════════════════════════════
+   PLACES LIST - Professional Design
+   Diseño profesional, simétrico y bien distribuido
+   ═══════════════════════════════════════════════════════════════════ */
+
 .places-section {
-    background:
-        radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
-        linear-gradient(135deg, #020617 0%, #022c22 35%, #064e3b 100%);
-    min-height: 100vh;
-    padding-top: 2rem;
-    padding-bottom: 3rem;
+  background:
+    radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
+    linear-gradient(135deg, #020617 0%, #022c22 35%, #064e3b 100%);
+  min-height: 100vh;
+  padding: 2.5rem 0 3.5rem;
 }
 
-.places-section .container {
-    max-width: 1200px;
+.places-section .container { 
+  max-width: 1280px;
 }
 
-/* Wrapper principal */
-.places-main-wrapper {
-    max-width: 1120px;
-    margin: 0 auto;
+.places-main-wrapper { 
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
-/* Card Superior: Título y Filtros */
+@media (min-width: 992px) {
+  .places-main-wrapper {
+    padding: 0 2rem;
+  }
+}
+
+/* Card Superior */
 .places-header-card {
-    background: rgba(4, 20, 12, 0.75);
-    border-radius: 28px;
-    padding: 2.5rem 2rem;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+  background: rgba(4, 20, 12, 0.95);
+  border-radius: 28px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  position: relative;
+  z-index: 10;
+  margin-bottom: 2.5rem;
 }
 
 @media (min-width: 992px) {
-    .places-header-card {
-        padding: 3rem 2.5rem;
-    }
+  .places-header-card { 
+    padding: 3rem 2.5rem;
+  }
 }
 
-/* Título principal con estilo del home */
+/* Título principal con vida */
 .places-title {
+  font-size: 2.25rem;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 
+    0 0 20px rgba(56, 239, 125, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.places-title::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #11998e, #38ef7d, transparent);
+  border-radius: 2px;
+  box-shadow: 0 0 12px rgba(56, 239, 125, 0.6);
+}
+
+.title-main {
+  background: linear-gradient(135deg, #ffffff 0%, #38ef7d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (min-width: 768px) {
+  .places-title { 
     font-size: 2.5rem;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    margin-bottom: 0.75rem;
+  }
 }
 
 @media (min-width: 992px) {
-    .places-title {
-        font-size: 3rem;
-    }
+  .places-title { 
+    font-size: 3rem;
+  }
 }
 
-.text-white-50 {
-    color: rgba(255, 255, 255, 0.7) !important;
+.text-white-50 { 
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-size: 1.0625rem;
+  line-height: 1.6;
 }
 
-.places-search-badge {
-    background: rgba(255, 255, 255, 0.15) !important;
-    color: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    backdrop-filter: blur(10px);
-}
-
-/* Card de filtros con glassmorphism oscuro mejorado */
-.places-filters-card {
-    background: rgba(3, 30, 20, 0.88);
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-}
-
-.places-filters-card-inner {
-    background: transparent;
-    padding: 2rem 1.75rem;
+/* Filtros */
+.filtros-home-style {
+  background: rgba(3, 30, 20, 0.95);
+  border-radius: 24px;
+  padding: 2rem 1.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  position: relative;
+  z-index: 100;
+  margin-top: 2rem;
 }
 
 @media (min-width: 992px) {
-    .places-filters-card-inner {
-        padding: 2.25rem 2rem;
-    }
+  .filtros-home-style {
+    padding: 2.25rem 2rem;
+  }
 }
 
-/* Contenedor de burbujas dentro de la card de filtros */
-.places-filters-bubbles {
-    padding: 0;
+/* Botones Dropdown */
+.btn-filtro-dropdown {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white !important;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.875rem 1.75rem;
+  border-radius: 999px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-filtro-dropdown:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  color: white !important;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-filtro-dropdown:focus {
+  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+  color: white !important;
+}
+
+/* Dropdown Menus */
+.dropdown-menu-filtros {
+  border-radius: 18px;
+  padding: 1rem;
+  margin-top: 0.625rem;
+  min-width: 300px;
+  max-width: 380px;
+  background: white;
+  border: none;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1050 !important;
+  position: absolute !important;
+}
+
+.dropdown-menu-filtros::-webkit-scrollbar { 
+  width: 8px;
+}
+
+.dropdown-menu-filtros::-webkit-scrollbar-track { 
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  margin: 0.5rem 0;
+}
+
+.dropdown-menu-filtros::-webkit-scrollbar-thumb { 
+  background: rgba(17, 153, 142, 0.3);
+  border-radius: 4px;
+}
+
+.dropdown-menu-filtros::-webkit-scrollbar-thumb:hover { 
+  background: rgba(17, 153, 142, 0.6);
+}
+
+.dropdown-item-filtro {
+  padding: 0.75rem 0.875rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: #1e293b;
+  gap: 0.625rem;
+  font-size: 0.9375rem;
+}
+
+.dropdown-item-filtro:hover {
+  background-color: rgba(17, 153, 142, 0.1);
+  transform: translateX(3px);
+  color: #11998e;
+}
+
+.dropdown-item-filtro i {
+  font-size: 1.125rem;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.dropdown-header {
+  color: #495057;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  padding: 0.625rem 0.875rem 0.375rem;
+  margin-top: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dropdown-header:first-child { 
+  margin-top: 0;
+}
+
+/* Asegurar que los dropdowns siempre estén visibles sobre todo */
+.filtros-home-style .dropdown {
+  position: relative;
+}
+
+.dropdown-menu.show {
+  z-index: 1050 !important;
 }
 
 /* Card Inferior: Grid de Lugares */
 .places-grid-card {
-    background: rgba(4, 20, 12, 0.75);
-    border-radius: 28px;
-    padding: 2rem 1.5rem;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+  background: rgba(4, 20, 12, 0.95);
+  border-radius: 28px;
+  padding: 2rem 1.75rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  position: relative;
+  z-index: 1;
 }
 
 @media (min-width: 992px) {
-    .places-grid-card {
-        padding: 2.5rem 2rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .places-section {
-        padding-top: 1.5rem;
-        padding-bottom: 2.5rem;
-    }
-}
-
-/* Cards de lugares en tonos blancos con detalles verdes */
-.places-section .card {
-    background: #ffffff;
-    border-radius: 20px;
-    border: 2px solid rgba(17, 153, 142, 0.2);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-}
-
-.places-section .card-body {
-    background: transparent;
-}
-
-.places-section .card-title {
-    color: #0f172a;
-    font-weight: 600;
-}
-
-.places-section .card-text,
-.places-section .small.text-muted {
-    color: #64748b !important;
-}
-
-/* Card Hover Effects */
-.places-section .card:hover {
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-    box-shadow: 0 12px 32px rgba(17, 153, 142, 0.25) !important;
-    border-color: rgba(17, 153, 142, 0.5);
-}
-
-/* Place card refinements */
-.place-card-media img {
-    height: 190px;
-    object-fit: cover;
-}
-
-.place-card-placeholder {
-    height: 190px;
-    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
-}
-
-.place-card-rating {
-    position: absolute;
-    right: 12px;
-    bottom: 12px;
-    background: #ffffff;
-    color: #11998e;
-    font-size: 0.8rem;
-    padding: 0.35rem 0.75rem;
-    box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
-    border: 1px solid rgba(17, 153, 142, 0.2);
-    font-weight: 600;
-}
-
-.place-card-body {
-    padding-top: 0.9rem;
-}
-
-.place-card-title {
-    color: #0f172a;
-    font-weight: 600;
-}
-
-.place-type-pill {
-    background: rgba(17, 153, 142, 0.1);
-    border-radius: 999px;
-    color: #11998e;
-    border: 1px solid rgba(17, 153, 142, 0.3);
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.place-flag-pill {
-    border-radius: 999px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.place-flag-featured {
-    background: rgba(250, 204, 21, 0.15);
-    color: #ca8a04;
-    border: 1px solid rgba(250, 204, 21, 0.4);
-}
-
-.place-flag-exclusive {
-    background: rgba(17, 153, 142, 0.15);
-    color: #11998e;
-    border: 1px solid rgba(17, 153, 142, 0.4);
-}
-
-.place-card-address {
-    color: #64748b !important;
-}
-
-.place-card-meta .place-open-badge {
-    background: rgba(22, 163, 74, 0.12);
-    color: #16a34a;
-    border: 1px solid rgba(22, 163, 74, 0.4);
-}
-
-.place-card-meta .place-closed-badge {
-    background: rgba(15, 23, 42, 0.9);
-    color: #e5e7eb;
-    border: 1px solid rgba(148, 163, 184, 0.5);
-}
-
-.place-card-description {
-    color: #4b5563;
-}
-
-.place-card-link {
-    color: #0f766e;
-    text-decoration: none;
-}
-
-.place-card-link:hover {
-    color: #22c55e;
-    text-decoration: underline;
-}
-
-.place-card-cta {
-    font-weight: 600;
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border: none;
-    color: white;
-    transition: all 0.3s ease;
-}
-
-.place-card-cta:hover {
-    background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
-    color: white;
-}
-
-/* Botón principal verde reutilizable (volver / CTAs secundarios) */
-.btn-gradient-purple {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border: none;
-    color: white;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
-}
-
-.btn-gradient-purple:hover {
-    background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
-    color: white;
-}
-
-/* Pagination styling con acentos verdes */
-.pagination .page-link {
-    border: 1px solid rgba(17, 153, 142, 0.3);
-    color: #11998e;
-    font-weight: 500;
-    background: white;
-}
-
-.pagination .page-link:hover {
-    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
-    border-color: rgba(17, 153, 142, 0.5);
-    color: #0e8678;
-}
-
-/* Filtros tipo Burbujas/Chips - alto contraste */
-.places-filters-bubbles {
-    padding: 0.75rem 0;
-}
-
-.filter-section {
-    margin-bottom: 1.25rem;
-}
-
-.filter-section:last-child {
-    margin-bottom: 0;
-}
- 
-/* Filtros en varias líneas (sin scroll horizontal) */
-.filter-bubbles-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    padding: 0.25rem 0.25rem 0.5rem 0.25rem;
-}
-
-.filter-bubble {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
-    gap: 0.45rem;
-    padding: 0.55rem 1.25rem;
-    border-radius: 999px;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    background: rgba(255, 255, 255, 0.96);
-    color: #0f172a;
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: all 0.22s ease;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
-}
-
-.filter-bubble:hover {
-    background: #f1f5f9;
-    border-color: rgba(15, 23, 42, 0.25);
-    color: #0f172a;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
-    text-decoration: none;
-}
-
-.filter-bubble.active {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border-color: rgba(22, 163, 74, 0.9);
-    color: #ffffff;
-    font-weight: 700;
-    box-shadow: 0 6px 18px rgba(15, 118, 110, 0.55);
-}
-
-.filter-bubble.active:hover {
-    background: linear-gradient(135deg, #0f766e 0%, #22c55e 100%);
-    border-color: rgba(22, 163, 74, 1);
-    box-shadow: 0 8px 22px rgba(15, 118, 110, 0.65);
-    transform: translateY(-2px);
-}
-
-.bubble-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #22c55e;
-    flex-shrink: 0;
-}
-
-.filter-bubble.active .bubble-dot {
-    background: #facc15;
-}
-
-.bubble-label {
-    line-height: 1.3;
-    position: relative;
-    z-index: 1;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .filter-bubble {
-        padding: 0.5rem 1.1rem;
-        font-size: 0.85rem;
-    }
-    
-    .filter-bubbles-container {
-        gap: 0.4rem;
-        padding-bottom: 0.65rem;
-    }
-}
-        
-/* Botones de idioma y navegación superior (mismo estilo que en el home) */
-.home-lang-switch .btn-lang-home {
-    border-radius: 999px;
-    padding: 0.35rem 0.9rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    background: rgba(0, 0, 0, 0.25);
-    color: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-}
-
-.home-lang-switch .btn-lang-home.active {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border-color: transparent;
-    color: #03120a;
-}
-
-.home-lang-switch .btn-lang-home.inactive:hover {
-    background: rgba(255, 255, 255, 0.18);
-}
-</style>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-// Los filtros ahora funcionan directamente con los enlaces de las burbujas
-// No se necesita JavaScript adicional ya que cada burbuja tiene su href configurado
-document.addEventListener('DOMContentLoaded', function() {
-    // Agregar efecto de click suave a las burbujas
-    const bubbles = document.querySelectorAll('.filter-bubble');
-    bubbles.forEach(bubble => {
-        bubble.addEventListener('click', function(e) {
-            // El enlace ya maneja la navegación, solo agregamos feedback visual
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 150);
-        });
-    });
-});
-</script>
-
-<script>
-// Ajuste de título/subtítulo en inglés por si el backend entrega texto base en español
-document.addEventListener('DOMContentLoaded', function() {
-  const lang = document.documentElement.getAttribute('lang') || 'es';
-  if (!lang.toLowerCase().startsWith('en')) return;
-
-  const heading = document.querySelector('.text-center.mb-5 h1.fw-bold');
-  const subtitle = document.querySelector('.text-center.mb-5 p.lead.text-muted');
-
-  if (heading) {
-    const text = heading.textContent.trim();
-    const prefixEs = 'Los mejores lugares en';
-    if (text.startsWith(prefixEs)) {
-      const comuna = text.slice(prefixEs.length).trim();
-      heading.textContent = `The best places in ${comuna}`;
-    }
+  .places-grid-card { 
+    padding: 2.5rem 2rem;
   }
+}
 
-  if (subtitle) {
-    const text = subtitle.textContent.trim();
-    const prefixEs = 'Descubre los sitios más destacados de';
-    if (text.startsWith(prefixEs)) {
-      const comuna = text.slice(prefixEs.length).trim();
-      subtitle.textContent = `Discover the most outstanding places in ${comuna}`;
-    }
-  }
-});
-</script>
-
-<style>
-/* Grid de lugares - lista vertical (sin scroll horizontal) */
+/* Grid de lugares */
 .lugares-grid {
-  padding: 0.5rem 0;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.75rem;
 }
 
-.lugar-card-wrapper {
+@media (min-width: 992px) {
+  .lugares-grid {
+    gap: 2rem;
+  }
+}
+
+.lugar-card-wrapper { 
   width: 100%;
 }
 
-@media (max-width: 767.98px) {
-  .place-card {
-    display: block;
-  }
+/* Place Cards */
+.place-card {
+  background: #ffffff;
+  border-radius: 24px !important;
+  border: 2px solid rgba(17, 153, 142, 0.2) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
 
-  .place-card-body {
-    padding: 1rem 1.1rem 1.15rem;
-  }
-
-  .place-card-meta {
-    gap: 0.75rem !important;
-  }
-
-  /* Paginación más compacta y táctil en mobile */
-  .pagination {
-    flex-wrap: nowrap;
-  }
-
-  .pagination .page-link {
-    padding: 0.55rem 0.85rem;
-    font-size: 0.85rem;
-  }
-
-  .pagination .page-link.border-0.bg-transparent {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
+.place-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(17, 153, 142, 0.3) !important;
+  border-color: rgba(17, 153, 142, 0.5) !important;
 }
 
 @media (min-width: 992px) {
   .place-card {
     display: grid;
-    grid-template-columns: 280px minmax(0, 1fr);
+    grid-template-columns: 320px minmax(0, 1fr);
+    align-items: center;
   }
-
+  
   .place-card-media img,
   .place-card-placeholder {
     height: 100%;
-    min-height: 190px;
-    max-height: 220px;
-    border-radius: 1.25rem 0 0 1.25rem;
+    min-height: 220px;
+    max-height: 240px;
+    border-radius: 1.5rem 0 0 1.5rem !important;
   }
-
-  .place-card-media {
+  
+  .place-card-media { 
     height: 100%;
   }
-
-  .place-card-body {
-    padding: 1.25rem 1.5rem;
+  
+  .place-card-body { 
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }
 
-/* Card styles */
-.card {
-  position: relative;
+.place-card-media img {
+  height: 220px;
+  object-fit: cover;
+  width: 100%;
 }
 
-.card:hover {
-  transform: translateY(-5px);
+@media (min-width: 768px) {
+  .place-card-media img {
+    height: 240px;
+  }
+}
+
+.place-card-placeholder {
+  height: 220px;
+  background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .place-card-placeholder {
+    height: 240px;
+  }
+}
+
+.place-card-placeholder i {
+  font-size: 3rem;
+  color: rgba(17, 153, 142, 0.3);
+}
+
+.place-card-rating {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  background: #ffffff;
+  color: #11998e;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.875rem;
+  box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
+  border: 1px solid rgba(17, 153, 142, 0.2);
+  border-radius: 999px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.place-card-body { 
+  padding: 1.5rem;
+}
+
+.place-card-title {
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  margin-bottom: 0.875rem;
+  letter-spacing: -0.01em;
+}
+
+@media (min-width: 992px) {
+  .place-card-title {
+    font-size: 1.375rem;
+  }
+}
+
+.place-type-pill {
+  background: rgba(17, 153, 142, 0.1);
+  border-radius: 999px;
+  color: #11998e;
+  border: 1px solid rgba(17, 153, 142, 0.3);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+}
+
+.place-flag-pill {
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+}
+
+.place-flag-featured {
+  background: rgba(250, 204, 21, 0.15);
+  color: #ca8a04;
+  border: 1px solid rgba(250, 204, 21, 0.4);
+}
+
+.place-flag-exclusive {
+  background: rgba(17, 153, 142, 0.15);
+  color: #11998e;
+  border: 1px solid rgba(17, 153, 142, 0.4);
+}
+
+.place-card-address { 
+  color: #64748b !important;
+  font-size: 0.9375rem;
+}
+
+.place-card-cta {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border: none;
+  color: white;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+}
+
+.place-card-cta:hover {
+  background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
+  color: white;
+}
+
+/* Navegación superior */
+.home-lang-switch .btn-lang-home {
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.home-lang-switch .btn-lang-home.active {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border-color: transparent;
+  color: #03120a;
+}
+
+.home-lang-switch .btn-lang-home.inactive:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Paginación */
+.pagination .page-link {
+  border: 1px solid rgba(17, 153, 142, 0.3);
+  color: #11998e;
+  font-weight: 500;
+  background: white;
+}
+
+.pagination .page-link:hover {
+  background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
+  border-color: rgba(17, 153, 142, 0.5);
+  color: #0e8678;
+}
+
+/* Botón verde */
+.btn-gradient-green {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+}
+
+.btn-gradient-green:hover {
+  background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
+  color: white;
+}
+
+/* Mobile */
+@media (max-width: 991px) {
+  .places-section { 
+    padding: 1.75rem 0 2.5rem;
+  }
+  
+  .places-main-wrapper {
+    padding: 0 1rem;
+  }
+  
+  .places-header-card { 
+    padding: 1.75rem 1.25rem;
+    margin-bottom: 2rem;
+    border-radius: 20px;
+  }
+  
+  .places-title {
+    font-size: 1.875rem;
+    margin-bottom: 0.625rem;
+  }
+  
+  .text-white-50 {
+    font-size: 1rem;
+  }
+  
+  .filtros-home-style { 
+    padding: 1.5rem 1.25rem;
+    margin-top: 1.5rem;
+    border-radius: 20px;
+  }
+  
+  .btn-filtro-dropdown { 
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9375rem;
+  }
+  
+  .dropdown-menu-filtros { 
+    min-width: 280px;
+    max-height: 320px;
+  }
+  
+  .places-grid-card {
+    padding: 1.5rem 1.25rem;
+    border-radius: 20px;
+  }
+  
+  .lugares-grid {
+    gap: 1.5rem;
+  }
+  
+  .place-card {
+    border-radius: 20px !important;
+  }
+  
+  .place-card-media img,
+  .place-card-placeholder {
+    height: 200px;
+  }
+  
+  .place-card-body {
+    padding: 1.25rem;
+  }
+  
+  .place-card-title {
+    font-size: 1.125rem;
+  }
+  
+  .place-card-rating {
+    right: 0.875rem;
+    bottom: 0.875rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8125rem;
+  }
 }
 </style>
 {% endblock %}

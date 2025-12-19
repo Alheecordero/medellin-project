@@ -1,7 +1,8 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Visualizador de Zonas Cubiertas</title>
+    <title>{% trans "Visualizador de zonas cubiertas" %}</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -45,7 +46,7 @@ const map = L.map('mapa').setView([6.2442, -75.5812], 12);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> {% trans "colaboradores" %}'
 }).addTo(map);
 
     // Capa para las zonas cubiertas (polígonos de búfer)
@@ -82,7 +83,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         const lat = e.latlng.lat.toFixed(6);
         const lng = e.latlng.lng.toFixed(6);
 
-        if (confirm(`¿Deseas guardar las coordenadas (${lat}, ${lng})?`)) {
+        const confirmPrefix = "{% trans "¿Deseas guardar las coordenadas" %}";
+        if (confirm(`${confirmPrefix} (${lat}, ${lng})?`)) {
             fetch("{% url 'explorer:guardar_coordenada' %}", {
                 method: 'POST',
         headers: {
@@ -105,12 +107,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         fillOpacity: 0.9
                     }).addTo(map);
         } else {
-                    alert('Error al guardar: ' + data.error); // Notificación de error
+                    alert('{% trans "Error al guardar:" %} ' + data.error); // Notificación de error
         }
     })
     .catch(error => {
                 console.error('Error en la petición fetch:', error);
-                alert('Ocurrió un error de red al intentar guardar la coordenada.');
+                alert('{% trans "Ocurrió un error de red al intentar guardar la coordenada." %}');
             });
         }
     });

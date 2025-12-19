@@ -2,42 +2,33 @@
 {% load i18n %}
 {% load static %}
 
-{# En About NO usamos navbar fijo; seguimos el patrón del home con botones internos #}
 {% block navbar %}{% endblock %}
 
 {% block title %}
-  {% get_current_language as LANGUAGE_CODE %}
-  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-    About | ViveMedellín
-  {% else %}
-    Nosotros | ViveMedellín
-  {% endif %}
+  {% trans "Nosotros | ViveMedellín" %}
 {% endblock %}
 
 {% block meta_description %}
-  {% blocktrans %}Aprende cómo usar ViveMedellín paso a paso: filtros por zona, tipos de lugares, búsqueda semántica, reseñas reales y mapas interactivos.{% endblocktrans %}
+  {% blocktrans %}Descubre cómo ViveMedellín te ayuda a explorar la ciudad: filtros por zona, tipos de lugares, búsqueda inteligente y datos verificados de restaurantes, bares y experiencias.{% endblocktrans %}
 {% endblock %}
 
 {% block content %}
+{% get_current_language as LANGUAGE_CODE %}
 <section class="about-section">
   <div class="container py-5">
     <div class="about-main-card mx-auto">
-      {% get_current_language as LANGUAGE_CODE %}
-      <!-- Barra superior: Home / About us / ES / EN (mismo lenguaje que home/detail) -->
-      <div class="d-flex justify-content-end mb-3 home-lang-switch gap-2 flex-wrap">
+      
+      <!-- Navegación superior -->
+      <nav class="d-flex justify-content-end mb-4 home-lang-switch gap-2 flex-wrap" aria-label="{% trans 'Navegación principal' %}">
         <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">
-          {% trans "Home" %}
+          {% trans "Inicio" %}
         </a>
         {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-          <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">
-            {% trans "About us" %}
-          </a>
+          <a href="{% url 'explorer:about' %}" class="btn btn-lang-home active" aria-current="page">{% trans "Nosotros" %}</a>
         {% else %}
-          <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">
-            {% trans "Nosotros" %}
-          </a>
+          <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home active" aria-current="page">{% trans "Nosotros" %}</a>
         {% endif %}
-        <form action="{% url 'set_language' %}" method="post">
+        <form action="{% url 'set_language' %}" method="post" class="d-inline">
           {% csrf_token %}
           <input type="hidden" name="language" value="es">
           {% if request.path|slice:":4" == "/en/" %}
@@ -47,7 +38,7 @@
           {% endif %}
           <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
         </form>
-        <form action="{% url 'set_language' %}" method="post">
+        <form action="{% url 'set_language' %}" method="post" class="d-inline">
           {% csrf_token %}
           <input type="hidden" name="language" value="en">
           {% if request.path|slice:":4" == "/en/" %}
@@ -57,420 +48,242 @@
           {% endif %}
           <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE|slice:":2" == 'en' %}active{% else %}inactive{% endif %}">EN</button>
         </form>
-      </div>
+      </nav>
 
-      <!-- Hero / Intro -->
-      <header class="about-hero text-center mb-4">
-        <p class="about-badge text-uppercase mb-2">
-          <i class="bi bi-compass me-1"></i>
-          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-            How it works
-          {% else %}
-            {% trans "Manual de uso" %}
-          {% endif %}
-        </p>
+      <!-- Hero -->
+      <header class="about-hero text-center mb-5 reveal">
+        <div class="about-badge mb-3">
+          <i class="bi bi-compass me-2"></i>
+          {% trans "Tu guía local" %}
+        </div>
         <h1 class="about-title mb-3">
-          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-            Explore Medellín like a local with ViveMedellín
-          {% else %}
-            {% trans "Explora Medellín como un local con ViveMedellín" %}
-          {% endif %}
+          {% blocktrans trimmed %}Descubre Medellín<br><span class="title-accent">como nunca antes</span>{% endblocktrans %}
         </h1>
-        <p class="about-subtitle mb-0">
-          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-            ViveMedellín is your curated map of restaurants, bars and plans in the city. Here we show you, in minutes, how to get the most out of it.
-          {% else %}
-            {% trans "ViveMedellín es tu mapa curado de restaurantes, bares y planes en la ciudad. Aquí te mostramos, en minutos, cómo sacarle el máximo provecho." %}
-          {% endif %}
+        <p class="about-subtitle">
+          {% blocktrans trimmed %}ViveMedellín es un directorio curado de restaurantes, bares, rooftops y experiencias en Medellín y sus alrededores. Organizamos la ciudad para que encuentres lo que buscas, más rápido.{% endblocktrans %}
         </p>
       </header>
 
-      <!-- Métricas rápidas -->
-      <section class="about-metrics row g-3 mb-4">
-        <div class="col-md-4">
-          <div class="metric-pill">
-            <div class="metric-label">
-              {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                Places with real photos
-              {% else %}
-                {% trans "Lugares con fotos reales" %}
-              {% endif %}
+      <!-- Qué es ViveMedellín -->
+      <section class="about-what mb-5 reveal" aria-labelledby="what-title">
+        <h2 id="what-title" class="section-title">
+          <i class="bi bi-stars me-2"></i>
+          {% trans "¿Qué es ViveMedellín?" %}
+        </h2>
+        
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="feature-card reveal-delay-1">
+              <div class="feature-icon">
+                <i class="bi bi-geo-alt-fill"></i>
+              </div>
+              <h3 class="feature-title">
+                {% trans "Organizado por zonas reales" %}
+              </h3>
+              <p class="feature-text">
+                {% blocktrans trimmed %}Navega por comunas (El Poblado, Laureles, La Candelaria...) y pueblos cercanos. Sin mapas genéricos—barrios reales.{% endblocktrans %}
+              </p>
             </div>
-            <div class="metric-value">{{ total_lugares|default:"+" }}+</div>
           </div>
-        </div>
-        <div class="col-md-4">
-          <div class="metric-pill">
-            <div class="metric-label">
-              {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                City areas
-              {% else %}
-                {% trans "Zonas de la ciudad" %}
-              {% endif %}
+          
+          <div class="col-lg-6">
+            <div class="feature-card reveal-delay-2">
+              <div class="feature-icon">
+                <i class="bi bi-filter-circle-fill"></i>
+              </div>
+              <h3 class="feature-title">
+                {% trans "Filtros inteligentes" %}
+              </h3>
+              <p class="feature-text">
+                {% blocktrans trimmed %}Filtra por tipo (restaurantes, bares, cafés, rooftops...) y características (terraza, música en vivo, pet-friendly, delivery...).{% endblocktrans %}
+              </p>
             </div>
-            <div class="metric-value">{{ total_comunas|default:"+" }}</div>
           </div>
-        </div>
-        <div class="col-md-4">
-          <div class="metric-pill">
-            <div class="metric-label">
-              {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                Types of experiences
-              {% else %}
-                {% trans "Tipos de experiencias" %}
-              {% endif %}
+          
+          <div class="col-lg-6">
+            <div class="feature-card reveal-delay-3">
+              <div class="feature-icon">
+                <i class="bi bi-search-heart"></i>
+              </div>
+              <h3 class="feature-title">
+                {% trans "Búsqueda semántica" %}
+              </h3>
+              <p class="feature-text">
+                {% blocktrans trimmed %}Pregunta naturalmente: "rooftop romántico en Poblado" o "café tranquilo para trabajar". Nuestra IA entiende tu intención.{% endblocktrans %}
+              </p>
             </div>
-            <div class="metric-value">{{ total_tipos|default:"10" }}+</div>
+          </div>
+          
+          <div class="col-lg-6">
+            <div class="feature-card reveal-delay-4">
+              <div class="feature-icon">
+                <i class="bi bi-pin-map-fill"></i>
+              </div>
+              <h3 class="feature-title">
+                {% trans "Cerca de mí" %}
+              </h3>
+              <p class="feature-text">
+                {% blocktrans trimmed %}Usa tu ubicación para encontrar lugares a poca distancia. Perfecto cuando ya estás afuera explorando.{% endblocktrans %}
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Paso a paso principal -->
-      <section class="about-steps mb-5">
-        <h2 class="section-title mb-3">
+      <!-- Cómo usar -->
+      <section class="about-how mb-5 reveal" aria-labelledby="how-title">
+        <h2 id="how-title" class="section-title">
           <i class="bi bi-lightning-charge me-2"></i>
-          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-            How to use ViveMedellín in 4 steps
-          {% else %}
-            {% trans "Cómo usar ViveMedellín en 4 pasos" %}
-          {% endif %}
+          {% trans "Cómo usarlo" %}
         </h2>
-        <div class="row g-4">
-          <!-- Paso 1 -->
-          <div class="col-md-6">
-            <article class="step-card">
-              <div class="step-icon">
-                <span>1</span>
-              </div>
-              <div class="step-body">
+        
+        <div class="steps-container" role="tablist" aria-label="{% trans 'Pasos para usar ViveMedellín' %}">
+          <div class="steps-nav">
+            <button class="step-tab active" role="tab" aria-selected="true" aria-controls="step-panel-1" id="step-tab-1" data-step="1" tabindex="0">
+              <span class="step-number">1</span>
+              <span class="step-label">{% trans "Elige zona" %}</span>
+            </button>
+            <button class="step-tab" role="tab" aria-selected="false" aria-controls="step-panel-2" id="step-tab-2" data-step="2" tabindex="-1">
+              <span class="step-number">2</span>
+              <span class="step-label">{% trans "Añade filtros" %}</span>
+            </button>
+            <button class="step-tab" role="tab" aria-selected="false" aria-controls="step-panel-3" id="step-tab-3" data-step="3" tabindex="-1">
+              <span class="step-number">3</span>
+              <span class="step-label">{% trans "Explora" %}</span>
+            </button>
+            <button class="step-tab" role="tab" aria-selected="false" aria-controls="step-panel-4" id="step-tab-4" data-step="4" tabindex="-1">
+              <span class="step-number">4</span>
+              <span class="step-label">{% trans "Decide" %}</span>
+            </button>
+          </div>
+          
+          <div class="steps-panels">
+            <article class="step-panel active" role="tabpanel" id="step-panel-1" aria-labelledby="step-tab-1">
+              <div class="step-content">
                 <h3 class="step-title">
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    Choose the area you want to explore
-                  {% else %}
-                    {% trans "Elige la zona que quieres explorar" %}
-                  {% endif %}
+                  {% trans "Parte de una zona" %}
                 </h3>
                 <p class="step-text">
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    From the home screen, use the commune bubbles (El Poblado, Laureles, Centro, etc.) or the “Area” filter to focus on the part of the city you care about.
-                  {% else %}
-                    {% trans "Desde la pantalla de inicio, usa las burbujas de comunas (El Poblado, Laureles, Centro, etc.) o el filtro de “Área” para centrarte en la parte de la ciudad que te interesa." %}
-                  {% endif %}
+                  {% blocktrans trimmed %}Desde el home, haz clic en una burbuja de área (El Poblado, Laureles, Envigado...) o usa el dropdown de Área para enfocar tu búsqueda en un barrio específico.{% endblocktrans %}
                 </p>
-                <ul class="step-list">
-                  <li>
-                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                      On desktop you will see chip-style filters and a main card for each area.
-                    {% else %}
-                      {% trans "En desktop, verás filtros tipo “chips” y una tarjeta principal por comuna." %}
-                    {% endif %}
-                  </li>
-                  <li>
-                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                      On mobile, swipe cards horizontally to discover more areas.
-                    {% else %}
-                      {% trans "En móvil, desliza horizontalmente las cards para descubrir más zonas." %}
-                    {% endif %}
-                  </li>
-                </ul>
               </div>
             </article>
-          </div>
-
-          <!-- Paso 2 -->
-          <div class="col-md-6">
-            <article class="step-card">
-              <div class="step-icon">
-                <span>2</span>
-              </div>
-              <div class="step-body">
+            
+            <article class="step-panel" role="tabpanel" id="step-panel-2" aria-labelledby="step-tab-2" hidden>
+              <div class="step-content">
                 <h3 class="step-title">
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    Filter by place type and features
-                  {% else %}
-                    {% trans "Filtra por tipo de lugar y características" %}
-                  {% endif %}
+                  {% trans "Combina tipo + características" %}
                 </h3>
                 <p class="step-text">
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    Combine “Place type” (restaurants, rooftops, cafés, bars…) with special features such as “pet‑friendly”, “terrace”, “cash only” or “open now”.
-                  {% else %}
-                    {% trans "Combina “Tipo de lugar” (restaurantes, rooftops, cafés, bares…) con características especiales como “pet friendly”, “terraza”, “solo efectivo” o “abierto ahora”." %}
-                  {% endif %}
+                  {% blocktrans trimmed %}Selecciona un tipo de lugar (restaurantes, bares, cafés...) y afina con características especiales como terraza, música en vivo, pet-friendly o delivery.{% endblocktrans %}
                 </p>
-                <ul class="step-list">
-                  <li>
-                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                      ViveMedellín only shows places with photos and curated data.
-                    {% else %}
-                      {% trans "ViveMedellín solo muestra lugares con fotos y datos curados." %}
-                    {% endif %}
-                  </li>
-                  <li>
-                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                      The more filters you use, the more precise the results list will be.
-                    {% else %}
-                      {% trans "Cuantos más filtros uses, más precisa será la lista de resultados." %}
-                    {% endif %}
-                  </li>
-                </ul>
               </div>
             </article>
-          </div>
-
-          <!-- Paso 3 -->
-          <div class="col-md-6">
-            <article class="step-card">
-              <div class="step-icon">
-                <span>3</span>
-              </div>
-              <div class="step-body">
+            
+            <article class="step-panel" role="tabpanel" id="step-panel-3" aria-labelledby="step-tab-3" hidden>
+              <div class="step-content">
                 <h3 class="step-title">
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    Run a semantic search (in natural language)
-                  {% else %}
-                    {% trans "Haz una búsqueda semántica (en lenguaje natural)" %}
-                  {% endif %}
+                  {% trans "Usa búsqueda semántica o Cerca de mí" %}
                 </h3>
                 <p class="step-text">
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    Type what you have in mind: “romantic Italian restaurant in Laureles”, “rooftop with a great view in El Poblado” or “quiet bar to work with coffee”.
-                  {% else %}
-                    {% trans "Escribe lo que tengas en mente: “restaurante italiano romántico en Laureles”, “rooftop con buena vista en El Poblado” o “bar tranquilo para trabajar con café”." %}
-                  {% endif %}
+                  {% blocktrans trimmed %}Escribe una consulta natural como "café tranquilo para trabajar" o activa Cerca de mí para encontrar lugares alrededor de tu ubicación actual.{% endblocktrans %}
                 </p>
-                <ul class="step-list">
-                  <li>
-                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                      Our semantic engine understands context, not just individual words.
-                    {% else %}
-                      {% trans "Nuestro motor semántico entiende el contexto, no solo palabras sueltas." %}
-                    {% endif %}
-                  </li>
-                  <li>
-                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                      You will get a grid of cards with recommendations ordered by relevance.
-                    {% else %}
-                      {% trans "Obtendrás una grilla de cards con recomendaciones ordenadas según afinidad." %}
-                    {% endif %}
-                  </li>
-                </ul>
               </div>
             </article>
-          </div>
-
-          <!-- Paso 4 -->
-          <div class="col-md-6">
-            <article class="step-card">
-              <div class="step-icon">
-                <span>4</span>
-              </div>
-              <div class="step-body">
+            
+            <article class="step-panel" role="tabpanel" id="step-panel-4" aria-labelledby="step-tab-4" hidden>
+              <div class="step-content">
                 <h3 class="step-title">
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    Open the detail page and decide
-                  {% else %}
-                    {% trans "Abre la ficha de detalle y decide" %}
-                  {% endif %}
+                  {% trans "Ve los detalles y ve" %}
                 </h3>
                 <p class="step-text">
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    On each card, click “View details” to open a view with photos, reviews, map and services. From there you can open Google Maps or Waze in one tap.
-                  {% else %}
-                    {% trans "En cada card, haz clic en “Ver detalles” para entrar a una vista con fotos, reseñas, mapa y servicios. Desde ahí puedes abrir Google Maps o Waze con un solo toque." %}
-                  {% endif %}
+                  {% blocktrans trimmed %}Abre "Ver detalles" para ver fotos, rango de precios, servicios y lugares similares. Luego salta directamente a Google Maps o Waze.{% endblocktrans %}
                 </p>
-                <ul class="step-list">
-                  <li>
-                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                      Review rating, services (terrace, live music, etc.) and price range.
-                    {% else %}
-                      {% trans "Revisa el rating, servicios (terraza, música en vivo, etc.) y rango de precios." %}
-                    {% endif %}
-                  </li>
-                  <li>
-                    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                      Explore nearby or similar places without leaving the detail view.
-                    {% else %}
-                      {% trans "Explora lugares cercanos o similares sin salir del detalle." %}
-                    {% endif %}
-                  </li>
-                </ul>
               </div>
             </article>
           </div>
         </div>
       </section>
 
-      <!-- Sección: Cómo se ve en Desktop vs Móvil -->
-      <section class="about-layouts mb-5">
-        <h2 class="section-title mb-3">
-          <i class="bi bi-display me-2"></i>
-          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-            Designed for desktop and mobile
-          {% else %}
-            {% trans "Pensado para desktop y móvil" %}
-          {% endif %}
+      <!-- Para quién es -->
+      <section class="about-audience mb-5 reveal" aria-labelledby="audience-title">
+        <h2 id="audience-title" class="section-title">
+          <i class="bi bi-people me-2"></i>
+          {% trans "¿Para quién es?" %}
         </h2>
-        <div class="row g-4">
-          <div class="col-md-6">
-            <div class="layout-card">
-              <div class="layout-chip">
-                <i class="bi bi-laptop me-1"></i>
-                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                  On desktop
-                {% else %}
-                  {% trans "En desktop" %}
-                {% endif %}
-              </div>
-              <p class="mb-2">
-                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                  On large screens, ViveMedellín works like a visual control panel: filters at the top and horizontal lists of places with detailed cards.
-                {% else %}
-                  {% trans "En pantallas grandes, ViveMedellín se comporta como un panel de control visual: filtros en la parte superior y listados horizontales de lugares con cards detalladas." %}
-                {% endif %}
-              </p>
-              <ul class="step-list">
-                <li>
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    Horizontal cards with image on the left and content on the right.
-                  {% else %}
-                    {% trans "Cards horizontales con imagen a la izquierda y contenido a la derecha." %}
-                  {% endif %}
-                </li>
-                <li>
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    Clearly separated sections: filters, results, detail and related places.
-                  {% else %}
-                    {% trans "Secciones bien separadas: filtros, resultados, detalle y lugares relacionados." %}
-                  {% endif %}
-                </li>
-              </ul>
-            </div>
+        
+        <div class="audience-grid" role="tablist" aria-label="{% trans 'Tipos de usuario' %}">
+          <button class="audience-card active" role="tab" aria-selected="true" aria-controls="audience-panel-local" id="audience-tab-local" data-audience="local">
+            <div class="audience-icon"><i class="bi bi-house-heart"></i></div>
+            <div class="audience-label">{% trans "Locales" %}</div>
+          </button>
+          <button class="audience-card" role="tab" aria-selected="false" aria-controls="audience-panel-visitor" id="audience-tab-visitor" data-audience="visitor">
+            <div class="audience-icon"><i class="bi bi-airplane"></i></div>
+            <div class="audience-label">{% trans "Visitantes" %}</div>
+          </button>
+          <button class="audience-card" role="tab" aria-selected="false" aria-controls="audience-panel-business" id="audience-tab-business" data-audience="business">
+            <div class="audience-icon"><i class="bi bi-shop"></i></div>
+            <div class="audience-label">{% trans "Negocios" %}</div>
+          </button>
+        </div>
+        
+        <div class="audience-panels mt-4">
+          <div class="audience-panel active" role="tabpanel" id="audience-panel-local" aria-labelledby="audience-tab-local">
+            <p class="audience-text">
+              {% blocktrans trimmed %}Ahorra tiempo decidiendo a dónde ir. Descubre nuevos lugares en tu comuna, encuentra esa terraza perfecta para esta noche y comparte recomendaciones con amigos en un toque.{% endblocktrans %}
+            </p>
           </div>
-          <div class="col-md-6">
-            <div class="layout-card">
-              <div class="layout-chip">
-                <i class="bi bi-phone me-1"></i>
-                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                  On mobile
-                {% else %}
-                  {% trans "En móvil" %}
-                {% endif %}
-              </div>
-              <p class="mb-2">
-                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                  On your phone, everything becomes carousels and full‑screen cards so you can decide quickly with your thumb.
-                {% else %}
-                  {% trans "En tu teléfono, todo se convierte en carruseles y cards a pantalla completa para que puedas decidir rápido con el pulgar." %}
-                {% endif %}
-              </p>
-              <ul class="step-list">
-                <li>
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    Horizontal carousels to explore areas and places without losing context.
-                  {% else %}
-                    {% trans "Carruseles horizontales para explorar zonas y lugares sin perder el contexto." %}
-                  {% endif %}
-                </li>
-                <li>
-                  {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                    Large, legible buttons to call, open maps or share via WhatsApp.
-                  {% else %}
-                    {% trans "Botones grandes y legibles para llamar, abrir mapas o compartir por WhatsApp." %}
-                  {% endif %}
-                </li>
-              </ul>
-            </div>
+          <div class="audience-panel" role="tabpanel" id="audience-panel-visitor" aria-labelledby="audience-tab-visitor" hidden>
+            <p class="audience-text">
+              {% blocktrans trimmed %}Llega a Medellín con un mapa listo. Conoce qué zonas tienen la mejor vida nocturna, cafés y comida imperdible—todo organizado por barrios reales.{% endblocktrans %}
+            </p>
+          </div>
+          <div class="audience-panel" role="tabpanel" id="audience-panel-business" aria-labelledby="audience-tab-business" hidden>
+            <p class="audience-text">
+              {% blocktrans trimmed %}Entiende cómo se posiciona tu zona y qué experiencias rodean tu negocio. Contáctanos para actualizar tu ficha o destacar tu lugar.{% endblocktrans %}
+            </p>
           </div>
         </div>
       </section>
 
-      <!-- Preguntas rápidas -->
-      <section class="about-faq mb-4">
-        <h2 class="section-title mb-3">
-          <i class="bi bi-question-circle me-2"></i>
-          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-            Quick questions
-          {% else %}
-            {% trans "Preguntas rápidas" %}
-          {% endif %}
+      <!-- Transparencia -->
+      <section class="about-transparency mb-5 reveal" aria-labelledby="transparency-title">
+        <h2 id="transparency-title" class="section-title">
+          <i class="bi bi-shield-check me-2"></i>
+          {% trans "Transparencia y Datos" %}
         </h2>
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="faq-item">
-              <h3 class="faq-title">
-                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                  Which places appear on ViveMedellín?
-                {% else %}
-                  {% trans "¿Qué lugares aparecen en ViveMedellín?" %}
-                {% endif %}
-              </h3>
-              <p class="faq-text">
-                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                  We mainly show restaurants, bars, cafés and experiences that have photos, a clear location and enough information for you to decide.
-                {% else %}
-                  {% trans "Mostramos principalmente restaurantes, bares, cafés y experiencias que tienen fotos, ubicación clara y datos suficientes para que puedas decidir." %}
-                {% endif %}
-              </p>
-            </div>
+        
+        <div class="transparency-content">
+          <div class="transparency-item">
+            <h3 class="transparency-subtitle">
+              <i class="bi bi-database me-2"></i>
+              {% trans "¿De dónde vienen nuestros datos?" %}
+            </h3>
+            <p class="transparency-text">
+              {% blocktrans trimmed %}Agregamos información pública de Google Places, OpenStreetMap y contribuciones directas. Verificamos y curamos cada ficha para asegurar calidad.{% endblocktrans %}
+            </p>
           </div>
-          <div class="col-md-6">
-            <div class="faq-item">
-              <h3 class="faq-title">
-                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                  Where do the ratings come from?
-                {% else %}
-                  {% trans "¿De dónde salen las calificaciones?" %}
-                {% endif %}
-              </h3>
-              <p class="faq-text">
-                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                  Scores and reviews are based on verified external sources (such as Google Maps) and are updated periodically.
-                {% else %}
-                  {% trans "Las puntuaciones y reseñas se basan en fuentes externas verificadas (como Google Maps) y se actualizan de forma periódica." %}
-                {% endif %}
-              </p>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="faq-item">
-              <h3 class="faq-title">
-                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                  Can I save my favorite places?
-                {% else %}
-                  {% trans "¿Puedo guardar mis lugares favoritos?" %}
-                {% endif %}
-              </h3>
-              <p class="faq-text">
-                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                  In this version we focus on discovery and decision. Features like personal lists or favorites will arrive in future updates.
-                {% else %}
-                  {% trans "En esta versión nos centramos en descubrir y decidir. Funciones como listas personales o favoritos llegarán en futuras actualizaciones." %}
-                {% endif %}
-              </p>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="faq-item">
-              <h3 class="faq-title">
-                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                  How do I change the language?
-                {% else %}
-                  {% trans "¿Cómo cambio de idioma?" %}
-                {% endif %}
-              </h3>
-              <p class="faq-text">
-                {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                  You can switch between Spanish and English using the ES / EN buttons in the top corner of the home page, listings and each detail page.
-                {% else %}
-                  {% trans "Puedes alternar entre español e inglés desde los botones ES / EN en la esquina superior del home, del listado y de cada ficha de detalle." %}
-                {% endif %}
-              </p>
-            </div>
+          
+          <div class="transparency-item">
+            <h3 class="transparency-subtitle">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {% trans "Aviso importante" %}
+            </h3>
+            <p class="transparency-text">
+              {% blocktrans trimmed %}La información puede cambiar sin previo aviso. Horarios, precios y disponibilidad deben confirmarse directamente con cada establecimiento. No somos responsables por inexactitudes.{% endblocktrans %}
+            </p>
           </div>
         </div>
       </section>
+
+      <!-- Botón volver -->
+      <div class="text-center mt-5 reveal">
+        <a href="{% url 'explorer:home' %}" class="btn btn-back">
+          <i class="bi bi-arrow-left me-2"></i>
+          {% trans "Volver a explorar" %}
+        </a>
+      </div>
+
     </div>
   </div>
 </section>
@@ -478,210 +291,572 @@
 
 {% block extra_css %}
 <style>
+/* ═══════════════════════════════════════════════════════════════
+   ABOUT PAGE - DISEÑO PROFESIONAL
+   ═══════════════════════════════════════════════════════════════ */
+
 .about-section {
   background:
-    radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
-    linear-gradient(135deg, #020617 0%, #022c22 35%, #064e3b 100%);
+    radial-gradient(ellipse at top, rgba(17, 153, 142, 0.2) 0%, transparent 50%),
+    linear-gradient(160deg, #020617 0%, #022c22 40%, #064e3b 100%);
   min-height: 100vh;
 }
 
 .about-main-card {
-  max-width: 960px;
-  background: rgba(4, 20, 12, 0.9);
+  max-width: 900px;
+  background: rgba(4, 20, 12, 0.92);
   border-radius: 28px;
-  padding: 2.5rem 2rem 2.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  padding: 2.5rem 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
   color: #e5e7eb;
 }
 
-/* Botones de idioma estilo home/detail */
+/* Navegación */
 .home-lang-switch .btn-lang-home {
   border-radius: 999px;
-  padding: 0.35rem 0.9rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  border: 1px solid rgba(148, 163, 184, 0.5);
-  background: rgba(15, 23, 42, 0.85);
-  color: rgba(226, 232, 240, 0.96);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.3);
+  color: rgba(255, 255, 255, 0.85);
+  transition: all 0.2s ease;
+}
+
+.home-lang-switch .btn-lang-home:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
 }
 
 .home-lang-switch .btn-lang-home.active {
   background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
   border-color: transparent;
-  color: #03120a;
+  color: #0f172a;
 }
 
-.home-lang-switch .btn-lang-home.inactive:hover {
-  background: rgba(148, 163, 184, 0.35);
+/* Hero */
+.about-hero {
+  padding: 1rem 0 2rem;
 }
 
 .about-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
   font-size: 0.75rem;
-  letter-spacing: 0.14em;
-  color: rgba(148, 163, 184, 0.95);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(74, 222, 128, 0.3);
 }
 
 .about-title {
-  font-size: 2.4rem;
+  font-size: 2.75rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #e5e7eb 0%, #a5f3fc 40%, #4ade80 100%);
+  line-height: 1.1;
+  color: #f8fafc;
+}
+
+.title-accent {
+  background: linear-gradient(135deg, #4ade80 0%, #22d3ee 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .about-subtitle {
-  max-width: 640px;
+  max-width: 600px;
   margin: 0 auto;
-  color: #cbd5f5;
+  font-size: 1.1rem;
+  color: #94a3b8;
+  line-height: 1.6;
 }
 
-.metric-pill {
-  border-radius: 999px;
-  padding: 0.75rem 1.25rem;
-  background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.18), transparent 50%),
-              rgba(15, 23, 42, 0.95);
-  border: 1px solid rgba(34, 197, 94, 0.7);
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.metric-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #9ca3af;
-}
-
-.metric-value {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #bbf7d0;
-}
-
+/* Section Titles */
 .section-title {
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #e5e7eb;
+  color: #f1f5f9;
   display: flex;
   align-items: center;
-  padding-bottom: 0.5rem;
-  border-bottom: 3px solid transparent;
-  border-image: linear-gradient(90deg, #22c55e 0%, #38bdf8 45%, transparent 60%);
-  border-image-slice: 1;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid rgba(74, 222, 128, 0.3);
 }
 
 .section-title i {
-  background: linear-gradient(135deg, #22c55e 0%, #38bdf8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 1.4rem;
+  color: #4ade80;
+  font-size: 1.3rem;
 }
 
-.step-card {
+/* Feature Cards */
+.feature-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 1.5rem;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(74, 222, 128, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(34, 211, 238, 0.1));
   display: flex;
-  gap: 0.9rem;
-  padding: 0.9rem 1rem;
-  border-radius: 18px;
-  background: rgba(15, 23, 42, 0.98);
-  border: 1px solid rgba(148, 163, 184, 0.5);
-}
-
-.step-icon span {
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #22c55e 0%, #4ade80 40%, #2dd4bf 100%);
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  color: #4ade80;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  background: linear-gradient(135deg, #11998e, #38ef7d);
   color: #0f172a;
-  font-weight: 700;
+  transform: scale(1.05);
+}
+
+.feature-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 0.5rem;
+}
+
+.feature-text {
   font-size: 0.9rem;
+  color: #94a3b8;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+/* Steps */
+.steps-container {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.steps-nav {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.step-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.step-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.step-tab.active {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border-color: transparent;
+  color: #0f172a;
+}
+
+.step-number {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.step-tab.active .step-number {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.step-panel {
+  display: none;
+  animation: fadeSlide 0.3s ease;
+}
+
+.step-panel.active {
+  display: block;
+}
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-content {
+  padding: 0.5rem;
 }
 
 .step-title {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 0.35rem;
+  color: #f1f5f9;
+  margin-bottom: 0.5rem;
 }
 
 .step-text {
-  font-size: 0.93rem;
-  color: #cbd5f5;
-  margin-bottom: 0.35rem;
+  font-size: 0.95rem;
+  color: #94a3b8;
+  margin-bottom: 0;
+  line-height: 1.6;
 }
 
-.step-list {
-  padding-left: 1.1rem;
-  margin-bottom: 0;
-  font-size: 0.9rem;
+/* Audience */
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.audience-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.audience-card:hover {
+  background: rgba(15, 23, 42, 0.8);
+  transform: translateY(-2px);
+}
+
+.audience-card.active {
+  background: linear-gradient(135deg, rgba(17, 153, 142, 0.3), rgba(56, 239, 125, 0.15));
+  border-color: rgba(74, 222, 128, 0.5);
+}
+
+.audience-icon {
+  font-size: 1.75rem;
+  color: #4ade80;
+  margin-bottom: 0.5rem;
+}
+
+.audience-label {
+  font-size: 0.85rem;
+  font-weight: 600;
   color: #e5e7eb;
 }
 
-.layout-card {
-  border-radius: 18px;
-  padding: 1rem 1.1rem;
-  background: rgba(15, 23, 42, 0.98);
-  border: 1px solid rgba(148, 163, 184, 0.5);
+.audience-panel {
+  display: none;
+  animation: fadeSlide 0.3s ease;
 }
 
-.layout-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.3rem 0.75rem;
-  border-radius: 999px;
-  background: rgba(34, 197, 94, 0.15);
-  color: #bbf7d0;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 0.4rem;
+.audience-panel.active {
+  display: block;
 }
 
-.faq-item {
+.audience-text {
+  font-size: 1rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Transparency */
+.transparency-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.transparency-item {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
-  padding: 0.9rem 1rem;
-  background: rgba(15, 23, 42, 0.96);
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  padding: 1.25rem;
 }
 
-.faq-title {
-  font-size: 0.98rem;
+.transparency-subtitle {
+  font-size: 0.95rem;
   font-weight: 600;
-  margin-bottom: 0.3rem;
+  color: #e5e7eb;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
 }
 
-.faq-text {
-  font-size: 0.9rem;
-  color: #cbd5f5;
-  margin-bottom: 0;
+.transparency-subtitle i {
+  color: #4ade80;
 }
+
+.transparency-text {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+
+/* Back Button */
+.btn-back {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #94a3b8;
+  font-weight: 500;
+  padding: 0.6rem 1.25rem;
+  border-radius: 999px;
+  transition: all 0.25s ease;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: translateX(-4px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REVEAL ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  
+  .feature-card,
+  .step-tab,
+  .audience-card,
+  .btn-cta-primary,
+  .btn-cta-secondary,
+  .btn-back {
+    transition: none;
+  }
+  
+  .step-panel,
+  .audience-panel {
+    animation: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
   .about-main-card {
-    padding: 2rem 1.4rem 2rem;
+    padding: 1.75rem 1.25rem;
+    border-radius: 20px;
   }
-
+  
   .about-title {
-    font-size: 1.9rem;
+    font-size: 2rem;
+  }
+  
+  .about-subtitle {
+    font-size: 1rem;
+  }
+  
+  .steps-nav {
+    flex-direction: column;
+  }
+  
+  .step-tab {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .audience-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .audience-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: left;
+    padding: 1rem;
+  }
+  
+  .audience-icon {
+    margin-bottom: 0;
+    font-size: 1.5rem;
+  }
+  
+  .cta-buttons {
+    flex-direction: column;
+  }
+  
+  .cta-buttons .btn {
+    width: 100%;
   }
 }
 </style>
 {% endblock %}
 
-
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // ═══════════════════════════════════════════════════════════════
+  // REVEAL ON SCROLL (IntersectionObserver)
+  // ═══════════════════════════════════════════════════════════════
+  
+  const revealElements = document.querySelectorAll('.reveal');
+  
+  if ('IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          // Trigger children with delay classes
+          entry.target.querySelectorAll('[class*="reveal-delay"]').forEach(child => {
+            child.classList.add('is-visible');
+          });
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+    
+    revealElements.forEach(el => revealObserver.observe(el));
+  } else {
+    // Fallback: show all immediately
+    revealElements.forEach(el => el.classList.add('is-visible'));
+  }
+  
+  // ═══════════════════════════════════════════════════════════════
+  // STEPS TABS (Accessible)
+  // ═══════════════════════════════════════════════════════════════
+  
+  const stepTabs = document.querySelectorAll('.step-tab');
+  const stepPanels = document.querySelectorAll('.step-panel');
+  
+  function activateStep(step) {
+    stepTabs.forEach(tab => {
+      const isActive = tab.dataset.step === step;
+      tab.classList.toggle('active', isActive);
+      tab.setAttribute('aria-selected', isActive);
+      tab.setAttribute('tabindex', isActive ? '0' : '-1');
+    });
+    
+    stepPanels.forEach(panel => {
+      const isActive = panel.id === `step-panel-${step}`;
+      panel.classList.toggle('active', isActive);
+      panel.hidden = !isActive;
+    });
+  }
+  
+  stepTabs.forEach(tab => {
+    tab.addEventListener('click', () => activateStep(tab.dataset.step));
+    
+    // Keyboard navigation
+    tab.addEventListener('keydown', (e) => {
+      const currentIndex = Array.from(stepTabs).indexOf(tab);
+      let newIndex;
+      
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        newIndex = (currentIndex + 1) % stepTabs.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        newIndex = (currentIndex - 1 + stepTabs.length) % stepTabs.length;
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        newIndex = 0;
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        newIndex = stepTabs.length - 1;
+      }
+      
+      if (newIndex !== undefined) {
+        stepTabs[newIndex].focus();
+        activateStep(stepTabs[newIndex].dataset.step);
+      }
+    });
+  });
+  
+  // ═══════════════════════════════════════════════════════════════
+  // AUDIENCE TABS (Accessible)
+  // ═══════════════════════════════════════════════════════════════
+  
+  const audienceCards = document.querySelectorAll('.audience-card');
+  const audiencePanels = document.querySelectorAll('.audience-panel');
+  
+  function activateAudience(audience) {
+    audienceCards.forEach(card => {
+      const isActive = card.dataset.audience === audience;
+      card.classList.toggle('active', isActive);
+      card.setAttribute('aria-selected', isActive);
+    });
+    
+    audiencePanels.forEach(panel => {
+      const isActive = panel.id === `audience-panel-${audience}`;
+      panel.classList.toggle('active', isActive);
+      panel.hidden = !isActive;
+    });
+  }
+  
+  audienceCards.forEach(card => {
+    card.addEventListener('click', () => activateAudience(card.dataset.audience));
+    
+    // Enter/Space support
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        activateAudience(card.dataset.audience);
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

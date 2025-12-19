@@ -4,7 +4,13 @@
 
 {% block navbar %}{% endblock %}
 
-{% block title %}{% trans "Resultados Semánticos" %}{% endblock %}
+{% block title %}
+  {% if query %}
+    {% blocktrans %}Resultados para "{{ query }}" en ViveMedellín{% endblocktrans %}
+  {% else %}
+    {% trans "Resultados semánticos en ViveMedellín" %}
+  {% endif %}
+{% endblock %}
 
 {% block content %}
 <section class="places-section">
@@ -15,11 +21,11 @@
         <div class="d-flex justify-content-end align-items-center mb-3 px-1 flex-wrap gap-2">
           <div class="home-lang-switch d-flex flex-wrap gap-2">
             <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">
-              {% trans "Home" %}
+              {% trans "Inicio" %}
             </a>
             {% if LANGUAGE_CODE|slice:":2" == 'en' %}
               <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">
-                {% trans "About us" %}
+                {% trans "Nosotros" %}
               </a>
             {% else %}
               <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">
@@ -50,8 +56,8 @@
         </div>
 
         <div class="text-center mb-4">
-          <h1 class="places-title fw-bold text-white">
-            {% trans "Resultados semánticos" %}
+          <h1 class="places-title fw-bold">
+            <span class="title-main">{% trans "Resultados semánticos" %}</span>
           </h1>
           <p class="lead text-white-50 mb-0">
             {% blocktrans %}Resultados inteligentes para la búsqueda{% endblocktrans %}:
@@ -110,22 +116,11 @@
                         {% endif %}
                       </div>
 
-                      {% if r.precio or r.abierto_ahora is not None %}
+                      {% if r.precio %}
                         <div class="d-flex flex-wrap align-items-center gap-3 mb-2 small place-card-meta">
-                          {% if r.precio %}
-                            <span class="text-muted">
-                              <i class="bi bi-cash-stack me-1"></i>{{ r.precio|format_price_range }}
-                            </span>
-                          {% endif %}
-                          {% if r.abierto_ahora %}
-                            <span class="badge rounded-pill place-open-badge">
-                              <i class="bi bi-circle-fill me-1"></i>{% trans "Abierto ahora" %}
-                            </span>
-                          {% elif r.abierto_ahora is not None %}
-                            <span class="badge rounded-pill place-closed-badge">
-                              <i class="bi bi-moon-stars me-1"></i>{% trans "Cerrado en este momento" %}
-                            </span>
-                          {% endif %}
+                          <span class="text-muted">
+                            <i class="bi bi-cash-stack me-1"></i>{{ r.precio|format_price_range }}
+                          </span>
                         </div>
                       {% endif %}
 
@@ -264,9 +259,35 @@
 
 .places-title {
     font-size: 2.5rem;
-    line-height: 1.15;
+    line-height: 1.3;
     letter-spacing: -0.02em;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 
+      0 0 20px rgba(56, 239, 125, 0.4),
+      0 2px 4px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.places-title::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #11998e, #38ef7d, transparent);
+    border-radius: 2px;
+    box-shadow: 0 0 12px rgba(56, 239, 125, 0.6);
+}
+
+.title-main {
+    background: linear-gradient(135deg, #ffffff 0%, #38ef7d 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .semantic-query {

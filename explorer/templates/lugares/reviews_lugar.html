@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
+{% load form_tags %}
 
 {% block navbar %}{% endblock %}
 {% block title %}{% trans "Reseñas de" %} {{ lugar.nombre }} | ViveMedellín{% endblock %}
@@ -23,92 +24,93 @@
 
 {% block og_image %}
   {% if lugar.get_primera_foto %}
-    {{ request.build_absolute_uri }}{{ lugar.get_primera_foto.imagen }}
+    {{ lugar.get_primera_foto.imagen|ensure_absolute_url:request }}
   {% else %}
-    {{ request.build_absolute_uri }}static/img/og-image.jpg
+    {{ '/static/img/og-image.jpg'|ensure_absolute_url:request }}
   {% endif %}
 {% endblock %}
 
 {% block content %}
 <section class="reviews-section">
 
-<div class="container py-5">
+<div class="container py-4">
   <div class="reviews-main-card">
     {% get_current_language as LANGUAGE_CODE %}
-    <div class="reviews-main-header">
-      <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
-        <div>
-          <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-purple me-2 rounded-pill">
-            <i class="bi bi-arrow-left me-1"></i>{% trans "Volver al lugar" %}
-          </a>
-        </div>
-        <div class="home-lang-switch d-flex flex-wrap gap-2">
-          <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">
-            {% trans "Home" %}
-          </a>
-          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-            <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">
-              {% trans "About us" %}
-            </a>
+    
+    <!-- Navegación Superior -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-green rounded-pill">
+        <i class="bi bi-arrow-left me-1"></i>{% trans "Volver al lugar" %}
+      </a>
+      <div class="home-lang-switch d-flex flex-wrap gap-2">
+        <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">{% trans "Inicio" %}</a>
+        {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+          <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">{% trans "Nosotros" %}</a>
+        {% else %}
+          <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">{% trans "Nosotros" %}</a>
+        {% endif %}
+        <form action="{% url 'set_language' %}" method="post" class="d-inline">
+          {% csrf_token %}
+          <input type="hidden" name="language" value="es">
+          {% if request.path|slice:":4" == "/en/" %}
+            <input type="hidden" name="next" value="{{ request.path|slice:'3:' }}">
           {% else %}
-            <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">
-              {% trans "Nosotros" %}
-            </a>
+            <input type="hidden" name="next" value="{{ request.path }}">
           {% endif %}
-          <form action="{% url 'set_language' %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="language" value="es">
-            {% if request.path|slice:":4" == "/en/" %}
-              <input type="hidden" name="next" value="{{ request.path|slice:'3:' }}">
-            {% else %}
-              <input type="hidden" name="next" value="{{ request.path }}">
-            {% endif %}
-            <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
-          </form>
-          <form action="{% url 'set_language' %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="language" value="en">
-            {% if request.path|slice:":4" == "/en/" %}
-              <input type="hidden" name="next" value="{{ request.path }}">
-            {% else %}
-              <input type="hidden" name="next" value="/en{{ request.path }}">
-            {% endif %}
-            <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE|slice:":2" == 'en' %}active{% else %}inactive{% endif %}">EN</button>
-          </form>
-        </div>
+          <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
+        </form>
+        <form action="{% url 'set_language' %}" method="post" class="d-inline">
+          {% csrf_token %}
+          <input type="hidden" name="language" value="en">
+          {% if request.path|slice:":4" == "/en/" %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+          {% else %}
+            <input type="hidden" name="next" value="/en{{ request.path }}">
+          {% endif %}
+          <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE|slice:":2" == 'en' %}active{% else %}inactive{% endif %}">EN</button>
+        </form>
       </div>
+    </div>
 
-      <div class="row align-items-center g-4">
+    <!-- Header Compacto -->
+    <div class="reviews-header">
+      <div class="row align-items-center g-3">
         <div class="col-lg-8">
-          <h1 class="display-5 fw-bold text-white mb-3">{{ lugar.nombre }}</h1>
-          <p class="text-white-50 mb-3">
+          <h1 class="reviews-title mb-2">
+            <span class="title-main">{{ lugar.nombre }}</span>
+          </h1>
+          <p class="reviews-subtitle mb-3">
             <i class="bi bi-chat-quote me-2"></i>{% trans "Reseñas del lugar" %}
           </p>
           
           <div class="rating-summary">
             <div class="d-flex align-items-center">
               <div class="rating-number">
-                <span class="display-6 fw-bold text-white">{{ lugar.rating|default:"?" }}</span>
-                <small class="text-white-50">/5</small>
+                <span class="rating-value">{{ lugar.rating|default:"?" }}</span>
               </div>
               <div class="ms-3">
                 <div class="stars-display mb-1">
                   {% if lugar.rating %}
                     {% for i in "12345" %}
                       {% if lugar.rating >= forloop.counter %}
-                        <i class="bi bi-star-fill text-warning fs-4"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
                       {% elif lugar.rating >= forloop.counter|add:"-0.5" %}
-                        <i class="bi bi-star-half text-warning fs-4"></i>
+                        <i class="bi bi-star-half text-warning"></i>
                       {% else %}
-                        <i class="bi bi-star text-white-50 fs-4"></i>
+                        <i class="bi bi-star text-white-50"></i>
                       {% endif %}
                     {% endfor %}
                   {% else %}
                     {% for i in "12345" %}
-                      <i class="bi bi-star text-white-50 fs-4"></i>
+                      <i class="bi bi-star text-white-50"></i>
                     {% endfor %}
                   {% endif %}
                 </div>
+                {% if total_reviews %}
+                <div class="total-reviews-badge">
+                  <i class="bi bi-people-fill me-1"></i>{{ total_reviews }} {% if total_reviews == 1 %}{% trans "reseña" %}{% else %}{% trans "reseñas" %}{% endif %}
+                </div>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -126,6 +128,20 @@
       </div>
     </div>
 
+    <!-- Info de Selección (SOLO si hay reseñas limitadas) -->
+    {% if reviews and total_reviews and reviews|length < total_reviews %}
+    <div class="selection-info">
+      <div class="selection-badge">
+        <i class="bi bi-info-circle me-2"></i>
+        {% blocktrans with shown=reviews|length total=total_reviews %}Mostrando {{ shown }} de {{ total }} reseñas{% endblocktrans %}
+      </div>
+      <p class="selection-note">
+        {% trans "Mostramos una selección de reseñas destacadas para ofrecer una visión equilibrada de la experiencia de nuestros visitantes." %}
+      </p>
+    </div>
+    {% endif %}
+
+    <!-- Lista de Reseñas -->
     <div class="reviews-list-wrapper">
     {% if reviews %}
       <div class="reviews-track" id="reviews-container">
@@ -145,7 +161,7 @@
                 {% endif %}
                 
                 <div class="reviewer-details">
-                  <h6 class="reviewer-name">{{ review.autor|default:"Usuario anónimo" }}</h6>
+                  <h6 class="reviewer-name">{% if review.autor %}{{ review.autor }}{% else %}{% trans "Usuario anónimo" %}{% endif %}</h6>
                   <div class="review-date">
                     {% if review.fecha %}
                       <i class="bi bi-calendar3 me-1"></i>
@@ -171,15 +187,15 @@
             <div class="review-content">
               {% if review.texto %}
                 <p class="review-text" data-original="{{ review.texto|escapejs }}">{{ review.texto|linebreaksbr }}</p>
-                <div class="mt-2 d-flex align-items-center gap-2">
+                <div class="review-actions">
                   <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill btn-translate" data-state="original">
                     {% trans "Traducir" %}
                   </button>
-                  <small class="text-muted d-none translated-hint">{% trans "Traducido automáticamente" %}</small>
+                  <small class="d-none translated-hint">{% trans "Traducido automáticamente" %}</small>
                 </div>
               {% else %}
-                <p class="review-text text-muted fst-italic">
-                  <i class="bi bi-chat-quote me-1"></i>
+                <p class="review-text review-text-empty">
+                  <i class="bi bi-chat-quote me-2"></i>
                   {% trans "Sin comentario escrito, solo calificación numérica." %}
                 </p>
               {% endif %}
@@ -193,15 +209,15 @@
   {% else %}
     <!-- Empty State -->
     <div class="empty-reviews">
-      <div class="text-center py-5">
-        <div class="empty-icon mb-4">
+      <div class="text-center py-4">
+        <div class="empty-icon mb-3">
           <i class="bi bi-chat-quote display-1 text-muted"></i>
         </div>
-        <h4 class="fw-bold text-dark mb-3">{% trans "¡Sé el primero en opinar!" %}</h4>
-        <p class="text-muted mb-4">
+        <h4 class="fw-bold text-dark mb-2">{% trans "¡Sé el primero en opinar!" %}</h4>
+        <p class="text-muted mb-3">
           {% trans "Este lugar aún no tiene reseñas. Comparte tu experiencia para ayudar a otros viajeros." %}
         </p>
-        <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-purple rounded-pill">
+        <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-green rounded-pill">
           <i class="bi bi-arrow-left me-1"></i>{% trans "Volver al lugar" %}
         </a>
       </div>
@@ -214,82 +230,395 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Cache buster - Button Fix v1.0 - 2025-01-30 -->
 <style>
-/* Fondo general de la página de reseñas */
+/* ═══════════════════════════════════════════════════════════════════
+   REVIEWS - Layout Compacto y Premium
+   ═══════════════════════════════════════════════════════════════════ */
+
 .reviews-section {
   background:
     radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
     linear-gradient(135deg, #020617 0%, #022c22 35%, #064e3b 100%);
   min-height: 100vh;
-  position: relative;
+  padding: 2rem 0 2.5rem;
 }
 
-.reviews-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: none;
-  opacity: 0;
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* Card principal que contiene header + reseñas (una sola gran card) */
+/* Card Principal Compacta */
 .reviews-main-card {
-  position: relative;
-  z-index: 2;
   max-width: 1120px;
-  margin: 0 auto 3.5rem;
-  background: rgba(4, 20, 12, 0.9);
+  margin: 0 auto;
+  background: rgba(4, 20, 12, 0.95);
   border-radius: 28px;
-  padding: 2.25rem 2rem;
+  padding: 2rem;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  overflow: hidden;
 }
 
-.reviews-main-header {
-  margin-bottom: 2rem;
+/* Header Compacto */
+.reviews-header {
+  margin-bottom: 1.5rem;
+}
+
+.reviews-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  text-shadow: 
+    0 0 20px rgba(56, 239, 125, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.reviews-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #11998e, #38ef7d, transparent);
+  border-radius: 2px;
+  box-shadow: 0 0 12px rgba(56, 239, 125, 0.6);
+}
+
+.reviews-title .title-main {
+  background: linear-gradient(135deg, #ffffff 0%, #38ef7d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.reviews-subtitle {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
 }
 
 .rating-summary {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 42, 0.95) 100%);
   backdrop-filter: blur(10px);
-  padding: 1.75rem;
-  border-radius: 20px;
+  padding: 1.25rem 1.5rem;
+  border-radius: 18px;
   border: 1px solid rgba(34, 197, 94, 0.4);
-  box-shadow: 
-    0 20px 50px rgba(15, 23, 42, 0.8),
-    0 6px 16px rgba(16, 185, 129, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.6);
 }
 
-.rating-number .display-6 {
-  font-size: 2.6rem;
+.rating-number {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
 }
 
-.rating-summary .stars-display i {
+.rating-value {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.stars-display {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.stars-display i {
+  font-size: 1.125rem;
   text-shadow: 0 0 8px rgba(250, 204, 21, 0.5);
 }
 
-/* Botones de idioma estilo home/detail */
+.total-reviews-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.875rem;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 999px;
+  color: #22c55e;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.place-preview img {
+  max-height: 180px;
+  width: 100%;
+  object-fit: cover;
+}
+
+/* Info de Selección */
+.selection-info {
+  background: rgba(56, 239, 125, 0.08);
+  border: 1px solid rgba(56, 239, 125, 0.2);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.selection-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.875rem;
+  background: rgba(56, 239, 125, 0.15);
+  border: 1px solid rgba(56, 239, 125, 0.3);
+  border-radius: 999px;
+  color: #38ef7d;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin-bottom: 0.625rem;
+}
+
+.selection-note {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Lista de Reseñas Compacta */
+.reviews-list-wrapper {
+  margin-top: 0;
+}
+
+.reviews-track {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+/* Review Cards - Siguiendo el estilo de las place-cards */
+.review-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 2px solid rgba(17, 153, 142, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  clip-path: inset(0 round 20px);
+  -webkit-clip-path: inset(0 round 20px);
+}
+
+.review-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(17, 153, 142, 0.25);
+  border-color: rgba(17, 153, 142, 0.5);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.reviewer-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.reviewer-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.875rem;
+  border: 2px solid rgba(17, 153, 142, 0.3);
+  flex-shrink: 0;
+}
+
+.reviewer-avatar-placeholder {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.875rem;
+  color: #ffffff;
+  font-size: 1.125rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.reviewer-details {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.reviewer-name {
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+  font-size: 0.9375rem;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.review-date {
+  font-size: 0.8125rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  gap: 0.25rem;
+}
+
+.review-rating {
+  font-size: 1rem;
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.review-content {
+  margin-top: 0;
+}
+
+.review-text {
+  color: #475569;
+  line-height: 1.65;
+  font-size: 0.875rem;
+  margin: 0 0 0.875rem 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.review-text-empty {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.review-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+}
+
+/* Variantes por Sentimiento */
+.review-card-good {
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+
+.review-card-good:hover {
+  border-color: rgba(34, 197, 94, 0.6) !important;
+  box-shadow: 0 12px 32px rgba(34, 197, 94, 0.2);
+}
+
+.review-card-medium {
+  border-color: rgba(250, 204, 21, 0.35) !important;
+}
+
+.review-card-medium:hover {
+  border-color: rgba(250, 204, 21, 0.7) !important;
+  box-shadow: 0 12px 32px rgba(250, 204, 21, 0.2);
+}
+
+.review-card-bad {
+  border-color: rgba(248, 113, 113, 0.4) !important;
+}
+
+.review-card-bad:hover {
+  border-color: rgba(248, 113, 113, 0.8) !important;
+  box-shadow: 0 12px 32px rgba(248, 113, 113, 0.2);
+}
+
+.btn-translate {
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: transparent;
+  color: #475569;
+  font-weight: 600;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.btn-translate:hover {
+  border-color: rgba(17, 153, 142, 0.5);
+  background: rgba(17, 153, 142, 0.08);
+  color: #11998e;
+}
+
+.translated-hint {
+  font-size: 0.7rem;
+  font-style: italic;
+  color: #64748b;
+}
+
+/* Empty State */
+.empty-reviews {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+}
+
+.empty-reviews h4 {
+  color: #ffffff;
+}
+
+.empty-reviews p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-icon {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  color: #03120a;
+  box-shadow: 0 8px 24px rgba(17, 153, 142, 0.4);
+}
+
+/* Botones */
+.btn-gradient-green {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);
+}
+
+.btn-gradient-green:hover {
+  background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
+  color: white;
+}
+
 .home-lang-switch .btn-lang-home {
   border-radius: 999px;
-  padding: 0.35rem 0.9rem;
-  font-size: 0.85rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  border: 1px solid rgba(148, 163, 184, 0.5);
-  background: rgba(15, 23, 42, 0.9);
-  color: rgba(226, 232, 240, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.85);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: all 0.3s ease;
 }
 
 .home-lang-switch .btn-lang-home.active {
@@ -299,306 +628,186 @@
 }
 
 .home-lang-switch .btn-lang-home.inactive:hover {
-  background: rgba(148, 163, 184, 0.35);
+  background: rgba(255, 255, 255, 0.18);
 }
 
-.place-preview img {
-  max-height: 200px;
+/* Animación */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.review-item {
+  animation: fadeIn 0.3s ease-in;
   width: 100%;
-  object-fit: cover;
 }
 
-/* Lista de reseñas dentro de la card principal */
-.reviews-list-wrapper {
-  margin-top: 2rem;
-}
+/* Responsive Compacto */
+@media (max-width: 991px) {
+  .reviews-section {
+    padding: 1.5rem 0 2rem;
+  }
 
-@media (max-width: 768px) {
   .reviews-main-card {
-    padding: 1.75rem 1.25rem;
-    border-radius: 24px;
-    margin-bottom: 2.5rem;
+    padding: 1.5rem 1.25rem;
+    border-radius: 20px;
   }
 
-  .reviews-main-header {
-    margin-bottom: 1.5rem;
-  }
-}
-
-/* Track de reseñas: columna por defecto */
-.reviews-track {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.25rem;
-}
-
-/* Button gradients */
-.btn-gradient-purple {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  border: none;
-  color: white;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(56, 239, 125, 0.3);
-  position: relative;
-  z-index: 999;
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-.btn-gradient-purple:hover {
-  background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(56, 239, 125, 0.4);
-  color: white;
-}
-
-/* Rating Stats */
-.rating-stats-card {
-  background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
-  border: 1px solid rgba(102, 126, 234, 0.1);
-}
-
-.stat-item {
-  padding: 15px 10px;
-}
-
-.star-count {
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #4a5568;
-}
-
-.progress-bar-container {
-  width: 100%;
-  height: 80px;
-  background: #e2e8f0;
-  border-radius: 4px;
-  display: flex;
-  align-items: end;
-  justify-content: center;
-  padding: 2px;
-  margin-bottom: 8px;
-}
-
-.progress-bar {
-  width: 20px;
-  border-radius: 2px;
-  transition: all 0.3s ease;
-}
-
-/* Review Cards */
-.review-card {
-  /* Mismo look & feel que las cards de places list */
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 1.25rem 1.5rem;
-  border: 2px solid rgba(17, 153, 142, 0.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  box-sizing: border-box;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 0;
-  position: relative;
-  overflow: hidden;
-}
-
-.review-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 32px rgba(17, 153, 142, 0.25);
-  border-color: rgba(17, 153, 142, 0.5);
-}
-
-.review-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.75rem;
-  padding: 0 0 0.75rem 0;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
-}
-
-.reviewer-info {
-  display: flex;
-  align-items: center;
-  flex: 1;
-}
-
-.reviewer-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 1rem;
-  border: 3px solid rgba(16, 185, 129, 0.2);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
-}
-
-.reviewer-avatar-placeholder {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 1rem;
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-}
-
-.reviewer-name {
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 0.35rem;
-  font-size: 1.05rem;
-}
-
-.review-date {
-  font-size: 0.85rem;
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  font-weight: 500;
-}
-
-.review-rating {
-  font-size: 1.25rem;
-  letter-spacing: 2px;
-}
-
-.review-content {
-  flex: 1;
-  margin-bottom: 0;
-  background: transparent;
-  padding: 0.75rem 0 0;
-}
-
-.review-text {
-  color: #475569;
-  line-height: 1.75;
-  font-size: 0.95rem;
-  margin: 0;
-  white-space: pre-line;
-}
-
-/* Variantes por sentimiento (según rating) */
-.review-card-good {
-  border-color: rgba(34, 197, 94, 0.35);
-}
-
-.review-card-good:hover {
-  border-color: rgba(34, 197, 94, 0.6);
-}
-
-.review-card-medium {
-  border-color: rgba(250, 204, 21, 0.45);
-}
-
-.review-card-medium:hover {
-  border-color: rgba(250, 204, 21, 0.75);
-}
-
-.review-card-bad {
-  border-color: rgba(248, 113, 113, 0.55);
-}
-
-.review-card-bad:hover {
-  border-color: rgba(248, 113, 113, 0.9);
-}
-
-.btn-translate {
-  border-color: rgba(148, 163, 184, 0.5);
-  color: #4b5563;
-  font-weight: 600;
-  padding: 0.5rem 1.25rem;
-  font-size: 0.85rem;
-}
-
-.btn-translate:hover {
-  border-color: #22c55e;
-  color: #16a34a;
-  background: rgba(34, 197, 94, 0.1);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
-}
-
-/* Empty State */
-.empty-reviews {
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-  border-radius: 20px;
-  border: 1px solid rgba(34, 197, 94, 0.2);
-  box-shadow: 
-    0 8px 28px rgba(15, 23, 42, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-.empty-icon {
-  width: 120px;
-  height: 120px;
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto;
-  color: white;
-}
-
-/* Versión móvil: lista vertical de reseñas (sin carrusel horizontal) */
-@media (max-width: 768px) {
-  .reviews-track {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding: 0;
+  .reviews-header {
+    margin-bottom: 1.25rem;
   }
 
-  .review-item {
-    width: 100%;
+  .reviews-title {
+    font-size: 1.625rem;
   }
-}
 
-/* Responsive */
-@media (max-width: 768px) {
   .rating-summary {
-    margin-top: 12px;
+    padding: 1rem 1.25rem;
   }
 
-  .place-preview {
-    margin-top: 16px;
+  .rating-value {
+    font-size: 2rem;
   }
 
-  .stat-item {
-    padding: 10px 5px;
+  .place-preview img {
+    max-height: 160px;
   }
-  
-  .progress-bar-container {
-    height: 60px;
+
+  .selection-info {
+    padding: 0.875rem 1rem;
+    margin-bottom: 1.25rem;
   }
-  
+
+  .reviews-track {
+    gap: 0.875rem;
+  }
+
   .review-card {
-    padding: 1rem 1.1rem;
+    padding: 1.25rem;
     border-radius: 18px;
+    clip-path: inset(0 round 18px);
+    -webkit-clip-path: inset(0 round 18px);
   }
-  
+
+  .review-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.875rem;
+    gap: 0.75rem;
+  }
+
+  .reviewer-avatar,
+  .reviewer-avatar-placeholder {
+    width: 44px;
+    height: 44px;
+    margin-right: 0.75rem;
+  }
+
+  .reviewer-avatar-placeholder {
+    font-size: 1rem;
+  }
+
+  .reviewer-name {
+    font-size: 0.875rem;
+  }
+
+  .review-date {
+    font-size: 0.75rem;
+  }
+
+  .review-rating {
+    font-size: 0.875rem;
+  }
+
+  .review-text {
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  .btn-translate {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .reviews-main-card {
+    padding: 1.25rem 1rem;
+  }
+
+  .reviews-title {
+    font-size: 1.5rem;
+  }
+
+  .rating-summary {
+    padding: 0.875rem 1rem;
+  }
+
+  .selection-info {
+    padding: 0.75rem 0.875rem;
+  }
+
+  .selection-note {
+    font-size: 0.8125rem;
+  }
+
+  .review-card {
+    padding: 1rem;
+    border-radius: 16px;
+    clip-path: inset(0 round 16px);
+    -webkit-clip-path: inset(0 round 16px);
+  }
+
+  .review-header {
+    gap: 0.625rem;
+    margin-bottom: 0.875rem;
+    padding-bottom: 0.75rem;
+  }
+
   .reviewer-avatar,
   .reviewer-avatar-placeholder {
     width: 40px;
     height: 40px;
+    margin-right: 0.625rem;
+  }
+
+  .reviewer-avatar-placeholder {
+    font-size: 0.9375rem;
+  }
+
+  .reviewer-name {
+    font-size: 0.8125rem;
+  }
+
+  .review-date {
+    font-size: 0.6875rem;
+  }
+
+  .review-rating {
+    font-size: 0.8125rem;
+  }
+
+  .review-text {
+    font-size: 0.8125rem;
+    line-height: 1.6;
+  }
+
+  .btn-translate {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.6875rem;
   }
 }
-
 </style>
 
-<!-- Script simple para reseñas -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Solo animación simple, sin scroll infinito
+    // Animación simple
     const reviewItems = document.querySelectorAll('.review-item');
     reviewItems.forEach((item, index) => {
         item.style.animationDelay = `${index * 0.1}s`;
@@ -661,12 +870,11 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
 
-    // Formato de fecha más humano y profesional
+    // Formato de fecha
     const locale = document.documentElement.getAttribute('lang') || navigator.language || 'es';
 
     function decodeUnicodeEscapes(str) {
       if (!str) return str;
-      // Decodificar \uXXXX a caracteres reales
       return str.replace(/\\u([0-9a-fA-F]{4})/g, (match, hex) => {
         return String.fromCharCode(parseInt(hex, 16));
       });
@@ -675,10 +883,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function parseRawDate(raw) {
       if (!raw) return null;
       
-      // Decodificar escapes Unicode primero
       const decoded = decodeUnicodeEscapes(String(raw).trim());
       
-      // Formato dd/mm/YYYY o d/m/YYYY
       const dmyMatch = decoded.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
       if (dmyMatch) {
         const day = parseInt(dmyMatch[1], 10);
@@ -690,7 +896,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
       
-      // Intentar parsear como ISO o timestamp (funciona con 2024-12-27T01:26:24.562057Z)
       const tryDate = new Date(decoded);
       return isNaN(tryDate.getTime()) ? null : tryDate;
     }
@@ -701,7 +906,6 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (dt) {
         try {
-          // Formato profesional: "7 nov 2025" en español, "Nov 7, 2025" en inglés
           const formatted = new Intl.DateTimeFormat(locale, { 
             year: 'numeric', 
             month: 'short', 
@@ -710,7 +914,6 @@ document.addEventListener('DOMContentLoaded', function() {
           
           span.textContent = formatted;
           
-          // Tooltip con fecha completa
           const fullDate = new Intl.DateTimeFormat(locale, { 
             weekday: 'long',
             year: 'numeric', 
@@ -721,7 +924,6 @@ document.addEventListener('DOMContentLoaded', function() {
           span.setAttribute('title', fullDate);
           span.style.cursor = 'help';
         } catch (err) {
-          // Fallback simple
           span.textContent = dt.toLocaleDateString(locale);
         }
       }
@@ -730,7 +932,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script>
-// Fallback inmediato por si DOMContentLoaded ya ocurrió antes de registrar el listener
+// Fallback inmediato
 (function() {
   if (document.readyState !== 'loading') {
     try {
@@ -747,7 +949,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!raw) return null;
         const decoded = decodeUnicode(String(raw).trim());
         
-        // Formato dd/mm/YYYY
         const dmyMatch = decoded.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
         if (dmyMatch) {
           const day = parseInt(dmyMatch[1], 10);
@@ -792,21 +993,4 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 </script>
 
-<!-- Animación fade-in para nuevas reseñas -->
-<style>
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.review-item {
-    animation: fadeIn 0.3s ease-in;
-}
-</style>
 {% endblock %}

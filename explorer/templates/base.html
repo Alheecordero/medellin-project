@@ -11,7 +11,7 @@
         
     <!-- Meta SEO -->
     <meta name="description" content="{% block meta_description %}{% trans "Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín." %}{% endblock %}">
-    <meta name="keywords" content="{% block meta_keywords %}Medellín, turismo, lugares, bares, restaurantes, discotecas, que hacer en Medellín{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}{% trans "Medellín, turismo, lugares, bares, restaurantes, discotecas, que hacer en Medellín" %}{% endblock %}">
     <meta name="author" content="Vivemedellín">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#020617">
@@ -27,14 +27,14 @@
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:title" content="{% block og_title %}{% trans "ViveMedellín - Tu Guía de la Ciudad" %}{% endblock %}">
     <meta property="og:description" content="{% block og_description %}{% trans "Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín." %}{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}{{ request.build_absolute_uri }}{% static 'img/medellin.jpg' %}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/medellin.jpg' %}{% endblock %}">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
     <meta property="twitter:title" content="{% block twitter_title %}{% trans "ViveMedellín - Tu Guía de la Ciudad" %}{% endblock %}">
     <meta property="twitter:description" content="{% block twitter_description %}{% trans "Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín." %}{% endblock %}">
-    <meta property="twitter:image" content="{% block twitter_image %}{{ request.build_absolute_uri }}{% static 'img/medellin.jpg' %}{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/medellin.jpg' %}{% endblock %}">
 
     <!-- Django JS i18n -->
     <script src="{% url 'javascript-catalog' %}?v={{ STATIC_BUST }}"></script>
@@ -81,9 +81,44 @@
       {% endif %}
     {% endif %}
 
-    <!-- Hreflang alternates -->
-    <link rel="alternate" hreflang="es" href="{{ request.build_absolute_uri }}" />
-    <link rel="alternate" hreflang="en" href="/en{{ request.path }}" />
+    <!-- Canonical sin parámetros de consulta -->
+    {% if request %}
+      {% with canonical_url=request.build_absolute_uri|cut:'?' %}
+        <link rel="canonical" href="{{ canonical_url }}">
+      {% endwith %}
+      <!-- Hreflang alternates (URLs absolutas) -->
+      {% with path=request.path %}
+        {% if path|slice:":4" == "/en/" %}
+          {# EN page: build ES equivalent #}
+          {% if path == "/en/places/" %}
+            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/lugares/" />
+          {% elif path|slice:":10" == "/en/places/" %}
+            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/lugares/{{ path|slice:"10:" }}" />
+          {% elif path|slice:":9" == "/en/place/" %}
+            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/lugar/{{ path|slice:"9:" }}" />
+          {% elif path == "/en/about-us/" %}
+            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/nosotros/" />
+          {% else %}
+            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}{{ path|slice:"3:" }}" />
+          {% endif %}
+          <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}{{ path }}" />
+        {% else %}
+          {# ES page: build EN equivalent #}
+          <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}{{ path }}" />
+          {% if path == "/lugares/" %}
+            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/places/" />
+          {% elif path|slice:":9" == "/lugares/" %}
+            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/places/{{ path|slice:"9:" }}" />
+          {% elif path|slice:":7" == "/lugar/" %}
+            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/place/{{ path|slice:"7:" }}" />
+          {% elif path == "/nosotros/" %}
+            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/about-us/" />
+          {% else %}
+            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en{{ path }}" />
+          {% endif %}
+        {% endif %}
+      {% endwith %}
+    {% endif %}
 
     <!-- CSS principal -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -107,15 +142,10 @@
     {% include 'footer.html' %}
 
     <!-- Scripts globales -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     <script src="{% static 'js/optimizations.js' %}?v={{ STATIC_BUST }}" defer></script>
     
     {% block extra_js %}{% endblock %}
-
-    <!-- Hreflang alternates -->
-    {% if request.resolver_match %}
-    <link rel="alternate" href="{{ request.build_absolute_uri }}" hreflang="es" />
-    <link rel="alternate" href="/en{{ request.path }}" hreflang="en" />
-    {% endif %}
 </body>
 </html>

@@ -1,5 +1,6 @@
 {% extends "admin/change_list.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block content_title %}
   <h1>{{ cl.opts.verbose_name_plural|capfirst }}</h1>
@@ -36,7 +37,7 @@
 
       // Capa base del mapa (OpenStreetMap)
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> {% trans "colaboradores" %}'
       }).addTo(map);
 
       // Obtener los puntos desde el contexto

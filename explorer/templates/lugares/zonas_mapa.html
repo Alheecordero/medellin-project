@@ -15,14 +15,14 @@
   // Capa base
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> {% trans "colaboradores" %}'
   }).addTo(map);
 
   // Cargar las zonas desde el endpoint GeoJSON
   fetch("/zonas-geojson/")
     .then(response => {
       if (!response.ok) {
-        throw new Error("No se pudo cargar el GeoJSON");
+        throw new Error("{% trans "No se pudo cargar el GeoJSON" %}");
       }
       return response.json();
     })
