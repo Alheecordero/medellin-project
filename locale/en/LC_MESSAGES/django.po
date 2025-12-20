@@ -1490,10 +1490,8 @@ msgid "Ver"
 msgstr "Friday"
 
 #: explorer/templates/lugares/places_detail.html:490
-#, fuzzy
-#| msgid "Sin detalles"
 msgid "Sin resultados"
-msgstr "No Details"
+msgstr "No results"
 
 #: explorer/templates/lugares/places_list.html:12
 msgid "Encuentra los lugares mejor valorados en ViveMedellín."
@@ -2596,6 +2594,52 @@ msgstr "Discover the best %(tipo)s in the city"
 #~ "Cards horizontales con imagen a la izquierda y contenido a la derecha."
 #~ msgstr ""
 #~ "Horizontal cards with the image on the left and content on the right."
+
+# Near Me - Backend messages
+#: explorer/views.py
+msgid "No encontramos %(tipo)s con %(caract)s en un radio de %(dist)s"
+msgstr "We found no %(tipo)s with %(caract)s within %(dist)s"
+
+#: explorer/views.py
+msgid "No encontramos %(tipo)s en un radio de %(dist)s"
+msgstr "We found no %(tipo)s within %(dist)s"
+
+#: explorer/views.py
+msgid "No encontramos lugares con %(caract)s en un radio de %(dist)s"
+msgstr "We found no places with %(caract)s within %(dist)s"
+
+#: explorer/views.py
+msgid "No encontramos lugares en un radio de %(dist)s"
+msgstr "We found no places within %(dist)s"
+
+#: explorer/views.py
+msgid "%(count)s %(tipo)s con %(caract)s a menos de %(dist)s"
+msgid_plural "%(count)s %(tipo)s con %(caract)s a menos de %(dist)s"
+msgstr[0] "%(count)s %(tipo)s with %(caract)s within %(dist)s"
+msgstr[1] "%(count)s %(tipo)s with %(caract)s within %(dist)s"
+
+#: explorer/views.py
+msgid "%(count)s %(tipo)s a menos de %(dist)s"
+msgid_plural "%(count)s %(tipo)s a menos de %(dist)s"
+msgstr[0] "%(count)s %(tipo)s within %(dist)s"
+msgstr[1] "%(count)s %(tipo)s within %(dist)s"
+
+#: explorer/views.py
+msgid "%(count)s lugar con %(caract)s a menos de %(dist)s"
+msgid_plural "%(count)s lugares con %(caract)s a menos de %(dist)s"
+msgstr[0] "%(count)s place with %(caract)s within %(dist)s"
+msgstr[1] "%(count)s places with %(caract)s within %(dist)s"
+
+#: explorer/views.py
+msgid "%(count)s lugar a menos de %(dist)s"
+msgid_plural "%(count)s lugares a menos de %(dist)s"
+msgstr[0] "%(count)s place within %(dist)s"
+msgstr[1] "%(count)s places within %(dist)s"
+
+# Near Me - Frontend messages
+#: explorer/templates/home.html
+msgid "Intenta ampliar el radio de búsqueda"
+msgstr "Try expanding the search radius"
 
 #~ msgid ""
 #~ "Secciones bien separadas: filtros, resultados, detalle y lugares "

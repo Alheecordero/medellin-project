@@ -1430,17 +1430,107 @@ def lugares_cercanos_ajax_view(request):
             })
         
         count = len(resultados)
-        distancia = f"{int(radio * 1000)}m" if radio < 1 else f"{radio}km"
-        mensaje = ngettext(
-            'Encontramos %(count)s lugar en un radio de %(dist)s',
-            'Encontramos %(count)s lugares en un radio de %(dist)s',
-            count
-        ) % {'count': count, 'dist': distancia}
+        distancia_str = f"{int(radio * 1000)}m" if radio < 1 else f"{radio}km"
+        
+        # Labels traducidos para tipos
+        tipo_labels = {
+            'restaurant': _('Restaurantes'),
+            'bar': _('Bares'),
+            'cafe': _('Cafés'),
+            'bakery': _('Panaderías'),
+            'night_club': _('Discotecas'),
+            'rooftop_bar': _('Rooftops'),
+            'karaoke': _('Karaokes'),
+            'sports_bar': _('Bares Deportivos'),
+            'casino': _('Casinos'),
+            'bowling_alley': _('Boleras'),
+            'spa': _('Spas'),
+            'art_gallery': _('Galerías de Arte'),
+            'museum': _('Museos'),
+            'tourist_attraction': _('Atracciones Turísticas'),
+        }
+        
+        # Labels traducidos para características
+        caracteristica_labels = {
+            'outdoor_seating': _('Terraza'),
+            'live_music': _('Música en Vivo'),
+            'good_for_groups': _('Para Grupos'),
+            'good_for_children': _('Para Niños'),
+            'delivery': _('Delivery'),
+            'takeout': _('Para Llevar'),
+            'dine_in': _('Comer en Local'),
+            'reservable': _('Reservaciones'),
+            'serves_cocktails': _('Cócteles'),
+            'serves_wine': _('Vinos'),
+            'serves_coffee': _('Café Especialidad'),
+            'serves_dessert': _('Postres'),
+            'allows_dogs': _('Pet Friendly'),
+            'wheelchair_accessible_entrance': _('Acceso Accesible'),
+            'accepts_credit_cards': _('Tarjetas de Crédito'),
+        }
+        
+        # Construir información de filtros aplicados
+        filtros_aplicados = {
+            'tipo': tipo if tipo else None,
+            'tipo_label': tipo_labels.get(tipo, None) if tipo else None,
+            'caracteristica': caracteristica if caracteristica else None,
+            'caracteristica_label': caracteristica_labels.get(caracteristica, None) if caracteristica else None,
+            'radio_km': radio,
+            'radio_display': distancia_str,
+        }
+        
+        # Mensaje dinámico basado en filtros reales
+        tipo_label = filtros_aplicados['tipo_label']
+        caract_label = filtros_aplicados['caracteristica_label']
+        
+        if count == 0:
+            # Sin resultados
+            if tipo_label and caract_label:
+                mensaje = _('No encontramos %(tipo)s con %(caract)s en un radio de %(dist)s') % {
+                    'tipo': tipo_label, 'caract': caract_label, 'dist': distancia_str
+                }
+            elif tipo_label:
+                mensaje = _('No encontramos %(tipo)s en un radio de %(dist)s') % {
+                    'tipo': tipo_label, 'dist': distancia_str
+                }
+            elif caract_label:
+                mensaje = _('No encontramos lugares con %(caract)s en un radio de %(dist)s') % {
+                    'caract': caract_label, 'dist': distancia_str
+                }
+            else:
+                mensaje = _('No encontramos lugares en un radio de %(dist)s') % {'dist': distancia_str}
+        else:
+            # Con resultados
+            if tipo_label and caract_label:
+                mensaje = ngettext(
+                    '%(count)s %(tipo)s con %(caract)s a menos de %(dist)s',
+                    '%(count)s %(tipo)s con %(caract)s a menos de %(dist)s',
+                    count
+                ) % {'count': count, 'tipo': tipo_label, 'caract': caract_label, 'dist': distancia_str}
+            elif tipo_label:
+                mensaje = ngettext(
+                    '%(count)s %(tipo)s a menos de %(dist)s',
+                    '%(count)s %(tipo)s a menos de %(dist)s',
+                    count
+                ) % {'count': count, 'tipo': tipo_label, 'dist': distancia_str}
+            elif caract_label:
+                mensaje = ngettext(
+                    '%(count)s lugar con %(caract)s a menos de %(dist)s',
+                    '%(count)s lugares con %(caract)s a menos de %(dist)s',
+                    count
+                ) % {'count': count, 'caract': caract_label, 'dist': distancia_str}
+            else:
+                mensaje = ngettext(
+                    '%(count)s lugar a menos de %(dist)s',
+                    '%(count)s lugares a menos de %(dist)s',
+                    count
+                ) % {'count': count, 'dist': distancia_str}
 
         return JsonResponse({
             'success': True,
             'total': count,
             'lugares': resultados,
+            'filtros_aplicados': filtros_aplicados,
             'ubicacion_usuario': {
                 'lat': lat,
                 'lng': lng,

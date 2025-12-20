@@ -2087,40 +2087,63 @@ $(document).ready(function() {
         const T_FEATURED = '{% trans "Destacado" %}';
         const T_EXCLUSIVE = '{% trans "Exclusivo" %}';
         const T_TOP_RATED = '{% trans "Top Valorado" %}';
-        const T_RADIUS = '{% trans "Radio" %}';
         const T_PLACES_NEAR = '{% trans "Lugares cerca de mí" %}';
         const T_NEAR_ME = '{% trans "cerca de mí" %}';
         const T_WITH = '{% trans "con" %}';
         const T_PLACES_WITH = '{% trans "Lugares con" %}';
+        const T_NO_RESULTS = '{% trans "Sin resultados" %}';
+        const T_TRY_EXPANDING = '{% trans "Intenta ampliar el radio de búsqueda" %}';
         
-        // Título dinámico según el tipo seleccionado
-        const tipoLabel = tipoNearMe ? TIPOS_LABELS[tipoNearMe] : '';
-        const featureLabel = featureNearMe ? FEATURES_LABELS[featureNearMe] : '';
+        // ═══════════════════════════════════════════════════════════════
+        // USAR DATOS REALES DEL BACKEND (no variables locales)
+        // ═══════════════════════════════════════════════════════════════
+        const filtros = data.filtros_aplicados || {};
+        const tipoLabelReal = filtros.tipo_label || '';
+        const featureLabelReal = filtros.caracteristica_label || '';
+        const radioReal = filtros.radio_km || radioDistancia;
+        const radioDisplay = filtros.radio_display || `${radioReal}km`;
+        const totalReal = data.total || 0;
         
-        // Construir título descriptivo
-        let titulo = T_PLACES_NEAR;
-        if (tipoLabel && featureLabel) {
-            titulo = `${tipoLabel} ${T_WITH} ${featureLabel} ${T_NEAR_ME}`;
-        } else if (tipoLabel) {
-            titulo = `${tipoLabel} ${T_NEAR_ME}`;
-        } else if (featureLabel) {
-            titulo = `${T_PLACES_WITH} ${featureLabel} ${T_NEAR_ME}`;
+        // Sincronizar variables locales con datos reales del backend
+        tipoNearMe = filtros.tipo || null;
+        featureNearMe = filtros.caracteristica || null;
+        radioDistancia = radioReal;
+        
+        // Construir título basado en datos REALES
+        let titulo;
+        if (totalReal === 0) {
+            titulo = T_NO_RESULTS;
+        } else if (tipoLabelReal && featureLabelReal) {
+            titulo = `${totalReal} ${tipoLabelReal} ${T_WITH} ${featureLabelReal}`;
+        } else if (tipoLabelReal) {
+            titulo = `${totalReal} ${tipoLabelReal} ${T_NEAR_ME}`;
+        } else if (featureLabelReal) {
+            titulo = `${totalReal} ${T_PLACES_WITH} ${featureLabelReal}`;
+        } else {
+            titulo = `${totalReal} ${T_PLACES_NEAR}`;
         }
         
-        // Construir subtítulo con filtros activos
-        let subtitulo = data.mensaje;
+        // Subtítulo: usar mensaje del backend (ya viene traducido y formateado)
+        let subtitulo = data.mensaje || '';
+        if (totalReal === 0) {
+            subtitulo = `${data.mensaje}<br><small class="text-muted">${T_TRY_EXPANDING}</small>`;
+        }
+        
+        // Construir badges con datos reales
         const filtrosActivos = [];
-        if (tipoLabel) filtrosActivos.push(`<span class="badge bg-success bg-opacity-25 text-white me-1">${tipoLabel}</span>`);
-        if (featureLabel) filtrosActivos.push(`<span class="badge bg-info bg-opacity-25 text-white me-1">${featureLabel}</span>`);
-        filtrosActivos.push(`<span class="badge bg-warning bg-opacity-25 text-white">${radioDistancia} km</span>`);
+        if (tipoLabelReal) {
+            filtrosActivos.push(`<span class="badge bg-success bg-opacity-25 text-white me-1"><i class="bi bi-check2 me-1"></i>${tipoLabelReal}</span>`);
+        }
+        if (featureLabelReal) {
+            filtrosActivos.push(`<span class="badge bg-info bg-opacity-25 text-white me-1"><i class="bi bi-check2 me-1"></i>${featureLabelReal}</span>`);
+        }
+        filtrosActivos.push(`<span class="badge bg-warning bg-opacity-25 text-white"><i class="bi bi-geo-alt me-1"></i>${radioDisplay}</span>`);
         
-        const filtrosHtml = filtrosActivos.length > 0 
-            ? `<div class="mt-2">${filtrosActivos.join('')}</div>` 
-            : '';
+        const filtrosHtml = `<div class="mt-2">${filtrosActivos.join('')}</div>`;
         
-        // Labels para dropdowns
-        const tipoSelectedLabel = tipoNearMe ? tipoLabel : '{% trans "Tipo" %}';
-        const featureSelectedLabel = featureNearMe ? featureLabel : '{% trans "Características" %}';
+        // Labels para dropdowns (basados en datos reales)
+        const tipoSelectedLabel = tipoLabelReal || '{% trans "Tipo" %}';
+        const featureSelectedLabel = featureLabelReal || '{% trans "Características" %}';
         
         let html = `
             <div class="semantic-home-wrapper">
@@ -2301,7 +2324,7 @@ $(document).ready(function() {
                                     <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button"
                                             id="distanceNearMeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="bi bi-rulers me-2"></i>
-                                        <span id="distance-label-result">${radioDistancia} km</span>
+                                        <span id="distance-label-result">${radioDisplay}</span>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="distanceNearMeDropdown">
                                         <li><a class="dropdown-item dropdown-item-filtro distance-nearme-option" href="javascript:void(0)" data-distance="1">
@@ -2414,20 +2437,20 @@ $(document).ready(function() {
         
         if (isUpdate) {
             // Solo actualizar el título, mensaje, badges y grid (sin recargar los filtros)
-            $('.semantic-home-title').removeClass('updating').text(titulo);
-            $('.semantic-home-header .lead').first().text(subtitulo);
+            $('.semantic-home-title').removeClass('updating').html(titulo);
+            $('.semantic-home-header .lead').first().html(subtitulo);
             
-            // Actualizar badges de filtros activos
+            // Actualizar badges de filtros activos (con datos reales del backend)
             $('.semantic-home-header .mt-2').first().html(filtrosActivos.join(''));
             
-            // Actualizar labels de los dropdowns
+            // Actualizar labels de los dropdowns con datos reales
             $('#tipoNearMeDropdown span').text(tipoSelectedLabel);
             $('#featureNearMeDropdown span').text(featureSelectedLabel);
-            $('#distance-label-result').text(radioDistancia + ' km');
+            $('#distance-label-result').text(radioDisplay);
             
-            // Actualizar clases selected de los dropdowns
-            $('#tipoNearMeDropdown').toggleClass('selected', !!tipoNearMe);
-            $('#featureNearMeDropdown').toggleClass('selected', !!featureNearMe);
+            // Actualizar clases selected de los dropdowns (basado en datos reales)
+            $('#tipoNearMeDropdown').toggleClass('selected', !!tipoLabelReal);
+            $('#featureNearMeDropdown').toggleClass('selected', !!featureLabelReal);
         
             // Generar solo el grid
             let gridHtml = '';
