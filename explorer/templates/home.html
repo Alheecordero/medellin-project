@@ -1290,8 +1290,9 @@ a.btn.btn-gradient-green:focus {
 
 {% block extra_js %}
 <script>
-// Constante de idioma disponible para todo el script
-const CURRENT_LANG = '{{ LANGUAGE_CODE|default:"es" }}' || 'es';
+// Idioma (normalizado). Django puede entregar 'en-us', 'en', etc.
+const CURRENT_LANG_RAW = ('{{ LANGUAGE_CODE|default:"es" }}' || 'es').toLowerCase();
+const CURRENT_LANG = CURRENT_LANG_RAW.slice(0, 2); // 'es' | 'en'
 // Helper seguro para traducciones en JS (usa djangojs si está disponible)
 const gettext = (window.gettext) ? window.gettext : (s => s);
 // Fallbacks para pluralización/interpolación si por algún motivo jsi18n no cargó (evita que el JS se rompa en EN)
@@ -1686,11 +1687,13 @@ $(document).ready(function() {
         $('.dropdown').removeClass('show');
         $('[data-bs-toggle="dropdown"]').attr('aria-expanded', 'false').removeClass('show');
         
-        // Forzar cierre con Bootstrap API
-        document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
-            const dropdown = bootstrap.Dropdown.getInstance(btn);
-            if (dropdown) dropdown.hide();
-        });
+        // Forzar cierre con Bootstrap API (si existe; bootstrap bundle carga con defer)
+        if (window.bootstrap && window.bootstrap.Dropdown) {
+            document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
+                const dropdown = window.bootstrap.Dropdown.getInstance(btn);
+                if (dropdown) dropdown.hide();
+            });
+        }
         
         // Mensaje de resultados: usar ngettext si está disponible, si no, fallback simple (ES)
         let msgResultados;
@@ -2090,11 +2093,13 @@ $(document).ready(function() {
         $('.dropdown').removeClass('show');
         $('[data-bs-toggle="dropdown"]').attr('aria-expanded', 'false').removeClass('show');
         
-        // Forzar cierre con Bootstrap API
-        document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
-            const dropdown = bootstrap.Dropdown.getInstance(btn);
-            if (dropdown) dropdown.hide();
-        });
+        // Forzar cierre con Bootstrap API (si existe; bootstrap bundle carga con defer)
+        if (window.bootstrap && window.bootstrap.Dropdown) {
+            document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
+                const dropdown = window.bootstrap.Dropdown.getInstance(btn);
+                if (dropdown) dropdown.hide();
+            });
+        }
         
         // Textos traducidos inyectados desde servidor
         const T_VIEW_DETAILS = '{% trans "Ver detalles" %}';
@@ -2548,11 +2553,13 @@ $(document).ready(function() {
         $('.dropdown').removeClass('show');
         $('[data-bs-toggle="dropdown"]').attr('aria-expanded', 'false').removeClass('show');
         
-        // Forzar cierre con Bootstrap API
-        document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
-            const dropdown = bootstrap.Dropdown.getInstance(btn);
-            if (dropdown) dropdown.hide();
-        });
+        // Forzar cierre con Bootstrap API (si existe; bootstrap bundle carga con defer)
+        if (window.bootstrap && window.bootstrap.Dropdown) {
+            document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
+                const dropdown = window.bootstrap.Dropdown.getInstance(btn);
+                if (dropdown) dropdown.hide();
+            });
+        }
         
         const T_VIEW_DETAILS = '{% trans "Ver detalles" %}';
         const T_NO_DETAILS = '{% trans "Sin detalles" %}';
