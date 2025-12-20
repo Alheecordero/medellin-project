@@ -128,6 +128,77 @@ def format_price_range(value: str | None) -> str:
     return _('No especificado')
 
 
+@register.simple_tag
+def img_url(foto, size='thumb'):
+    """
+    Retorna la URL óptima de imagen según el tamaño requerido.
+    
+    Uso:
+        {% img_url foto 'thumb' %}   -> 220px (cards pequeñas)
+        {% img_url foto 'medium' %}  -> 800px (cards medianas, hero)
+        {% img_url foto 'full' %}    -> Original (modal galería)
+    
+    Fallback automático si la variante no existe.
+    """
+    if not foto:
+        return ''
+    
+    # Obtener URLs de las variantes
+    thumb = getattr(foto, 'imagen_miniatura', None) or ''
+    medium = getattr(foto, 'imagen_mediana', None) or ''
+    full = getattr(foto, 'imagen', None) or ''
+    
+    if size == 'thumb':
+        return thumb or medium or full
+    elif size == 'medium':
+        return medium or full
+    else:  # 'full' o cualquier otro
+        return full
+
+
+@register.inclusion_tag('components/optimized_img.html')
+def optimized_img(foto, alt='', css_class='', sizes='100vw', loading='lazy', hero=False):
+    """
+    Renderiza una imagen optimizada con srcset para responsive.
+    
+    Uso:
+        {% optimized_img foto alt="Nombre" css_class="card-img" %}
+        {% optimized_img foto alt="Hero" hero=True loading="eager" %}
+    """
+    if not foto:
+        return {'has_image': False, 'alt': alt, 'css_class': css_class}
+    
+    thumb = getattr(foto, 'imagen_miniatura', None) or ''
+    medium = getattr(foto, 'imagen_mediana', None) or ''
+    full = getattr(foto, 'imagen', None) or ''
+    
+    # Determinar src principal según contexto
+    if hero:
+        src = medium or full
+    else:
+        src = thumb or medium or full
+    
+    # Construir srcset
+    srcset_parts = []
+    if thumb:
+        srcset_parts.append(f"{thumb} 220w")
+    if medium:
+        srcset_parts.append(f"{medium} 800w")
+    if full:
+        srcset_parts.append(f"{full} 1600w")
+    
+    return {
+        'has_image': bool(src),
+        'src': src,
+        'srcset': ', '.join(srcset_parts) if srcset_parts else '',
+        'sizes': sizes,
+        'alt': alt,
+        'css_class': css_class,
+        'loading': loading,
+        'data_full': full,  # Para modal de galería
+    }
+
+
 @register.filter(name="ensure_absolute_url")
 def ensure_absolute_url(url: str | None, request) -> str:
     """

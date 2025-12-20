@@ -209,8 +209,15 @@
               <div class="lugar-card-wrapper">
                 <div class="card h-100 shadow-sm border-0 rounded-4 place-card">
                   <div class="place-card-media position-relative">
-                    {% if lugar.get_primera_foto %}
-                      <img src="{{ lugar.get_primera_foto.imagen }}" 
+                    {% with foto=lugar.get_primera_foto %}
+                    {% if foto %}
+                      <img src="{{ foto.imagen_miniatura|default:foto.imagen }}"
+                           {% if foto.imagen_miniatura and foto.imagen_mediana %}
+                           srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen_mediana }} 800w, {{ foto.imagen }} 1600w"
+                           {% elif foto.imagen_miniatura %}
+                           srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen }} 1600w"
+                           {% endif %}
+                           sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 320px"
                            class="card-img-top rounded-top-4" 
                            alt="{{ lugar.nombre }}"
                            loading="lazy">
@@ -219,6 +226,7 @@
                         <i class="bi bi-image text-muted fs-2"></i>
                       </div>
                     {% endif %}
+                    {% endwith %}
                     {% if lugar.rating %}
                       <div class="place-card-rating badge rounded-pill">
                         <i class="bi bi-star-fill me-1"></i>
@@ -325,7 +333,7 @@
 .places-section {
   background:
     radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
-    linear-gradient(135deg, #020617 0%, #022c22 35%, #064e3b 100%);
+    linear-gradient(135deg, #0a1628 0%, #0a3d32 35%, #0d5f4a 100%);
   min-height: 100vh;
   padding: 2.5rem 0 3.5rem;
 }

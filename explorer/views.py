@@ -29,6 +29,37 @@ import os
 
 from .models import Places, Foto, RegionOSM, Tag, PLACE_TYPE_CHOICES
 
+
+# ────────────────────────────────────────────────────────────────────────
+# Helpers para Imágenes Optimizadas
+# ────────────────────────────────────────────────────────────────────────
+
+def get_optimized_image_urls(foto, size='thumb'):
+    """
+    Retorna las URLs de imagen optimizadas.
+    
+    Args:
+        foto: Objeto Foto o None
+        size: 'thumb' (220px), 'medium' (800px), 'full' (original)
+    
+    Returns:
+        dict con 'imagen' (URL principal) y 'imagen_full' (para modal)
+    """
+    if not foto:
+        return {'imagen': None, 'imagen_full': None}
+    
+    thumb = getattr(foto, 'imagen_miniatura', None) or ''
+    medium = getattr(foto, 'imagen_mediana', None) or ''
+    full = getattr(foto, 'imagen', None) or ''
+    
+    if size == 'thumb':
+        return {'imagen': thumb or medium or full, 'imagen_full': full}
+    elif size == 'medium':
+        return {'imagen': medium or full, 'imagen_full': full}
+    else:
+        return {'imagen': full, 'imagen_full': full}
+
+
 # ────────────────────────────────────────────────────────────────────────
 # Mixins Optimizados
 # ────────────────────────────────────────────────────────────────────────
@@ -65,7 +96,7 @@ class BasePlacesMixin:
     def get_base_queryset(self):
         """Queryset base optimizado para todos los lugares."""
         return Places.objects.filter(tiene_fotos=True).prefetch_related(
-            Prefetch('fotos', queryset=Foto.objects.only('imagen')[:3], to_attr='cached_fotos'),
+            Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura')[:3], to_attr='cached_fotos'),
             Prefetch('tags', to_attr='cached_tags')
         )
 
@@ -185,7 +216,7 @@ class HomeView(TemplateView):
                             'rating': lugar.rating or 0.0,
                             'total_reviews': lugar.total_reviews,
                             'tipo': get_localized_place_type(lugar),
-                            'imagen': primera_foto.imagen if primera_foto else None,
+                            **get_optimized_image_urls(primera_foto, 'thumb'),
                             'es_destacado': lugar.es_destacado,
                             'es_exclusivo': lugar.es_exclusivo
                         })
@@ -705,7 +736,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
     def get_queryset(self):
         """Queryset optimizado específicamente para vista de detalle."""
         return Places.objects.filter(tiene_fotos=True).prefetch_related(
-            Prefetch('fotos', queryset=Foto.objects.only('imagen')[:5], to_attr='cached_fotos'),
+            Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura')[:5], to_attr='cached_fotos'),
             Prefetch('tags', to_attr='cached_tags')
         )
     
@@ -739,29 +770,29 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
     
     def _get_lugares_cercanos(self, lugar, distance=500, limit=3):
         """Obtener lugares cercanos con caché y optimización geoespacial."""
+        from django.contrib.gis.db.models.functions import Distance as GeoDistance
+        
         if not lugar.ubicacion:
             return []
             
-        cache_key = f"nearby_optimized_{lugar.id}_{distance}_{limit}"
+        cache_key = f"nearby_optimized_{lugar.id}_{distance}_{limit}_v2"
         result = cache.get(cache_key)
         
         if result is None:
-            # Optimización 1: Reducir distancia de 1000m a 500m
-            # Optimización 2: Usar select_related para comuna
-            # Optimización 3: Usar only() para limitar campos
-            # Optimización 4: Reducir límite de 5 a 3
             result = list(Places.objects.filter(
                 tiene_fotos=True,
                 ubicacion__distance_lte=(lugar.ubicacion, distance)
             ).exclude(
                 id=lugar.id
             ).only(
-                'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo', 'comuna_osm_id'
+                'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo', 'comuna_osm_id', 'ubicacion'
             ).prefetch_related(
-                Prefetch('fotos', queryset=Foto.objects.only('imagen')[:1], to_attr='cached_fotos')
-            ).order_by('-es_destacado', '-rating')[:limit])  # Priorizando destacados y rating
+                Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura')[:1], to_attr='cached_fotos')
+            ).annotate(
+                distancia_metros=GeoDistance('ubicacion', lugar.ubicacion)
+            ).order_by('distancia_metros', '-es_destacado', '-rating')[:limit])
             
-            cache.set(cache_key, result, 3600)  # 1 hora de caché
+            cache.set(cache_key, result, 3600)
         
         return result
     
@@ -817,12 +848,12 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         
         return result
     
-    def _get_lugares_misma_comuna(self, lugar):
+    def _get_lugares_misma_comuna(self, lugar, limit=6):
         """Obtener otros lugares de la misma comuna."""
         if not lugar.comuna_osm_id:
             return []
             
-        cache_key = f"comuna_optimized_{lugar.comuna_osm_id}_{lugar.id}"
+        cache_key = f"comuna_optimized_{lugar.comuna_osm_id}_{lugar.id}_{limit}"
         result = cache.get(cache_key)
         
         if result is None:
@@ -834,10 +865,10 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
             ).only(
                 'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo'
             ).prefetch_related(
-                Prefetch('fotos', queryset=Foto.objects.only('imagen')[:1], to_attr='cached_fotos')
-            ).order_by('-es_destacado', '-rating')[:3])  # Priorizando destacados
+                Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura')[:1], to_attr='cached_fotos')
+            ).order_by('-es_destacado', '-rating')[:limit])
             
-            cache.set(cache_key, result, 3600)  # 1 hora de caché
+            cache.set(cache_key, result, 3600)
         
         return result
     
@@ -913,7 +944,7 @@ class PlaceReviewsView(DetailView):
     
     def get_queryset(self):
         return Places.objects.filter(tiene_fotos=True).prefetch_related(
-            Prefetch('fotos', queryset=Foto.objects.only('imagen'), to_attr='cached_fotos')
+            Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura'), to_attr='cached_fotos')
         )
     
     def get_context_data(self, **kwargs):
@@ -1264,7 +1295,7 @@ def filtros_ajax_view(request):
                 'rating': lugar.rating or 0.0,
                 'total_reviews': lugar.total_reviews or 0,
                 'tipo': get_localized_place_type(lugar),
-                'imagen': primera_foto.imagen if primera_foto else None,
+                **get_optimized_image_urls(primera_foto, 'thumb'),
                 'es_destacado': lugar.es_destacado,
                 'es_exclusivo': lugar.es_exclusivo,
                 # Siempre enviar URL ya resuelta (evita bugs de prefijo /en en frontend)
@@ -1402,7 +1433,7 @@ def places_filter_ajax(request):
                 'rating': lugar.rating or 0.0,
                 'total_reviews': lugar.total_reviews or 0,
                 'tipo': get_localized_place_type(lugar),
-                'imagen': primera_foto.imagen if primera_foto else None,
+                **get_optimized_image_urls(primera_foto, 'thumb'),
                 'es_destacado': lugar.es_destacado,
                 'es_exclusivo': lugar.es_exclusivo,
                 'precio': lugar.precio,
@@ -1591,7 +1622,7 @@ def lugares_cercanos_ajax_view(request):
                 'rating': lugar.rating or 0.0,
                 'total_reviews': lugar.total_reviews or 0,
                 'tipo': get_localized_place_type(lugar),
-                'imagen': primera_foto.imagen if primera_foto else None,
+                **get_optimized_image_urls(primera_foto, 'thumb'),
                 'es_destacado': lugar.es_destacado,
                 'es_exclusivo': lugar.es_exclusivo,
                 # URL resuelta por Django según idioma actual
@@ -1742,11 +1773,17 @@ def lugares_cercanos_ajax(request, slug):
             return JsonResponse({'error': _('Lugar no encontrado')}, status=404)
         
         view = PlaceDetailView()
-        lugares_cercanos = view._get_lugares_cercanos(lugar) if lugar.ubicacion else []
+        lugares_cercanos = view._get_lugares_cercanos(lugar, distance=1000, limit=6) if lugar.ubicacion else []
         
         # Serializar lugares
         data = []
         for lugar_cercano in lugares_cercanos:
+            # Calcular distancia en km
+            distancia_km = None
+            if hasattr(lugar_cercano, 'distancia_metros') and lugar_cercano.distancia_metros:
+                distancia_km = round(lugar_cercano.distancia_metros.km, 2)
+            
+            foto = lugar_cercano.cached_fotos[0] if lugar_cercano.cached_fotos else None
             data.append({
                 'id': lugar_cercano.id,
                 'nombre': lugar_cercano.nombre,
@@ -1755,8 +1792,9 @@ def lugares_cercanos_ajax(request, slug):
                 'rating': lugar_cercano.rating,
                 'es_destacado': lugar_cercano.es_destacado,
                 'es_exclusivo': lugar_cercano.es_exclusivo,
-                'imagen': lugar_cercano.cached_fotos[0].imagen if lugar_cercano.cached_fotos else None,
+                **get_optimized_image_urls(foto, 'thumb'),
                 'url': reverse('explorer:lugares_detail', args=[lugar_cercano.slug]) if lugar_cercano.slug else None,
+                'distancia_km': distancia_km,
             })
         
         return JsonResponse({'lugares': data})
@@ -1774,11 +1812,12 @@ def lugares_similares_ajax(request, slug):
             return JsonResponse({'error': _('Lugar no encontrado')}, status=404)
         
         view = PlaceDetailView()
-        lugares_similares = view._get_lugares_similares(lugar)
+        lugares_similares = view._get_lugares_similares(lugar, limit=6)
         
         # Serializar lugares
         data = []
         for lugar_similar in lugares_similares:
+            foto = lugar_similar.cached_fotos[0] if lugar_similar.cached_fotos else None
             data.append({
                 'id': lugar_similar.id,
                 'nombre': lugar_similar.nombre,
@@ -1787,7 +1826,7 @@ def lugares_similares_ajax(request, slug):
                 'rating': lugar_similar.rating,
                 'es_destacado': lugar_similar.es_destacado,
                 'es_exclusivo': lugar_similar.es_exclusivo,
-                'imagen': lugar_similar.cached_fotos[0].imagen if lugar_similar.cached_fotos else None,
+                **get_optimized_image_urls(foto, 'thumb'),
                 'url': reverse('explorer:lugares_detail', args=[lugar_similar.slug]) if lugar_similar.slug else None,
             })
         
@@ -1806,11 +1845,12 @@ def lugares_comuna_ajax(request, slug):
             return JsonResponse({'error': _('Lugar no encontrado')}, status=404)
         
         view = PlaceDetailView()
-        lugares_comuna = view._get_lugares_misma_comuna(lugar) if lugar.comuna_osm_id else []
+        lugares_comuna = view._get_lugares_misma_comuna(lugar, limit=6) if lugar.comuna_osm_id else []
         
         # Serializar lugares
         data = []
         for lugar_comuna_item in lugares_comuna:
+            foto = lugar_comuna_item.cached_fotos[0] if lugar_comuna_item.cached_fotos else None
             data.append({
                 'id': lugar_comuna_item.id,
                 'nombre': lugar_comuna_item.nombre,
@@ -1819,7 +1859,7 @@ def lugares_comuna_ajax(request, slug):
                 'rating': lugar_comuna_item.rating,
                 'es_destacado': lugar_comuna_item.es_destacado,
                 'es_exclusivo': lugar_comuna_item.es_exclusivo,
-                'imagen': lugar_comuna_item.cached_fotos[0].imagen if lugar_comuna_item.cached_fotos else None,
+                **get_optimized_image_urls(foto, 'thumb'),
                 'url': reverse('explorer:lugares_detail', args=[lugar_comuna_item.slug]) if lugar_comuna_item.slug else None,
             })
         
@@ -1875,7 +1915,7 @@ def semantic_search_ajax(request):
 			'tipo': get_localized_place_type(lugar),
 			'direccion': lugar.direccion,
 			'rating': lugar.rating or 0.0,
-			'imagen': foto.imagen if foto else None,
+			**get_optimized_image_urls(foto, 'thumb'),
 			'score': round(getattr(lugar, 'score', 0.0), 4),
 			# URL resuelta por Django según idioma actual
 			'url': reverse('explorer:lugares_detail', kwargs={'slug': lugar.slug}) if lugar.slug else None,
@@ -1932,7 +1972,7 @@ class SemanticSearchView(View):
                         "rating": l.rating,
                         "score": round(getattr(l, "score", 0.0), 3),
                         "slug": l.slug,
-                        "imagen": primera_foto.imagen if primera_foto else None,
+                        **get_optimized_image_urls(primera_foto, 'thumb'),
                         "es_destacado": bool(getattr(l, "es_destacado", False)),
                         "es_exclusivo": bool(getattr(l, "es_exclusivo", False)),
                         "precio": getattr(l, "precio", None),

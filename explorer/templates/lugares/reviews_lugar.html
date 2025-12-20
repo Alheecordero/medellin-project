@@ -23,11 +23,13 @@
 {% endblock %}
 
 {% block og_image %}
-  {% if lugar.get_primera_foto %}
-    {{ lugar.get_primera_foto.imagen|ensure_absolute_url:request }}
+  {% with foto=lugar.get_primera_foto %}
+  {% if foto %}
+    {{ foto.imagen_mediana|default:foto.imagen|ensure_absolute_url:request }}
   {% else %}
     {{ '/static/img/og-image.jpg'|ensure_absolute_url:request }}
   {% endif %}
+  {% endwith %}
 {% endblock %}
 
 {% block content %}
@@ -98,13 +100,22 @@
         </div>
         
         <div class="col-lg-4">
-          {% if lugar.get_primera_foto %}
+          {% with foto=lugar.get_primera_foto %}
+          {% if foto %}
             <div class="place-preview">
-              <img src="{{ lugar.get_primera_foto.imagen }}" 
+              <img src="{{ foto.imagen_mediana|default:foto.imagen }}" 
+                   {% if foto.imagen_miniatura and foto.imagen_mediana %}
+                   srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen_mediana }} 800w"
+                   {% elif foto.imagen_miniatura %}
+                   srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen }} 800w"
+                   {% endif %}
+                   sizes="(max-width: 576px) 100vw, 400px"
                    alt="{{ lugar.nombre }}" 
-                   class="img-fluid rounded-4 shadow-lg">
+                   class="img-fluid rounded-4 shadow-lg"
+                   loading="lazy">
             </div>
           {% endif %}
+          {% endwith %}
         </div>
       </div>
     </div>
@@ -113,11 +124,11 @@
     {% if reviews and total_reviews and reviews|length < total_reviews %}
     <div class="selection-info">
       <div class="selection-badge">
-        <i class="bi bi-info-circle me-2"></i>
+        <i class="bi bi-chat-quote me-2"></i>
         {% blocktrans with shown=reviews|length total=total_reviews %}Mostrando {{ shown }} de {{ total }} reseñas{% endblocktrans %}
       </div>
       <p class="selection-note">
-        {% trans "Mostramos una selección de reseñas destacadas para ofrecer una visión equilibrada de la experiencia de nuestros visitantes." %}
+        {% trans "Selección de reseñas destacadas. El rating refleja el promedio de todas las opiniones." %}
       </p>
     </div>
     {% endif %}
@@ -219,7 +230,7 @@
 .reviews-section {
   background:
     radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
-    linear-gradient(135deg, #020617 0%, #022c22 35%, #064e3b 100%);
+    linear-gradient(135deg, #0a1628 0%, #0a3d32 35%, #0d5f4a 100%);
   min-height: 100vh;
   padding: 2rem 0 2.5rem;
 }

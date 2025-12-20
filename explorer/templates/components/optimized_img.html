@@ -1,0 +1,14 @@
+{% if has_image %}
+<img src="{{ src }}"
+     {% if srcset %}srcset="{{ srcset }}"{% endif %}
+     {% if sizes %}sizes="{{ sizes }}"{% endif %}
+     alt="{{ alt }}"
+     class="{{ css_class }}"
+     loading="{{ loading }}"
+     {% if data_full %}data-full="{{ data_full }}"{% endif %}>
+{% else %}
+<div class="placeholder-img {{ css_class }}">
+    <i class="bi bi-image"></i>
+</div>
+{% endif %}
+

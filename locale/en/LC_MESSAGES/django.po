@@ -2707,3 +2707,19 @@ msgstr "Try expanding the search radius"
 #~ msgstr ""
 #~ "You can switch between Spanish and English using the ES / EN buttons in "
 #~ "the top corner of the home, list and each detail page."
+
+# --- Reviews Page Improvements ---
+msgid "%(count)s reseñas en Google"
+msgstr "%(count)s Google reviews"
+
+msgid "Rating %(rating)s/5 calculado por Google sobre %(count)s opiniones verificadas"
+msgstr "Rating %(rating)s/5 calculated by Google from %(count)s verified reviews"
+
+msgid "Google proporciona hasta 5 reseñas destacadas por lugar. El rating %(rating)s/5 representa el promedio real de las %(total)s opiniones totales."
+msgstr "Google provides up to 5 featured reviews per place. The %(rating)s/5 rating represents the actual average of all %(total)s total reviews."
+
+msgid "Mostrando todas las %(count)s reseñas disponibles"
+msgstr "Showing all %(count)s available reviews"
+
+msgid "Selección de reseñas destacadas. El rating refleja el promedio de todas las opiniones."
+msgstr "Featured reviews selection. The rating reflects the average of all reviews."
