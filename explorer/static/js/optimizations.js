@@ -1,35 +1,36 @@
 // optimizations.js
 
-// Initialize search with autocomplete
+// Initialize search with autocomplete (only if jQuery UI is loaded)
 $(document).ready(function () {
-  $("#search-places").autocomplete({
-    source: function (request, response) {
-      $.ajax({
-        url: "/api/lugares/autocompletar/", // Ajustar esta URL si es diferente
-        dataType: "json",
-        data: { term: request.term },
-        success: function (data) {
-          response(
-            $.map(data, function (item) {
-              return {
-                label: item.label,
-                value: item.label,
-                slug: item.slug,
-              };
-            })
-          );
-        },
-      });
-    },
-    minLength: 2,
-    select: function (event, ui) {
-      if (ui.item.slug) {
-        // Usar una forma más robusta para construir la URL, si es posible
-        // Por ahora, se mantiene una URL estática con un reemplazo.
-        window.location.href = "/lugar/" + ui.item.slug + "/";
-      }
-    },
-  });
+  // Guard: solo inicializar autocomplete si jQuery UI está disponible
+  if (typeof $.fn.autocomplete === 'function') {
+    $("#search-places").autocomplete({
+      source: function (request, response) {
+        $.ajax({
+          url: "/api/lugares/autocompletar/",
+          dataType: "json",
+          data: { term: request.term },
+          success: function (data) {
+            response(
+              $.map(data, function (item) {
+                return {
+                  label: item.label,
+                  value: item.label,
+                  slug: item.slug,
+                };
+              })
+            );
+          },
+        });
+      },
+      minLength: 2,
+      select: function (event, ui) {
+        if (ui.item.slug) {
+          window.location.href = "/lugar/" + ui.item.slug + "/";
+        }
+      },
+    });
+  }
 
   // Smooth scroll for anchor links
   $('a[href^="#"]').on("click", function (e) {

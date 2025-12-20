@@ -1299,7 +1299,9 @@ const gettext = (window.gettext) ? window.gettext : (s => s);
 const ngettext = (window.ngettext) ? window.ngettext : ((singular, plural, count) => (Number(count) === 1 ? singular : plural));
 const interpolate = (window.interpolate) ? window.interpolate : ((fmt, obj) => {
     try {
-        return String(fmt).replace(/%\\(([^)]+)\\)s/g, (_, k) => (obj && obj[k] !== undefined ? obj[k] : ''));
+        // Regex para %(key)s - construido sin backslashes problemáticos en templates
+        const re = new RegExp('%[(]([^)]+)[)]s', 'g');
+        return String(fmt).replace(re, (_, k) => (obj && obj[k] !== undefined ? obj[k] : ''));
     } catch (_) {
         return String(fmt);
     }
