@@ -1,7 +1,101 @@
 from django import template
 from django.utils.translation import gettext as _
+import re
 
 register = template.Library()
+
+
+@register.simple_tag(takes_context=True)
+def translate_url_to(context, language_code):
+    """
+    Traduce la URL actual al idioma especificado.
+    Uso: {% translate_url_to 'en' %}
+    """
+    request = context.get('request')
+    if not request:
+        return '/'
+    
+    current_url = request.get_full_path()
+    
+    # Fallback: manejo manual de URLs con patrones regex
+    # Nota: No usamos django_translate_url porque no maneja URLs con segmentos
+    # que tienen diferentes nombres en cada idioma (ej: /nosotros/ <-> /about-us/)
+    import re as regex
+    
+    # Separar path y query string
+    if '?' in current_url:
+        path, query = current_url.split('?', 1)
+        query = '?' + query
+    else:
+        path, query = current_url, ''
+    
+    if language_code == 'en':
+        # ES -> EN
+        if path.startswith('/en/'):
+            return current_url  # Ya está en inglés
+        
+        # Patrones de conversión ES -> EN (orden importa: más específico primero)
+        patterns = [
+            # Páginas especiales
+            (r'^/nosotros/$', '/en/about-us/'),
+            (r'^/about-us/$', '/en/about-us/'),  # Por si acceden a /about-us/ sin prefijo
+            (r'^/busqueda-semantica/', '/en/semantic-search/'),
+            # Reviews con slug (con ñ URL-encoded o no)
+            (r'^/lugar/([^/]+)/rese[ñ%C3%B1]as/$', r'/en/place/\1/reviews/'),
+            # Lugares por comuna
+            (r'^/lugares/([^/]+)/$', r'/en/places/\1/'),
+            # Detalle de lugar
+            (r'^/lugar/([^/]+)/$', r'/en/place/\1/'),
+            # Lista general
+            (r'^/lugares/$', '/en/places/'),
+            # Home
+            (r'^/$', '/en/'),
+        ]
+        
+        for pattern, replacement in patterns:
+            if regex.match(pattern, path):
+                new_path = regex.sub(pattern, replacement, path)
+                return new_path + query
+        
+        # Fallback: agregar /en/
+        return '/en' + current_url
+    
+    else:  # ES
+        # EN -> ES
+        if not path.startswith('/en/'):
+            # Manejar caso especial de /about-us/ sin prefijo
+            if path == '/about-us/':
+                return '/nosotros/' + query
+            return current_url  # Ya está en español
+        
+        # Quitar /en/ primero para facilitar el matching
+        path_sin_en = path[3:]  # Quita '/en'
+        
+        # Patrones de conversión EN -> ES
+        patterns = [
+            # Páginas especiales
+            (r'^/about-us/$', '/nosotros/'),
+            (r'^/nosotros/$', '/nosotros/'),  # Por si hay /en/nosotros/
+            (r'^/semantic-search/', '/busqueda-semantica/'),
+            # Reviews con slug
+            (r'^/place/([^/]+)/reviews/$', r'/lugar/\1/reseñas/'),
+            # Lugares por comuna
+            (r'^/places/([^/]+)/$', r'/lugares/\1/'),
+            # Detalle de lugar
+            (r'^/place/([^/]+)/$', r'/lugar/\1/'),
+            # Lista general
+            (r'^/places/$', '/lugares/'),
+            # Home
+            (r'^/$', '/'),
+        ]
+        
+        for pattern, replacement in patterns:
+            if regex.match(pattern, path_sin_en):
+                new_path = regex.sub(pattern, replacement, path_sin_en)
+                return new_path + query
+        
+        # Fallback: quitar /en/
+        return (path_sin_en if path_sin_en else '/') + query
 
 @register.filter(name='add_class')
 def add_class(field, css_class):

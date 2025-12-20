@@ -1,0 +1,20 @@
+{% load i18n %}
+{% load form_tags %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{# Componente de cambio de idioma reutilizable #}
+{# Uso: {% include 'components/lang_switcher.html' %} #}
+
+<form action="{% url 'set_language' %}" method="post" class="d-inline">
+    {% csrf_token %}
+    <input type="hidden" name="language" value="es">
+    <input type="hidden" name="next" value="{% translate_url_to 'es' %}">
+    <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
+</form>
+<form action="{% url 'set_language' %}" method="post" class="d-inline">
+    {% csrf_token %}
+    <input type="hidden" name="language" value="en">
+    <input type="hidden" name="next" value="{% translate_url_to 'en' %}">
+    <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE|slice:':2' == 'en' %}active{% else %}inactive{% endif %}">EN</button>
+</form>
+

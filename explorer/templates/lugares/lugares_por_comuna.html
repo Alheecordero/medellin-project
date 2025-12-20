@@ -48,26 +48,7 @@
                 {% trans "Nosotros" %}
               </a>
             {% endif %}
-            <form action="{% url 'set_language' %}" method="post">
-              {% csrf_token %}
-              <input type="hidden" name="language" value="es">
-              {% if request.path|slice:":4" == "/en/" %}
-                <input type="hidden" name="next" value="{{ request.path|slice:'3:' }}">
-              {% else %}
-                <input type="hidden" name="next" value="{{ request.path }}">
-              {% endif %}
-              <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
-            </form>
-            <form action="{% url 'set_language' %}" method="post">
-              {% csrf_token %}
-              <input type="hidden" name="language" value="en">
-              {% if request.path|slice:":4" == "/en/" %}
-                <input type="hidden" name="next" value="{{ request.path }}">
-              {% else %}
-                <input type="hidden" name="next" value="/en{{ request.path }}">
-              {% endif %}
-              <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE|slice:":2" == 'en' %}active{% else %}inactive{% endif %}">EN</button>
-            </form>
+            {% include 'components/lang_switcher.html' %}
           </div>
         </div>
 

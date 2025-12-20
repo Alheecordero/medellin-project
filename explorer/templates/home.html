@@ -51,29 +51,7 @@
                               </a>
                             {% endif %}
                             <!-- Selector de idioma -->
-                            <form action="{% url 'set_language' %}" method="post">
-                                {% csrf_token %}
-                                <input type="hidden" name="language" value="es">
-                                {% if request.path|slice:":4" == "/en/" %}
-                                    {# Si estamos en /en/... quitar prefijo al volver a ES #}
-                                    <input type="hidden" name="next" value="{{ request.path|slice:'3:' }}">
-                                {% else %}
-                                    <input type="hidden" name="next" value="{{ request.path }}">
-                                {% endif %}
-                                <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE == 'es' %}active{% else %}inactive{% endif %}">ES</button>
-                            </form>
-                            <form action="{% url 'set_language' %}" method="post">
-                                {% csrf_token %}
-                                <input type="hidden" name="language" value="en">
-                                {% if request.path|slice:":4" == "/en/" %}
-                                    {# Ya estamos en /en/... mantenemos el prefijo #}
-                                    <input type="hidden" name="next" value="{{ request.path }}">
-                                {% else %}
-                                    {# Añadir prefijo /en al cambiar a inglés #}
-                                    <input type="hidden" name="next" value="/en{{ request.path }}">
-                                {% endif %}
-                                <button type="submit" class="btn btn-lang-home {% if LANGUAGE_CODE|slice:":2" == 'en' %}active{% else %}inactive{% endif %}">EN</button>
-                            </form>
+                            {% include 'components/lang_switcher.html' %}
                         </div>                    
                         <h1 class="hero-title display-2 mb-4 fw-bold">
                             {% blocktrans trimmed %}Descubre Medellín<br><span class="title-accent">como nunca antes</span>{% endblocktrans %}
