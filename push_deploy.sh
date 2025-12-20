@@ -154,10 +154,22 @@ ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc '
   PREV_COMMIT=\$(git rev-parse --short HEAD || echo none)
   echo \"Commit anterior: \$PREV_COMMIT\"
   
-  # Fetch y reset (preservando archivos locales como .env)
+  # Guardar .env antes de reset (si existe)
+  if [ -f .env ]; then
+    cp .env /tmp/.env.backup
+    echo \"Backup de .env creado\"
+  fi
+  
+  # Fetch y reset
   git fetch origin \"$BRANCH\"
   git checkout -B \"$BRANCH\"
   git reset --hard \"origin/$BRANCH\"
+  
+  # Restaurar .env después de reset
+  if [ -f /tmp/.env.backup ]; then
+    cp /tmp/.env.backup .env
+    echo \".env restaurado desde backup\"
+  fi
   
   NEW_COMMIT=\$(git rev-parse --short HEAD)
   echo \"Commit nuevo: \$NEW_COMMIT\"
