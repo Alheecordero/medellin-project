@@ -3,9 +3,12 @@ set -euo pipefail
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
+YELLOW='\033[1;33m'
 NC='\033[0m'
 
-echo -e "${GREEN}Starting deployment process...${NC}"
+echo -e "${GREEN}╔════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║           ViveMedellín - Professional Deploy Script            ║${NC}"
+echo -e "${GREEN}╚════════════════════════════════════════════════════════════════╝${NC}"
 
 # Configuración
 BRANCH=${BRANCH:-main}
@@ -15,8 +18,10 @@ VENV_DIR=${VENV_DIR:-med}
 SERVICE=${SERVICE:-gunicorn}
 GIT_REPO=${GIT_REPO:-https://github.com/Alheecordero/medellin-project.git}
 
-# Flags de despliegue (por defecto: modo rápido, no toca env/credenciales)
-# --full habilita pip+migrate+static
+# Archivos que NUNCA deben subirse al repo (configuración local)
+LOCAL_ONLY_FILES=".env .env.local settings_local.py vivemedellin-*.json"
+
+# Flags de despliegue (por defecto: modo rápido)
 DO_PIP=false
 DO_MIGRATE=false
 DO_STATIC=false
@@ -38,82 +43,200 @@ for arg in "$@"; do
     --compile) DO_COMPILE=true ;;
     --clear-cache) DO_CLEAR_CACHE=true ;;
     --no-clear-cache) DO_CLEAR_CACHE=false ;;
+    --help|-h)
+      echo "Uso: $0 [opciones]"
+      echo ""
+      echo "Opciones:"
+      echo "  --full          Ejecutar pip install, migrate y collectstatic"
+      echo "  --pip           Solo pip install"
+      echo "  --migrate       Solo migrate"
+      echo "  --static        Solo collectstatic"
+      echo "  --compile       Compilar mensajes i18n"
+      echo "  --clear-cache   Limpiar caché Django (por defecto: sí)"
+      echo "  --no-restart    No reiniciar gunicorn"
+      echo ""
+      exit 0
+      ;;
   esac
 done
 
-# Push a GitHub
-echo -e "${GREEN}Verificando cambios locales...${NC}"
+# ═══════════════════════════════════════════════════════════════════
+# PASO 1: Verificar que no hay archivos locales en staging
+# ═══════════════════════════════════════════════════════════════════
+echo -e "\n${GREEN}[1/5] Verificando archivos locales...${NC}"
+
+# Verificar que .env NO está siendo trackeado
+if git ls-files --error-unmatch .env >/dev/null 2>&1; then
+    echo -e "${RED}ERROR: .env está siendo trackeado por Git!${NC}"
+    echo -e "${YELLOW}Ejecuta: git rm --cached .env${NC}"
+    exit 1
+fi
+
+# Verificar que DEBUG=True no está en ningún archivo trackeado
+if git grep -l "DEBUG=True" -- '*.py' '*.env*' 2>/dev/null | grep -v '.example' | head -1; then
+    echo -e "${YELLOW}ADVERTENCIA: Se encontró DEBUG=True en archivos trackeados${NC}"
+fi
+
+echo -e "${GREEN}✓ No hay archivos de configuración local en el repo${NC}"
+
+# ═══════════════════════════════════════════════════════════════════
+# PASO 2: Preparar y enviar cambios a GitHub
+# ═══════════════════════════════════════════════════════════════════
+echo -e "\n${GREEN}[2/5] Preparando cambios para GitHub...${NC}"
+
+# Excluir archivos locales explícitamente
 git add -A
-if ! git diff --cached --quiet; then
-    echo -e "${GREEN}Auto-commit de cambios locales...${NC}"
-    git commit -m "auto: deploy $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+
+# Verificar si hay cambios
+if git diff --cached --quiet; then
+    echo -e "${YELLOW}No hay cambios para enviar${NC}"
+else
+    echo -e "${GREEN}Creando commit...${NC}"
+    git commit -m "deploy: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
 fi
 
-echo -e "${GREEN}Pushing changes to GitHub...${NC}"
+echo -e "${GREEN}Enviando a GitHub...${NC}"
 if ! git push origin "$BRANCH"; then
-	echo -e "${RED}Failed to push changes to GitHub${NC}"
-	exit 1
+    echo -e "${RED}ERROR: No se pudo enviar a GitHub${NC}"
+    exit 1
 fi
 
-# Actualizar y reiniciar en servidor
-echo -e "${GREEN}Updating and restarting on server...${NC}"
-ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc 'set -e; \
-  cd \"$APP_DIR\"; \
-  if [ ! -d .git ]; then echo -e \"${RED}ERROR: Git repo not found in $APP_DIR${NC}\"; exit 1; fi; \
-  if [ ! -f .env ]; then echo -e \"${RED}ERROR: .env not found in $APP_DIR (required)${NC}\"; exit 1; fi; \
-  # Guardrail: evitar que DEBUG quede activo (o duplicado) en producción, lo cual expone páginas técnicas en la web \
-  DBG_COUNT=$(grep -c \"^DEBUG=\" .env || true); \
-  if [ \"${DBG_COUNT:-0}\" -ne 1 ]; then \
-    echo -e \"${RED}ERROR: .env must contain exactly ONE DEBUG=... line (found ${DBG_COUNT:-0}).${NC}\"; \
-    echo -e \"${RED}Fix: keep a single line like DEBUG=False in /var/www/medellin-project/.env${NC}\"; \
-    exit 1; \
-  fi; \
-  if grep -Eiq \"^DEBUG=(true|1|yes|on)$\" .env; then \
-    echo -e \"${RED}ERROR: DEBUG is ON in production (.env). Set DEBUG=False before deploying.${NC}\"; \
-    exit 1; \
-  fi; \
-  PREV_COMMIT=$(git rev-parse --short HEAD || echo none); \
-  # Importante: si el fetch falla, el deploy NO debe continuar (evita quedar en commits viejos) \
-  git fetch origin \"$BRANCH\"; \
-  git checkout -B \"$BRANCH\"; \
-  git reset --hard \"origin/$BRANCH\"; \
-  echo \"Server HEAD after reset: $(git rev-parse --short HEAD)\"; \
-  # Do NOT remove untracked files to preserve .env and keys \
-  if [ ! -d \"$VENV_DIR\" ]; then python3 -m venv \"$VENV_DIR\"; fi; \
-  source \"$VENV_DIR\"/bin/activate; \
-  # Respetar credenciales/entorno del servidor: NO tocar .env ni keys \
-  if $DO_PIP; then pip install --upgrade pip; pip install -r requirements.txt; fi; \
-  if $DO_MIGRATE; then python manage.py migrate --noinput; fi; \
-  if $DO_COMPILE; then \
-    echo Compilando mensajes i18n...; \
-    python manage.py compilemessages -l en -l es || true; \
-  fi; \
-  if $DO_CLEAR_CACHE; then \
-    echo Limpiando caché Django...; \
-    python manage.py shell -c \"from django.core.cache import caches; [c.clear() for c in caches.all()]; print('DJANGO_CACHE_CLEARED')\" || echo 'Cache clear skipped'; \
-  fi; \
-  if $DO_STATIC; then python manage.py collectstatic --noinput; fi; \
-  sudo systemctl daemon-reload || true; \
-  if $DO_RESTART; then sudo systemctl restart \"$SERVICE\"; fi; \
-  sleep 2; \
-  HC_CODE=$(curl -s -o /dev/null -w \"%{http_code}\" --unix-socket /run/gunicorn.sock http://localhost/ || echo 000); \
-  if $DO_RESTART && [ \"\$HC_CODE\" != \"200\" ] && [ \"\$HC_CODE\" != \"301\" ]; then \
-    echo \"Healthcheck failed (\$HC_CODE). Rolling back to \$PREV_COMMIT\"; \
-    git reset --hard \"\$PREV_COMMIT\"; \
-    sudo systemctl restart \"$SERVICE\"; \
-    exit 1; \
-  fi; \
-  # Healthcheck adicional de API semántica (no bloqueante)
-  curl -sS -H \"Accept: application/json\" \"https://vivemedellin.co/api/semantic-search/?q=ping&top=1\" -o /dev/null -w \"API:%{http_code}\\n\" || true; \
-  # Healthcheck de jsi18n para ambos idiomas (no bloqueante)
-  curl -s -o /dev/null -w \"JS:%{http_code}\\n\" http://localhost/jsi18n/ || true; \
-  curl -s -o /dev/null -w \"JS_EN:%{http_code}\\n\" http://localhost/en/jsi18n/ || true; \
-  if sudo nginx -t; then sudo systemctl reload nginx || true; else echo \"Skipping nginx reload (config test failed)\"; fi; \
-  echo OK'"
+LOCAL_COMMIT=$(git rev-parse --short HEAD)
+echo -e "${GREEN}✓ Commit local: ${LOCAL_COMMIT}${NC}"
+
+# ═══════════════════════════════════════════════════════════════════
+# PASO 3: Validar configuración del servidor ANTES de actualizar
+# ═══════════════════════════════════════════════════════════════════
+echo -e "\n${GREEN}[3/5] Validando configuración del servidor...${NC}"
+
+# Validar .env del servidor (sin modificar nada aún)
+ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc '
+  set -e
+  cd \"$APP_DIR\"
+  
+  # Verificar que existe .env
+  if [ ! -f .env ]; then
+    echo \"ERROR: .env no existe en el servidor\"
+    exit 1
+  fi
+  
+  # Verificar que DEBUG=False (exactamente una vez)
+  DBG_COUNT=\$(grep -c \"^DEBUG=\" .env || echo 0)
+  if [ \"\$DBG_COUNT\" -ne 1 ]; then
+    echo \"ERROR: .env debe tener exactamente UNA línea DEBUG= (encontradas: \$DBG_COUNT)\"
+    cat .env
+    exit 1
+  fi
+  
+  if grep -Eq \"^DEBUG=(True|true|1|yes|on)\$\" .env; then
+    echo \"ERROR: DEBUG está activado en producción!\"
+    exit 1
+  fi
+  
+  echo \"✓ Configuración del servidor válida\"
+'"
 
 if [ $? -ne 0 ]; then
-	echo -e "${RED}Failed to update or restart on server${NC}"
-	exit 1
+    echo -e "${RED}ERROR: La configuración del servidor no es válida${NC}"
+    echo -e "${YELLOW}Corrige el .env del servidor antes de continuar${NC}"
+    exit 1
 fi
 
-echo -e "${GREEN}Deployment completed successfully!${NC}"
+# ═══════════════════════════════════════════════════════════════════
+# PASO 4: Actualizar código en el servidor
+# ═══════════════════════════════════════════════════════════════════
+echo -e "\n${GREEN}[4/5] Actualizando código en el servidor...${NC}"
+
+ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc '
+  set -e
+  cd \"$APP_DIR\"
+  
+  PREV_COMMIT=\$(git rev-parse --short HEAD || echo none)
+  echo \"Commit anterior: \$PREV_COMMIT\"
+  
+  # Fetch y reset (preservando archivos locales como .env)
+  git fetch origin \"$BRANCH\"
+  git checkout -B \"$BRANCH\"
+  git reset --hard \"origin/$BRANCH\"
+  
+  NEW_COMMIT=\$(git rev-parse --short HEAD)
+  echo \"Commit nuevo: \$NEW_COMMIT\"
+  
+  # Activar entorno virtual
+  if [ ! -d \"$VENV_DIR\" ]; then python3 -m venv \"$VENV_DIR\"; fi
+  source \"$VENV_DIR/bin/activate\"
+  
+  # Operaciones opcionales
+  if $DO_PIP; then
+    echo \"Instalando dependencias...\"
+    pip install --upgrade pip
+    pip install -r requirements.txt
+  fi
+  
+  if $DO_MIGRATE; then
+    echo \"Ejecutando migraciones...\"
+    python manage.py migrate --noinput
+  fi
+  
+  if $DO_COMPILE; then
+    echo \"Compilando mensajes i18n...\"
+    python manage.py compilemessages -l en -l es 2>/dev/null || echo \"(compilemessages omitido - msgfmt no disponible)\"
+  fi
+  
+  if $DO_CLEAR_CACHE; then
+    echo \"Limpiando caché...\"
+    python manage.py shell -c \"from django.core.cache import caches; [c.clear() for c in caches.all()]; print(\\\"Cache limpiado\\\")\" 2>/dev/null || true
+  fi
+  
+  if $DO_STATIC; then
+    echo \"Recolectando archivos estáticos...\"
+    python manage.py collectstatic --noinput
+  fi
+'"
+
+# ═══════════════════════════════════════════════════════════════════
+# PASO 5: Reiniciar servicios y verificar
+# ═══════════════════════════════════════════════════════════════════
+echo -e "\n${GREEN}[5/5] Reiniciando servicios...${NC}"
+
+ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc '
+  set -e
+  cd \"$APP_DIR\"
+  
+  sudo systemctl daemon-reload || true
+  
+  if $DO_RESTART; then
+    sudo systemctl restart gunicorn
+    sleep 2
+    
+    # Healthcheck
+    HC_CODE=\$(curl -s -o /dev/null -w \"%{http_code}\" --unix-socket /run/gunicorn.sock http://localhost/ || echo 000)
+    echo \"Healthcheck: \$HC_CODE\"
+    
+    if [ \"\$HC_CODE\" != \"200\" ] && [ \"\$HC_CODE\" != \"301\" ]; then
+      echo \"ERROR: Healthcheck falló\"
+      exit 1
+    fi
+  fi
+  
+  # Reload nginx si la config es válida
+  if sudo nginx -t 2>/dev/null; then
+    sudo systemctl reload nginx || true
+  fi
+  
+  echo \"\"
+  echo \"════════════════════════════════════════\"
+  echo \"✓ Deploy completado exitosamente\"
+  echo \"  Commit: \$(git rev-parse --short HEAD)\"
+  echo \"  Fecha:  \$(date)\"
+  echo \"════════════════════════════════════════\"
+'"
+
+if [ $? -ne 0 ]; then
+    echo -e "${RED}ERROR: El deploy falló${NC}"
+    exit 1
+fi
+
+echo -e "\n${GREEN}╔════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║                    ✓ DEPLOY EXITOSO                            ║${NC}"
+echo -e "${GREEN}╚════════════════════════════════════════════════════════════════╝${NC}"

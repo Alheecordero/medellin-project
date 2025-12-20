@@ -5,9 +5,15 @@
 __pycache__/
 *.pyc
 
-# Configuraciones locales
+# Configuraciones locales - NUNCA versionar
+.env
+.env.local
+.env.production
 settings_dev.py
 *.sqlite3
+
+# Excepción: .env.example SÍ debe versionarse (es referencia)
+!.env.example
 
 # Archivos de datos y media grandes que viven en GCS (no en el repo)
 coordenadas_guardadas.json
