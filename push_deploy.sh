@@ -58,6 +58,17 @@ ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc 'set -e; \
   cd \"$APP_DIR\"; \
   if [ ! -d .git ]; then echo -e \"${RED}ERROR: Git repo not found in $APP_DIR${NC}\"; exit 1; fi; \
   if [ ! -f .env ]; then echo -e \"${RED}ERROR: .env not found in $APP_DIR (required)${NC}\"; exit 1; fi; \
+  # Guardrail: evitar que DEBUG quede activo (o duplicado) en producción, lo cual expone páginas técnicas en la web \
+  DBG_COUNT=$(grep -c \"^DEBUG=\" .env || true); \
+  if [ \"${DBG_COUNT:-0}\" -ne 1 ]; then \
+    echo -e \"${RED}ERROR: .env must contain exactly ONE DEBUG=... line (found ${DBG_COUNT:-0}).${NC}\"; \
+    echo -e \"${RED}Fix: keep a single line like DEBUG=False in /var/www/medellin-project/.env${NC}\"; \
+    exit 1; \
+  fi; \
+  if grep -Eiq \"^DEBUG=(true|1|yes|on)$\" .env; then \
+    echo -e \"${RED}ERROR: DEBUG is ON in production (.env). Set DEBUG=False before deploying.${NC}\"; \
+    exit 1; \
+  fi; \
   PREV_COMMIT=$(git rev-parse --short HEAD || echo none); \
   git fetch origin \"$BRANCH\" || true; \
   git checkout -B \"$BRANCH\"; \
