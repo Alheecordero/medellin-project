@@ -73,9 +73,11 @@ ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc 'set -e; \
     exit 1; \
   fi; \
   PREV_COMMIT=$(git rev-parse --short HEAD || echo none); \
-  git fetch origin \"$BRANCH\" || true; \
+  # Importante: si el fetch falla, el deploy NO debe continuar (evita quedar en commits viejos) \
+  git fetch origin \"$BRANCH\"; \
   git checkout -B \"$BRANCH\"; \
   git reset --hard \"origin/$BRANCH\"; \
+  echo \"Server HEAD after reset: $(git rev-parse --short HEAD)\"; \
   # Do NOT remove untracked files to preserve .env and keys \
   if [ ! -d \"$VENV_DIR\" ]; then python3 -m venv \"$VENV_DIR\"; fi; \
   source \"$VENV_DIR\"/bin/activate; \
