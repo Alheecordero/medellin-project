@@ -1063,7 +1063,7 @@ msgstr "GPS active"
 
 #: explorer/templates/home.html:1896
 msgid "Tu navegador no soporta geolocalización"
-msgstr "Your browser doesn't support geolocation"
+msgstr "Your browser does not support geolocation"
 
 #: explorer/templates/home.html:1926
 msgid "Error de ubicación"
