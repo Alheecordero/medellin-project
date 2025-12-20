@@ -63,14 +63,15 @@
             <!-- DROPDOWN: Áreas -->
             <div class="col-lg-4 col-md-6">
               <div class="dropdown">
-                <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button"
+                <button class="btn btn-filtro-dropdown w-100 dropdown-toggle {% if region_actual %}selected{% endif %}" type="button"
                         id="areasDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="bi bi-geo-alt me-2"></i>
-                  <span>{% if region_actual %}{{ region_actual.name }}{% else %}{% trans "Seleccionar Área" %}{% endif %}</span>
+                  <span id="area-label">{% if region_actual %}{{ region_actual.name }}{% else %}{% trans "Seleccionar Área" %}{% endif %}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="areasDropdown">
                   <li>
-                    <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_list' %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}">
+                    <a class="dropdown-item dropdown-item-filtro area-option" href="javascript:void(0)" 
+                       data-area-slug="" data-area-name="{% trans 'Todas las áreas' %}">
                       <i class="bi bi-globe me-2 text-primary"></i>
                       <div>
                         <div class="fw-semibold">{% trans "Todas las áreas" %}</div>
@@ -83,7 +84,8 @@
                     <li class="dropdown-header"><i class="bi bi-building me-2 text-success"></i>{% trans "Medellín (Áreas)" %}</li>
                     {% for area in comunas_medellin %}
                       <li>
-                        <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_por_comuna' area.slug %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}">
+                        <a class="dropdown-item dropdown-item-filtro area-option" href="javascript:void(0)"
+                           data-area-slug="{{ area.slug }}" data-area-name="{{ area.name }}">
                           <i class="bi bi-geo-alt me-2 text-primary"></i>
                           <div class="fw-semibold">{{ area.name }}</div>
                         </a>
@@ -95,7 +97,8 @@
                     <li class="dropdown-header"><i class="bi bi-map me-2 text-info"></i>{% trans "Otras áreas de Antioquia" %}</li>
                     {% for area in otras_regiones %}
                       <li>
-                        <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_por_comuna' area.slug %}{% if tipo_actual %}?tipo={{ tipo_actual }}{% endif %}">
+                        <a class="dropdown-item dropdown-item-filtro area-option" href="javascript:void(0)"
+                           data-area-slug="{{ area.slug }}" data-area-name="{{ area.name }}">
                           <i class="bi bi-geo-alt me-2 text-primary"></i>
                           <div class="fw-semibold">{{ area.name }}</div>
                         </a>
@@ -109,18 +112,15 @@
             <!-- DROPDOWN: Tipos -->
             <div class="col-lg-4 col-md-6">
               <div class="dropdown">
-                <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button"
+                <button class="btn btn-filtro-dropdown w-100 dropdown-toggle {% if tipo_actual %}selected{% endif %}" type="button"
                         id="tiposDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="bi bi-grid-3x3-gap me-2"></i>
-                  <span id="tipo-label">{% if tipo_actual_label %}{{ tipo_actual_label }}{% else %}{% trans "Seleccionar Tipo" %}{% endif %}</span>
+                  <span id="tipo-label-btn">{% if tipo_actual_label %}{{ tipo_actual_label }}{% else %}{% trans "Seleccionar Tipo" %}{% endif %}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="tiposDropdown">
                   <li>
-                    {% if region_actual %}
-                      <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}">
-                    {% else %}
-                      <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_list' %}">
-                    {% endif %}
+                    <a class="dropdown-item dropdown-item-filtro tipo-option" href="javascript:void(0)"
+                       data-tipo-code="" data-tipo-label="{% trans 'Todos los tipos' %}">
                       <i class="bi bi-grid me-2 text-primary"></i>
                       <div class="fw-semibold">{% trans "Todos los tipos" %}</div>
                     </a>
@@ -130,11 +130,8 @@
                     <li class="dropdown-header"><span class="me-2">{{ grupo.emoji }}</span>{{ grupo.name }}</li>
                     {% for item in grupo.items %}
                       <li>
-                        {% if region_actual %}
-                          <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_por_comuna' region_actual.slug %}?tipo={{ item.code }}">
-                        {% else %}
-                          <a class="dropdown-item dropdown-item-filtro" href="{% url 'explorer:lugares_list' %}?tipo={{ item.code }}">
-                        {% endif %}
+                        <a class="dropdown-item dropdown-item-filtro tipo-option" href="javascript:void(0)"
+                           data-tipo-code="{{ item.code }}" data-tipo-label="{{ item.label }}">
                           <i class="bi bi-arrow-right me-2 text-muted"></i>
                           <div class="fw-semibold">{{ item.label }}</div>
                         </a>
@@ -152,42 +149,50 @@
                 <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button"
                         id="featuresDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="bi bi-stars me-2"></i>
-                  <span>{% trans "Características" %}</span>
+                  <span id="features-label">{% trans "Características" %}</span>
+                  <span id="features-count" class="badge bg-success ms-2" style="display: none;">0</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="featuresDropdown">
-                  {% with base=request.path %}
-                    <!-- Servicios de Entrega -->
-                    <li class="dropdown-header"><i class="bi bi-bicycle me-2 text-primary"></i>{% trans "Servicios de Entrega" %}</li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?delivery=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-bicycle me-2 text-success"></i><div class="fw-semibold">{% trans "Delivery" %}</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?takeout=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-bag me-2 text-success"></i><div class="fw-semibold">{% trans "Para Llevar" %}</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?dine_in=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-house me-2 text-success"></i><div class="fw-semibold">{% trans "Comer en Local" %}</div></a></li>
-                    
-                    <li><hr class="dropdown-divider"></li>
-                    
-                    <!-- Ambiente & Experiencia -->
-                    <li class="dropdown-header"><i class="bi bi-stars me-2 text-warning"></i>{% trans "Ambiente & Experiencia" %}</li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?outdoor_seating=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-tree me-2 text-success"></i><div class="fw-semibold">{% trans "Terraza" %}</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?live_music=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-music-note-beamed me-2 text-success"></i><div class="fw-semibold">{% trans "Música en Vivo" %}</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?good_for_groups=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-people me-2 text-success"></i><div class="fw-semibold">{% trans "Para Grupos" %}</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?good_for_children=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-emoji-smile me-2 text-success"></i><div class="fw-semibold">{% trans "Para Niños" %}</div></a></li>
-                    
-                    <li><hr class="dropdown-divider"></li>
-                    
-                    <!-- Especialidades -->
-                    <li class="dropdown-header"><i class="bi bi-cup-straw me-2 text-info"></i>{% trans "Especialidades" %}</li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?serves_cocktails=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-cup-straw me-2 text-success"></i><div class="fw-semibold">{% trans "Cócteles" %}</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?serves_wine=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-cup me-2 text-success"></i><div class="fw-semibold">{% trans "Vinos" %}</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?serves_coffee=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-cup-hot me-2 text-success"></i><div class="fw-semibold">{% trans "Café Especialidad" %}</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?serves_dessert=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-cake me-2 text-success"></i><div class="fw-semibold">{% trans "Postres" %}</div></a></li>
-                    
-                    <li><hr class="dropdown-divider"></li>
-                    
-                    <!-- Accesibilidad & Comodidades -->
-                    <li class="dropdown-header"><i class="bi bi-universal-access me-2 text-secondary"></i>{% trans "Accesibilidad & Comodidades" %}</li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?wheelchair_accessible_entrance=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-universal-access me-2 text-success"></i><div class="fw-semibold">{% trans "Acceso Accesible" %}</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?allows_dogs=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-heart me-2 text-danger"></i><div class="fw-semibold">{% trans "Pet Friendly" %}</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-filtro" href="{{ base }}?accepts_credit_cards=true{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}"><i class="bi bi-credit-card me-2 text-success"></i><div class="fw-semibold">{% trans "Tarjetas de Crédito" %}</div></a></li>
-                  {% endwith %}
+                  <!-- Limpiar características -->
+                  <li>
+                    <a class="dropdown-item dropdown-item-filtro feature-clear" href="javascript:void(0)">
+                      <i class="bi bi-x-circle me-2 text-muted"></i>
+                      <div class="fw-semibold">{% trans "Limpiar características" %}</div>
+                    </a>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  
+                  <!-- Servicios de Entrega -->
+                  <li class="dropdown-header"><i class="bi bi-bicycle me-2 text-primary"></i>{% trans "Servicios de Entrega" %}</li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="delivery" data-label="{% trans 'Delivery' %}"><i class="bi bi-bicycle me-2 text-success"></i><div class="fw-semibold">{% trans "Delivery" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="takeout" data-label="{% trans 'Para Llevar' %}"><i class="bi bi-bag me-2 text-success"></i><div class="fw-semibold">{% trans "Para Llevar" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="dine_in" data-label="{% trans 'Comer en Local' %}"><i class="bi bi-house me-2 text-success"></i><div class="fw-semibold">{% trans "Comer en Local" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
+                  
+                  <li><hr class="dropdown-divider"></li>
+                  
+                  <!-- Ambiente & Experiencia -->
+                  <li class="dropdown-header"><i class="bi bi-stars me-2 text-warning"></i>{% trans "Ambiente & Experiencia" %}</li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="outdoor_seating" data-label="{% trans 'Terraza' %}"><i class="bi bi-tree me-2 text-success"></i><div class="fw-semibold">{% trans "Terraza" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="live_music" data-label="{% trans 'Música en Vivo' %}"><i class="bi bi-music-note-beamed me-2 text-success"></i><div class="fw-semibold">{% trans "Música en Vivo" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="good_for_groups" data-label="{% trans 'Para Grupos' %}"><i class="bi bi-people me-2 text-success"></i><div class="fw-semibold">{% trans "Para Grupos" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="good_for_children" data-label="{% trans 'Para Niños' %}"><i class="bi bi-emoji-smile me-2 text-success"></i><div class="fw-semibold">{% trans "Para Niños" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
+                  
+                  <li><hr class="dropdown-divider"></li>
+                  
+                  <!-- Especialidades -->
+                  <li class="dropdown-header"><i class="bi bi-cup-straw me-2 text-info"></i>{% trans "Especialidades" %}</li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="serves_cocktails" data-label="{% trans 'Cócteles' %}"><i class="bi bi-cup-straw me-2 text-success"></i><div class="fw-semibold">{% trans "Cócteles" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="serves_wine" data-label="{% trans 'Vinos' %}"><i class="bi bi-cup me-2 text-success"></i><div class="fw-semibold">{% trans "Vinos" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="serves_coffee" data-label="{% trans 'Café Especialidad' %}"><i class="bi bi-cup-hot me-2 text-success"></i><div class="fw-semibold">{% trans "Café Especialidad" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="serves_dessert" data-label="{% trans 'Postres' %}"><i class="bi bi-cake me-2 text-success"></i><div class="fw-semibold">{% trans "Postres" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
+                  
+                  <li><hr class="dropdown-divider"></li>
+                  
+                  <!-- Accesibilidad & Comodidades -->
+                  <li class="dropdown-header"><i class="bi bi-universal-access me-2 text-secondary"></i>{% trans "Accesibilidad & Comodidades" %}</li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="wheelchair_accessible_entrance" data-label="{% trans 'Acceso Accesible' %}"><i class="bi bi-universal-access me-2 text-success"></i><div class="fw-semibold">{% trans "Acceso Accesible" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="allows_dogs" data-label="{% trans 'Pet Friendly' %}"><i class="bi bi-heart me-2 text-danger"></i><div class="fw-semibold">{% trans "Pet Friendly" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
+                  <li><a class="dropdown-item dropdown-item-filtro feature-option" href="javascript:void(0)" data-feature="accepts_credit_cards" data-label="{% trans 'Tarjetas de Crédito' %}"><i class="bi bi-credit-card me-2 text-success"></i><div class="fw-semibold">{% trans "Tarjetas de Crédito" %}</div><i class="bi bi-check2 ms-auto feature-check" style="display:none;"></i></a></li>
                 </ul>
               </div>
             </div>
@@ -865,5 +870,409 @@
     font-size: 0.8125rem;
   }
 }
+
+/* Estado seleccionado para dropdowns */
+.btn-filtro-dropdown.selected {
+  background: rgba(17, 153, 142, 0.35) !important;
+  border-color: rgba(17, 153, 142, 0.6) !important;
+}
+
+/* Check en características seleccionadas */
+.feature-option.active {
+  background: rgba(17, 153, 142, 0.1);
+}
+
+.feature-option.active .feature-check {
+  display: inline-block !important;
+  color: #11998e;
+}
+
+/* Loading overlay */
+.places-grid-card.loading {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+/* Animación para nuevos resultados */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lugar-card-wrapper.animate {
+  animation: fadeInUp 0.3s ease forwards;
+}
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // ═══════════════════════════════════════════════════════════════
+    // FILTRADO DINÁMICO PROFESIONAL
+    // ═══════════════════════════════════════════════════════════════
+    
+    // Estado inicial de filtros (desde el servidor)
+    const filtros = {
+        area: '{{ region_actual.slug|default:"" }}',
+        areaName: '{{ region_actual.name|default:"" }}',
+        tipo: '{{ tipo_actual|default:"" }}',
+        tipoLabel: '{{ tipo_actual_label|default:"" }}',
+        caracteristicas: {},
+        pagina: 1
+    };
+    
+    // Textos traducidos
+    const T = {
+        selectArea: '{% trans "Seleccionar Área" %}',
+        selectType: '{% trans "Seleccionar Tipo" %}',
+        features: '{% trans "Características" %}',
+        loading: '{% trans "Cargando..." %}',
+        noResults: '{% trans "No hay lugares disponibles" %}',
+        noResultsMsg: '{% trans "No se encontraron lugares que coincidan con tu búsqueda." %}',
+        viewAll: '{% trans "Ver todos los lugares" %}',
+        viewDetails: '{% trans "Ver detalles" %}',
+        featured: '{% trans "Destacado" %}',
+        exclusive: '{% trans "Exclusivo" %}',
+        prev: '{% trans "Anterior" %}',
+        next: '{% trans "Siguiente" %}'
+    };
+    
+    // Parsear características iniciales desde URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const featureKeys = ['delivery', 'takeout', 'dine_in', 'outdoor_seating', 'live_music',
+        'good_for_groups', 'good_for_children', 'serves_cocktails', 'serves_wine',
+        'serves_coffee', 'serves_dessert', 'wheelchair_accessible_entrance',
+        'allows_dogs', 'accepts_credit_cards', 'reservable'];
+    
+    featureKeys.forEach(key => {
+        if (urlParams.get(key) === 'true') {
+            filtros.caracteristicas[key] = true;
+            $(`.feature-option[data-feature="${key}"]`).addClass('active')
+                .find('.feature-check').show();
+        }
+    });
+    updateFeaturesCount();
+    
+    // Control de búsqueda
+    let searchTimeout = null;
+    let currentRequest = null;
+    const DEBOUNCE_MS = 400;
+    
+    // ─────────────────────────────────────────────────────────────
+    // EVENT: Selección de Área
+    // ─────────────────────────────────────────────────────────────
+    $(document).on('click', '.area-option', function(e) {
+        e.preventDefault();
+        filtros.area = $(this).data('area-slug') || '';
+        filtros.areaName = $(this).data('area-name') || '';
+        filtros.pagina = 1;
+        
+        // Actualizar UI
+        $('#area-label').text(filtros.area ? filtros.areaName : T.selectArea);
+        $('#areasDropdown').toggleClass('selected', !!filtros.area);
+        $('#areasDropdown').dropdown('hide');
+        
+        ejecutarBusqueda();
+    });
+    
+    // ─────────────────────────────────────────────────────────────
+    // EVENT: Selección de Tipo
+    // ─────────────────────────────────────────────────────────────
+    $(document).on('click', '.tipo-option', function(e) {
+        e.preventDefault();
+        filtros.tipo = $(this).data('tipo-code') || '';
+        filtros.tipoLabel = $(this).data('tipo-label') || '';
+        filtros.pagina = 1;
+        
+        // Actualizar UI
+        $('#tipo-label-btn').text(filtros.tipo ? filtros.tipoLabel : T.selectType);
+        $('#tiposDropdown').toggleClass('selected', !!filtros.tipo);
+        $('#tiposDropdown').dropdown('hide');
+        
+        ejecutarBusqueda();
+    });
+    
+    // ─────────────────────────────────────────────────────────────
+    // EVENT: Toggle de Característica
+    // ─────────────────────────────────────────────────────────────
+    $(document).on('click', '.feature-option', function(e) {
+        e.preventDefault();
+        e.stopPropagation(); // No cerrar el dropdown
+        
+        const feature = $(this).data('feature');
+        const isActive = $(this).hasClass('active');
+        
+        if (isActive) {
+            $(this).removeClass('active').find('.feature-check').hide();
+            delete filtros.caracteristicas[feature];
+        } else {
+            $(this).addClass('active').find('.feature-check').show();
+            filtros.caracteristicas[feature] = true;
+        }
+        
+        filtros.pagina = 1;
+        updateFeaturesCount();
+        programarBusqueda();
+    });
+    
+    // ─────────────────────────────────────────────────────────────
+    // EVENT: Limpiar Características
+    // ─────────────────────────────────────────────────────────────
+    $(document).on('click', '.feature-clear', function(e) {
+        e.preventDefault();
+        filtros.caracteristicas = {};
+        filtros.pagina = 1;
+        
+        $('.feature-option').removeClass('active').find('.feature-check').hide();
+        updateFeaturesCount();
+        $('#featuresDropdown').dropdown('hide');
+        
+        ejecutarBusqueda();
+    });
+    
+    // ─────────────────────────────────────────────────────────────
+    // HELPERS
+    // ─────────────────────────────────────────────────────────────
+    function updateFeaturesCount() {
+        const count = Object.keys(filtros.caracteristicas).length;
+        const $count = $('#features-count');
+        const $btn = $('#featuresDropdown');
+        
+        if (count > 0) {
+            $count.text(count).show();
+            $btn.addClass('selected');
+        } else {
+            $count.hide();
+            $btn.removeClass('selected');
+        }
+    }
+    
+    function programarBusqueda() {
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(ejecutarBusqueda, DEBOUNCE_MS);
+    }
+    
+    function ejecutarBusqueda() {
+        if (searchTimeout) clearTimeout(searchTimeout);
+        if (currentRequest) currentRequest.abort();
+        
+        // Mostrar loading
+        $('.places-grid-card').addClass('loading');
+        
+        // Construir parámetros
+        const params = new URLSearchParams();
+        if (filtros.area) params.append('area', filtros.area);
+        if (filtros.tipo) params.append('tipo', filtros.tipo);
+        if (filtros.pagina > 1) params.append('page', filtros.pagina);
+        
+        Object.keys(filtros.caracteristicas).forEach(key => {
+            params.append(key, 'true');
+        });
+        
+        // Actualizar URL sin recargar (History API)
+        const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+        window.history.pushState({filtros: filtros}, '', newUrl);
+        
+        // Petición AJAX
+        currentRequest = $.ajax({
+            url: '{% url "explorer:places_filter_ajax" %}',
+            type: 'GET',
+            data: params.toString(),
+            success: function(response) {
+                $('.places-grid-card').removeClass('loading');
+                if (response.success) {
+                    renderizarResultados(response);
+                    actualizarTitulo(response);
+                }
+            },
+            error: function(xhr, status, error) {
+                if (status === 'abort') return;
+                $('.places-grid-card').removeClass('loading');
+                console.error('Error:', error);
+            }
+        });
+    }
+    
+    function renderizarResultados(data) {
+        const $grid = $('.lugares-grid');
+        const $container = $('.places-grid-card');
+        
+        if (data.lugares.length === 0) {
+            $container.html(`
+                <div class="text-center py-5">
+                    <i class="bi bi-search display-1 mb-3 text-white-50"></i>
+                    <h3 class="text-white">${T.noResults}</h3>
+                    <p class="text-white-50">${data.mensaje || T.noResultsMsg}</p>
+                    <a href="{% url 'explorer:lugares_list' %}" class="btn btn-gradient-green rounded-pill px-4">
+                        ${T.viewAll}
+                    </a>
+                </div>
+            `);
+            return;
+        }
+        
+        // Generar HTML de cards
+        let html = '<div class="lugares-grid">';
+        data.lugares.forEach((lugar, i) => {
+            html += generarCardHtml(lugar, i);
+        });
+        html += '</div>';
+        
+        // Agregar paginación si existe
+        if (data.paginacion && data.paginacion.total_paginas > 1) {
+            html += generarPaginacionHtml(data.paginacion);
+        }
+        
+        $container.html(html);
+        
+        // Animar cards
+        $('.lugar-card-wrapper').each(function(i) {
+            $(this).css('animation-delay', (i * 0.05) + 's').addClass('animate');
+        });
+    }
+    
+    function generarCardHtml(lugar, index) {
+        const rating = lugar.rating ? `
+            <div class="place-card-rating badge rounded-pill">
+                <i class="bi bi-star-fill me-1"></i>
+                <span class="fw-semibold">${lugar.rating.toFixed(1)}</span>
+            </div>` : '';
+        
+        const imagen = lugar.imagen 
+            ? `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${lugar.nombre}" loading="lazy">`
+            : `<div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
+                 <i class="bi bi-image text-muted fs-2"></i>
+               </div>`;
+        
+        const badges = [];
+        badges.push(`<span class="badge place-type-pill"><i class="bi bi-geo-alt me-1"></i>${lugar.tipo}</span>`);
+        if (lugar.es_destacado) {
+            badges.push(`<span class="badge place-flag-pill place-flag-featured"><i class="bi bi-star-fill me-1"></i>${T.featured}</span>`);
+        }
+        if (lugar.es_exclusivo) {
+            badges.push(`<span class="badge place-flag-pill place-flag-exclusive"><i class="bi bi-gem me-1"></i>${T.exclusive}</span>`);
+        }
+        
+        const direccion = lugar.direccion 
+            ? `<div class="small text-muted mb-2 place-card-address"><i class="bi bi-map me-1"></i>${lugar.direccion.substring(0, 50)}...</div>` 
+            : '';
+        
+        const cta = lugar.url 
+            ? `<a href="${lugar.url}" class="btn mt-auto w-100 rounded-pill place-card-cta"><i class="bi bi-eye me-1"></i>${T.viewDetails}</a>`
+            : '';
+        
+        return `
+            <div class="lugar-card-wrapper">
+                <div class="card h-100 shadow-sm border-0 rounded-4 place-card">
+                    <div class="place-card-media position-relative">
+                        ${imagen}
+                        ${rating}
+                    </div>
+                    <div class="card-body d-flex flex-column place-card-body">
+                        <h5 class="card-title fw-semibold mb-2 place-card-title">${lugar.nombre}</h5>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">${badges.join('')}</div>
+                        ${direccion}
+                        ${cta}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    function generarPaginacionHtml(pag) {
+        let html = '<nav class="mt-5 d-flex justify-content-center"><ul class="pagination">';
+        
+        if (pag.tiene_anterior) {
+            html += `<li class="page-item">
+                <a class="page-link rounded-pill me-2 pagination-link" href="javascript:void(0)" data-page="${pag.pagina_anterior}">
+                    <i class="bi bi-chevron-left me-1"></i>${T.prev}
+                </a>
+            </li>`;
+        }
+        
+        html += `<li class="page-item disabled">
+            <span class="page-link border-0 bg-transparent text-muted">
+                ${pag.pagina_actual} / ${pag.total_paginas}
+            </span>
+        </li>`;
+        
+        if (pag.tiene_siguiente) {
+            html += `<li class="page-item">
+                <a class="page-link rounded-pill ms-2 pagination-link" href="javascript:void(0)" data-page="${pag.pagina_siguiente}">
+                    ${T.next}<i class="bi bi-chevron-right ms-1"></i>
+                </a>
+            </li>`;
+        }
+        
+        html += '</ul></nav>';
+        return html;
+    }
+    
+    function actualizarTitulo(data) {
+        // Actualizar subtítulo con el mensaje del backend
+        $('.places-header-card .lead').text(data.mensaje);
+    }
+    
+    // ─────────────────────────────────────────────────────────────
+    // EVENT: Paginación
+    // ─────────────────────────────────────────────────────────────
+    $(document).on('click', '.pagination-link', function(e) {
+        e.preventDefault();
+        filtros.pagina = $(this).data('page');
+        ejecutarBusqueda();
+        
+        // Scroll al inicio de resultados
+        $('html, body').animate({
+            scrollTop: $('.places-grid-card').offset().top - 100
+        }, 400);
+    });
+    
+    // ─────────────────────────────────────────────────────────────
+    // HISTORY: Manejar navegación hacia atrás/adelante
+    // ─────────────────────────────────────────────────────────────
+    window.addEventListener('popstate', function(e) {
+        if (e.state && e.state.filtros) {
+            Object.assign(filtros, e.state.filtros);
+            sincronizarUI();
+            ejecutarBusqueda();
+        }
+    });
+    
+    function sincronizarUI() {
+        // Área
+        $('#area-label').text(filtros.area ? filtros.areaName : T.selectArea);
+        $('#areasDropdown').toggleClass('selected', !!filtros.area);
+        
+        // Tipo
+        $('#tipo-label-btn').text(filtros.tipo ? filtros.tipoLabel : T.selectType);
+        $('#tiposDropdown').toggleClass('selected', !!filtros.tipo);
+        
+        // Características
+        $('.feature-option').each(function() {
+            const feature = $(this).data('feature');
+            if (filtros.caracteristicas[feature]) {
+                $(this).addClass('active').find('.feature-check').show();
+            } else {
+                $(this).removeClass('active').find('.feature-check').hide();
+            }
+        });
+        updateFeaturesCount();
+    }
+});
+</script>
 {% endblock %}

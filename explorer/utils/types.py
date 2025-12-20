@@ -38,3 +38,30 @@ def get_localized_place_type(place) -> str:
     return translated
 
 
+def get_localized_place_type_from_code(tipo_code: str) -> str:
+    """Return localized type label from a type code (not a Place object).
+    
+    Useful for API responses where we have the code but not the model instance.
+    """
+    if not tipo_code:
+        return ""
+    
+    # Import here to avoid circular imports
+    from explorer.models import PLACE_TYPE_CHOICES
+    
+    # Find the Spanish label from choices
+    spanish_label = tipo_code
+    for code, label in PLACE_TYPE_CHOICES:
+        if code == tipo_code:
+            spanish_label = str(label)
+            break
+    
+    translated = gettext(spanish_label)
+    lang = (get_language() or "").lower()
+    
+    if lang.startswith("en") and translated == spanish_label:
+        return derive_english_from_code(tipo_code)
+    
+    return translated
+
+

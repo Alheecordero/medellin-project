@@ -16,7 +16,7 @@ import ipaddress
 from pgvector.django import CosineDistance
 from django.views import View
 from django.utils.translation import gettext as _, ngettext, get_language
-from explorer.utils.types import get_localized_place_type
+from explorer.utils.types import get_localized_place_type, get_localized_place_type_from_code
 from django.conf import settings
 from django.urls import reverse
 from django.utils.crypto import salted_hmac
@@ -1293,6 +1293,177 @@ def filtros_ajax_view(request):
                 'area': area_id,
                 'categoria': categoria,
                 'caracteristica': caracteristica
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'error': _('Error en la búsqueda: %(err)s') % {'err': str(e)}
+        }, status=500)
+
+
+@require_GET
+def places_filter_ajax(request):
+    """
+    API AJAX profesional para filtrado dinámico en places_list.
+    Soporta: área, tipo, características múltiples, paginación.
+    """
+    from django.http import JsonResponse
+    from django.core.paginator import Paginator
+    
+    # Parámetros
+    area_slug = request.GET.get('area', '').strip()
+    tipo = request.GET.get('tipo', '').strip()
+    page = request.GET.get('page', '1')
+    per_page = 12
+    
+    # Características booleanas
+    caracteristicas = [
+        'delivery', 'takeout', 'dine_in', 'outdoor_seating', 'live_music',
+        'good_for_groups', 'good_for_children', 'serves_cocktails', 'serves_wine',
+        'serves_coffee', 'serves_dessert', 'wheelchair_accessible_entrance',
+        'allows_dogs', 'accepts_credit_cards', 'reservable'
+    ]
+    
+    try:
+        page = int(page)
+        if page < 1:
+            page = 1
+    except ValueError:
+        page = 1
+    
+    try:
+        # Construir queryset base
+        qs = Places.objects.filter(tiene_fotos=True)
+        
+        # Filtrar por área
+        region_info = None
+        if area_slug:
+            try:
+                region = RegionOSM.objects.get(slug=area_slug)
+                qs = qs.filter(comuna_osm_id=region.osm_id)
+                region_info = {
+                    'slug': region.slug,
+                    'name': region.name,
+                    'osm_id': region.osm_id
+                }
+            except RegionOSM.DoesNotExist:
+                pass
+        
+        # Filtrar por tipo
+        tipo_label = None
+        if tipo:
+            qs = qs.filter(tipo=tipo)
+            tipo_label = get_localized_place_type_from_code(tipo)
+        
+        # Filtrar por características
+        caracteristicas_activas = []
+        caracteristicas_labels = {
+            'delivery': _('Delivery'),
+            'takeout': _('Para Llevar'),
+            'dine_in': _('Comer en Local'),
+            'outdoor_seating': _('Terraza'),
+            'live_music': _('Música en Vivo'),
+            'good_for_groups': _('Para Grupos'),
+            'good_for_children': _('Para Niños'),
+            'serves_cocktails': _('Cócteles'),
+            'serves_wine': _('Vinos'),
+            'serves_coffee': _('Café Especialidad'),
+            'serves_dessert': _('Postres'),
+            'wheelchair_accessible_entrance': _('Acceso Accesible'),
+            'allows_dogs': _('Pet Friendly'),
+            'accepts_credit_cards': _('Tarjetas de Crédito'),
+            'reservable': _('Reservaciones'),
+        }
+        
+        for caract in caracteristicas:
+            if request.GET.get(caract) == 'true':
+                qs = qs.filter(**{caract: True})
+                caracteristicas_activas.append({
+                    'key': caract,
+                    'label': str(caracteristicas_labels.get(caract, caract))
+                })
+        
+        # Ordenar
+        qs = qs.prefetch_related('fotos').order_by('-es_destacado', '-rating', 'nombre')
+        
+        # Paginación
+        total_count = qs.count()
+        paginator = Paginator(qs, per_page)
+        page_obj = paginator.get_page(page)
+        
+        # Formatear resultados
+        resultados = []
+        for lugar in page_obj:
+            primera_foto = lugar.fotos.first()
+            resultados.append({
+                'nombre': lugar.nombre,
+                'slug': lugar.slug,
+                'rating': lugar.rating or 0.0,
+                'total_reviews': lugar.total_reviews or 0,
+                'tipo': get_localized_place_type(lugar),
+                'imagen': primera_foto.imagen if primera_foto else None,
+                'es_destacado': lugar.es_destacado,
+                'es_exclusivo': lugar.es_exclusivo,
+                'precio': lugar.precio,
+                'direccion': lugar.direccion,
+                'url': reverse('explorer:lugares_detail', kwargs={'slug': lugar.slug}) if lugar.slug else None
+            })
+        
+        # Construir mensaje
+        if total_count == 0:
+            if tipo_label and region_info:
+                mensaje = _('No encontramos %(tipo)s en %(area)s') % {'tipo': tipo_label, 'area': region_info['name']}
+            elif tipo_label:
+                mensaje = _('No encontramos %(tipo)s') % {'tipo': tipo_label}
+            elif region_info:
+                mensaje = _('No encontramos lugares en %(area)s') % {'area': region_info['name']}
+            else:
+                mensaje = _('No encontramos lugares con estos filtros')
+        else:
+            if tipo_label and region_info:
+                mensaje = ngettext(
+                    '%(count)s %(tipo)s en %(area)s',
+                    '%(count)s %(tipo)s en %(area)s',
+                    total_count
+                ) % {'count': total_count, 'tipo': tipo_label, 'area': region_info['name']}
+            elif tipo_label:
+                mensaje = ngettext(
+                    '%(count)s %(tipo)s encontrados',
+                    '%(count)s %(tipo)s encontrados',
+                    total_count
+                ) % {'count': total_count, 'tipo': tipo_label}
+            elif region_info:
+                mensaje = ngettext(
+                    '%(count)s lugar en %(area)s',
+                    '%(count)s lugares en %(area)s',
+                    total_count
+                ) % {'count': total_count, 'area': region_info['name']}
+            else:
+                mensaje = ngettext(
+                    '%(count)s lugar encontrado',
+                    '%(count)s lugares encontrados',
+                    total_count
+                ) % {'count': total_count}
+        
+        return JsonResponse({
+            'success': True,
+            'total': total_count,
+            'lugares': resultados,
+            'mensaje': mensaje,
+            'filtros_aplicados': {
+                'area': region_info,
+                'tipo': tipo if tipo else None,
+                'tipo_label': tipo_label,
+                'caracteristicas': caracteristicas_activas
+            },
+            'paginacion': {
+                'pagina_actual': page,
+                'total_paginas': paginator.num_pages,
+                'tiene_anterior': page_obj.has_previous(),
+                'tiene_siguiente': page_obj.has_next(),
+                'pagina_anterior': page_obj.previous_page_number() if page_obj.has_previous() else None,
+                'pagina_siguiente': page_obj.next_page_number() if page_obj.has_next() else None,
             }
         })
         
