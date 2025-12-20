@@ -1164,6 +1164,10 @@ def lugares_cercanos_ajax_view(request):
     lng = request.GET.get('lng')
     radio = request.GET.get('radio', '0.8')  # Radio por defecto 800m
     
+    # Obtener filtros opcionales
+    tipo = request.GET.get('tipo', '').strip()
+    caracteristica = request.GET.get('caracteristica', '').strip()
+    
     if not lat or not lng:
         return JsonResponse({
             'error': 'Se requieren las coordenadas de latitud y longitud'
@@ -1187,10 +1191,70 @@ def lugares_cercanos_ajax_view(request):
         # Buscar lugares cercanos - enfoque simplificado
         from django.contrib.gis.db.models.functions import Distance
         
-        lugares_cercanos = Places.objects.filter(
+        # Construir queryset base
+        qs = Places.objects.filter(
             tiene_fotos=True,
             ubicacion__distance_lte=(user_location, D(km=radio))
-        ).prefetch_related('fotos').annotate(
+        )
+        
+        # Aplicar filtro de tipo si existe
+        if tipo:
+            # Mapeo de tipos del frontend a tipos de la BD
+            tipo_mapping = {
+                'restaurant': ['restaurant', 'fine_dining_restaurant', 'seafood_restaurant', 
+                              'italian_restaurant', 'mexican_restaurant', 'japanese_restaurant',
+                              'chinese_restaurant', 'thai_restaurant', 'indian_restaurant',
+                              'french_restaurant', 'american_restaurant', 'mediterranean_restaurant',
+                              'korean_restaurant', 'vietnamese_restaurant', 'brazilian_restaurant',
+                              'spanish_restaurant', 'greek_restaurant', 'pizza_restaurant',
+                              'hamburger_restaurant', 'burger_restaurant', 'steak_house',
+                              'fast_food_restaurant', 'vegetarian_restaurant', 'vegan_restaurant',
+                              'brunch_restaurant', 'buffet_restaurant', 'food_court'],
+                'bar': ['bar', 'pub', 'cocktail_bar', 'wine_bar', 'beer_bar', 'beer_garden',
+                       'beer_hall', 'whiskey_bar', 'tequila_bar', 'sports_bar', 'hookah_bar',
+                       'dive_bar', 'lounge'],
+                'cafe': ['cafe', 'coffee_shop', 'tea_house', 'tea_room'],
+                'bakery': ['bakery', 'pastry_shop', 'dessert_shop'],
+                'night_club': ['night_club', 'nightclub', 'disco', 'dance_club'],
+                'rooftop_bar': ['rooftop_bar', 'rooftop'],
+                'karaoke': ['karaoke', 'karaoke_bar'],
+                'sports_bar': ['sports_bar'],
+                'casino': ['casino', 'gambling_house'],
+                'bowling_alley': ['bowling_alley', 'bowling_center'],
+                'spa': ['spa', 'wellness_center', 'sauna'],
+                'art_gallery': ['art_gallery', 'gallery'],
+                'museum': ['museum', 'history_museum', 'art_museum', 'science_museum'],
+                'tourist_attraction': ['tourist_attraction', 'landmark', 'monument', 'historical_landmark'],
+            }
+            
+            # Obtener tipos relacionados o usar el tipo directamente
+            tipos_buscar = tipo_mapping.get(tipo, [tipo])
+            qs = qs.filter(tipo__in=tipos_buscar)
+        
+        # Aplicar filtro de característica si existe
+        if caracteristica:
+            caracteristica_filters = {
+                'outdoor_seating': {'outdoor_seating': True},
+                'live_music': {'live_music': True},
+                'good_for_groups': {'good_for_groups': True},
+                'good_for_children': {'good_for_children': True},
+                'delivery': {'delivery': True},
+                'takeout': {'takeout': True},
+                'dine_in': {'dine_in': True},
+                'reservable': {'reservable': True},
+                'serves_cocktails': {'serves_cocktails': True},
+                'serves_wine': {'serves_wine': True},
+                'serves_coffee': {'serves_coffee': True},
+                'serves_dessert': {'serves_dessert': True},
+                'allows_dogs': {'allows_dogs': True},
+                'wheelchair_accessible_entrance': {'wheelchair_accessible_entrance': True},
+                'accepts_credit_cards': {'accepts_credit_cards': True},
+            }
+            
+            if caracteristica in caracteristica_filters:
+                qs = qs.filter(**caracteristica_filters[caracteristica])
+        
+        lugares_cercanos = qs.prefetch_related('fotos').annotate(
             distancia_metros=Distance('ubicacion', user_location)
         ).order_by('distancia_metros', '-es_destacado', '-rating')[:15]
         
