@@ -206,69 +206,77 @@ class HomeView(TemplateView):
 
     def _get_filtros_data(self):
         """Obtiene datos para los filtros del home."""
-        # 1. ÁREAS - Obtener regiones principales (priorizando Poblado y Laureles)
+        # 1. ÁREAS - Dropdown debe mostrar listas completas; chips pueden ser una selección.
         from django.db.models import Case, When, IntegerField
-        
-        regiones_areas_qs = RegionOSM.objects.filter(
-            osm_id__in=Places.objects.filter(tiene_fotos=True).values_list('comuna_osm_id', flat=True).distinct()
+
+        regiones_con_lugares = Places.objects.filter(tiene_fotos=True).values_list('comuna_osm_id', flat=True).distinct()
+
+        regiones_qs = RegionOSM.objects.filter(
+            osm_id__in=regiones_con_lugares,
+            name__isnull=False,
         ).annotate(
             orden_area=Case(
                 When(name__icontains='Poblado', then=1),
                 When(name__icontains='Laureles', then=2),
-                default=3,
+                When(admin_level='8', then=3),  # comunas
+                When(admin_level='6', then=4),  # municipios
+                default=5,
                 output_field=IntegerField()
             )
         ).order_by('orden_area', 'name')
 
-        # Importante: el template `home.html` espera `comunas_medellin` y `otras_regiones`
-        # para renderizar los chips/burbujas (y el dropdown de áreas). Mantener estas keys
-        # evita que se "desaparezcan" cuando el queryset cambia.
-        regiones_areas = list(regiones_areas_qs[:22])
+        # Listas completas para dropdown
+        regiones_areas = list(regiones_qs)
         comunas_medellin = [r for r in regiones_areas if getattr(r, "admin_level", None) == "8"]
         otras_regiones = [r for r in regiones_areas if getattr(r, "admin_level", None) != "8"]
+
+        # Selección para chips (evita una nube enorme en mobile)
+        comunas_medellin_chips = comunas_medellin[:18]
+        otras_regiones_chips = otras_regiones[:10]
         
-        # 2. CATEGORÍAS REALES - Basadas en PLACE_TYPE_CHOICES
-        categorias_reales = [
-            {
-                'name': _('Restaurantes'),
-                'icon': 'bi-cup-hot',
-                'color': 'success',
-                'subcategorias': [
-                    {'value': 'restaurant', 'name': _('Restaurante General')},
-                    {'value': 'fine_dining_restaurant', 'name': _('Restaurante Gourmet')},
-                    {'value': 'pizza_restaurant', 'name': _('Pizzería')},
-                    {'value': 'italian_restaurant', 'name': _('Restaurante Italiano')},
-                    {'value': 'mexican_restaurant', 'name': _('Restaurante Mexicano')},
-                    {'value': 'chinese_restaurant', 'name': _('Restaurante Chino')},
-                    {'value': 'seafood_restaurant', 'name': _('Marisquería')},
-                    {'value': 'steak_house', 'name': _('Parrilla de Carnes')},
-                    {'value': 'fast_food_restaurant', 'name': _('Comida Rápida')},
-                ]
-            },
-            {
-                'name': _('Bares & Vida Nocturna'),
-                'icon': 'bi-cup-straw',
-                'color': 'warning',
-                'subcategorias': [
-                    {'value': 'bar', 'name': _('Bar')},
-                    {'value': 'wine_bar', 'name': _('Bar de Vinos')},
-                    {'value': 'pub', 'name': _('Pub')},
-                    {'value': 'night_club', 'name': _('Discoteca')},
-                    {'value': 'karaoke', 'name': _('Karaoke')},
-                ]
-            },
-            {
-                'name': _('Cafeterías'),
-                'icon': 'bi-cup',
-                'color': 'info',
-                'subcategorias': [
-                    {'value': 'cafe', 'name': _('Cafetería')},
-                    {'value': 'internet_cafe', 'name': _('Cibercafé')},
-                    {'value': 'breakfast_restaurant', 'name': _('Desayunos')},
-                    {'value': 'brunch_restaurant', 'name': _('Brunch')},
-                ]
-            }
-        ]
+        # 2. TIPOS - Lista completa (antes estaba recortada y por eso no veías todo)
+        # home.html espera estructura: [{name, icon, color, subcategorias:[{value,name}]}]
+        # Hacemos grupos "humanos" por heurística sobre el code.
+        def _label_for(code: str, es_label: str) -> str:
+            # En ES usamos la etiqueta del choice; en EN se traduce si existe, o se deriva en frontend.
+            return _(es_label)
+
+        restaurants: list[dict] = []
+        nightlife: list[dict] = []
+        cafes: list[dict] = []
+        culture: list[dict] = []
+        wellness: list[dict] = []
+        other: list[dict] = []
+
+        for code, es_label in PLACE_TYPE_CHOICES:
+            item = {"value": code, "name": _label_for(code, es_label)}
+            c = (code or "").lower()
+            if "restaurant" in c or c in {"food", "food_court", "meal_delivery", "meal_takeaway", "catering_service"}:
+                restaurants.append(item)
+            elif c in {"bar", "wine_bar", "pub", "night_club", "karaoke", "bar_and_grill"}:
+                nightlife.append(item)
+            elif "cafe" in c or c in {"cafeteria", "acai_shop", "cat_cafe", "dog_cafe", "internet_cafe"}:
+                cafes.append(item)
+            elif "museum" in c or "art" in c or "cultural" in c or "historical" in c or "attraction" in c or "tour" in c or "landmark" in c:
+                culture.append(item)
+            elif "spa" in c or "wellness" in c or "health" in c:
+                wellness.append(item)
+            else:
+                other.append(item)
+
+        categorias_reales = []
+        if restaurants:
+            categorias_reales.append({"name": _("Restaurantes y comida"), "icon": "bi-cup-hot", "color": "success", "subcategorias": restaurants})
+        if nightlife:
+            categorias_reales.append({"name": _("Bares y vida nocturna"), "icon": "bi-cup-straw", "color": "warning", "subcategorias": nightlife})
+        if cafes:
+            categorias_reales.append({"name": _("Cafeterías"), "icon": "bi-cup", "color": "info", "subcategorias": cafes})
+        if culture:
+            categorias_reales.append({"name": _("Cultura y atracciones"), "icon": "bi-camera", "color": "primary", "subcategorias": culture})
+        if wellness:
+            categorias_reales.append({"name": _("Bienestar y spa"), "icon": "bi-heart-pulse", "color": "danger", "subcategorias": wellness})
+        if other:
+            categorias_reales.append({"name": _("Otros"), "icon": "bi-three-dots", "color": "secondary", "subcategorias": other})
         
         # 3. ETIQUETAS ESPECIALES - Características y servicios
         etiquetas_especiales = [
@@ -316,6 +324,8 @@ class HomeView(TemplateView):
             'regiones_areas': regiones_areas,
             'comunas_medellin': comunas_medellin,
             'otras_regiones': otras_regiones,
+            'comunas_medellin_chips': comunas_medellin_chips,
+            'otras_regiones_chips': otras_regiones_chips,
             'categorias_reales': categorias_reales,
             'etiquetas_especiales': etiquetas_especiales,
         }
@@ -469,14 +479,71 @@ class PlacesListView(ListView):
                 output_field=IntegerField()
             )
         ).order_by('orden_area', 'name')
+
+        # Split para dropdown de áreas (template places_list.html lo espera así)
+        comunas_medellin = [r for r in regiones_filtro if getattr(r, "admin_level", None) == "8"]
+        otras_regiones = [r for r in regiones_filtro if getattr(r, "admin_level", None) != "8"]
+
+        # Dropdown de tipos (template places_list.html espera `tipo_grupos_ui`)
+        # Estructura: [{emoji, name, items:[{code,label}]}]
+        from explorer.utils.types import derive_english_from_code
+        lang = (get_language() or "").lower()
+
+        def label_for(code: str, es_label: str) -> str:
+            # Usar traducción si existe; si estamos en EN y no hay, derivar del code.
+            tr = _(es_label)
+            if lang.startswith("en") and tr == es_label:
+                return derive_english_from_code(code)
+            return tr
+
+        groups = [
+            {"key": "food", "emoji": "🍽️", "name": _("Restaurantes y comida"), "items": []},
+            {"key": "nightlife", "emoji": "🍸", "name": _("Bares y vida nocturna"), "items": []},
+            {"key": "cafes", "emoji": "☕", "name": _("Cafeterías"), "items": []},
+            {"key": "culture", "emoji": "🎭", "name": _("Cultura y atracciones"), "items": []},
+            {"key": "wellness", "emoji": "🧘", "name": _("Bienestar y spa"), "items": []},
+            {"key": "other", "emoji": "✨", "name": _("Otros"), "items": []},
+        ]
+        idx = {g["key"]: g for g in groups}
+
+        for code, es_label in PLACE_TYPE_CHOICES:
+            item = {"code": code, "label": label_for(code, es_label)}
+            c = (code or "").lower()
+            if "restaurant" in c or c in {"food", "food_court", "meal_delivery", "meal_takeaway", "catering_service"}:
+                idx["food"]["items"].append(item)
+            elif c in {"bar", "wine_bar", "pub", "night_club", "karaoke", "bar_and_grill"}:
+                idx["nightlife"]["items"].append(item)
+            elif "cafe" in c or c in {"cafeteria", "acai_shop", "cat_cafe", "dog_cafe", "internet_cafe"}:
+                idx["cafes"]["items"].append(item)
+            elif "museum" in c or "art" in c or "cultural" in c or "historical" in c or "attraction" in c or "tour" in c or "landmark" in c:
+                idx["culture"]["items"].append(item)
+            elif "spa" in c or "wellness" in c or "health" in c:
+                idx["wellness"]["items"].append(item)
+            else:
+                idx["other"]["items"].append(item)
+
+        tipo_grupos_ui = [g for g in groups if g["items"]]
+        tipo_actual_label = None
+        if tipo_actual:
+            for g in tipo_grupos_ui:
+                for it in g["items"]:
+                    if it["code"] == tipo_actual:
+                        tipo_actual_label = it["label"]
+                        break
+                if tipo_actual_label:
+                    break
         
         context.update({
             "busqueda_actual": busqueda_actual,
             "tipo_actual": tipo_actual,
+            "tipo_actual_label": tipo_actual_label,
             "titulo_pagina": titulo_pagina,
             "descripcion_pagina": descripcion_pagina,
             "tipos_info": tipos_info,
             "regiones_filtro": regiones_filtro,
+            "comunas_medellin": comunas_medellin,
+            "otras_regiones": otras_regiones,
+            "tipo_grupos_ui": tipo_grupos_ui,
         })
         return context
 
@@ -517,9 +584,10 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         
         # Meta data para AJAX loading
         context['ajax_endpoints'] = {
-            'lugares_cercanos': f'/api/lugares/{lugar.slug}/cercanos/',
-            'lugares_similares': f'/api/lugares/{lugar.slug}/similares/',
-            'lugares_comuna': f'/api/lugares/{lugar.slug}/comuna/',
+            # Respetar prefijo i18n (/en/...) automáticamente
+            'lugares_cercanos': reverse('explorer:lugares_cercanos_ajax', kwargs={'slug': lugar.slug}),
+            'lugares_similares': reverse('explorer:lugares_similares_ajax', kwargs={'slug': lugar.slug}),
+            'lugares_comuna': reverse('explorer:lugares_comuna_ajax', kwargs={'slug': lugar.slug}),
         }
         
         return context
@@ -1047,7 +1115,8 @@ def filtros_ajax_view(request):
                 'imagen': primera_foto.imagen if primera_foto else None,
                 'es_destacado': lugar.es_destacado,
                 'es_exclusivo': lugar.es_exclusivo,
-                'url': None  # El frontend construye la URL según el idioma
+                # Siempre enviar URL ya resuelta (evita bugs de prefijo /en en frontend)
+                'url': reverse('explorer:lugares_detail', kwargs={'slug': lugar.slug}) if lugar.slug else None
             })
         
         # Obtener información del área
@@ -1138,7 +1207,8 @@ def lugares_cercanos_ajax_view(request):
                 'imagen': primera_foto.imagen if primera_foto else None,
                 'es_destacado': lugar.es_destacado,
                 'es_exclusivo': lugar.es_exclusivo,
-                'url': None,  # El frontend construye la URL según el idioma
+                # URL resuelta por Django según idioma actual
+                'url': reverse('explorer:lugares_detail', kwargs={'slug': lugar.slug}) if lugar.slug else None,
                 'distancia': round(lugar.distancia_metros.km, 2) if hasattr(lugar, 'distancia_metros') and lugar.distancia_metros else None,
                 'direccion': lugar.direccion
             })
@@ -1330,7 +1400,8 @@ def semantic_search_ajax(request):
 			'rating': lugar.rating or 0.0,
 			'imagen': foto.imagen if foto else None,
 			'score': round(getattr(lugar, 'score', 0.0), 4),
-			'url': None,  # El frontend construye la URL según el idioma
+			# URL resuelta por Django según idioma actual
+			'url': reverse('explorer:lugares_detail', kwargs={'slug': lugar.slug}) if lugar.slug else None,
 			'es_destacado': bool(getattr(lugar, 'es_destacado', False)),
 			'es_exclusivo': bool(getattr(lugar, 'es_exclusivo', False)),
 			'total_reviews': lugar.total_reviews or 0,

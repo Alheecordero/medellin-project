@@ -1789,9 +1789,6 @@ msgid "lugar/<slug:slug>/"
 msgstr "place/<slug:slug>/"
 
 #: explorer/urls.py:19
-#, fuzzy
-#| msgctxt "url"
-#| msgid "lugar/<slug:slug>/reviews/"
 msgctxt "url"
 msgid "lugar/<slug:slug>/reseñas/"
 msgstr "place/<slug:slug>/reviews/"

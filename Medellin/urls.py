@@ -47,6 +47,15 @@ urlpatterns = [
             permanent=True
         )
     ),
+
+    # Redirect de compatibilidad en español (URLs antiguas)
+    re_path(
+        r'^lugar/(?P<slug>[\w-]+)/reviews/$',
+        RedirectView.as_view(
+            url='/lugar/%(slug)s/reseñas/',
+            permanent=True
+        )
+    ),
 ]
 
 urlpatterns += i18n_patterns(

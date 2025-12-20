@@ -53,9 +53,10 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Archivos media
-# NOTA: Comentado para permitir usar GCS cuando USE_GCS_IN_DEBUG=True
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = BASE_DIR / 'media'
+# En local, definir MEDIA_URL/MEDIA_ROOT para que runserver sirva media sin
+# crear un catch-all que interfiera con otras URLs.
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Activar debug toolbar
 DEBUG_TOOLBAR = True

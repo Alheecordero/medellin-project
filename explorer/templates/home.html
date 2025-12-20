@@ -259,15 +259,16 @@
                     <!-- Contenedor de resultados principal se define fuera del hero para no afectar el fondo -->
 
                     <!-- Burbujas de áreas de Medellín (en la parte inferior de la card) -->
-                    {% if comunas_medellin or otras_regiones %}
+                    {% if comunas_medellin_chips or otras_regiones_chips or comunas_medellin or otras_regiones %}
                     <div class="areas-burbujas mt-2 flex-column">
-                        {% if comunas_medellin %}
+                        {% with comunas_chips=comunas_medellin_chips|default:comunas_medellin otras_chips=otras_regiones_chips|default:otras_regiones %}
+                        {% if comunas_chips %}
                         <div class="areas-group">
                             <div class="areas-group-label">
                                 {% trans "Medellín (Áreas)" %}
                             </div>
                             <div class="areas-group-bubbles">
-                                {% for area in comunas_medellin %}
+                                {% for area in comunas_chips %}
                             <a href="{% url 'explorer:lugares_por_comuna' area.slug %}" class="area-bubble">
                                 <span class="dot"></span>
                                 <span class="label">{{ area.name }}</span>
@@ -277,13 +278,13 @@
                         </div>
                         {% endif %}
 
-                        {% if otras_regiones %}
+                        {% if otras_chips %}
                         <div class="areas-group mt-2">
                             <div class="areas-group-label">
                                 {% trans "Otras áreas de Antioquia" %}
                             </div>
                             <div class="areas-group-bubbles">
-                                {% for area in otras_regiones %}
+                                {% for area in otras_chips %}
                                     <a href="{% url 'explorer:lugares_por_comuna' area.slug %}" class="area-bubble">
                                         <span class="dot"></span>
                                         <span class="label">{{ area.name }}</span>
@@ -302,6 +303,7 @@
                             </div>
                         </div>
                     </div>
+                        {% endwith %}
                     {% endif %}
                 </div>
             </div>
@@ -1292,6 +1294,15 @@ a.btn.btn-gradient-green:focus {
 const CURRENT_LANG = '{{ LANGUAGE_CODE|default:"es" }}' || 'es';
 // Helper seguro para traducciones en JS (usa djangojs si está disponible)
 const gettext = (window.gettext) ? window.gettext : (s => s);
+// Fallbacks para pluralización/interpolación si por algún motivo jsi18n no cargó (evita que el JS se rompa en EN)
+const ngettext = (window.ngettext) ? window.ngettext : ((singular, plural, count) => (Number(count) === 1 ? singular : plural));
+const interpolate = (window.interpolate) ? window.interpolate : ((fmt, obj) => {
+    try {
+        return String(fmt).replace(/%\\(([^)]+)\\)s/g, (_, k) => (obj && obj[k] !== undefined ? obj[k] : ''));
+    } catch (_) {
+        return String(fmt);
+    }
+});
 
 // Helper global para rango de precios (coherente con form_tags.format_price_range)
 function formatPriceRangeJs(raw) {

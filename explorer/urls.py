@@ -16,7 +16,8 @@ urlpatterns = [
     path(pgettext_lazy('url', 'lugares/'), views.lugares_list, name='lugares_list'),
     path(pgettext_lazy('url', 'lugares/<slug:comuna_slug>/'), views.lugares_por_comuna, name='lugares_por_comuna'),
     path(pgettext_lazy('url', 'lugar/<slug:slug>/'), views.lugares_detail, name='lugares_detail'),
-    path(pgettext_lazy('url', 'lugar/<slug:slug>/reviews/'), views.reviews_lugar, name='reviews_lugar'),
+    # Nota: en español usamos "reseñas" y en inglés se traduce a "reviews" vía msgctxt "url"
+    path(pgettext_lazy('url', 'lugar/<slug:slug>/reseñas/'), views.reviews_lugar, name='reviews_lugar'),
     
     # API endpoints
     path('api/filtros-ajax/', views.filtros_ajax_view, name='filtros_ajax'),

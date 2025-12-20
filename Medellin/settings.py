@@ -276,6 +276,12 @@ STATICFILES_DIRS = [
     BASE_DIR / "Medellin" / "static",
 ]
 
+# Media (IMPORTANTE): si no se define, Django usa MEDIA_URL="" en debug,
+# y `static(settings.MEDIA_URL, ...)` puede terminar creando un catch-all `^(?P<path>.*)$`
+# que secuestra todas las URLs y genera 404 confusos.
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
 
 
 
