@@ -1851,16 +1851,14 @@ msgid "Aceptan Tarjetas"
 msgstr "Cards accepted"
 
 #: explorer/views.py:462 explorer/views.py:1059
-#, fuzzy, python-format
-#| msgid "Resultados para \"%(query)s\""
+#, python-format
 msgid "Resultados para \"%(query)s\" en %(area)s"
-msgstr "Results for \"%(query)s\""
+msgstr "Results for \"%(query)s\" in %(area)s"
 
 #: explorer/views.py:463 explorer/views.py:1060
-#, fuzzy, python-format
-#| msgid "Lugares que coinciden con tu búsqueda en Medellín"
+#, python-format
 msgid "Lugares que coinciden con tu búsqueda en %(area)s"
-msgstr "Places that match your search in Medellín"
+msgstr "Places matching your search in %(area)s"
 
 #: explorer/views.py:473 explorer/views.py:1069
 #, python-format
@@ -1868,22 +1866,19 @@ msgid "Mejores %(tipo)s en %(area)s"
 msgstr "Best %(tipo)s in %(area)s"
 
 #: explorer/views.py:474 explorer/views.py:1070
-#, fuzzy, python-format
-#| msgid "Descubre los mejores sitios que ofrece la ciudad"
+#, python-format
 msgid "Descubre los mejores %(tipo)s recomendados en %(area)s"
-msgstr "Discover the best places the city has to offer"
+msgstr "Discover the best %(tipo)s in %(area)s"
 
 #: explorer/views.py:480 explorer/views.py:1076
-#, fuzzy, python-format
-#| msgid "Los mejores lugares en %(comuna)s"
+#, python-format
 msgid "Los mejores lugares en %(area)s"
-msgstr "The best places in %(comuna)s"
+msgstr "The Best Places in %(area)s"
 
 #: explorer/views.py:481 explorer/views.py:1077
-#, fuzzy, python-format
-#| msgid "Descubre los sitios más destacados de %(comuna)s"
+#, python-format
 msgid "Descubre los sitios más destacados de %(area)s"
-msgstr "Discover the most outstanding sites of %(comuna)s"
+msgstr "Discover the most outstanding places in %(area)s"
 
 #: explorer/views.py:489 explorer/views.py:1080
 msgid " y "
@@ -1938,6 +1933,348 @@ msgstr "Empty text"
 #: explorer/views.py:1693
 msgid "Límite de traducciones temporal alcanzado. Intenta más tarde."
 msgstr "Temporary translation limit reached. Please try again later."
+
+# ═══════════════════════════════════════════════════════════════════
+# H1 TITLES FOR PLACES LIST (SEO)
+# ═══════════════════════════════════════════════════════════════════
+
+msgid "Todos los Lugares en Medellín"
+msgstr "All Places in Medellín"
+
+msgid "Descubre los mejores sitios que ofrece la ciudad"
+msgstr "Discover the best places the city has to offer"
+
+msgid "Mejores Restaurantes en Medellín"
+msgstr "Best Restaurants in Medellín"
+
+msgid "Descubre los sabores más auténticos de la gastronomía paisa y mundial"
+msgstr "Discover the most authentic flavors of Paisa and world cuisine"
+
+msgid "Mejores Bares en Medellín"
+msgstr "Best Bars in Medellín"
+
+msgid "Vive la mejor vida nocturna de la ciudad de la eterna primavera"
+msgstr "Experience the best nightlife in the city of eternal spring"
+
+msgid "Mejores Cafeterías en Medellín"
+msgstr "Best Cafés in Medellín"
+
+msgid "Experimenta la auténtica cultura cafetera paisa"
+msgstr "Experience authentic Paisa coffee culture"
+
+msgid "Mejores Discotecas en Medellín"
+msgstr "Best Nightclubs in Medellín"
+
+msgid "Las mejores discotecas y clubes nocturnos de la ciudad"
+msgstr "The best nightclubs and clubs in the city"
+
+msgid "Mejores Pubs en Medellín"
+msgstr "Best Pubs in Medellín"
+
+msgid "Descubre los pubs más auténticos de la ciudad"
+msgstr "Discover the most authentic pubs in the city"
+
+msgid "Mejores Bares de Vinos en Medellín"
+msgstr "Best Wine Bars in Medellín"
+
+msgid "Los mejores lugares para disfrutar de una copa de vino"
+msgstr "The best places to enjoy a glass of wine"
+
+msgid "Mejores Spas en Medellín"
+msgstr "Best Spas in Medellín"
+
+msgid "Relájate en los mejores spas y centros de bienestar"
+msgstr "Relax in the best spas and wellness centers"
+
+msgid "Mejores Karaokes en Medellín"
+msgstr "Best Karaokes in Medellín"
+
+msgid "Canta y diviértete en los mejores karaokes de la ciudad"
+msgstr "Sing and have fun at the best karaokes in the city"
+
+msgid "Mejores Restaurantes Italianos en Medellín"
+msgstr "Best Italian Restaurants in Medellín"
+
+msgid "Disfruta de la auténtica cocina italiana en Medellín"
+msgstr "Enjoy authentic Italian cuisine in Medellín"
+
+msgid "Mejores Restaurantes Mexicanos en Medellín"
+msgstr "Best Mexican Restaurants in Medellín"
+
+msgid "Sabores auténticos de la cocina mexicana"
+msgstr "Authentic Mexican cuisine flavors"
+
+msgid "Mejores Restaurantes Japoneses en Medellín"
+msgstr "Best Japanese Restaurants in Medellín"
+
+msgid "Sushi, ramen y más en los mejores restaurantes japoneses"
+msgstr "Sushi, ramen and more at the best Japanese restaurants"
+
+msgid "Mejores Restaurantes Chinos en Medellín"
+msgstr "Best Chinese Restaurants in Medellín"
+
+msgid "Disfruta de la auténtica cocina china"
+msgstr "Enjoy authentic Chinese cuisine"
+
+msgid "Mejores Restaurantes Franceses en Medellín"
+msgstr "Best French Restaurants in Medellín"
+
+msgid "Haute cuisine francesa en la ciudad"
+msgstr "French haute cuisine in the city"
+
+msgid "Mejores Marisquerías en Medellín"
+msgstr "Best Seafood Restaurants in Medellín"
+
+msgid "Los mejores mariscos y pescados frescos"
+msgstr "The best fresh seafood and fish"
+
+msgid "Mejores Pizzerías en Medellín"
+msgstr "Best Pizzerias in Medellín"
+
+msgid "Las pizzas más deliciosas de la ciudad"
+msgstr "The most delicious pizzas in the city"
+
+msgid "Mejores Hamburgueserías en Medellín"
+msgstr "Best Burger Joints in Medellín"
+
+msgid "Las hamburguesas más jugosas y deliciosas"
+msgstr "The juiciest and most delicious burgers"
+
+msgid "Mejores Asaderos en Medellín"
+msgstr "Best Steakhouses in Medellín"
+
+msgid "Las mejores carnes a la parrilla"
+msgstr "The best grilled meats"
+
+msgid "Mejores Restaurantes de Sushi en Medellín"
+msgstr "Best Sushi Restaurants in Medellín"
+
+msgid "El sushi más fresco de la ciudad"
+msgstr "The freshest sushi in the city"
+
+msgid "Mejores Restaurantes de Comida Rápida en Medellín"
+msgstr "Best Fast Food Restaurants in Medellín"
+
+msgid "Comida rápida deliciosa para cualquier momento"
+msgstr "Delicious fast food for any time"
+
+msgid "Mejores Restaurantes Veganos en Medellín"
+msgstr "Best Vegan Restaurants in Medellín"
+
+msgid "Opciones veganas deliciosas para todos"
+msgstr "Delicious vegan options for everyone"
+
+msgid "Mejores Restaurantes Vegetarianos en Medellín"
+msgstr "Best Vegetarian Restaurants in Medellín"
+
+msgid "Comida vegetariana saludable y deliciosa"
+msgstr "Healthy and delicious vegetarian food"
+
+msgid "Mejores Restaurantes Gourmet en Medellín"
+msgstr "Best Gourmet Restaurants in Medellín"
+
+msgid "Experiencias gastronómicas de alto nivel"
+msgstr "High-level gastronomic experiences"
+
+msgid "Mejores Restaurantes de Desayuno en Medellín"
+msgstr "Best Breakfast Restaurants in Medellín"
+
+msgid "Comienza el día con los mejores desayunos"
+msgstr "Start your day with the best breakfasts"
+
+msgid "Mejores Lugares de Brunch en Medellín"
+msgstr "Best Brunch Spots in Medellín"
+
+msgid "Los mejores brunchs de la ciudad"
+msgstr "The best brunches in the city"
+
+# Dynamic H1 patterns
+#, python-format
+msgid "Lugares %(filters)s en Medellín"
+msgstr "Places %(filters)s in Medellín"
+
+msgid "Lugares especializados que cumplen tus criterios de búsqueda"
+msgstr "Specialized places that meet your search criteria"
+
+#, python-format
+msgid "Los Mejores Lugares en %(comuna)s"
+msgstr "The Best Places in %(comuna)s"
+
+#, python-format
+msgid "Descubre los sitios más destacados de %(comuna)s"
+msgstr "Discover the most outstanding places in %(comuna)s"
+
+#, python-format
+msgid "Lugares %(filters)s en %(comuna)s"
+msgstr "Places %(filters)s in %(comuna)s"
+
+#, python-format
+msgid "Lugares especializados en %(comuna)s que cumplen tus criterios"
+msgstr "Specialized places in %(comuna)s that meet your criteria"
+
+#, python-format
+msgid "Resultados para \"%(query)s\""
+msgstr "Results for \"%(query)s\""
+
+msgid "Lugares que coinciden con tu búsqueda en Medellín"
+msgstr "Places matching your search in Medellín"
+
+# Preposición
+msgid "en"
+msgstr "in"
+
+# Short titles for comuna pages
+msgid "Mejores Bares"
+msgstr "Best Bars"
+
+msgid "Mejores Cafeterías"
+msgstr "Best Cafés"
+
+msgid "Mejores Discotecas"
+msgstr "Best Nightclubs"
+
+msgid "Mejores Pubs"
+msgstr "Best Pubs"
+
+msgid "Mejores Bares de Vinos"
+msgstr "Best Wine Bars"
+
+msgid "Mejores Spas"
+msgstr "Best Spas"
+
+msgid "Mejores Karaokes"
+msgstr "Best Karaokes"
+
+msgid "Mejores Restaurantes Italianos"
+msgstr "Best Italian Restaurants"
+
+msgid "Mejores Restaurantes Mexicanos"
+msgstr "Best Mexican Restaurants"
+
+msgid "Mejores Restaurantes Japoneses"
+msgstr "Best Japanese Restaurants"
+
+msgid "Mejores Restaurantes Chinos"
+msgstr "Best Chinese Restaurants"
+
+msgid "Mejores Marisquerías"
+msgstr "Best Seafood Restaurants"
+
+msgid "Mejores Pizzerías"
+msgstr "Best Pizzerias"
+
+msgid "Mejores Hamburgueserías"
+msgstr "Best Burger Joints"
+
+msgid "Mejores Asaderos"
+msgstr "Best Steakhouses"
+
+msgid "Mejores Restaurantes de Sushi"
+msgstr "Best Sushi Restaurants"
+
+msgid "Mejores Restaurantes de Comida Rápida"
+msgstr "Best Fast Food Restaurants"
+
+msgid "Mejores Restaurantes Veganos"
+msgstr "Best Vegan Restaurants"
+
+msgid "Mejores Restaurantes Vegetarianos"
+msgstr "Best Vegetarian Restaurants"
+
+msgid "Mejores Restaurantes Gourmet"
+msgstr "Best Gourmet Restaurants"
+
+msgid "Mejores Restaurantes de Desayuno"
+msgstr "Best Breakfast Restaurants"
+
+msgid "Mejores Lugares de Brunch"
+msgstr "Best Brunch Spots"
+
+# Short descriptions
+msgid "Descubre los sabores más auténticos"
+msgstr "Discover the most authentic flavors"
+
+msgid "Vive la mejor vida nocturna"
+msgstr "Experience the best nightlife"
+
+msgid "Experimenta la cultura cafetera"
+msgstr "Experience coffee culture"
+
+msgid "Las mejores discotecas y clubes nocturnos"
+msgstr "The best nightclubs and clubs"
+
+msgid "Descubre los pubs más auténticos"
+msgstr "Discover the most authentic pubs"
+
+msgid "Los mejores lugares para una copa de vino"
+msgstr "The best places for a glass of wine"
+
+msgid "Relájate en los mejores spas"
+msgstr "Relax in the best spas"
+
+msgid "Canta y diviértete"
+msgstr "Sing and have fun"
+
+msgid "Auténtica cocina italiana"
+msgstr "Authentic Italian cuisine"
+
+msgid "Sabores auténticos de México"
+msgstr "Authentic Mexican flavors"
+
+msgid "Sushi, ramen y más"
+msgstr "Sushi, ramen and more"
+
+msgid "Auténtica cocina china"
+msgstr "Authentic Chinese cuisine"
+
+msgid "Los mejores mariscos frescos"
+msgstr "The best fresh seafood"
+
+msgid "Las pizzas más deliciosas"
+msgstr "The most delicious pizzas"
+
+msgid "Las hamburguesas más jugosas"
+msgstr "The juiciest burgers"
+
+msgid "El sushi más fresco"
+msgstr "The freshest sushi"
+
+msgid "Comida rápida deliciosa"
+msgstr "Delicious fast food"
+
+msgid "Opciones veganas deliciosas"
+msgstr "Delicious vegan options"
+
+msgid "Comida vegetariana saludable"
+msgstr "Healthy vegetarian food"
+
+msgid "Los mejores brunchs"
+msgstr "The best brunches"
+
+# Dynamic H1 patterns (comuna-specific)
+#, python-format
+msgid "%(titulo)s en %(comuna)s"
+msgstr "%(titulo)s in %(comuna)s"
+
+#, python-format
+msgid "%(desc)s en %(comuna)s"
+msgstr "%(desc)s in %(comuna)s"
+
+#, python-format
+msgid "Mejores %(tipo)s en %(comuna)s"
+msgstr "Best %(tipo)s in %(comuna)s"
+
+#, python-format
+msgid "Descubre los mejores %(tipo)s en %(comuna)s"
+msgstr "Discover the best %(tipo)s in %(comuna)s"
+
+#, python-format
+msgid "Mejores %(tipo)s en Medellín"
+msgstr "Best %(tipo)s in Medellín"
+
+#, python-format
+msgid "Descubre los mejores %(tipo)s en la ciudad"
+msgstr "Discover the best %(tipo)s in the city"
 
 #, fuzzy
 #~| msgid "Imagen de"
@@ -2133,58 +2470,7 @@ msgstr "Temporary translation limit reached. Please try again later."
 #~ msgid "Muy costoso"
 #~ msgstr "High-end"
 
-#~ msgid "Mejores Restaurantes en Medellín"
-#~ msgstr "Best Restaurants in Medellín"
-
-#~ msgid ""
-#~ "Descubre los sabores más auténticos de la gastronomía paisa y mundial"
-#~ msgstr "Discover the most authentic flavors of Paisa and world cuisine"
-
-#~ msgid "Mejores Bares y Discotecas en Medellín"
-#~ msgstr "Best Bars and Clubs in Medellín"
-
-#~ msgid "Vive la mejor vida nocturna de la ciudad de la eterna primavera"
-#~ msgstr "Experience the best nightlife in the city of eternal spring"
-
-#~ msgid "Mejores Cafeterías en Medellín"
-#~ msgstr "Best Cafes in Medellín"
-
-#~ msgid "Experimenta la auténtica cultura cafetera paisa"
-#~ msgstr "Experience authentic Paisa coffee culture"
-
-#, python-format
-#~ msgid "%(titulo)s"
-#~ msgstr "%(titulo)s"
-
-#, python-format
-#~ msgid "en %(comuna)s"
-#~ msgstr "in %(comuna)s"
-
-#, python-format
-#~ msgid " %(filters)s"
-#~ msgstr " %(filters)s"
-
-#, python-format
-#~ msgid "%(desc)s en la zona de %(comuna)s"
-#~ msgstr "%(desc)s in the area of %(comuna)s"
-
-#, python-format
-#~ msgid "Lugares %(filters)s en %(comuna)s"
-#~ msgstr "Places %(filters)s in %(comuna)s"
-
-#, python-format
-#~ msgid "Lugares especializados en %(comuna)s que cumplen tus criterios"
-#~ msgstr "Specialized places in %(comuna)s that meet your criteria"
-
-#, python-format
-#~ msgid "Lugares %(filters)s en Medellín"
-#~ msgstr "Places %(filters)s in Medellín"
-
-#~ msgid "Lugares especializados que cumplen tus criterios de búsqueda"
-#~ msgstr "Specialized places that meet your search criteria"
-
-#~ msgid "Todos los Lugares en Medellín"
-#~ msgstr "All Places in Medellín"
+# (obsolete entries removed - now active translations)
 
 #~ msgid "Encontramos %s lugar que coincide con tus filtros"
 #~ msgid_plural "Encontramos %s lugares que coinciden con tus filtros"

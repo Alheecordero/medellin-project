@@ -1176,10 +1176,11 @@ def lugares_por_comuna(request, comuna_slug):
                 }
             elif tipo_actual:
                 if tipo_actual in tipos_info:
-                    # Tipo predefinido
+                    # Tipo predefinido - usar título + " en {comuna}"
                     info = tipos_info[tipo_actual]
-                    titulo_pagina = _('%(titulo)s en %(comuna)s') % {'titulo': info['titulo'], 'comuna': region.name}
-                    descripcion_pagina = _('%(desc)s en %(comuna)s') % {'desc': info['descripcion'], 'comuna': region.name}
+                    # Construir directamente sin doble traducción
+                    titulo_pagina = str(info['titulo']) + ' ' + _('en') + ' ' + region.name
+                    descripcion_pagina = str(info['descripcion']) + ' ' + _('en') + ' ' + region.name
                 else:
                     # Tipo dinámico
                     titulo_pagina = _('Mejores %(tipo)s en %(comuna)s') % {'tipo': tipo_label_traducido, 'comuna': region.name}
