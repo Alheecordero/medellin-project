@@ -21,13 +21,14 @@ urlpatterns = [
     
     # API endpoints
     path('api/filtros-ajax/', views.filtros_ajax_view, name='filtros_ajax'),
-    path('api/lugares-cercanos/', views.lugares_cercanos_ajax_view, name='lugares_cercanos_ajax'),
+    # Near Me (geolocalización) - nombre ÚNICO (evita colisiones con endpoints por slug)
+    path('api/lugares-cercanos/', views.lugares_cercanos_ajax_view, name='lugares_cercanos_near_me'),
     path('api/semantic-search/', views.semantic_search_ajax, name='semantic_search_ajax'),
     path('api/translate_review', views.translate_review_api, name='translate_review_api'),
     # path('api/lugar/<slug:slug>/reviews/', views.reviews_lugar_ajax, name='reviews_lugar_ajax'),  # No necesario con solo 5 reseñas
     
     # Progressive Loading AJAX endpoints
-    path('api/lugares/<slug:slug>/cercanos/', views.lugares_cercanos_ajax, name='lugares_cercanos_ajax'),
-    path('api/lugares/<slug:slug>/similares/', views.lugares_similares_ajax, name='lugares_similares_ajax'),
-    path('api/lugares/<slug:slug>/comuna/', views.lugares_comuna_ajax, name='lugares_comuna_ajax'),
+    path('api/lugares/<slug:slug>/cercanos/', views.lugares_cercanos_ajax, name='lugares_cercanos_ajax_slug'),
+    path('api/lugares/<slug:slug>/similares/', views.lugares_similares_ajax, name='lugares_similares_ajax_slug'),
+    path('api/lugares/<slug:slug>/comuna/', views.lugares_comuna_ajax, name='lugares_comuna_ajax_slug'),
 ]

@@ -585,9 +585,9 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         # Meta data para AJAX loading
         context['ajax_endpoints'] = {
             # Respetar prefijo i18n (/en/...) automáticamente
-            'lugares_cercanos': reverse('explorer:lugares_cercanos_ajax', kwargs={'slug': lugar.slug}),
-            'lugares_similares': reverse('explorer:lugares_similares_ajax', kwargs={'slug': lugar.slug}),
-            'lugares_comuna': reverse('explorer:lugares_comuna_ajax', kwargs={'slug': lugar.slug}),
+            'lugares_cercanos': reverse('explorer:lugares_cercanos_ajax_slug', kwargs={'slug': lugar.slug}),
+            'lugares_similares': reverse('explorer:lugares_similares_ajax_slug', kwargs={'slug': lugar.slug}),
+            'lugares_comuna': reverse('explorer:lugares_comuna_ajax_slug', kwargs={'slug': lugar.slug}),
         }
         
         return context

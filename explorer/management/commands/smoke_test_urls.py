@@ -71,11 +71,11 @@ class Command(BaseCommand):
             Case("reviews_lugar", safe_reverse("explorer:reviews_lugar", {"slug": place_slug})),
             # APIs (GET)
             Case("api_filtros_ajax", safe_reverse("explorer:filtros_ajax")),
-            Case("api_lugares_cercanos_ajax_view", safe_reverse("explorer:lugares_cercanos_ajax")),
+            Case("api_lugares_cercanos_near_me", safe_reverse("explorer:lugares_cercanos_near_me")),
             Case("api_semantic_search_ajax", safe_reverse("explorer:semantic_search_ajax")),
-            Case("api_lugares_slug_cercanos", safe_reverse("explorer:lugares_cercanos_ajax", {"slug": place_slug_geo})),
-            Case("api_lugares_slug_similares", safe_reverse("explorer:lugares_similares_ajax", {"slug": place_slug_geo})),
-            Case("api_lugares_slug_comuna", safe_reverse("explorer:lugares_comuna_ajax", {"slug": place_slug_geo})),
+            Case("api_lugares_slug_cercanos", safe_reverse("explorer:lugares_cercanos_ajax_slug", {"slug": place_slug_geo})),
+            Case("api_lugares_slug_similares", safe_reverse("explorer:lugares_similares_ajax_slug", {"slug": place_slug_geo})),
+            Case("api_lugares_slug_comuna", safe_reverse("explorer:lugares_comuna_ajax_slug", {"slug": place_slug_geo})),
             # translate_review_api es POST; lo probamos con payload mínimo.
             Case("api_translate_review", safe_reverse("explorer:translate_review_api"), method="POST"),
             # Global (no namespace)

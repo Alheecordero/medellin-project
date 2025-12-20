@@ -2059,7 +2059,7 @@ $(document).ready(function() {
         
         // Llamada AJAX
         $.ajax({
-            url: "{% url 'explorer:lugares_cercanos_ajax' %}",
+            url: "{% url 'explorer:lugares_cercanos_near_me' %}",
             type: 'GET',
             data: requestData,
             success: function(response) {
