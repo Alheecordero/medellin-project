@@ -22,6 +22,7 @@ DO_MIGRATE=false
 DO_STATIC=false
 DO_RESTART=true
 DO_COMPILE=false
+DO_CLEAR_CACHE=true
 
 for arg in "$@"; do
   case "$arg" in
@@ -35,6 +36,8 @@ for arg in "$@"; do
     --restart) DO_RESTART=true ;;
     --no-restart) DO_RESTART=false ;;
     --compile) DO_COMPILE=true ;;
+    --clear-cache) DO_CLEAR_CACHE=true ;;
+    --no-clear-cache) DO_CLEAR_CACHE=false ;;
   esac
 done
 
@@ -82,6 +85,10 @@ ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc 'set -e; \
   if $DO_COMPILE; then \
     echo Compilando mensajes i18n...; \
     python manage.py compilemessages -l en -l es || true; \
+  fi; \
+  if $DO_CLEAR_CACHE; then \
+    echo Limpiando caché Django...; \
+    python manage.py shell -c \"from django.core.cache import caches; [c.clear() for c in caches.all()]; print('DJANGO_CACHE_CLEARED')\" || echo 'Cache clear skipped'; \
   fi; \
   if $DO_STATIC; then python manage.py collectstatic --noinput; fi; \
   sudo systemctl daemon-reload || true; \
