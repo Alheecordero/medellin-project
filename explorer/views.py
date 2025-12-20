@@ -382,7 +382,8 @@ class PlacesListView(ListView):
         busqueda_actual = self.request.GET.get("q", "")
         comuna_actual = self.request.GET.get("comuna", "")
         
-        # Mapeo de tipos a títulos y descripciones
+        # Mapeo de tipos a títulos y descripciones SEO-friendly
+        # Diccionario base con tipos comunes y sus descripciones SEO
         tipos_info = {
             'restaurant': {
                 'titulo': _('Mejores Restaurantes en Medellín'),
@@ -390,7 +391,7 @@ class PlacesListView(ListView):
                 'icono': 'bi-cup-hot'
             },
             'bar': {
-                'titulo': _('Mejores Bares y Discotecas en Medellín'), 
+                'titulo': _('Mejores Bares en Medellín'), 
                 'descripcion': _('Vive la mejor vida nocturna de la ciudad de la eterna primavera'),
                 'icono': 'bi-cup-straw'
             },
@@ -398,7 +399,113 @@ class PlacesListView(ListView):
                 'titulo': _('Mejores Cafeterías en Medellín'),
                 'descripcion': _('Experimenta la auténtica cultura cafetera paisa'),
                 'icono': 'bi-cup'
-            }
+            },
+            'night_club': {
+                'titulo': _('Mejores Discotecas en Medellín'),
+                'descripcion': _('Las mejores discotecas y clubes nocturnos de la ciudad'),
+                'icono': 'bi-moon-stars'
+            },
+            'pub': {
+                'titulo': _('Mejores Pubs en Medellín'),
+                'descripcion': _('Descubre los pubs más auténticos de la ciudad'),
+                'icono': 'bi-cup-straw'
+            },
+            'wine_bar': {
+                'titulo': _('Mejores Bares de Vinos en Medellín'),
+                'descripcion': _('Los mejores lugares para disfrutar de una copa de vino'),
+                'icono': 'bi-cup'
+            },
+            'spa': {
+                'titulo': _('Mejores Spas en Medellín'),
+                'descripcion': _('Relájate en los mejores spas y centros de bienestar'),
+                'icono': 'bi-droplet'
+            },
+            'karaoke': {
+                'titulo': _('Mejores Karaokes en Medellín'),
+                'descripcion': _('Canta y diviértete en los mejores karaokes de la ciudad'),
+                'icono': 'bi-mic'
+            },
+            # Restaurantes por cocina
+            'italian_restaurant': {
+                'titulo': _('Mejores Restaurantes Italianos en Medellín'),
+                'descripcion': _('Disfruta de la auténtica cocina italiana en Medellín'),
+                'icono': 'bi-cup-hot'
+            },
+            'mexican_restaurant': {
+                'titulo': _('Mejores Restaurantes Mexicanos en Medellín'),
+                'descripcion': _('Sabores auténticos de la cocina mexicana'),
+                'icono': 'bi-cup-hot'
+            },
+            'japanese_restaurant': {
+                'titulo': _('Mejores Restaurantes Japoneses en Medellín'),
+                'descripcion': _('Sushi, ramen y más en los mejores restaurantes japoneses'),
+                'icono': 'bi-cup-hot'
+            },
+            'chinese_restaurant': {
+                'titulo': _('Mejores Restaurantes Chinos en Medellín'),
+                'descripcion': _('Disfruta de la auténtica cocina china'),
+                'icono': 'bi-cup-hot'
+            },
+            'french_restaurant': {
+                'titulo': _('Mejores Restaurantes Franceses en Medellín'),
+                'descripcion': _('Haute cuisine francesa en la ciudad'),
+                'icono': 'bi-cup-hot'
+            },
+            'seafood_restaurant': {
+                'titulo': _('Mejores Marisquerías en Medellín'),
+                'descripcion': _('Los mejores mariscos y pescados frescos'),
+                'icono': 'bi-cup-hot'
+            },
+            'pizza_restaurant': {
+                'titulo': _('Mejores Pizzerías en Medellín'),
+                'descripcion': _('Las pizzas más deliciosas de la ciudad'),
+                'icono': 'bi-cup-hot'
+            },
+            'hamburger_restaurant': {
+                'titulo': _('Mejores Hamburgueserías en Medellín'),
+                'descripcion': _('Las hamburguesas más jugosas y deliciosas'),
+                'icono': 'bi-cup-hot'
+            },
+            'steak_house': {
+                'titulo': _('Mejores Asaderos en Medellín'),
+                'descripcion': _('Las mejores carnes a la parrilla'),
+                'icono': 'bi-cup-hot'
+            },
+            'sushi_restaurant': {
+                'titulo': _('Mejores Restaurantes de Sushi en Medellín'),
+                'descripcion': _('El sushi más fresco de la ciudad'),
+                'icono': 'bi-cup-hot'
+            },
+            'fast_food_restaurant': {
+                'titulo': _('Mejores Restaurantes de Comida Rápida en Medellín'),
+                'descripcion': _('Comida rápida deliciosa para cualquier momento'),
+                'icono': 'bi-cup-hot'
+            },
+            'vegan_restaurant': {
+                'titulo': _('Mejores Restaurantes Veganos en Medellín'),
+                'descripcion': _('Opciones veganas deliciosas para todos'),
+                'icono': 'bi-cup-hot'
+            },
+            'vegetarian_restaurant': {
+                'titulo': _('Mejores Restaurantes Vegetarianos en Medellín'),
+                'descripcion': _('Comida vegetariana saludable y deliciosa'),
+                'icono': 'bi-cup-hot'
+            },
+            'fine_dining_restaurant': {
+                'titulo': _('Mejores Restaurantes Gourmet en Medellín'),
+                'descripcion': _('Experiencias gastronómicas de alto nivel'),
+                'icono': 'bi-cup-hot'
+            },
+            'breakfast_restaurant': {
+                'titulo': _('Mejores Restaurantes de Desayuno en Medellín'),
+                'descripcion': _('Comienza el día con los mejores desayunos'),
+                'icono': 'bi-cup-hot'
+            },
+            'brunch_restaurant': {
+                'titulo': _('Mejores Lugares de Brunch en Medellín'),
+                'descripcion': _('Los mejores brunchs de la ciudad'),
+                'icono': 'bi-cup-hot'
+            },
         }
         
         # Detectar filtros especiales activos
@@ -432,36 +539,74 @@ class PlacesListView(ListView):
             except RegionOSM.DoesNotExist:
                 pass
 
-        # Título y descripción dinámicos
+        # Obtener label traducido del tipo actual (para tipos no predefinidos)
+        tipo_label_traducido = None
+        if tipo_actual:
+            # Buscar en PLACE_TYPE_CHOICES para obtener el label en español
+            for code, es_label in PLACE_TYPE_CHOICES:
+                if code == tipo_actual:
+                    tipo_label_traducido = _(es_label)  # Traducir al idioma actual
+                    break
+            if not tipo_label_traducido:
+                # Fallback: humanizar el código
+                tipo_label_traducido = tipo_actual.replace('_', ' ').title()
+        
+        # Título y descripción dinámicos - lógica SEO completa
+        ubicacion = comuna_info.name if comuna_info else _('Medellín')
+        filtros_text = _(' y ').join(filtros_activos[:2]) if filtros_activos else ''
+        
         if busqueda_actual:
+            # Búsqueda textual
             titulo_pagina = _("Resultados para \"%(query)s\"") % {"query": busqueda_actual}
-            descripcion_pagina = _('Lugares que coinciden con tu búsqueda en Medellín')
-        elif comuna_info and not tipo_actual and not filtros_activos:
-            # Cuando viene de "Ver todos" de una comuna específica
-            titulo_pagina = _('Los mejores lugares en %(comuna)s') % {'comuna': comuna_info.name}
-            descripcion_pagina = _('Descubre los sitios más destacados de %(comuna)s') % {'comuna': comuna_info.name}
-        elif comuna_info and tipo_actual and tipo_actual in tipos_info:
-            # Comuna + tipo específico
-            info = tipos_info[tipo_actual]
-            titulo_pagina = _('%(titulo)s').replace(_('en Medellín'), _('en %(comuna)s') % {'comuna': comuna_info.name}) % {'titulo': info['titulo']}
-            if filtros_activos:
-                titulo_pagina += _(' %(filters)s') % {'filters': _(' y ').join(filtros_activos[:2])}
-            descripcion_pagina = _('%(desc)s en la zona de %(comuna)s') % {'desc': info['descripcion'], 'comuna': comuna_info.name}
+            descripcion_pagina = _('Lugares que coinciden con tu búsqueda en %(ubicacion)s') % {'ubicacion': ubicacion}
+        
+        elif tipo_actual:
+            # Tenemos un tipo seleccionado
+            if tipo_actual in tipos_info:
+                # Tipo con descripción SEO predefinida
+                info = tipos_info[tipo_actual]
+                if comuna_info:
+                    # Reemplazar "en Medellín" por "en {comuna}"
+                    titulo_base = str(info['titulo']).replace(_('en Medellín'), '')
+                    titulo_base = str(titulo_base).replace('en Medellín', '').strip()
+                    titulo_pagina = _('%(titulo)s en %(comuna)s') % {'titulo': titulo_base, 'comuna': comuna_info.name}
+                else:
+                    titulo_pagina = info['titulo']
+                
+                if filtros_activos:
+                    titulo_pagina = str(titulo_pagina) + ' ' + filtros_text
+                
+                if comuna_info:
+                    descripcion_pagina = _('%(desc)s en la zona de %(comuna)s') % {'desc': info['descripcion'], 'comuna': comuna_info.name}
+                else:
+                    descripcion_pagina = info['descripcion']
+            else:
+                # Tipo dinámico (no predefinido) - generar título SEO
+                if comuna_info:
+                    titulo_pagina = _('Mejores %(tipo)s en %(comuna)s') % {'tipo': tipo_label_traducido, 'comuna': comuna_info.name}
+                    descripcion_pagina = _('Descubre los mejores %(tipo)s en la zona de %(comuna)s') % {'tipo': tipo_label_traducido.lower(), 'comuna': comuna_info.name}
+                else:
+                    titulo_pagina = _('Mejores %(tipo)s en Medellín') % {'tipo': tipo_label_traducido}
+                    descripcion_pagina = _('Descubre los mejores %(tipo)s en la ciudad') % {'tipo': tipo_label_traducido.lower()}
+                
+                if filtros_activos:
+                    titulo_pagina = str(titulo_pagina) + ' ' + filtros_text
+        
         elif comuna_info and filtros_activos:
-            # Comuna + filtros especiales
-            titulo_pagina = _('Lugares %(filters)s en %(comuna)s') % {'filters': _(' y ').join(filtros_activos[:2]), 'comuna': comuna_info.name}
+            # Comuna + filtros especiales (sin tipo)
+            titulo_pagina = _('Lugares %(filters)s en %(comuna)s') % {'filters': filtros_text, 'comuna': comuna_info.name}
             descripcion_pagina = _('Lugares especializados en %(comuna)s que cumplen tus criterios') % {'comuna': comuna_info.name}
-        elif tipo_actual and tipo_actual in tipos_info:
-            # Solo tipo, sin comuna
-            info = tipos_info[tipo_actual]
-            titulo_pagina = info['titulo']
-            if filtros_activos:
-                titulo_pagina += _(' %(filters)s') % {'filters': _(' y ').join(filtros_activos[:2])}
-            descripcion_pagina = info['descripcion']
+        
+        elif comuna_info:
+            # Solo comuna, sin tipo ni filtros
+            titulo_pagina = _('Los Mejores Lugares en %(comuna)s') % {'comuna': comuna_info.name}
+            descripcion_pagina = _('Descubre los sitios más destacados de %(comuna)s') % {'comuna': comuna_info.name}
+        
         elif filtros_activos:
             # Solo filtros especiales, sin comuna ni tipo
-            titulo_pagina = _('Lugares %(filters)s en Medellín') % {'filters': _(' y ').join(filtros_activos[:2])}
+            titulo_pagina = _('Lugares %(filters)s en Medellín') % {'filters': filtros_text}
             descripcion_pagina = _('Lugares especializados que cumplen tus criterios de búsqueda')
+        
         else:
             # Vista general sin filtros
             titulo_pagina = _('Todos los Lugares en Medellín')
@@ -964,23 +1109,31 @@ def lugares_por_comuna(request, comuna_slug):
             tipo_actual = self.request.GET.get("tipo", "")
             busqueda_actual = self.request.GET.get("q", "")
             
-            # Mapeo de tipos para comuna específica
+            # Mapeo de tipos SEO para comuna específica (lista extendida)
             tipos_info = {
-                'restaurant': {
-                    'titulo': f'Mejores Restaurantes en {region.name}',
-                    'descripcion': f'Descubre los sabores más auténticos en {region.name}',
-                    'icono': 'bi-cup-hot'
-                },
-                'bar': {
-                    'titulo': f'Mejores Bares en {region.name}', 
-                    'descripcion': f'Vive la mejor vida nocturna en {region.name}',
-                    'icono': 'bi-cup-straw'
-                },
-                'cafe': {
-                    'titulo': f'Mejores Cafeterías en {region.name}',
-                    'descripcion': f'Experimenta la cultura cafetera en {region.name}',
-                    'icono': 'bi-cup'
-                }
+                'restaurant': {'titulo': _('Mejores Restaurantes'), 'descripcion': _('Descubre los sabores más auténticos')},
+                'bar': {'titulo': _('Mejores Bares'), 'descripcion': _('Vive la mejor vida nocturna')},
+                'cafe': {'titulo': _('Mejores Cafeterías'), 'descripcion': _('Experimenta la cultura cafetera')},
+                'night_club': {'titulo': _('Mejores Discotecas'), 'descripcion': _('Las mejores discotecas y clubes nocturnos')},
+                'pub': {'titulo': _('Mejores Pubs'), 'descripcion': _('Descubre los pubs más auténticos')},
+                'wine_bar': {'titulo': _('Mejores Bares de Vinos'), 'descripcion': _('Los mejores lugares para una copa de vino')},
+                'spa': {'titulo': _('Mejores Spas'), 'descripcion': _('Relájate en los mejores spas')},
+                'karaoke': {'titulo': _('Mejores Karaokes'), 'descripcion': _('Canta y diviértete')},
+                'italian_restaurant': {'titulo': _('Mejores Restaurantes Italianos'), 'descripcion': _('Auténtica cocina italiana')},
+                'mexican_restaurant': {'titulo': _('Mejores Restaurantes Mexicanos'), 'descripcion': _('Sabores auténticos de México')},
+                'japanese_restaurant': {'titulo': _('Mejores Restaurantes Japoneses'), 'descripcion': _('Sushi, ramen y más')},
+                'chinese_restaurant': {'titulo': _('Mejores Restaurantes Chinos'), 'descripcion': _('Auténtica cocina china')},
+                'seafood_restaurant': {'titulo': _('Mejores Marisquerías'), 'descripcion': _('Los mejores mariscos frescos')},
+                'pizza_restaurant': {'titulo': _('Mejores Pizzerías'), 'descripcion': _('Las pizzas más deliciosas')},
+                'hamburger_restaurant': {'titulo': _('Mejores Hamburgueserías'), 'descripcion': _('Las hamburguesas más jugosas')},
+                'steak_house': {'titulo': _('Mejores Asaderos'), 'descripcion': _('Las mejores carnes a la parrilla')},
+                'sushi_restaurant': {'titulo': _('Mejores Restaurantes de Sushi'), 'descripcion': _('El sushi más fresco')},
+                'fast_food_restaurant': {'titulo': _('Mejores Restaurantes de Comida Rápida'), 'descripcion': _('Comida rápida deliciosa')},
+                'vegan_restaurant': {'titulo': _('Mejores Restaurantes Veganos'), 'descripcion': _('Opciones veganas deliciosas')},
+                'vegetarian_restaurant': {'titulo': _('Mejores Restaurantes Vegetarianos'), 'descripcion': _('Comida vegetariana saludable')},
+                'fine_dining_restaurant': {'titulo': _('Mejores Restaurantes Gourmet'), 'descripcion': _('Experiencias gastronómicas de alto nivel')},
+                'breakfast_restaurant': {'titulo': _('Mejores Restaurantes de Desayuno'), 'descripcion': _('Comienza el día con los mejores desayunos')},
+                'brunch_restaurant': {'titulo': _('Mejores Lugares de Brunch'), 'descripcion': _('Los mejores brunchs')},
             }
             
             # Detectar filtros especiales activos
@@ -999,59 +1152,57 @@ def lugares_por_comuna(request, comuna_slug):
             for filtro, nombre in filtros_especiales_map.items():
                 if self.request.GET.get(filtro) == 'true':
                     filtros_activos.append(nombre)
+            
+            # Obtener label traducido del tipo actual (para tipos no predefinidos)
+            tipo_label_traducido = None
+            if tipo_actual:
+                for code, es_label in PLACE_TYPE_CHOICES:
+                    if code == tipo_actual:
+                        tipo_label_traducido = _(es_label)
+                        break
+                if not tipo_label_traducido:
+                    tipo_label_traducido = tipo_actual.replace('_', ' ').title()
 
-            # Título dinámico para comuna específica (versión robusta por idioma)
-            # Usar el prefijo de la URL para decidir el idioma, evitando inconsistencias de estado
-            lang = 'en' if self.request.path.startswith('/en/') else (get_language() or 'es')
+            # Título dinámico para comuna específica - SEO optimizado
+            filtros_text = _(' y ').join(filtros_activos[:2]) if filtros_activos else ''
+            
             if busqueda_actual:
-                if lang.startswith('en'):
-                    titulo_pagina = f'Results for "{busqueda_actual}" in {region.name}'
-                    descripcion_pagina = f'Places that match your search in {region.name}'
+                titulo_pagina = _('Resultados para "%(query)s" en %(comuna)s') % {
+                    'query': busqueda_actual,
+                    'comuna': region.name,
+                }
+                descripcion_pagina = _('Lugares que coinciden con tu búsqueda en %(comuna)s') % {
+                    'comuna': region.name,
+                }
+            elif tipo_actual:
+                if tipo_actual in tipos_info:
+                    # Tipo predefinido
+                    info = tipos_info[tipo_actual]
+                    titulo_pagina = _('%(titulo)s en %(comuna)s') % {'titulo': info['titulo'], 'comuna': region.name}
+                    descripcion_pagina = _('%(desc)s en %(comuna)s') % {'desc': info['descripcion'], 'comuna': region.name}
                 else:
-                    titulo_pagina = _('Resultados para "%(query)s" en %(comuna)s') % {
-                        'query': busqueda_actual,
-                        'comuna': region.name,
-                    }
-                    descripcion_pagina = _('Lugares que coinciden con tu búsqueda en %(comuna)s') % {
-                        'comuna': region.name,
-                    }
-            elif tipo_actual and tipo_actual in tipos_info:
-                info = tipos_info[tipo_actual]
-                titulo_pagina = info['titulo']
+                    # Tipo dinámico
+                    titulo_pagina = _('Mejores %(tipo)s en %(comuna)s') % {'tipo': tipo_label_traducido, 'comuna': region.name}
+                    descripcion_pagina = _('Descubre los mejores %(tipo)s en %(comuna)s') % {'tipo': tipo_label_traducido.lower(), 'comuna': region.name}
+                
                 if filtros_activos:
-                    # Aquí info['titulo'] ya viene traducido por get_localized_place_type
-                    joiner = ' and ' if lang.startswith('en') else _(' y ')
-                    filtros_txt = joiner.join(filtros_activos[:2])
-                    if lang.startswith('en'):
-                        titulo_pagina += f' {filtros_txt}'
-                    else:
-                        titulo_pagina += _(' %(filters)s') % {'filters': filtros_txt}
-                descripcion_pagina = info['descripcion']
+                    titulo_pagina = str(titulo_pagina) + ' ' + filtros_text
+            
             elif filtros_activos:
-                joiner = ' and ' if lang.startswith('en') else _(' y ')
-                filtros_txt = joiner.join(filtros_activos[:2])
-                if lang.startswith('en'):
-                    titulo_pagina = f'Places {filtros_txt} in {region.name}'
-                    descripcion_pagina = f'Specialized places in {region.name} that match your criteria'
-                else:
-                    titulo_pagina = _('Lugares %(filters)s en %(comuna)s') % {
-                        'filters': filtros_txt,
-                        'comuna': region.name,
-                    }
-                    descripcion_pagina = _('Lugares especializados en %(comuna)s que cumplen tus criterios') % {
-                        'comuna': region.name,
-                    }
+                titulo_pagina = _('Lugares %(filters)s en %(comuna)s') % {
+                    'filters': filtros_text,
+                    'comuna': region.name,
+                }
+                descripcion_pagina = _('Lugares especializados en %(comuna)s que cumplen tus criterios') % {
+                    'comuna': region.name,
+                }
             else:
-                if lang.startswith('en'):
-                    titulo_pagina = f'The best places in {region.name}'
-                    descripcion_pagina = f'Discover the most outstanding places in {region.name}'
-                else:
-                    titulo_pagina = _('Los mejores lugares en %(comuna)s') % {
-                        'comuna': region.name,
-                    }
-                    descripcion_pagina = _('Descubre los sitios más destacados de %(comuna)s') % {
-                        'comuna': region.name,
-                    }
+                titulo_pagina = _('Los Mejores Lugares en %(comuna)s') % {
+                    'comuna': region.name,
+                }
+                descripcion_pagina = _('Descubre los sitios más destacados de %(comuna)s') % {
+                    'comuna': region.name,
+                }
             
             # Actualizar contexto
             context.update({
