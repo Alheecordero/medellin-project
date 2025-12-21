@@ -2772,3 +2772,22 @@ msgstr "Smart search results in Medellín. Discover unique places based on your 
 
 msgid "búsqueda Medellín, lugares Medellín, bares restaurantes Medellín"
 msgstr "search Medellín, places Medellín, bars restaurants Medellín"
+
+#: explorer/templates/home.html (title & meta)
+msgid "ViveMedellín | Bares, Restaurantes y Vida Nocturna en Medellín"
+msgstr "ViveMedellín | Bars, Restaurants & Nightlife in Medellín"
+
+msgid "Guía #1 de Medellín: más de 7,000 bares, restaurantes, rooftops y discotecas con ratings reales. Explora El Poblado, Laureles, Envigado y más."
+msgstr "Medellín's #1 Guide: over 7,000 bars, restaurants, rooftops and clubs with real ratings. Explore El Poblado, Laureles, Envigado and more."
+
+msgid "bares Medellín, restaurantes Medellín, rooftops El Poblado, discotecas Medellín, dónde comer Medellín, vida nocturna Medellín, mejores bares El Poblado, restaurantes Laureles"
+msgstr "bars Medellín, restaurants Medellín, rooftops El Poblado, clubs Medellín, where to eat Medellín, nightlife Medellín, best bars El Poblado, restaurants Laureles"
+
+msgid "ViveMedellín | Los Mejores Bares y Restaurantes de Medellín"
+msgstr "ViveMedellín | The Best Bars & Restaurants in Medellín"
+
+msgid "Descubre más de 7,000 lugares en Medellín: bares, restaurantes, rooftops y discotecas. Ratings de Google, horarios y ubicación exacta."
+msgstr "Discover over 7,000 places in Medellín: bars, restaurants, rooftops and clubs. Google ratings, schedules and exact location."
+
+msgid "Vista panorámica de Medellín - ViveMedellín"
+msgstr "Panoramic view of Medellín - ViveMedellín"
