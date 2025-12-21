@@ -67,21 +67,21 @@
 
       <!-- Card Inferior: Grid de Lugares -->
       <div class="places-grid-card">
-        <div class="row g-4 lugares-grid">
-          {% for lugar in lugares %}
-            <div class="col-md-4">
+  <div class="row g-4 lugares-grid">
+    {% for lugar in lugares %}
+      <div class="col-md-4">
               {% include 'components/place_card.html' with lugar=lugar %}
-            </div>
-          {% empty %}
-            <div class="col-12">
+      </div>
+    {% empty %}
+      <div class="col-12">
               <div class="empty-state">
                 <i class="bi bi-search empty-state__icon"></i>
                 <h3 class="empty-state__title">{% trans "No se encontraron lugares" %}</h3>
                 <p class="empty-state__text">{% trans "No se encontraron lugares en esta página." %}</p>
-              </div>
-            </div>
-          {% endfor %}
         </div>
+      </div>
+    {% endfor %}
+  </div>
 
   <!-- ✅ Paginador -->
   {% if is_paginated %}
@@ -140,7 +140,7 @@
 /* Estilos específicos de la página - Cards vienen de components.css */
 .places-section {
   background: var(--gradient-glow), var(--gradient-dark-bg);
-  min-height: 100vh;
+    min-height: 100vh;
   padding: var(--space-8) 0 var(--space-12);
 }
 
@@ -154,10 +154,10 @@
   box-shadow: var(--shadow-3xl);
   border: 1px solid var(--white-12);
   backdrop-filter: var(--backdrop-blur-xl);
-}
+    }
 
 .places-title {
-  font-size: 2.5rem;
+    font-size: 2.5rem;
   font-weight: var(--font-weight-extrabold);
   color: var(--color-white);
   text-shadow: 0 0 20px var(--accent-40), 0 2px 4px var(--black-50);
@@ -188,7 +188,7 @@
 @media (min-width: 992px) { .places-title { font-size: var(--font-size-5xl); } }
 
 .places-filters-card {
-  background: rgba(3, 30, 20, 0.85);
+    background: rgba(3, 30, 20, 0.85);
   border-radius: var(--radius-2xl);
   border: 1px solid var(--white-10);
   box-shadow: var(--shadow-xl);
