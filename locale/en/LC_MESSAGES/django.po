@@ -1146,7 +1146,6 @@ msgid "Tipo"
 msgstr "Type"
 
 #: explorer/templates/home.html:2132
-#, fuzzy
 #| msgid "Cerrado"
 msgid "Cerrar"
 msgstr "Close"
