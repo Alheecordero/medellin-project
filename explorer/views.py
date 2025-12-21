@@ -699,7 +699,7 @@ class PlacesListView(ListView):
             # Tenemos un tipo seleccionado
             if tipo_actual in tipos_info:
                 # Tipo con descripción SEO predefinida
-            info = tipos_info[tipo_actual]
+                info = tipos_info[tipo_actual]
                 if comuna_info:
                     # Reemplazar "en Medellín" por "en {comuna}"
                     titulo_base = str(info['titulo']).replace(_('en Medellín'), '')
@@ -708,11 +708,11 @@ class PlacesListView(ListView):
                 else:
                     titulo_pagina = info['titulo']
                 
-            if filtros_activos:
+                if filtros_activos:
                     titulo_pagina = str(titulo_pagina) + ' ' + filtros_text
                 
                 if comuna_info:
-            descripcion_pagina = _('%(desc)s en la zona de %(comuna)s') % {'desc': info['descripcion'], 'comuna': comuna_info.name}
+                    descripcion_pagina = _('%(desc)s en la zona de %(comuna)s') % {'desc': info['descripcion'], 'comuna': comuna_info.name}
                 else:
                     descripcion_pagina = info['descripcion']
             else:
@@ -1312,11 +1312,11 @@ def lugares_por_comuna(request, comuna_slug):
             elif tipo_actual:
                 if tipo_actual in tipos_info:
                     # Tipo predefinido - usar título + " en {comuna}"
-                info = tipos_info[tipo_actual]
+                    info = tipos_info[tipo_actual]
                     # Construir directamente sin doble traducción
                     titulo_pagina = str(info['titulo']) + ' ' + _('en') + ' ' + region.name
                     descripcion_pagina = str(info['descripcion']) + ' ' + _('en') + ' ' + region.name
-                    else:
+                else:
                     # Tipo dinámico
                     titulo_pagina = _('Mejores %(tipo)s en %(comuna)s') % {'tipo': tipo_label_traducido, 'comuna': region.name}
                     descripcion_pagina = _('Descubre los mejores %(tipo)s en %(comuna)s') % {'tipo': tipo_label_traducido.lower(), 'comuna': region.name}
@@ -1336,9 +1336,9 @@ def lugares_por_comuna(request, comuna_slug):
                 titulo_pagina = _('Los Mejores Lugares en %(comuna)s') % {
                         'comuna': region.name,
                     }
-                    descripcion_pagina = _('Descubre los sitios más destacados de %(comuna)s') % {
+                descripcion_pagina = _('Descubre los sitios más destacados de %(comuna)s') % {
                         'comuna': region.name,
-                    }
+                }
             
             # Actualizar contexto
             context.update({
@@ -1822,10 +1822,10 @@ def lugares_cercanos_ajax_view(request):
         else:
             # Con resultados
             if tipo_label and caract_label:
-        mensaje = ngettext(
+                mensaje = ngettext(
                     '%(count)s %(tipo)s con %(caract)s a menos de %(dist)s',
                     '%(count)s %(tipo)s con %(caract)s a menos de %(dist)s',
-            count
+                    count
                 ) % {'count': count, 'tipo': tipo_label, 'caract': caract_label, 'dist': distancia_str}
             elif tipo_label:
                 mensaje = ngettext(
@@ -2189,7 +2189,7 @@ def _guess_lang_es_en(text: str) -> str:
     if spanish_matches > english_matches:
         return 'ES'
     elif english_matches > spanish_matches:
-    return 'EN'
+        return 'EN'
     
     # Por defecto español (contexto de Colombia)
     return 'ES'
