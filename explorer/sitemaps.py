@@ -35,7 +35,7 @@ class PlacesSitemap(Sitemap):
         ).filter(
             Q(rating__gte=2.0) | Q(rating__isnull=True)
         ).only(
-            'slug', 'es_destacado', 'rating', 'id'
+            'slug', 'es_destacado', 'rating', 'id', 'fecha_actualizacion'
         ).order_by("-es_destacado", "-rating", "-id")
 
     def location(self, obj):
@@ -52,7 +52,7 @@ class PlacesSitemap(Sitemap):
         return 0.7
 
     def lastmod(self, obj):
-        return obj.updated_at if hasattr(obj, 'updated_at') else None
+        return obj.fecha_actualizacion if hasattr(obj, 'fecha_actualizacion') else None
 
 
 class ComunasSitemap(Sitemap):
