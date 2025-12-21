@@ -2453,14 +2453,14 @@ msgstr "Discover the best %(tipo)s in the city"
 #~ msgid "Resultados para:"
 #~ msgstr "Results for:"
 
-#~ msgid "Económico"
-#~ msgstr "Budget-friendly"
+msgid "Económico"
+msgstr "Budget"
 
-#~ msgid "Moderado"
-#~ msgstr "Mid-range"
+msgid "Moderado"
+msgstr "Moderate"
 
-#~ msgid "Costoso"
-#~ msgstr "Pricey"
+msgid "Costoso"
+msgstr "Expensive"
 
 #~ msgid "Muy costoso"
 #~ msgstr "High-end"
@@ -2844,3 +2844,12 @@ msgstr "Your local guide to Medellín: thousands of bars, restaurants, rooftops 
 
 msgid "Descubre miles de lugares en Medellín: bares, restaurantes, rooftops y discotecas. Ratings de Google, horarios y ubicación exacta."
 msgstr "Discover thousands of places in Medellín: bars, restaurants, rooftops and clubs. Google ratings, schedules and exact location."
+
+#: explorer/templates/lugares/places_detail.html
+msgid "Visitar Web"
+msgstr "Visit Website"
+
+#: explorer/templates/components/share_buttons.html
+msgid "Compartir en Telegram"
+msgstr "Share on Telegram"
+
