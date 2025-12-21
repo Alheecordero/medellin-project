@@ -17,10 +17,14 @@ class StaticViewSitemap(Sitemap):
 
 
 class PlacesSitemap(Sitemap):
-    """Sitemap para lugares individuales con alta prioridad para lugares destacados."""
+    """Sitemap para lugares individuales con alta prioridad para lugares destacados.
+    
+    Django automáticamente crea múltiples sitemaps si hay más de 50,000 URLs.
+    El orden prioriza lugares destacados y con mejor rating primero.
+    """
     changefreq = "weekly"
     priority = 0.8
-    limit = 2000  # Límite por sitemap (reducido para evitar timeout)
+    # Django automáticamente paginará si hay más de 50,000 URLs
 
     def items(self):
         return Places.objects.filter(
@@ -29,7 +33,7 @@ class PlacesSitemap(Sitemap):
             slug=""
         ).filter(
             Q(rating__gte=2.0) | Q(rating__isnull=True)
-        ).order_by("-es_destacado", "-rating", "-id")[:self.limit]
+        ).order_by("-es_destacado", "-rating", "-id")
 
     def location(self, obj):
         return reverse("explorer:lugares_detail", args=[obj.slug])
@@ -65,17 +69,20 @@ class ComunasSitemap(Sitemap):
 
 
 class ImagesSitemap(Sitemap):
-    """Sitemap de imágenes para Google Images."""
+    """Sitemap de imágenes para Google Images.
+    
+    Nota: Las imágenes apuntan a las mismas páginas de lugares (no son URLs únicas).
+    Django automáticamente paginará si hay más de 50,000 URLs.
+    """
     changefreq = "monthly"
     priority = 0.5
-    limit = 2000  # Reducido para evitar timeout
 
     def items(self):
         return Foto.objects.exclude(
             Q(imagen__isnull=True) | Q(imagen="")
         ).select_related("lugar").filter(
             lugar__slug__isnull=False
-        ).order_by("-id")[:self.limit]
+        ).order_by("-id")
 
     def location(self, obj):
         if obj.lugar and obj.lugar.slug:
