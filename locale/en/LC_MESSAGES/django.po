@@ -2816,4 +2816,3 @@ msgid "Descubre bares, restaurantes, rooftops y discotecas en Medellín. Ratings
 msgstr "Discover bars, restaurants, rooftops and clubs in Medellín. Real ratings and updated schedules."
 
 msgid "ViveMedellín - Guía de lugares en Medellín"
-msgstr "ViveMedellín - Guide to places in Medellín"
