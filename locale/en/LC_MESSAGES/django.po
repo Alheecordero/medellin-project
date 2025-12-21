@@ -2739,5 +2739,13 @@ msgid "Compartir en Twitter"
 msgstr "Share on Twitter"
 
 #: explorer/templates/components/share_buttons.html:44
-msgid "Compartir en Telegram"
-msgstr "Share on Telegram"
+
+#: explorer/templates/lugares/places_detail.html (SEO keywords)
+msgid "mejores"
+msgstr "best"
+
+msgid "terraza"
+msgstr "terrace"
+
+msgid "música en vivo"
+msgstr "live music"

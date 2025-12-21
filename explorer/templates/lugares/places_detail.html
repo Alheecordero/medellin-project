@@ -5,20 +5,20 @@
 {% load form_tags %}
 {% load i18n_extras %}
 
-{% block title %}{{ lugar.nombre }} - {{ lugar|place_type_label }} en {% if lugar.comuna %}{{ lugar.comuna.name }}{% else %}Medellín{% endif %} | ViveMedellín{% endblock %}
+{% block title %}{{ lugar.nombre }} - {{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}{% else %}Medellín{% endif %} | ViveMedellín{% endblock %}
 
 {% block meta_description %}
-{{ lugar.nombre }}{% if lugar.rating %} ⭐ {{ lugar.rating|floatformat:1 }}{% endif %} - {{ lugar|place_type_label }} en {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if lugar.direccion %} 📍 {{ lugar.direccion|truncatechars:60 }}{% endif %}{% if lugar.precio %} 💰 {{ lugar.precio|format_price_range }}{% endif %}
+{{ lugar.nombre }}{% if lugar.rating %} ⭐ {{ lugar.rating|floatformat:1 }}{% endif %} - {{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if lugar.direccion %} 📍 {{ lugar.direccion|truncatechars:60 }}{% endif %}{% if lugar.precio %} 💰 {{ lugar.precio|format_price_range }}{% endif %}
 {% endblock %}
 
 {% block meta_keywords %}
-{{ lugar.nombre }}, {{ lugar|place_type_label }} Medellín, {{ lugar|place_type_label }} {% if lugar.comuna %}{{ lugar.comuna.name }}{% endif %}, mejores {{ lugar|place_type_label|lower }}s Medellín{% if lugar.outdoor_seating %}, terraza{% endif %}{% if lugar.live_music %}, música en vivo{% endif %}{% if lugar.delivery %}, delivery{% endif %}
+{{ lugar.nombre }}, {{ lugar|place_type_label }} Medellín, {{ lugar|place_type_label }} {% if lugar.comuna %}{{ lugar.comuna.name }}{% endif %}, {% trans "mejores" %} {{ lugar|place_type_label|lower }}s Medellín{% if lugar.outdoor_seating %}, {% trans "terraza" %}{% endif %}{% if lugar.live_music %}, {% trans "música en vivo" %}{% endif %}{% if lugar.delivery %}, delivery{% endif %}
 {% endblock %}
 
 {% block og_type %}place{% endblock %}
-{% block og_title %}{{ lugar.nombre }} - {{ lugar|place_type_label }} en Medellín | ViveMedellín{% endblock %}
+{% block og_title %}{{ lugar.nombre }} - {{ lugar|place_type_label }} {% trans "en" %} Medellín | ViveMedellín{% endblock %}
 {% block og_description %}
-{% if lugar.rating %}⭐ {{ lugar.rating|floatformat:1 }} - {% endif %}{{ lugar|place_type_label }} en {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if lugar.descripcion %} {{ lugar.descripcion|truncatechars:100 }}{% endif %}
+{% if lugar.rating %}⭐ {{ lugar.rating|floatformat:1 }} - {% endif %}{{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if lugar.descripcion %} {{ lugar.descripcion|truncatechars:100 }}{% endif %}
 {% endblock %}
 
 {% block og_image %}
