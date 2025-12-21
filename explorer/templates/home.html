@@ -4,19 +4,13 @@
 
 {% block title %}{% trans "ViveMedellín | Bares, Restaurantes y Vida Nocturna en Medellín" %}{% endblock %}
 
-{% block meta_description %}
-{% blocktrans %}Guía #1 de Medellín: más de 7,000 bares, restaurantes, rooftops y discotecas con ratings reales. Explora El Poblado, Laureles, Envigado y más.{% endblocktrans %}
-{% endblock %}
+{% block meta_description %}{% blocktrans %}Tu guía local de Medellín: miles de bares, restaurantes, rooftops y discotecas con ratings de Google. Explora El Poblado, Laureles, Envigado y más.{% endblocktrans %}{% endblock %}
 
-{% block meta_keywords %}
-{% blocktrans %}bares Medellín, restaurantes Medellín, rooftops El Poblado, discotecas Medellín, dónde comer Medellín, vida nocturna Medellín, mejores bares El Poblado, restaurantes Laureles{% endblocktrans %}
-{% endblock %}
+{% block meta_keywords %}{% blocktrans %}bares Medellín, restaurantes Medellín, rooftops El Poblado, discotecas Medellín, dónde comer Medellín, vida nocturna Medellín, mejores bares El Poblado, restaurantes Laureles{% endblocktrans %}{% endblock %}
 
 {% block og_title %}{% trans "ViveMedellín | Los Mejores Bares y Restaurantes de Medellín" %}{% endblock %}
 
-{% block og_description %}
-{% blocktrans %}Descubre más de 7,000 lugares en Medellín: bares, restaurantes, rooftops y discotecas. Ratings de Google, horarios y ubicación exacta.{% endblocktrans %}
-{% endblock %}
+{% block og_description %}{% blocktrans %}Descubre miles de lugares en Medellín: bares, restaurantes, rooftops y discotecas. Ratings de Google, horarios y ubicación exacta.{% endblocktrans %}{% endblock %}
 
 {% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}{% endblock %}
 {% block og_image_alt %}{% trans "Vista panorámica de Medellín - ViveMedellín" %}{% endblock %}
@@ -60,8 +54,9 @@
                                 <input type="text" 
                                        id="search-places" 
                                        class="form-control form-control-lg rounded-start-pill border-0"
-                                       placeholder="{% trans 'Busca bares, restaurantes, lugares...' %}">
-                                <button class="btn btn-light rounded-end-pill px-4" type="button">
+                                       placeholder="{% trans 'Busca bares, restaurantes, lugares...' %}"
+                                       aria-label="{% trans 'Buscar lugares en Medellín' %}">
+                                <button class="btn btn-light rounded-end-pill px-4" type="button" aria-label="{% trans 'Buscar' %}">
                                     <i class="bi bi-search"></i>
                                 </button>
                             </div>

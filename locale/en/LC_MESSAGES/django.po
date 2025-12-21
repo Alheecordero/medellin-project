@@ -1149,7 +1149,7 @@ msgstr "Type"
 #, fuzzy
 #| msgid "Cerrado"
 msgid "Cerrar"
-msgstr "Closed"
+msgstr "Close"
 
 #: explorer/templates/home.html:2155
 #: explorer/templates/lugares/places_list.html:144
@@ -2817,3 +2817,31 @@ msgstr "Discover bars, restaurants, rooftops and clubs in Medellín. Real rating
 
 msgid "ViveMedellín - Guía de lugares en Medellín"
 msgstr "ViveMedellín - Guide to places in Medellín"
+
+#: explorer/templates/home.html (aria-labels)
+msgid "Buscar lugares en Medellín"
+msgstr "Search places in Medellín"
+
+msgid "Buscar"
+msgstr "Search"
+
+#: explorer/templates/footer.html
+msgid "Volver arriba"
+msgstr "Back to top"
+
+#: explorer/templates/components/lang_switcher.html
+msgid "Cambiar a español"
+msgstr "Switch to Spanish"
+
+msgid "Cambiar a inglés"
+msgstr "Switch to English"
+
+msgid "idioma actual"
+msgstr "current language"
+
+#: explorer/templates/home.html (updated meta)
+msgid "Tu guía local de Medellín: miles de bares, restaurantes, rooftops y discotecas con ratings de Google. Explora El Poblado, Laureles, Envigado y más."
+msgstr "Your local guide to Medellín: thousands of bars, restaurants, rooftops and clubs with Google ratings. Explore El Poblado, Laureles, Envigado and more."
+
+msgid "Descubre miles de lugares en Medellín: bares, restaurantes, rooftops y discotecas. Ratings de Google, horarios y ubicación exacta."
+msgstr "Discover thousands of places in Medellín: bars, restaurants, rooftops and clubs. Google ratings, schedules and exact location."
