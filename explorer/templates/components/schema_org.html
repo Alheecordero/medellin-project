@@ -102,7 +102,10 @@
         "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'explorer:lugares_detail' lugar.slug %}"{% if lugar.rating %},
         "aggregateRating": {
           "@type": "AggregateRating",
-          "ratingValue": {{ lugar.rating|floatformat:1 }}
+          "ratingValue": {{ lugar.rating|floatformat:1 }},
+          "bestRating": "5",
+          "worstRating": "1"{% if lugar.total_reviews %},
+          "reviewCount": {{ lugar.total_reviews }}{% endif %}
         }{% endif %}
       }
     }{% if not forloop.last %},{% endif %}
