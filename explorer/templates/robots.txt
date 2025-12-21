@@ -4,37 +4,49 @@
 User-agent: *
 Allow: /
 
-# Directorios permitidos
+# ═══════════════════════════════════════════════════════════════
+# PÁGINAS INDEXABLES (valiosas para SEO)
+# ═══════════════════════════════════════════════════════════════
+
+# Listas de lugares - rankean para "restaurantes Medellín", "bares El Poblado"
 Allow: /lugares/
-Allow: /lugar/
 Allow: /en/places/
+
+# Detalles de lugares - rankean para nombres específicos
+Allow: /lugar/
 Allow: /en/place/
+
+# Páginas estáticas
 Allow: /nosotros/
 Allow: /en/about-us/
 
-# Bloquear rutas internas/admin
+# Páginas filtradas - MUY VALIOSAS para SEO
+# Rankean para: "restaurantes con terraza Medellín", "bares música en vivo"
+# NO bloquear estos parámetros
+
+# ═══════════════════════════════════════════════════════════════
+# BLOQUEAR SOLO RUTAS INTERNAS
+# ═══════════════════════════════════════════════════════════════
+
 Disallow: /admin/
 Disallow: /api/
 Disallow: /i18n/
 Disallow: /__debug__/
 Disallow: /static/admin/
+Disallow: /jsi18n/
 
-# Evitar indexar páginas con parámetros de filtros
-Disallow: /*?page=
-Disallow: /*?tipo=
-Disallow: /*?delivery=
-Disallow: /*?outdoor_seating=
-Disallow: /*?*&*
+# ═══════════════════════════════════════════════════════════════
+# RECURSOS ESTÁTICOS
+# ═══════════════════════════════════════════════════════════════
 
-# Permitir recursos estáticos para crawlers
-Allow: /static/img/*.jpg
-Allow: /static/img/*.png
-Allow: /static/css/*.css
-Allow: /static/js/*.js
+Allow: /static/img/
+Allow: /static/css/
+Allow: /static/js/
 
-# Crawl-delay (ser amable con el servidor)
+# ═══════════════════════════════════════════════════════════════
+# CONFIGURACIÓN
+# ═══════════════════════════════════════════════════════════════
+
 Crawl-delay: 1
 
-# Sitemaps
 Sitemap: https://vivemedellin.co/sitemap.xml
-
