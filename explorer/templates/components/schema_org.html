@@ -2,6 +2,7 @@
 {% load static %}
 {% load form_tags %}
 {% load i18n_extras %}
+{% load l10n %}
 
 {# Schema.org JSON-LD para SEO #}
 {# Uso: {% include 'components/schema_org.html' with schema_type='place' lugar=lugar %} #}
@@ -57,14 +58,14 @@
   },{% endif %}
   {% if lugar.ubicacion %}"geo": {
     "@type": "GeoCoordinates",
-    "latitude": {{ lugar.ubicacion.y }},
-    "longitude": {{ lugar.ubicacion.x }}
+    "latitude": {{ lugar.ubicacion.y|unlocalize }},
+    "longitude": {{ lugar.ubicacion.x|unlocalize }}
   },{% endif %}
   {% if lugar.telefono %}"telephone": "{{ lugar.telefono }}",{% endif %}
   {% if lugar.sitio_web %}"url": "{{ lugar.sitio_web }}",{% endif %}
   {% if lugar.rating %}"aggregateRating": {
     "@type": "AggregateRating",
-    "ratingValue": {{ lugar.rating|floatformat:1 }},
+    "ratingValue": {{ lugar.rating|unlocalize }},
     "bestRating": "5",
     "worstRating": "1"{% if lugar.total_reviews %},
     "reviewCount": {{ lugar.total_reviews }}{% endif %}
@@ -102,7 +103,7 @@
         "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'explorer:lugares_detail' lugar.slug %}"{% if lugar.rating %},
         "aggregateRating": {
           "@type": "AggregateRating",
-          "ratingValue": {{ lugar.rating|floatformat:1 }},
+          "ratingValue": {{ lugar.rating|unlocalize }},
           "bestRating": "5",
           "worstRating": "1"{% if lugar.total_reviews %},
           "reviewCount": {{ lugar.total_reviews }}{% endif %}
