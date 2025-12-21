@@ -6,7 +6,7 @@ from django.contrib.sitemaps.views import index as sitemap_index, sitemap
 from django.views.generic import RedirectView, TemplateView
 from explorer.sitemaps import (
     StaticViewSitemap, PlacesSitemap, ComunasSitemap,
-    ImagesSitemap, PlacesSitemapEN, StaticViewSitemapEN
+    PlacesSitemapEN, StaticViewSitemapEN
 )
 from explorer import views as explorer_views
 from django.conf import settings
@@ -20,7 +20,6 @@ sitemaps = {
     'places': PlacesSitemap,
     'places-en': PlacesSitemapEN,
     'comunas': ComunasSitemap,
-    'images': ImagesSitemap,
 }
 
 urlpatterns = [

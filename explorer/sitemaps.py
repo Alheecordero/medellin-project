@@ -1,7 +1,7 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 from django.db.models import Q
-from explorer.models import Places, RegionOSM, Foto
+from explorer.models import Places, RegionOSM
 
 
 class StaticViewSitemap(Sitemap):
@@ -71,26 +71,8 @@ class ComunasSitemap(Sitemap):
         return reverse("explorer:lugares_por_comuna", args=[obj.slug])
 
 
-class ImagesSitemap(Sitemap):
-    """Sitemap de imágenes para Google Images.
-    
-    Nota: Las imágenes apuntan a las mismas páginas de lugares (no son URLs únicas).
-    Django automáticamente paginará si hay más de 50,000 URLs.
-    """
-    changefreq = "monthly"
-    priority = 0.5
-
-    def items(self):
-        return Foto.objects.exclude(
-            Q(imagen__isnull=True) | Q(imagen="")
-        ).select_related("lugar").filter(
-            lugar__slug__isnull=False
-        ).order_by("-id")
-
-    def location(self, obj):
-        if obj.lugar and obj.lugar.slug:
-            return reverse("explorer:lugares_detail", args=[obj.lugar.slug])
-        return "/"
+# ImagesSitemap eliminado - las imágenes ya están en las páginas de lugares
+# y causaba timeout al cargar demasiadas fotos
 
 
 # Para versión en inglés
