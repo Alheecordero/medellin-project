@@ -2749,3 +2749,16 @@ msgstr "terrace"
 
 msgid "música en vivo"
 msgstr "live music"
+
+#: explorer/templates/lugares/places_list.html (SEO keywords)
+msgid "lugares"
+msgstr "places"
+
+msgid "bares"
+msgstr "bars"
+
+msgid "restaurantes"
+msgstr "restaurants"
+
+msgid "vida nocturna"
+msgstr "nightlife"

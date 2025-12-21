@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block meta_keywords %}
-{% if tipo_actual %}{{ tipo_actual_label }} Medellín, mejores {{ tipo_actual_label|lower }} Medellín, {% endif %}{% if region_actual %}{{ region_actual.name }} Medellín, lugares {{ region_actual.name }}, {% endif %}bares Medellín, restaurantes Medellín, vida nocturna Medellín
+{% if tipo_actual %}{{ tipo_actual_label }} Medellín, {% trans "mejores" %} {{ tipo_actual_label|lower }} Medellín, {% endif %}{% if region_actual %}{{ region_actual.name }} Medellín, {% trans "lugares" %} {{ region_actual.name }}, {% endif %}{% trans "bares" %} Medellín, {% trans "restaurantes" %} Medellín, {% trans "vida nocturna" %} Medellín
 {% endblock %}
 
 {% block og_title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
