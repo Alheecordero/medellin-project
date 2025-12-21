@@ -2791,3 +2791,29 @@ msgstr "Discover over 7,000 places in Medellín: bars, restaurants, rooftops and
 
 msgid "Vista panorámica de Medellín - ViveMedellín"
 msgstr "Panoramic view of Medellín - ViveMedellín"
+
+#: explorer/templates/lugares/places_list.html (meta)
+msgid "Ratings de Google, horarios actualizados y ubicación exacta. Filtra por tipo, zona y características."
+msgstr "Google ratings, updated hours and exact location. Filter by type, area and features."
+
+msgid "Encuentra lugares con ratings reales y horarios actualizados."
+msgstr "Find places with real ratings and updated schedules."
+
+#: explorer/templates/base.html (defaults)
+msgid "Guía completa de Medellín: los mejores bares, restaurantes, rooftops y discotecas. Ratings reales, horarios y ubicación exacta. ¡Explora como un local!"
+msgstr "Complete guide to Medellín: the best bars, restaurants, rooftops and clubs. Real ratings, schedules and exact location. Explore like a local!"
+
+msgid "bares Medellín, restaurantes Medellín, rooftops Medellín, discotecas El Poblado, dónde comer Medellín, vida nocturna Medellín, mejores lugares Medellín"
+msgstr "bars Medellín, restaurants Medellín, rooftops Medellín, clubs El Poblado, where to eat Medellín, nightlife Medellín, best places Medellín"
+
+msgid "ViveMedellín | Descubre Bares, Restaurantes y Vida Nocturna"
+msgstr "ViveMedellín | Discover Bars, Restaurants & Nightlife"
+
+msgid "ViveMedellín | Los Mejores Lugares de Medellín"
+msgstr "ViveMedellín | The Best Places in Medellín"
+
+msgid "Descubre bares, restaurantes, rooftops y discotecas en Medellín. Ratings reales y horarios actualizados."
+msgstr "Discover bars, restaurants, rooftops and clubs in Medellín. Real ratings and updated schedules."
+
+msgid "ViveMedellín - Guía de lugares en Medellín"
+msgstr "ViveMedellín - Guide to places in Medellín"
