@@ -1,0 +1,62 @@
+{% load i18n %}
+{% load form_tags %}
+{% load i18n_extras %}
+{# Componente: Place Card Compact - Card compacta para lugares relacionados #}
+
+<article class="place-card-compact">
+  
+  {# === IMAGEN === #}
+  <div class="place-card-compact__media">
+    {% if lugar.get_primera_foto %}
+      {% with foto=lugar.get_primera_foto %}
+        <img 
+          src="{{ foto.imagen_miniatura|default:foto.imagen }}"
+          alt="{{ lugar.nombre }}"
+          loading="lazy"
+        >
+      {% endwith %}
+    {% elif lugar.imagen %}
+      <img src="{{ lugar.imagen }}" alt="{{ lugar.nombre }}" loading="lazy">
+    {% else %}
+      <div class="place-card-compact__placeholder">
+        <i class="bi bi-image"></i>
+      </div>
+    {% endif %}
+    
+    {# Rating #}
+    {% if lugar.rating %}
+      <div class="place-card-compact__rating">
+        <i class="bi bi-star-fill"></i>
+        {{ lugar.rating|floatformat:1 }}
+      </div>
+    {% endif %}
+    
+    {# Distancia #}
+    {% if show_distance and distance_value %}
+      <div class="place-card-compact__distance">
+        <i class="bi bi-geo-alt"></i>
+        {{ distance_value }}
+      </div>
+    {% endif %}
+  </div>
+  
+  {# === CONTENIDO === #}
+  <div class="place-card-compact__body">
+    <h4 class="place-card-compact__title">{{ lugar.nombre }}</h4>
+    
+    <div class="place-card-compact__type">
+      <i class="bi bi-geo-alt"></i>
+      {% if lugar.get_tipo_display %}
+        {{ lugar|place_type_label }}
+      {% else %}
+        {{ lugar.tipo }}
+      {% endif %}
+    </div>
+    
+    <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="place-card-compact__cta">
+      <i class="bi bi-eye"></i>
+      {% trans "Ver detalles" %}
+    </a>
+  </div>
+</article>
+

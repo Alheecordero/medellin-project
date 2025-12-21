@@ -1,0 +1,133 @@
+{% load i18n %}
+{# Botones de compartir en redes sociales #}
+{# Uso: {% include 'components/share_buttons.html' with title=lugar.nombre url=request.build_absolute_uri %} #}
+
+{% with share_url=url|default:request.build_absolute_uri share_title=title|default:"ViveMedellín" %}
+<div class="share-buttons">
+    <span class="share-label"><i class="bi bi-share me-1"></i>{% trans "Compartir" %}:</span>
+    
+    <!-- WhatsApp -->
+    <a href="https://wa.me/?text={{ share_title|urlencode }}%0A{{ share_url|urlencode }}" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       class="share-btn share-btn--whatsapp" 
+       title="{% trans 'Compartir en WhatsApp' %}"
+       aria-label="{% trans 'Compartir en WhatsApp' %}">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+    
+    <!-- Facebook -->
+    <a href="https://www.facebook.com/sharer/sharer.php?u={{ share_url|urlencode }}" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       class="share-btn share-btn--facebook" 
+       title="{% trans 'Compartir en Facebook' %}"
+       aria-label="{% trans 'Compartir en Facebook' %}">
+        <i class="bi bi-facebook"></i>
+    </a>
+    
+    <!-- Twitter/X -->
+    <a href="https://twitter.com/intent/tweet?text={{ share_title|urlencode }}&url={{ share_url|urlencode }}&via=vivemedellin" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       class="share-btn share-btn--twitter" 
+       title="{% trans 'Compartir en Twitter' %}"
+       aria-label="{% trans 'Compartir en Twitter' %}">
+        <i class="bi bi-twitter-x"></i>
+    </a>
+    
+    <!-- Telegram -->
+    <a href="https://t.me/share/url?url={{ share_url|urlencode }}&text={{ share_title|urlencode }}" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       class="share-btn share-btn--telegram" 
+       title="{% trans 'Compartir en Telegram' %}"
+       aria-label="{% trans 'Compartir en Telegram' %}">
+        <i class="bi bi-telegram"></i>
+    </a>
+    
+    <!-- Copiar enlace -->
+    <button type="button" 
+            class="share-btn share-btn--copy" 
+            onclick="navigator.clipboard.writeText('{{ share_url }}').then(() => { this.innerHTML = '<i class=\'bi bi-check2\'></i>'; setTimeout(() => { this.innerHTML = '<i class=\'bi bi-link-45deg\'></i>'; }, 2000); })"
+            title="{% trans 'Copiar enlace' %}"
+            aria-label="{% trans 'Copiar enlace' %}">
+        <i class="bi bi-link-45deg"></i>
+    </button>
+</div>
+
+<style>
+.share-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.share-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    margin-right: 0.25rem;
+}
+
+.share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.share-btn:hover {
+    transform: scale(1.1);
+    color: #fff;
+}
+
+.share-btn--whatsapp:hover {
+    background: #25D366;
+    border-color: #25D366;
+}
+
+.share-btn--facebook:hover {
+    background: #1877F2;
+    border-color: #1877F2;
+}
+
+.share-btn--twitter:hover {
+    background: #000;
+    border-color: #000;
+}
+
+.share-btn--telegram:hover {
+    background: #0088cc;
+    border-color: #0088cc;
+}
+
+.share-btn--copy:hover {
+    background: #22c55e;
+    border-color: #22c55e;
+}
+
+@media (max-width: 576px) {
+    .share-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+    .share-label {
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+}
+</style>
+{% endwith %}
+

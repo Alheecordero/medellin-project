@@ -2,20 +2,17 @@
    VIVE MEDELLÍN - ESTILOS PRINCIPALES
    ======================================== */
 
-/* Variables CSS */
+/* Variables CSS - Usa variables de variables.css para colores primarios */
 :root {
-  --primary-color: #FF6B6B;
-  --secondary-color: #4ECDC4;
-  --dark-color: #2C3E50;
+  /* Colores legacy - usar variables de variables.css cuando sea posible */
+  --primary-color: #11998e;
+  --secondary-color: #38ef7d;
+  --dark-color: #0f172a;
   --light-color: #F8F9FA;
-  --accent-color: #FFE66D;
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-dark: linear-gradient(135deg, #2C3E50 0%, #3498DB 100%);
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
-  --shadow-xl: 0 12px 48px rgba(0,0,0,0.2);
+  --accent-color: #38ef7d;
+  /* IMPORTANTE: --gradient-primary se define en variables.css con colores verdes */
+  --gradient-secondary: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  --gradient-dark: linear-gradient(135deg, #0a1628 0%, #0a3d32 100%);
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --border-radius: 12px;
   --border-radius-sm: 8px;
@@ -191,12 +188,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-outline-modern {
   background: transparent;
-  border: 2px solid #667eea;
-  color: #667eea;
+  border: 2px solid var(--color-primary, #11998e);
+  color: var(--color-primary, #11998e);
 }
 
 .btn-outline-modern:hover {
-  background: #667eea;
+  background: var(--color-primary, #11998e);
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
@@ -437,7 +434,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .search-modern input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--color-primary, #11998e);
   box-shadow: var(--shadow-xl);
 }
 
@@ -494,7 +491,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 50px;
   height: 50px;
   border: 3px solid rgba(102, 126, 234, 0.2);
-  border-top-color: #667eea;
+  border-top-color: var(--color-primary, #11998e);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }

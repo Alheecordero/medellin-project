@@ -103,9 +103,19 @@ def add_class(field, css_class):
 
 @register.filter(name='format_price_range')
 def format_price_range(value: str | None) -> str:
+    """
+    Formatea el rango de precios de Google Places API.
+    Retorna string vacío si el precio no es válido (para no mostrar en UI).
+    """
     if not value:
-        return _("No especificado")
+        return ''
     val = str(value).strip().upper()
+    
+    # Valores que indican "sin precio" - retornar vacío para no mostrar
+    invalid_values = {'NONE', 'NULL', '', 'PRICE_LEVEL_UNSPECIFIED'}
+    if val in invalid_values:
+        return ''
+    
     mapping = {
         '$': _('Económico'),
         '$$': _('Moderado'),
@@ -115,17 +125,16 @@ def format_price_range(value: str | None) -> str:
         'PRICE_LEVEL_MODERATE': _('Moderado'),
         'PRICE_LEVEL_EXPENSIVE': _('Costoso'),
         'PRICE_LEVEL_VERY_EXPENSIVE': _('Muy costoso'),
-        'PRICE_LEVEL_UNSPECIFIED': _('No especificado'),
-        'NONE': _('No especificado'),
-        'NULL': _('No especificado'),
     }
-    # Normalizar símbolos largos como '₱', etc., si aparecieran
+    
     if val in mapping:
         return mapping[val]
+    
     # Intento heurístico: contar signos $
     if all(ch == '$' for ch in val) and 1 <= len(val) <= 4:
-        return mapping.get('$' * len(val), _('No especificado'))
-    return _('No especificado')
+        return mapping.get('$' * len(val), '')
+    
+    return ''
 
 
 @register.simple_tag

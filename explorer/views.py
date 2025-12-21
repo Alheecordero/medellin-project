@@ -31,6 +31,28 @@ from .models import Places, Foto, RegionOSM, Tag, PLACE_TYPE_CHOICES
 
 
 # ────────────────────────────────────────────────────────────────────────
+# Tipos de lugares a EXCLUIR de listados públicos
+# (no son relevantes para gastronomía/entretenimiento)
+# ────────────────────────────────────────────────────────────────────────
+TIPOS_EXCLUIDOS = [
+    # Belleza/Personal
+    'barber_shop', 'beautician', 'beauty_salon', 'wellness_center', 'spa',
+    # Automotriz
+    'car_wash', 'parking',
+    # Salud
+    'doctor', 'health',
+    # Educación
+    'school', 'childrens_camp',
+    # Servicios domésticos
+    'laundry', 'real_estate_agency',
+    # Solo servicio (sin local físico)
+    'catering_service', 'food_delivery',
+    # Otros no relevantes
+    'internet_cafe', 'playground', 'auditorium', 'barbecue_area',
+]
+
+
+# ────────────────────────────────────────────────────────────────────────
 # Helpers para Imágenes Optimizadas
 # ────────────────────────────────────────────────────────────────────────
 
@@ -95,7 +117,14 @@ class BasePlacesMixin:
     
     def get_base_queryset(self):
         """Queryset base optimizado para todos los lugares."""
-        return Places.objects.filter(tiene_fotos=True).prefetch_related(
+        # Excluir: sin fotos, rating muy bajo, tipos irrelevantes
+        return Places.objects.filter(
+            tiene_fotos=True
+        ).exclude(
+            tipo__in=TIPOS_EXCLUIDOS
+        ).filter(
+            Q(rating__gte=2.0) | Q(rating__isnull=True)
+        ).prefetch_related(
             Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura')[:3], to_attr='cached_fotos'),
             Prefetch('tags', to_attr='cached_tags')
         )
@@ -276,22 +305,22 @@ class HomeView(TemplateView):
         nightlife: list[dict] = []
         cafes: list[dict] = []
         culture: list[dict] = []
-        wellness: list[dict] = []
         other: list[dict] = []
 
         for code, es_label in PLACE_TYPE_CHOICES:
+            # Excluir tipos irrelevantes de los filtros
+            if code in TIPOS_EXCLUIDOS:
+                continue
             item = {"value": code, "name": _label_for(code, es_label)}
             c = (code or "").lower()
-            if "restaurant" in c or c in {"food", "food_court", "meal_delivery", "meal_takeaway", "catering_service"}:
+            if "restaurant" in c or c in {"food", "food_court", "meal_delivery", "meal_takeaway"}:
                 restaurants.append(item)
             elif c in {"bar", "wine_bar", "pub", "night_club", "karaoke", "bar_and_grill"}:
                 nightlife.append(item)
-            elif "cafe" in c or c in {"cafeteria", "acai_shop", "cat_cafe", "dog_cafe", "internet_cafe"}:
+            elif "cafe" in c or c in {"cafeteria", "acai_shop", "cat_cafe", "dog_cafe"}:
                 cafes.append(item)
             elif "museum" in c or "art" in c or "cultural" in c or "historical" in c or "attraction" in c or "tour" in c or "landmark" in c:
                 culture.append(item)
-            elif "spa" in c or "wellness" in c or "health" in c:
-                wellness.append(item)
             else:
                 other.append(item)
 
@@ -304,8 +333,7 @@ class HomeView(TemplateView):
             categorias_reales.append({"name": _("Cafeterías"), "icon": "bi-cup", "color": "info", "subcategorias": cafes})
         if culture:
             categorias_reales.append({"name": _("Cultura y atracciones"), "icon": "bi-camera", "color": "primary", "subcategorias": culture})
-        if wellness:
-            categorias_reales.append({"name": _("Bienestar y spa"), "icon": "bi-heart-pulse", "color": "danger", "subcategorias": wellness})
+        # Nota: Categoría "Bienestar y spa" eliminada porque todos sus tipos están excluidos
         if other:
             categorias_reales.append({"name": _("Otros"), "icon": "bi-three-dots", "color": "secondary", "subcategorias": other})
         
@@ -371,8 +399,14 @@ class PlacesListView(ListView):
     
     def get_queryset(self):
         """Obtiene y filtra lugares según parámetros de búsqueda."""
-        # Queryset base optimizado - solo lugares con fotos, priorizando destacados
-        qs = Places.objects.filter(tiene_fotos=True).prefetch_related('fotos').order_by('-es_destacado', '-rating', 'nombre')
+        # Queryset base: con fotos, sin tipos irrelevantes, rating decente
+        qs = Places.objects.filter(
+            tiene_fotos=True
+        ).exclude(
+            tipo__in=TIPOS_EXCLUIDOS
+        ).filter(
+            Q(rating__gte=2.0) | Q(rating__isnull=True)
+        ).prefetch_related('fotos').order_by('-es_destacado', '-rating', 'nombre')
 
         # Búsqueda por nombre
         q = self.request.GET.get("q")
@@ -677,24 +711,24 @@ class PlacesListView(ListView):
             {"key": "nightlife", "emoji": "🍸", "name": _("Bares y vida nocturna"), "items": []},
             {"key": "cafes", "emoji": "☕", "name": _("Cafeterías"), "items": []},
             {"key": "culture", "emoji": "🎭", "name": _("Cultura y atracciones"), "items": []},
-            {"key": "wellness", "emoji": "🧘", "name": _("Bienestar y spa"), "items": []},
             {"key": "other", "emoji": "✨", "name": _("Otros"), "items": []},
         ]
         idx = {g["key"]: g for g in groups}
 
         for code, es_label in PLACE_TYPE_CHOICES:
+            # Excluir tipos irrelevantes de los filtros
+            if code in TIPOS_EXCLUIDOS:
+                continue
             item = {"code": code, "label": label_for(code, es_label)}
             c = (code or "").lower()
-            if "restaurant" in c or c in {"food", "food_court", "meal_delivery", "meal_takeaway", "catering_service"}:
+            if "restaurant" in c or c in {"food", "food_court", "meal_delivery", "meal_takeaway"}:
                 idx["food"]["items"].append(item)
             elif c in {"bar", "wine_bar", "pub", "night_club", "karaoke", "bar_and_grill"}:
                 idx["nightlife"]["items"].append(item)
-            elif "cafe" in c or c in {"cafeteria", "acai_shop", "cat_cafe", "dog_cafe", "internet_cafe"}:
+            elif "cafe" in c or c in {"cafeteria", "acai_shop", "cat_cafe", "dog_cafe"}:
                 idx["cafes"]["items"].append(item)
             elif "museum" in c or "art" in c or "cultural" in c or "historical" in c or "attraction" in c or "tour" in c or "landmark" in c:
                 idx["culture"]["items"].append(item)
-            elif "spa" in c or "wellness" in c or "health" in c:
-                idx["wellness"]["items"].append(item)
             else:
                 idx["other"]["items"].append(item)
 
@@ -1269,8 +1303,12 @@ def filtros_ajax_view(request):
         }, status=400)
     
     try:
-        # Construir queryset base
-        qs = Places.objects.filter(tiene_fotos=True)
+        # Construir queryset base - excluir tipos irrelevantes y ratings muy bajos
+        qs = Places.objects.filter(tiene_fotos=True).exclude(
+            tipo__in=TIPOS_EXCLUIDOS
+        ).filter(
+            Q(rating__gte=2.0) | Q(rating__isnull=True)
+        )
         
         # Aplicar filtros
         if area_id != 'all':
@@ -1364,8 +1402,12 @@ def places_filter_ajax(request):
         page = 1
     
     try:
-        # Construir queryset base
-        qs = Places.objects.filter(tiene_fotos=True)
+        # Construir queryset base - excluir tipos irrelevantes y ratings muy bajos
+        qs = Places.objects.filter(tiene_fotos=True).exclude(
+            tipo__in=TIPOS_EXCLUIDOS
+        ).filter(
+            Q(rating__gte=2.0) | Q(rating__isnull=True)
+        )
         
         # Filtrar por área
         region_info = None
@@ -1545,10 +1587,14 @@ def lugares_cercanos_ajax_view(request):
         # Buscar lugares cercanos - enfoque simplificado
         from django.contrib.gis.db.models.functions import Distance
         
-        # Construir queryset base
+        # Construir queryset base - excluir tipos irrelevantes y ratings muy bajos
         qs = Places.objects.filter(
             tiene_fotos=True,
             ubicacion__distance_lte=(user_location, D(km=radio))
+        ).exclude(
+            tipo__in=TIPOS_EXCLUIDOS
+        ).filter(
+            Q(rating__gte=2.0) | Q(rating__isnull=True)
         )
         
         # Aplicar filtro de tipo si existe
@@ -1902,6 +1948,8 @@ def semantic_search_ajax(request):
 		Places.objects
 		.extra(select={"score": "1 - (embedding <=> %s::vector)"}, select_params=[query_embedding])
 		.filter(tiene_fotos=True, embedding__isnull=False)
+		.exclude(tipo__in=TIPOS_EXCLUIDOS)  # Excluir tipos irrelevantes
+		.filter(Q(rating__gte=2.0) | Q(rating__isnull=True))  # Excluir ratings muy bajos
 		.order_by('-score')
 		.prefetch_related('fotos')
 	)[:top_k]
@@ -2034,20 +2082,67 @@ def _guess_lang_es_en(text: str) -> str:
     """Heurística simple ES/EN para evitar 'AUTO' en MyMemory.
     Devuelve 'ES' o 'EN'.
     """
-    if not text:
-        return 'EN'
+    if not text or len(text.strip()) < 3:
+        return 'ES'  # Por defecto español para textos muy cortos
+    
     lowered = text.lower()
-    # Señales de español: tildes, eñes, signos de ¿¡, y stopwords comunes
+    
+    # Señales de español: tildes, eñes, signos de ¿¡
     if re.search(r"[áéíóúñ¿¡]", lowered):
         return 'ES'
-    spanish_tokens = {" el ", " la ", " de ", " y ", " en ", " los ", " las ", " una ", " un ", " que ", " con ", " para ", " por "}
+    
+    # Stopwords de español (más completo)
+    spanish_tokens = {
+        " el ", " la ", " de ", " y ", " en ", " los ", " las ", " una ", " un ", 
+        " que ", " con ", " para ", " por ", " es ", " muy ", " bien ", " mal ",
+        " pero ", " como ", " más ", " del ", " al ", " este ", " esta ", " eso ",
+        " bueno ", " excelente ", " rico ", " delicioso ", " recomendado ", " lugar "
+    }
     padded = f" {lowered} "
-    if any(tok in padded for tok in spanish_tokens):
+    spanish_matches = sum(1 for tok in spanish_tokens if tok in padded)
+    
+    # Stopwords de inglés
+    english_tokens = {
+        " the ", " and ", " is ", " are ", " was ", " were ", " this ", " that ",
+        " good ", " great ", " nice ", " food ", " place ", " very ", " but ",
+        " with ", " for ", " from ", " have ", " has ", " been ", " really "
+    }
+    english_matches = sum(1 for tok in english_tokens if tok in padded)
+    
+    # Decidir basado en qué idioma tiene más coincidencias
+    if spanish_matches > english_matches:
         return 'ES'
-    return 'EN'
+    elif english_matches > spanish_matches:
+        return 'EN'
+    
+    # Por defecto español (contexto de Colombia)
+    return 'ES'
 
 
 def _mymemory_translate(text: str, source: str, target: str) -> str | None:
+    """Traduce texto usando MyMemory API.
+    
+    Limitaciones de MyMemory:
+    - Textos muy cortos (< 3 chars) a veces fallan
+    - Textos muy largos (> 500 chars) requieren cuenta premium
+    """
+    # Textos muy cortos: retornar sin traducir
+    if len(text.strip()) < 3:
+        return text
+    
+    # Textos muy largos: truncar a 500 caracteres (límite gratuito de MyMemory)
+    max_length = 500
+    truncated = False
+    original_text = text
+    if len(text) > max_length:
+        # Intentar cortar en un espacio para no romper palabras
+        cut_point = text.rfind(' ', 0, max_length)
+        if cut_point > max_length * 0.7:  # Si encontramos un espacio razonable
+            text = text[:cut_point]
+        else:
+            text = text[:max_length]
+        truncated = True
+    
     params = {
         "q": text,
         "langpair": f"{source}|{target}",
@@ -2055,12 +2150,23 @@ def _mymemory_translate(text: str, source: str, target: str) -> str | None:
     url = "https://api.mymemory.translated.net/get?" + urlencode(params)
     try:
         import json as _json
-        with urllib.request.urlopen(url, timeout=8) as resp:
+        with urllib.request.urlopen(url, timeout=10) as resp:
             data = _json.loads(resp.read().decode("utf-8", errors="ignore"))
             status = int(data.get("responseStatus", 500))
             translated = (data.get("responseData") or {}).get("translatedText") or ""
-            # Rechazar mensajes de error como "'AUTO' IS AN INVALID SOURCE LANGUAGE ..."
-            if status == 200 and translated and "INVALID SOURCE LANGUAGE" not in translated and " 'AUTO' " not in translated:
+            
+            # Rechazar mensajes de error de la API
+            if "INVALID SOURCE LANGUAGE" in translated or "'AUTO'" in translated:
+                return None
+            
+            # Rechazar si la respuesta es igual al input (no se tradujo)
+            if translated.strip().lower() == text.strip().lower():
+                return None
+            
+            if status == 200 and translated:
+                # Si truncamos, agregar indicador
+                if truncated:
+                    translated = translated + "..."
                 return translated
     except Exception:
         return None

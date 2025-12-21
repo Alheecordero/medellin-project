@@ -67,66 +67,21 @@
 
       <!-- Card Inferior: Grid de Lugares -->
       <div class="places-grid-card">
-  <!-- Lista de lugares -->
-  <div class="row g-4 lugares-grid">
-    {% for lugar in lugares %}
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm border-0 rounded-4 place-card">
-          <div class="place-card-media position-relative">
-            {% with foto=lugar.fotos.first %}
-            {% if foto %}
-              <img src="{{ foto.imagen_miniatura|default:foto.imagen }}"
-                   {% if foto.imagen_miniatura and foto.imagen_mediana %}
-                   srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen_mediana }} 800w, {{ foto.imagen }} 1600w"
-                   {% elif foto.imagen_miniatura %}
-                   srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen }} 1600w"
-                   {% endif %}
-                   sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 33vw"
-                   class="card-img-top rounded-top-4" 
-                   alt="{% trans "Imagen de" %} {{ lugar.nombre }}" 
-                   loading="lazy">
-            {% else %}
-              <div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
-                <i class="bi bi-image text-muted fs-2"></i>
+        <div class="row g-4 lugares-grid">
+          {% for lugar in lugares %}
+            <div class="col-md-4">
+              {% include 'components/place_card.html' with lugar=lugar %}
+            </div>
+          {% empty %}
+            <div class="col-12">
+              <div class="empty-state">
+                <i class="bi bi-search empty-state__icon"></i>
+                <h3 class="empty-state__title">{% trans "No se encontraron lugares" %}</h3>
+                <p class="empty-state__text">{% trans "No se encontraron lugares en esta página." %}</p>
               </div>
-            {% endif %}
-            {% endwith %}
-            {% if lugar.rating %}
-            <div class="place-card-rating badge rounded-pill">
-              <i class="bi bi-star-fill me-1"></i>
-              <span class="fw-semibold">{{ lugar.rating|floatformat:1 }}</span>
             </div>
-            {% endif %}
-          </div>
-          <div class="card-body d-flex flex-column place-card-body">
-            <h5 class="card-title fw-semibold mb-2 place-card-title">{{ lugar.nombre }}</h5>
-            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-              <span class="badge place-type-pill">
-                <i class="bi bi-geo-alt me-1"></i>{{ lugar|place_type_label }}
-              </span>
-            </div>
-            {% if lugar.direccion %}
-            <div class="small text-muted mb-2 place-card-address">
-              <i class="bi bi-map me-1"></i>{{ lugar.direccion }}
-            </div>
-            {% endif %}
-            {% if lugar.slug %}
-              <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn mt-auto w-100 rounded-pill place-card-cta">{% trans "Ver detalles" %}</a>
-            {% else %}
-              <span class="btn btn-outline-secondary mt-auto w-100 disabled rounded-pill">{% trans "Sin detalles" %}</span>
-            {% endif %}
-          </div>
+          {% endfor %}
         </div>
-      </div>
-    {% empty %}
-      <div class="col-12">
-        <div class="text-center py-5">
-          <i class="bi bi-search display-1 mb-3 text-white-50"></i>
-          <h3 class="text-white">{% trans "No se encontraron lugares en esta página." %}</h3>
-        </div>
-      </div>
-    {% endfor %}
-  </div>
 
   <!-- ✅ Paginador -->
   {% if is_paginated %}
@@ -182,271 +137,100 @@
 
 {% block extra_css %}
 <style>
-/* Fondo general de la página de listados – mismo degradado verde que el home */
+/* Estilos específicos de la página - Cards vienen de components.css */
 .places-section {
-    background:
-        radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
-        linear-gradient(135deg, #0a1628 0%, #0a3d32 35%, #0d5f4a 100%);
-    min-height: 100vh;
-    padding-top: 2rem;
-    padding-bottom: 3rem;
+  background: var(--gradient-glow), var(--gradient-dark-bg);
+  min-height: 100vh;
+  padding: var(--space-8) 0 var(--space-12);
 }
 
-.places-section .container {
-    max-width: 1200px;
-}
+.places-section .container { max-width: 1200px; }
+.places-main-wrapper { max-width: 1120px; margin: 0 auto; }
 
-/* Wrapper principal */
-.places-main-wrapper {
-    max-width: 1120px;
-    margin: 0 auto;
-}
-
-/* Card Superior: Mapa */
 .places-header-card {
-    background: rgba(4, 20, 12, 0.75);
-    border-radius: 28px;
-    padding: 2.5rem 2rem;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+  background: var(--dark-card-80);
+  border-radius: var(--radius-4xl);
+  padding: var(--space-10) var(--space-8);
+  box-shadow: var(--shadow-3xl);
+  border: 1px solid var(--white-12);
+  backdrop-filter: var(--backdrop-blur-xl);
 }
 
-@media (min-width: 992px) {
-    .places-header-card {
-        padding: 3rem 2.5rem;
-    }
-}
-
-/* Título principal con vida */
 .places-title {
-    font-size: 2.5rem;
-    line-height: 1.3;
-    letter-spacing: -0.02em;
-    margin-bottom: 1rem;
-    font-weight: 800;
-    color: #ffffff;
-    text-shadow: 
-      0 0 20px rgba(56, 239, 125, 0.4),
-      0 2px 4px rgba(0, 0, 0, 0.5);
-    position: relative;
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-white);
+  text-shadow: 0 0 20px var(--accent-40), 0 2px 4px var(--black-50);
+  position: relative;
+  margin-bottom: var(--space-4);
 }
 
 .places-title::after {
-    content: '';
-    position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, #11998e, #38ef7d, transparent);
-    border-radius: 2px;
-    box-shadow: 0 0 12px rgba(56, 239, 125, 0.6);
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-accent), transparent);
+  border-radius: 2px;
+  box-shadow: 0 0 12px var(--accent-60);
 }
 
 .title-main {
-    background: linear-gradient(135deg, #ffffff 0%, #38ef7d 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  background: linear-gradient(135deg, var(--color-white) 0%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-@media (min-width: 992px) {
-    .places-title {
-        font-size: 3rem;
-    }
-}
+@media (min-width: 992px) { .places-title { font-size: var(--font-size-5xl); } }
 
-.text-white-50 {
-    color: rgba(255, 255, 255, 0.7) !important;
-}
-
-/* Card de mapa con glassmorphism oscuro */
 .places-filters-card {
-    background: rgba(3, 30, 20, 0.85);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  background: rgba(3, 30, 20, 0.85);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--white-10);
+  box-shadow: var(--shadow-xl);
 }
 
-.places-filters-card-inner {
-    background: transparent;
-    padding: 0;
-}
+.places-filters-card-inner { background: transparent; padding: 0; }
 
-/* Card Inferior: Grid de Lugares */
 .places-grid-card {
-    background: rgba(4, 20, 12, 0.75);
-    border-radius: 28px;
-    padding: 2rem 1.5rem;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+  background: var(--dark-card-80);
+  border-radius: var(--radius-4xl);
+  padding: var(--space-8) var(--space-6);
+  box-shadow: var(--shadow-3xl);
+  border: 1px solid var(--white-12);
+  backdrop-filter: var(--backdrop-blur-xl);
 }
 
 @media (min-width: 992px) {
-    .places-grid-card {
-        padding: 2.5rem 2rem;
-    }
+  .places-grid-card { padding: var(--space-10) var(--space-8); }
 }
 
-@media (max-width: 768px) {
-    .places-section {
-        padding-top: 1.5rem;
-        padding-bottom: 2.5rem;
-    }
-}
+/* Grid de 3 columnas para esta vista */
+.lugares-grid { margin-top: 0; }
 
-/* Cards de lugares en tonos blancos con detalles verdes */
-.places-section .card {
-    background: #ffffff;
-    border-radius: 20px;
-    border: 2px solid rgba(17, 153, 142, 0.2);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-}
+/* Nav links */
+/* Nav Links - estilos en components.css */
 
-.places-section .card-body {
-    background: transparent;
-}
-
-.places-section .card-title {
-    color: #0f172a;
-    font-weight: 600;
-}
-
-.places-section .card-text {
-    color: #64748b !important;
-}
-
-.places-section .card:hover {
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-    box-shadow: 0 12px 32px rgba(17, 153, 142, 0.25) !important;
-    border-color: rgba(17, 153, 142, 0.5);
-}
-
-/* Place card refinements */
-.place-card-media img {
-    height: 190px;
-    object-fit: cover;
-}
-
-.place-card-placeholder {
-    height: 190px;
-    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
-}
-
-.place-card-rating {
-    position: absolute;
-    right: 12px;
-    bottom: 12px;
-    background: #ffffff;
-    color: #11998e;
-    font-size: 0.8rem;
-    padding: 0.35rem 0.75rem;
-    box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
-    border: 1px solid rgba(17, 153, 142, 0.2);
-    font-weight: 600;
-}
-
-.place-card-body {
-    padding-top: 0.9rem;
-}
-
-.place-card-title {
-    color: #0f172a;
-    font-weight: 600;
-}
-
-.place-type-pill {
-    background: rgba(17, 153, 142, 0.1);
-    border-radius: 999px;
-    color: #11998e;
-    border: 1px solid rgba(17, 153, 142, 0.3);
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.place-card-address {
-    color: #64748b !important;
-}
-
-.place-card-cta {
-    font-weight: 600;
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border: none;
-    color: white;
-    transition: all 0.3s ease;
-}
-
-.place-card-cta:hover {
-    background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
-    color: white;
-}
-
-/* Botón principal verde reutilizable (volver / CTAs secundarios) */
-.btn-gradient-purple {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  border: none;
-  color: white;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
-}
-
-.btn-gradient-purple:hover {
-  background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
-  color: white;
-}
-
-/* Botones de idioma (mismo estilo que en otras vistas) */
-.home-lang-switch .btn-lang-home {
-  border-radius: 999px;
-  padding: 0.35rem 0.9rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(0, 0, 0, 0.25);
-  color: rgba(255, 255, 255, 0.85);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-}
-
-.home-lang-switch .btn-lang-home.active {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  border-color: transparent;
-  color: #03120a;
-}
-
-.home-lang-switch .btn-lang-home.inactive:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
-
-/* Pagination styling con acentos verdes */
+/* Pagination */
 .pagination .page-link {
-    border: 1px solid rgba(17, 153, 142, 0.3);
-    color: #11998e;
-    font-weight: 500;
-    background: white;
+  border: 1px solid var(--primary-30);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+  background: var(--color-white);
 }
 
 .pagination .page-link:hover {
-    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
-    border-color: rgba(17, 153, 142, 0.5);
-    color: #0e8678;
+  background: var(--primary-10);
+  border-color: var(--primary-50);
+  color: var(--color-primary-dark);
 }
 
-.lugares-grid {
-  margin-top: 0;
+@media (max-width: 768px) {
+  .places-section { padding: var(--space-6) 0 var(--space-10); }
 }
 </style>
 {% endblock %}

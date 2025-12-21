@@ -1,0 +1,157 @@
+{% load i18n %}
+{% load static %}
+{% load form_tags %}
+{% load i18n_extras %}
+
+{# Schema.org JSON-LD para SEO #}
+{# Uso: {% include 'components/schema_org.html' with schema_type='place' lugar=lugar %} #}
+
+{% if schema_type == 'website' %}
+{# Schema para la página principal #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "ViveMedellín",
+  "alternateName": "Vive Medellín",
+  "url": "{{ request.scheme }}://{{ request.get_host }}/",
+  "description": "{% trans 'Guía completa de bares, restaurantes, rooftops y vida nocturna en Medellín, Colombia' %}",
+  "inLanguage": ["es", "en"],
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "{{ request.scheme }}://{{ request.get_host }}/lugares/?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ViveMedellín",
+    "url": "{{ request.scheme }}://{{ request.get_host }}/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}"
+    }
+  }
+}
+</script>
+{% endif %}
+
+{% if schema_type == 'place' and lugar %}
+{# Schema para página de detalle de lugar #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "{% if lugar.tipo == 'restaurant' %}Restaurant{% elif lugar.tipo == 'bar' or lugar.tipo == 'sports_bar' %}BarOrPub{% elif lugar.tipo == 'night_club' %}NightClub{% elif lugar.tipo == 'cafe' or lugar.tipo == 'coffee_shop' %}CafeOrCoffeeShop{% elif lugar.tipo == 'bakery' %}Bakery{% elif lugar.tipo == 'museum' %}Museum{% elif lugar.tipo == 'art_gallery' %}ArtGallery{% elif lugar.tipo == 'tourist_attraction' %}TouristAttraction{% else %}LocalBusiness{% endif %}",
+  "name": "{{ lugar.nombre }}",
+  "url": "{{ request.build_absolute_uri }}",
+  {% if lugar.descripcion %}"description": "{{ lugar.descripcion|truncatechars:160 }}",{% endif %}
+  {% if lugar.get_primera_foto %}"image": "{{ lugar.get_primera_foto.imagen_mediana|default:lugar.get_primera_foto.imagen }}",{% endif %}
+  {% if lugar.direccion %}"address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{ lugar.direccion }}",
+    "addressLocality": "Medellín",
+    "addressRegion": "Antioquia",
+    "addressCountry": "CO"
+  },{% endif %}
+  {% if lugar.ubicacion %}"geo": {
+    "@type": "GeoCoordinates",
+    "latitude": {{ lugar.ubicacion.y }},
+    "longitude": {{ lugar.ubicacion.x }}
+  },{% endif %}
+  {% if lugar.telefono %}"telephone": "{{ lugar.telefono }}",{% endif %}
+  {% if lugar.sitio_web %}"url": "{{ lugar.sitio_web }}",{% endif %}
+  {% if lugar.rating %}"aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": {{ lugar.rating|floatformat:1 }},
+    "bestRating": "5",
+    "worstRating": "1"{% if lugar.total_reviews %},
+    "reviewCount": {{ lugar.total_reviews }}{% endif %}
+  },{% endif %}
+  {% if lugar.precio %}"priceRange": "{{ lugar.precio|format_price_range }}",{% endif %}
+  "currenciesAccepted": "COP",
+  "paymentAccepted": "{% if lugar.accepts_credit_cards %}Credit Card, {% endif %}Cash",
+  {% if lugar.serves_cocktails or lugar.serves_wine or lugar.serves_beer %}"servesCuisine": "{% if lugar.serves_cocktails %}Cocktails{% endif %}{% if lugar.serves_wine %}, Wine{% endif %}{% if lugar.serves_beer %}, Beer{% endif %}",{% endif %}
+  "isAccessibleForFree": true,
+  {% if lugar.wheelchair_accessible_entrance %}"accessibilityFeature": "wheelchairAccessible",{% endif %}
+  {% if lugar.allows_dogs %}"amenityFeature": {"@type": "LocationFeatureSpecification", "name": "Pet Friendly", "value": true},{% endif %}
+  "sameAs": [{% if lugar.google_maps_uri %}"{{ lugar.google_maps_uri }}"{% endif %}]
+}
+</script>
+{% endif %}
+
+{% if schema_type == 'list' %}
+{# Schema para listado de lugares #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "{{ titulo_pagina|default:'Lugares en Medellín' }}",
+  "description": "{{ descripcion_pagina|default:'Los mejores lugares para visitar en Medellín' }}",
+  "url": "{{ request.build_absolute_uri }}",
+  "numberOfItems": {{ lugares|length|default:0 }},
+  "itemListElement": [
+    {% for lugar in lugares %}
+    {
+      "@type": "ListItem",
+      "position": {{ forloop.counter }},
+      "item": {
+        "@type": "LocalBusiness",
+        "name": "{{ lugar.nombre }}",
+        "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'explorer:lugares_detail' lugar.slug %}"{% if lugar.rating %},
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": {{ lugar.rating|floatformat:1 }}
+        }{% endif %}
+      }
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endif %}
+
+{% if schema_type == 'breadcrumbs' and breadcrumbs %}
+{# Schema para breadcrumbs #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {% for crumb in breadcrumbs %}
+    {
+      "@type": "ListItem",
+      "position": {{ forloop.counter }},
+      "name": "{{ crumb.name }}",
+      "item": "{{ request.scheme }}://{{ request.get_host }}{{ crumb.url }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endif %}
+
+{% if schema_type == 'organization' %}
+{# Schema para organización (footer/about) #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "ViveMedellín",
+  "url": "{{ request.scheme }}://{{ request.get_host }}/",
+  "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}",
+  "description": "{% trans 'Guía turística digital de Medellín con información real de bares, restaurantes y lugares de entretenimiento' %}",
+  "areaServed": {
+    "@type": "City",
+    "name": "Medellín",
+    "containedInPlace": {
+      "@type": "AdministrativeArea",
+      "name": "Antioquia, Colombia"
+    }
+  },
+  "knowsLanguage": ["es", "en"]
+}
+</script>
+{% endif %}
+

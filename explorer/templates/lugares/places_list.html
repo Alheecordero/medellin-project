@@ -6,20 +6,20 @@
 
 {% block navbar %}{% endblock %}
 
-{% block title %}{{ titulo_pagina }} | {% trans "ViveMedellín" %}{% endblock %}
+{% block title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
 
 {% block meta_description %}
-  {{ descripcion_pagina }}. {% trans "Encuentra los lugares mejor valorados en ViveMedellín." %}
+{{ descripcion_pagina }} {% trans "Ratings de Google, horarios actualizados y ubicación exacta. Filtra por tipo, zona y características." %}
 {% endblock %}
 
 {% block meta_keywords %}
-  {% blocktrans %}lugares Medellín, bares Medellín, restaurantes Medellín, sitios para salir en Medellín{% endblocktrans %}
+{% if tipo_actual %}{{ tipo_actual_label }} Medellín, mejores {{ tipo_actual_label|lower }} Medellín, {% endif %}{% if region_actual %}{{ region_actual.name }} Medellín, lugares {{ region_actual.name }}, {% endif %}bares Medellín, restaurantes Medellín, vida nocturna Medellín
 {% endblock %}
 
 {% block og_title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
 
 {% block og_description %}
-  {{ descripcion_pagina }}. {% trans "Descubre lugares con calificaciones reales en Medellín." %}
+{{ descripcion_pagina }} {% trans "Encuentra lugares con ratings reales y horarios actualizados." %}
 {% endblock %}
 
 {% block og_image %}
@@ -27,6 +27,9 @@
 {% endblock %}
 
 {% block content %}
+<!-- Schema.org JSON-LD para SEO -->
+{% include 'components/schema_org.html' with schema_type='list' lugares=lugares titulo_pagina=titulo_pagina descripcion_pagina=descripcion_pagina %}
+
 <section class="places-section">
   <div class="container py-5">
     <div class="places-main-wrapper">
@@ -202,78 +205,11 @@
       </div>
 
       <!-- Card Inferior: Grid de Lugares -->
-      <div class="places-grid-card">
+      <div class="places-grid-card" id="places-grid-container">
         {% if lugares %}
-          <div class="lugares-grid">
+          <div class="places-grid">
             {% for lugar in lugares %}
-              <div class="lugar-card-wrapper">
-                <div class="card h-100 shadow-sm border-0 rounded-4 place-card">
-                  <div class="place-card-media position-relative">
-                    {% with foto=lugar.get_primera_foto %}
-                    {% if foto %}
-                      <img src="{{ foto.imagen_miniatura|default:foto.imagen }}"
-                           {% if foto.imagen_miniatura and foto.imagen_mediana %}
-                           srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen_mediana }} 800w, {{ foto.imagen }} 1600w"
-                           {% elif foto.imagen_miniatura %}
-                           srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen }} 1600w"
-                           {% endif %}
-                           sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 320px"
-                           class="card-img-top rounded-top-4" 
-                           alt="{{ lugar.nombre }}"
-                           loading="lazy">
-                    {% else %}
-                      <div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
-                        <i class="bi bi-image text-muted fs-2"></i>
-                      </div>
-                    {% endif %}
-                    {% endwith %}
-                    {% if lugar.rating %}
-                      <div class="place-card-rating badge rounded-pill">
-                        <i class="bi bi-star-fill me-1"></i>
-                        <span class="fw-semibold">{{ lugar.rating|floatformat:1 }}</span>
-                      </div>
-                    {% endif %}
-                  </div>
-
-                  <div class="card-body d-flex flex-column place-card-body">
-                    <h5 class="card-title fw-semibold mb-2 place-card-title">{{ lugar.nombre }}</h5>
-                    
-                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                      <span class="badge place-type-pill">
-                        <i class="bi bi-geo-alt me-1"></i>{{ lugar|place_type_label }}
-                      </span>
-                      {% if lugar.es_destacado %}
-                        <span class="badge place-flag-pill place-flag-featured">
-                          <i class="bi bi-star-fill me-1"></i>{% trans "Destacado" %}
-                        </span>
-                      {% endif %}
-                      {% if lugar.es_exclusivo %}
-                        <span class="badge place-flag-pill place-flag-exclusive">
-                          <i class="bi bi-gem me-1"></i>{% trans "Exclusivo" %}
-                        </span>
-                      {% endif %}
-                    </div>
-
-                    {% if lugar.precio %}
-                      <div class="small text-muted mb-2">
-                        <i class="bi bi-cash-stack me-1"></i>{{ lugar.precio|format_price_range }}
-                      </div>
-                    {% endif %}
-
-                    {% if lugar.direccion %}
-                      <div class="small text-muted mb-2 place-card-address">
-                        <i class="bi bi-map me-1"></i>{{ lugar.direccion|truncatechars:50 }}
-                      </div>
-                    {% endif %}
-
-                    {% if lugar.slug %}
-                      <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn mt-auto w-100 rounded-pill place-card-cta">
-                        <i class="bi bi-eye me-1"></i>{% trans "Ver detalles" %}
-                      </a>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
+              {% include 'components/place_card.html' with lugar=lugar card_variant='horizontal' %}
             {% endfor %}
           </div>
 
@@ -326,64 +262,48 @@
 {% block extra_css %}
 <style>
 /* ═══════════════════════════════════════════════════════════════════
-   PLACES LIST - Professional Design
-   Diseño profesional, simétrico y bien distribuido
+   PLACES LIST - Page Specific Styles
+   Los estilos de cards están en components.css
    ═══════════════════════════════════════════════════════════════════ */
 
 .places-section {
-  background:
-    radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
-    linear-gradient(135deg, #0a1628 0%, #0a3d32 35%, #0d5f4a 100%);
+  background: var(--gradient-glow), var(--gradient-dark-bg);
   min-height: 100vh;
-  padding: 2.5rem 0 3.5rem;
+  padding: var(--space-10) 0 var(--space-12);
 }
 
-.places-section .container { 
-  max-width: 1280px;
-}
+.places-section .container { max-width: 1280px; }
 
 .places-main-wrapper { 
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 var(--space-6);
 }
 
 @media (min-width: 992px) {
-  .places-main-wrapper {
-    padding: 0 2rem;
-  }
+  .places-main-wrapper { padding: 0 var(--space-8); }
 }
 
-/* Card Superior */
+/* Card Header */
 .places-header-card {
-  background: rgba(4, 20, 12, 0.95);
-  border-radius: 28px;
-  padding: 2.5rem 2rem;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--dark-card-95);
+  border-radius: var(--radius-4xl);
+  padding: var(--space-10) var(--space-8);
+  box-shadow: var(--shadow-3xl);
+  border: 1px solid var(--white-12);
   position: relative;
   z-index: 10;
-  margin-bottom: 2.5rem;
+  margin-bottom: var(--space-10);
 }
 
-@media (min-width: 992px) {
-  .places-header-card { 
-    padding: 3rem 2.5rem;
-  }
-}
-
-/* Título principal con vida */
+/* Título */
 .places-title {
-  font-size: 2.25rem;
-  line-height: 1.3;
-  letter-spacing: -0.02em;
-  margin-bottom: 1rem;
-  font-weight: 800;
-  color: #ffffff;
-  text-shadow: 
-    0 0 20px rgba(56, 239, 125, 0.4),
-    0 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-white);
+  text-shadow: 0 0 20px var(--accent-40), 0 2px 4px var(--black-50);
   position: relative;
+  margin-bottom: var(--space-4);
 }
 
 .places-title::after {
@@ -394,541 +314,218 @@
   transform: translateX(-50%);
   width: 80px;
   height: 4px;
-  background: linear-gradient(90deg, transparent, #11998e, #38ef7d, transparent);
+  background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-accent), transparent);
   border-radius: 2px;
-  box-shadow: 0 0 12px rgba(56, 239, 125, 0.6);
+  box-shadow: 0 0 12px var(--accent-60);
 }
 
 .title-main {
-  background: linear-gradient(135deg, #ffffff 0%, #38ef7d 100%);
+  background: linear-gradient(135deg, var(--color-white) 0%, var(--color-accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-@media (min-width: 768px) {
-  .places-title { 
-    font-size: 2.5rem;
-  }
-}
-
-@media (min-width: 992px) {
-  .places-title { 
-    font-size: 3rem;
-  }
-}
-
-.text-white-50 { 
-  color: rgba(255, 255, 255, 0.75) !important;
-  font-size: 1.0625rem;
-  line-height: 1.6;
-}
+@media (min-width: 768px) { .places-title { font-size: 2.5rem; } }
+@media (min-width: 992px) { .places-title { font-size: var(--font-size-5xl); } }
 
 /* Filtros */
 .filtros-home-style {
   background: rgba(3, 30, 20, 0.95);
-  border-radius: 24px;
-  padding: 2rem 1.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-3xl);
+  padding: var(--space-8) var(--space-6);
+  border: 1px solid var(--white-12);
   position: relative;
   z-index: 100;
-  margin-top: 2rem;
+  margin-top: var(--space-8);
 }
 
-@media (min-width: 992px) {
-  .filtros-home-style {
-    padding: 2.25rem 2rem;
-  }
-}
-
-/* Botones Dropdown */
-.btn-filtro-dropdown {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white !important;
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 0.875rem 1.75rem;
-  border-radius: 999px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.btn-filtro-dropdown:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  color: white !important;
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-.btn-filtro-dropdown:focus {
-  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
-  color: white !important;
-}
-
-/* Dropdown Menus */
-.dropdown-menu-filtros {
-  border-radius: 18px;
-  padding: 1rem;
-  margin-top: 0.625rem;
-  min-width: 300px;
-  max-width: 380px;
-  background: white;
-  border: none;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-  max-height: 400px;
-  overflow-y: auto;
-  z-index: 1050 !important;
-  position: absolute !important;
-}
-
-.dropdown-menu-filtros::-webkit-scrollbar { 
-  width: 8px;
-}
-
-.dropdown-menu-filtros::-webkit-scrollbar-track { 
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
-  margin: 0.5rem 0;
-}
-
-.dropdown-menu-filtros::-webkit-scrollbar-thumb { 
-  background: rgba(17, 153, 142, 0.3);
-  border-radius: 4px;
-}
-
-.dropdown-menu-filtros::-webkit-scrollbar-thumb:hover { 
-  background: rgba(17, 153, 142, 0.6);
-}
-
-.dropdown-item-filtro {
-  padding: 0.75rem 0.875rem;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  color: #1e293b;
-  gap: 0.625rem;
-  font-size: 0.9375rem;
-}
-
-.dropdown-item-filtro:hover {
-  background-color: rgba(17, 153, 142, 0.1);
-  transform: translateX(3px);
-  color: #11998e;
-}
-
-.dropdown-item-filtro i {
-  font-size: 1.125rem;
-  width: 24px;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.dropdown-header {
-  color: #495057;
-  font-weight: 700;
-  font-size: 0.8125rem;
-  padding: 0.625rem 0.875rem 0.375rem;
-  margin-top: 0.625rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.dropdown-header:first-child { 
-  margin-top: 0;
-}
-
-/* Asegurar que los dropdowns siempre estén visibles sobre todo */
-.filtros-home-style .dropdown {
-  position: relative;
-}
-
-.dropdown-menu.show {
-  z-index: 1050 !important;
-}
-
-/* Card Inferior: Grid de Lugares */
+/* Grid Container */
 .places-grid-card {
-  background: rgba(4, 20, 12, 0.95);
-  border-radius: 28px;
-  padding: 2rem 1.75rem;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--dark-card-95);
+  border-radius: var(--radius-4xl);
+  padding: var(--space-8) var(--space-6);
+  box-shadow: var(--shadow-3xl);
+  border: 1px solid var(--white-12);
   position: relative;
   z-index: 1;
 }
 
 @media (min-width: 992px) {
-  .places-grid-card { 
-    padding: 2.5rem 2rem;
-  }
+  .places-grid-card { padding: var(--space-10) var(--space-8); }
 }
 
-/* Grid de lugares */
-.lugares-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 1.75rem;
+/* Cards - títulos con gradiente verde */
+.places-grid .place-card__title,
+.lugares-grid .place-card__title {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
 }
 
-@media (min-width: 992px) {
-  .lugares-grid {
-    gap: 2rem;
-  }
-}
-
-.lugar-card-wrapper { 
-  width: 100%;
-}
-
-/* Place Cards */
-.place-card {
-  background: #ffffff;
-  border-radius: 24px !important;
-  border: 2px solid rgba(17, 153, 142, 0.2) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.place-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 40px rgba(17, 153, 142, 0.3) !important;
-  border-color: rgba(17, 153, 142, 0.5) !important;
-}
-
-@media (min-width: 992px) {
-  .place-card {
-    display: grid;
-    grid-template-columns: 320px minmax(0, 1fr);
-    align-items: center;
-  }
-  
-  .place-card-media img,
-  .place-card-placeholder {
-    height: 100%;
-    min-height: 220px;
-    max-height: 240px;
-    border-radius: 1.5rem 0 0 1.5rem !important;
-  }
-  
-  .place-card-media { 
-    height: 100%;
-  }
-  
-  .place-card-body { 
-    padding: 2rem 2.25rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-}
-
-.place-card-media img {
-  height: 220px;
-  object-fit: cover;
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  .place-card-media img {
-    height: 240px;
-  }
-}
-
-.place-card-placeholder {
-  height: 220px;
-  background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@media (min-width: 768px) {
-  .place-card-placeholder {
-    height: 240px;
-  }
-}
-
-.place-card-placeholder i {
-  font-size: 3rem;
-  color: rgba(17, 153, 142, 0.3);
-}
-
-.place-card-rating {
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  background: #ffffff;
-  color: #11998e;
-  font-size: 0.875rem;
-  padding: 0.5rem 0.875rem;
-  box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
-  border: 1px solid rgba(17, 153, 142, 0.2);
-  border-radius: 999px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-}
-
-.place-card-body { 
-  padding: 1.5rem;
-}
-
-.place-card-title {
-  color: #0f172a;
-  font-weight: 700;
-  font-size: 1.25rem;
-  line-height: 1.3;
-  margin-bottom: 0.875rem;
-  letter-spacing: -0.01em;
-}
-
-@media (min-width: 992px) {
-  .place-card-title {
-    font-size: 1.375rem;
-  }
-}
-
-.place-type-pill {
-  background: rgba(17, 153, 142, 0.1);
-  border-radius: 999px;
-  color: #11998e;
-  border: 1px solid rgba(17, 153, 142, 0.3);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  padding: 0.375rem 0.75rem;
-}
-
-.place-flag-pill {
-  border-radius: 999px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  padding: 0.375rem 0.75rem;
-}
-
-.place-flag-featured {
-  background: rgba(250, 204, 21, 0.15);
-  color: #ca8a04;
-  border: 1px solid rgba(250, 204, 21, 0.4);
-}
-
-.place-flag-exclusive {
-  background: rgba(17, 153, 142, 0.15);
-  color: #11998e;
-  border: 1px solid rgba(17, 153, 142, 0.4);
-}
-
-.place-card-address { 
-  color: #64748b !important;
-  font-size: 0.9375rem;
-}
-
-.place-card-cta {
-  font-weight: 600;
-  font-size: 0.9375rem;
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  border: none;
-  color: white;
-  transition: all 0.3s ease;
-  padding: 0.75rem 1.5rem;
-  border-radius: 999px;
-}
-
-.place-card-cta:hover {
-  background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
-  color: white;
-}
-
-/* Navegación superior */
-.home-lang-switch .btn-lang-home {
-  border-radius: 999px;
-  padding: 0.35rem 0.9rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(0, 0, 0, 0.25);
-  color: rgba(255, 255, 255, 0.85);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-}
-
-.home-lang-switch .btn-lang-home.active {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  border-color: transparent;
-  color: #03120a;
-}
-
-.home-lang-switch .btn-lang-home.inactive:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
+/* Nav Links - estilos en components.css */
 
 /* Paginación */
 .pagination .page-link {
-  border: 1px solid rgba(17, 153, 142, 0.3);
-  color: #11998e;
-  font-weight: 500;
-  background: white;
+  border: 1px solid var(--primary-30);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+  background: var(--color-white);
 }
 
 .pagination .page-link:hover {
-  background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
-  border-color: rgba(17, 153, 142, 0.5);
-  color: #0e8678;
+  background: var(--primary-10);
+  border-color: var(--primary-50);
+  color: var(--color-primary-dark);
 }
 
-/* Botón verde */
-.btn-gradient-green {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  border: none;
-  color: white;
-  font-weight: 600;
-}
-
-.btn-gradient-green:hover {
-  background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
-  color: white;
-}
-
-/* Mobile */
-@media (max-width: 991px) {
-  .places-section { 
-    padding: 1.75rem 0 2.5rem;
-  }
-  
-  .places-main-wrapper {
-    padding: 0 1rem;
-  }
-  
-  .places-header-card { 
-    padding: 1.75rem 1.25rem;
-    margin-bottom: 2rem;
-    border-radius: 20px;
-  }
-  
-  .places-title {
-    font-size: 1.875rem;
-    margin-bottom: 0.625rem;
-  }
-  
-  .text-white-50 {
-    font-size: 1rem;
-  }
-  
-  .filtros-home-style { 
-    padding: 1.5rem 1.25rem;
-    margin-top: 1.5rem;
-    border-radius: 20px;
-  }
-  
-  .btn-filtro-dropdown { 
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9375rem;
-  }
-  
-  .dropdown-menu-filtros { 
-    min-width: 280px;
-    max-height: 320px;
-  }
-  
-  .places-grid-card {
-    padding: 1.5rem 1.25rem;
-    border-radius: 20px;
-  }
-  
-  .lugares-grid {
-    gap: 1.5rem;
-  }
-  
-  .place-card {
-    border-radius: 20px !important;
-  }
-  
-  .place-card-media img,
-  .place-card-placeholder {
-    height: 200px;
-  }
-  
-  .place-card-body {
-    padding: 1.25rem;
-  }
-  
-  .place-card-title {
-    font-size: 1.125rem;
-  }
-  
-  .place-card-rating {
-    right: 0.875rem;
-    bottom: 0.875rem;
-    padding: 0.4rem 0.75rem;
-    font-size: 0.8125rem;
-  }
-}
-
-/* Estado seleccionado para dropdowns */
+/* Estados de filtros */
 .btn-filtro-dropdown.selected {
-  background: rgba(17, 153, 142, 0.35) !important;
-  border-color: rgba(17, 153, 142, 0.6) !important;
+  background: var(--primary-35) !important;
+  border-color: var(--primary-60) !important;
 }
 
-/* Check en características seleccionadas */
 .feature-option.active {
-  background: rgba(17, 153, 142, 0.1);
+  background: var(--primary-10);
 }
 
 .feature-option.active .feature-check {
   display: inline-block !important;
-  color: #11998e;
+  color: var(--color-primary);
 }
 
-/* Loading overlay */
+/* Loading */
 .places-grid-card.loading {
   opacity: 0.5;
   pointer-events: none;
 }
 
-.loading-overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-}
-
-/* Animación para nuevos resultados */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+/* Mobile */
+@media (max-width: 991px) {
+  .places-section { padding: var(--space-6) 0 var(--space-10); }
+  .places-main-wrapper { padding: 0 var(--space-4); }
+  .places-header-card { 
+    padding: var(--space-6) var(--space-5);
+    margin-bottom: var(--space-8);
+    border-radius: var(--radius-2xl);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .places-title { font-size: var(--font-size-3xl); }
+  .filtros-home-style { 
+    padding: var(--space-6) var(--space-5);
+    margin-top: var(--space-6);
+    border-radius: var(--radius-2xl);
   }
-}
-
-.lugar-card-wrapper.animate {
-  animation: fadeInUp 0.3s ease forwards;
+  .places-grid-card {
+    padding: var(--space-6) var(--space-5);
+    border-radius: var(--radius-2xl);
+  }
 }
 </style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+// Helper global para rango de precios (coherente con form_tags.format_price_range)
+function formatPriceRangeJs(raw) {
+    if (!raw) return '';
+    const val = String(raw).toUpperCase();
+    const map = {
+        '$': '$', '$$': '$$', '$$$': '$$$', '$$$$': '$$$$',
+        'PRICE_LEVEL_INEXPENSIVE': '$',
+        'PRICE_LEVEL_MODERATE': '$$',
+        'PRICE_LEVEL_EXPENSIVE': '$$$',
+        'PRICE_LEVEL_VERY_EXPENSIVE': '$$$$',
+    };
+    if (map[val]) return map[val];
+    if (/^\$+$/.test(val) && val.length <= 4) return val;
+    return '';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FUNCIÓN GLOBAL: Genera HTML de card idéntica al componente place_card.html
+// Usa clases BEM: place-card__* para consistencia total
+// ═══════════════════════════════════════════════════════════════════
+function generarPlaceCardHtml(lugar, opciones = {}) {
+    const T = {
+        viewDetails: opciones.viewDetails || '{% trans "Ver detalles" %}',
+        featured: opciones.featured || '{% trans "Destacado" %}',
+        exclusive: opciones.exclusive || '{% trans "Exclusivo" %}',
+        top: opciones.top || 'Top'
+    };
+    
+    // Distancia formateada
+    const distancia = lugar.distancia_km || lugar.distancia;
+    const distanciaStr = distancia ? (distancia < 1 ? `${Math.round(distancia * 1000)} m` : `${Number(distancia).toFixed(1)} km`) : '';
+    
+    // Precio formateado
+    const precio = formatPriceRangeJs(lugar.precio);
+    
+    // URL
+    const url = lugar.url || `/lugar/${lugar.slug}/`;
+    
+    // Imagen
+    const imagenHtml = lugar.imagen 
+        ? `<img src="${lugar.imagen}" class="place-card__img" alt="${lugar.nombre}" loading="lazy">`
+        : `<div class="place-card__placeholder"><i class="bi bi-image"></i></div>`;
+    
+    // Rating badge
+    const ratingHtml = typeof lugar.rating === 'number' 
+        ? `<div class="place-card__rating"><i class="bi bi-star-fill"></i><span>${lugar.rating.toFixed(1)}</span></div>` 
+        : '';
+    
+    // Distance badge
+    const distanceHtml = distanciaStr 
+        ? `<div class="place-card__distance"><i class="bi bi-geo-alt"></i><span>${distanciaStr}</span></div>` 
+        : '';
+    
+    // Badges
+    let badgesHtml = `<span class="place-card__badge place-card__badge--type"><i class="bi bi-geo-alt"></i>${lugar.tipo || ''}</span>`;
+    if (lugar.es_destacado) {
+        badgesHtml += `<span class="place-card__badge place-card__badge--featured"><i class="bi bi-star-fill"></i>${T.featured}</span>`;
+    }
+    if (lugar.es_exclusivo) {
+        badgesHtml += `<span class="place-card__badge place-card__badge--exclusive"><i class="bi bi-gem"></i>${T.exclusive}</span>`;
+    }
+    if (typeof lugar.rating === 'number' && lugar.rating >= 4.5) {
+        badgesHtml += `<span class="place-card__badge place-card__badge--top-rated"><i class="bi bi-award"></i>${T.top}</span>`;
+    }
+    
+    // Precio
+    const precioHtml = precio 
+        ? `<div class="place-card__meta"><i class="bi bi-cash-stack"></i><span>${precio}</span></div>` 
+        : '';
+    
+    // Dirección (truncada a 45 chars)
+    const direccion = lugar.direccion ? lugar.direccion.substring(0, 45) + (lugar.direccion.length > 45 ? '...' : '') : '';
+    const direccionHtml = direccion 
+        ? `<div class="place-card__address"><i class="bi bi-map"></i><span>${direccion}</span></div>` 
+        : '';
+    
+    // CTA
+    const ctaHtml = lugar.slug 
+        ? `<a href="${url}" class="place-card__cta"><i class="bi bi-eye"></i>${T.viewDetails}</a>` 
+        : '';
+    
+    return `
+        <div class="place-card-wrapper">
+            <article class="place-card place-card--horizontal">
+                <div class="place-card__media">
+                    ${imagenHtml}
+                    ${ratingHtml}
+                    ${distanceHtml}
+                </div>
+                <div class="place-card__body">
+                    <h3 class="place-card__title">${lugar.nombre}</h3>
+                    <div class="place-card__badges">${badgesHtml}</div>
+                    ${precioHtml}
+                    ${direccionHtml}
+                    ${ctaHtml}
+                </div>
+            </article>
+        </div>`;
+}
+
 $(document).ready(function() {
     // ═══════════════════════════════════════════════════════════════
     // FILTRADO DINÁMICO PROFESIONAL
@@ -1154,52 +751,13 @@ $(document).ready(function() {
         });
     }
     
-    function generarCardHtml(lugar, index) {
-        const rating = lugar.rating ? `
-            <div class="place-card-rating badge rounded-pill">
-                <i class="bi bi-star-fill me-1"></i>
-                <span class="fw-semibold">${lugar.rating.toFixed(1)}</span>
-            </div>` : '';
-        
-        const imagen = lugar.imagen 
-            ? `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${lugar.nombre}" loading="lazy">`
-            : `<div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
-                 <i class="bi bi-image text-muted fs-2"></i>
-               </div>`;
-        
-        const badges = [];
-        badges.push(`<span class="badge place-type-pill"><i class="bi bi-geo-alt me-1"></i>${lugar.tipo}</span>`);
-        if (lugar.es_destacado) {
-            badges.push(`<span class="badge place-flag-pill place-flag-featured"><i class="bi bi-star-fill me-1"></i>${T.featured}</span>`);
-        }
-        if (lugar.es_exclusivo) {
-            badges.push(`<span class="badge place-flag-pill place-flag-exclusive"><i class="bi bi-gem me-1"></i>${T.exclusive}</span>`);
-        }
-        
-        const direccion = lugar.direccion 
-            ? `<div class="small text-muted mb-2 place-card-address"><i class="bi bi-map me-1"></i>${lugar.direccion.substring(0, 50)}...</div>` 
-            : '';
-        
-        const cta = lugar.url 
-            ? `<a href="${lugar.url}" class="btn mt-auto w-100 rounded-pill place-card-cta"><i class="bi bi-eye me-1"></i>${T.viewDetails}</a>`
-            : '';
-        
-        return `
-            <div class="lugar-card-wrapper">
-                <div class="card h-100 shadow-sm border-0 rounded-4 place-card">
-                    <div class="place-card-media position-relative">
-                        ${imagen}
-                        ${rating}
-                    </div>
-                    <div class="card-body d-flex flex-column place-card-body">
-                        <h5 class="card-title fw-semibold mb-2 place-card-title">${lugar.nombre}</h5>
-                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">${badges.join('')}</div>
-                        ${direccion}
-                        ${cta}
-                    </div>
-                </div>
-            </div>
-        `;
+    // ═══════════════════════════════════════════════════════════════
+    // Función estandarizada para generar HTML de card
+    // Muestra: Imagen, Rating, Tipo, Destacado, Exclusivo, Top, Precio, Dirección, CTA
+    // ═══════════════════════════════════════════════════════════════
+    // Usa la función global generarPlaceCardHtml para mantener consistencia
+    function generarCardHtml(lugar) {
+        return generarPlaceCardHtml(lugar);
     }
     
     function generarPaginacionHtml(pag) {

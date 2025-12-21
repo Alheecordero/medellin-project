@@ -1,0 +1,111 @@
+{% load i18n %}
+{% load form_tags %}
+{% load i18n_extras %}
+{# Componente: Place Card - Card reutilizable para mostrar lugares #}
+
+{% with foto=lugar.get_primera_foto %}
+<div class="place-card-wrapper">
+  <article class="place-card {% if card_variant %}place-card--{{ card_variant }}{% endif %}">
+    
+    {# === IMAGEN === #}
+    <div class="place-card__media">
+      {% if foto %}
+        <img 
+          src="{{ foto.imagen_miniatura|default:foto.imagen }}"
+          {% if foto.imagen_miniatura and foto.imagen_mediana %}
+          srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen_mediana }} 800w, {{ foto.imagen }} 1600w"
+          {% elif foto.imagen_miniatura %}
+          srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen }} 1600w"
+          {% endif %}
+          sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 320px"
+          class="place-card__img" 
+          alt="{{ lugar.nombre }}"
+          loading="lazy"
+        >
+      {% else %}
+        <div class="place-card__placeholder">
+          <i class="bi bi-image"></i>
+        </div>
+      {% endif %}
+      
+      {# Rating Badge #}
+      {% if lugar.rating %}
+        <div class="place-card__rating">
+          <i class="bi bi-star-fill"></i>
+          <span>{{ lugar.rating|floatformat:1 }}</span>
+        </div>
+      {% endif %}
+      
+      {# Distance Badge (opcional) #}
+      {% if show_distance and distance_value %}
+        <div class="place-card__distance">
+          <i class="bi bi-geo-alt"></i>
+          <span>{{ distance_value }}</span>
+        </div>
+      {% endif %}
+    </div>
+    
+    {# === CONTENIDO === #}
+    <div class="place-card__body">
+      
+      {# Título #}
+      <h3 class="place-card__title">{{ lugar.nombre }}</h3>
+      
+      {# Badges #}
+      <div class="place-card__badges">
+        <span class="place-card__badge place-card__badge--type">
+          <i class="bi bi-geo-alt"></i>
+          {{ lugar|place_type_label }}
+        </span>
+        
+        {% if lugar.es_destacado %}
+          <span class="place-card__badge place-card__badge--featured">
+            <i class="bi bi-star-fill"></i>
+            {% trans "Destacado" %}
+          </span>
+        {% endif %}
+        
+        {% if lugar.es_exclusivo %}
+          <span class="place-card__badge place-card__badge--exclusive">
+            <i class="bi bi-gem"></i>
+            {% trans "Exclusivo" %}
+          </span>
+        {% endif %}
+        
+        {% if lugar.rating >= 4.5 %}
+          <span class="place-card__badge place-card__badge--top-rated">
+            <i class="bi bi-award"></i>
+            {% trans "Top" %}
+          </span>
+        {% endif %}
+      </div>
+      
+      {# Precio (opcional) #}
+      {% if show_price|default:True and lugar.precio %}
+        <div class="place-card__meta">
+          <i class="bi bi-cash-stack"></i>
+          <span>{{ lugar.precio|format_price_range }}</span>
+        </div>
+      {% endif %}
+      
+      {# Dirección (opcional) #}
+      {% if show_address|default:True and lugar.direccion %}
+        <div class="place-card__address">
+          <i class="bi bi-map"></i>
+          <span>{{ lugar.direccion|truncatechars:45 }}</span>
+        </div>
+      {% endif %}
+      
+      {# CTA Button #}
+      {% if lugar.slug %}
+        <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="place-card__cta">
+          <i class="bi bi-eye"></i>
+          {% trans "Ver detalles" %}
+        </a>
+      {% endif %}
+      
+    </div>
+  </article>
+</div>
+{% endwith %}
+

@@ -2,27 +2,24 @@
 {% load i18n %}
 {% load static %}
 
-{% block title %}{% trans "Inicio | ViveMedellín" %}{% endblock %}
+{% block title %}{% trans "ViveMedellín | Bares, Restaurantes y Vida Nocturna en Medellín" %}{% endblock %}
 
 {% block meta_description %}
-  {% blocktrans %}Bienvenido a ViveMedellín: descubre los mejores bares, discotecas, rooftops y restaurantes de Medellín, organizados por comunas. ¡Explora como un local!{% endblocktrans %}
+{% blocktrans %}Guía #1 de Medellín: más de 7,000 bares, restaurantes, rooftops y discotecas con ratings reales. Explora El Poblado, Laureles, Envigado y más.{% endblocktrans %}
 {% endblock %}
 
 {% block meta_keywords %}
-  {% blocktrans %}ViveMedellín, bares Medellín, discotecas Medellín, restaurantes Medellín, comunas Medellín, vida nocturna Medellín{% endblocktrans %}
+{% blocktrans %}bares Medellín, restaurantes Medellín, rooftops El Poblado, discotecas Medellín, dónde comer Medellín, vida nocturna Medellín, mejores bares El Poblado, restaurantes Laureles{% endblocktrans %}
 {% endblock %}
 
-{% block og_title %}
-  {% trans "ViveMedellín | Descubre los mejores lugares por comuna" %}
-{% endblock %}
+{% block og_title %}{% trans "ViveMedellín | Los Mejores Bares y Restaurantes de Medellín" %}{% endblock %}
 
 {% block og_description %}
-  {% blocktrans %}Navega los mejores sitios para salir en Medellín. Desde El Poblado hasta Laureles, descubre lugares únicos en cada comuna.{% endblocktrans %}
+{% blocktrans %}Descubre más de 7,000 lugares en Medellín: bares, restaurantes, rooftops y discotecas. Ratings de Google, horarios y ubicación exacta.{% endblocktrans %}
 {% endblock %}
 
-{% block og_image %}
-  {{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}
-{% endblock %}
+{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}{% endblock %}
+{% block og_image_alt %}{% trans "Vista panorámica de Medellín - ViveMedellín" %}{% endblock %}
 
 {% block navbar %}{% endblock %}
 
@@ -294,6 +291,10 @@
     <div id="ajax-results"></div>
 </section>
 
+<!-- Schema.org JSON-LD -->
+{% include 'components/schema_org.html' with schema_type='website' %}
+{% include 'components/schema_org.html' with schema_type='organization' %}
+
     <!-- Pre-carga i18n para textos usados solo en JS (oculto) -->
     <div class="visually-hidden" aria-hidden="true">
         {% trans "Obteniendo ubicación..." %}
@@ -321,29 +322,7 @@
     display: none;
 }
 
-/* Botones de idioma dentro del hero (home) */
-.home-lang-switch .btn-lang-home {
-    border-radius: 999px;
-    padding: 0.35rem 0.9rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    background: rgba(0, 0, 0, 0.25);
-    color: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-}
-
-.home-lang-switch .btn-lang-home.active {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border-color: transparent;
-    color: #03120a;
-}
-
-.home-lang-switch .btn-lang-home.inactive:hover {
-    background: rgba(255, 255, 255, 0.18);
-}
+/* Botones de idioma - estilos en components.css */
 
 /* Hero Section con foto limpia de Medellín como fondo */
 .hero-section-clean {
@@ -548,48 +527,10 @@
     z-index: 2; /* por encima del área de resultados */
 }
 
-/* Botones Dropdown de Filtros */
-.btn-filtro-dropdown {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white !important;
-    font-size: 1rem;
-    font-weight: 600;
-    padding: 0.75rem 1.5rem;
-    border-radius: 25px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
+/* Botones y Dropdowns de Filtros - estilos base en components.css */
 
-.btn-filtro-dropdown:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    color: white !important;
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
-.btn-filtro-dropdown:focus {
-    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
-    color: white !important;
-}
-
-/* Dropdown Menus de Filtros */
+/* Posicionamiento específico del dropdown para Home */
 .dropdown-menu-filtros {
-    border-radius: 15px;
-    padding: 0.75rem;
-    margin-top: 0.5rem;
-    min-width: 320px;
-    max-width: 400px;
-    background: white;
-    border: none;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(10px);
-    max-height: 350px;
-    overflow-y: auto;
-    
-    /* Forzar dirección hacia abajo pero con z-index menor que resultados */
     position: absolute !important;
     top: 100% !important;
     bottom: auto !important;
@@ -601,66 +542,17 @@
     z-index: 100 !important;
 }
 
-/* Dropdown específico para características (más alto por tener más contenido) */
+/* Dropdown específico para características */
 #etiquetasDropdown + .dropdown-menu-filtros {
     max-height: 280px;
     overflow-y: auto;
     overflow-x: hidden;
 }
 
-/* Scrollbar personalizada para dropdowns */
-.dropdown-menu-filtros::-webkit-scrollbar {
-    width: 6px;
-}
-
-.dropdown-menu-filtros::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 3px;
-}
-
-.dropdown-menu-filtros::-webkit-scrollbar-thumb {
-    background: rgba(102, 126, 234, 0.3);
-    border-radius: 3px;
-    transition: all 0.3s ease;
-}
-
-.dropdown-menu-filtros::-webkit-scrollbar-thumb:hover {
-    background: rgba(102, 126, 234, 0.6);
-}
-
-/* Prevenir colapso automático de dropdowns en mobile */
 @media (max-width: 768px) {
-    .dropdown-menu-filtros {
-        min-width: 280px;
-        max-width: 90vw;
-        max-height: 300px;
-    }
-    
     #etiquetasDropdown + .dropdown-menu-filtros {
         max-height: 250px;
     }
-}
-
-.dropdown-item-filtro {
-    padding: 0.75rem;
-    border-radius: 10px;
-    border: none;
-    display: flex;
-    align-items: center;
-    transition: all 0.3s ease;
-    text-decoration: none;
-}
-
-.dropdown-item-filtro:hover {
-    background-color: rgba(102, 126, 234, 0.1);
-    transform: translateX(3px);
-    color: #667eea;
-}
-
-.dropdown-item-filtro i {
-    font-size: 1.1rem;
-    width: 20px;
-    flex-shrink: 0;
 }
 
 .dropdown-header {
@@ -673,18 +565,6 @@
 
 .dropdown-header:first-child {
     margin-top: 0;
-}
-
-/* Estados de filtros seleccionados */
-.btn-filtro-dropdown.selected {
-    background: rgba(40, 167, 69, 0.3);
-    border-color: rgba(40, 167, 69, 0.5);
-    color: white !important;
-}
-
-.btn-filtro-dropdown.selected:hover {
-    background: rgba(40, 167, 69, 0.4);
-    border-color: rgba(40, 167, 69, 0.6);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1017,7 +897,7 @@
     z-index: 100 !important;
 }
 
-/* === Resultados del home: reutilizar EXACTAMENTE el layout de list view (place-card) === */
+/* === Resultados del home - estilos de cards === */
 .semantic-home-wrapper {
     background: rgba(4, 20, 12, 0.8);
     border-radius: 24px;
@@ -1029,146 +909,26 @@
 }
 
 @media (min-width: 992px) {
-    .semantic-home-wrapper {
-        padding: 2.25rem 2rem 2.5rem;
-    }
+    .semantic-home-wrapper { padding: 2.25rem 2rem 2.5rem; }
 }
 
-.semantic-home-title {
-    font-size: 2rem;
+.semantic-home-title { font-size: 2rem; }
+.semantic-home-query { font-weight: 600; color: #a5f3fc; }
+.semantic-home-grid { padding: 0.5rem 0; display: flex; flex-direction: column; gap: 1.25rem; }
+.semantic-home-item { width: 100%; }
+
+/* Cards en resultados del home - títulos con gradiente */
+.semantic-home-wrapper .place-card__title,
+.lugares-grid .place-card__title {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
 }
 
-.semantic-home-query {
-    font-weight: 600;
-    color: #a5f3fc;
-}
-
-/* Grid de resultados semánticos: lista vertical (sin scroll horizontal) */
-.semantic-home-grid {
-  padding: 0.5rem 0;
-    display: flex;
-  flex-direction: column;
-    gap: 1.25rem;
-  }
-
-  .semantic-home-item {
-    width: 100%;
-}
-
-/* Layout horizontal de place-card (copiado del list view) */
-@media (min-width: 992px) {
-  .place-card {
-    display: grid;
-    grid-template-columns: 280px minmax(0, 1fr);
-  }
-
-  .place-card-media img,
-  .place-card-placeholder {
-    height: 100%;
-    min-height: 190px;
-    max-height: 220px;
-    border-radius: 1.25rem 0 0 1.25rem;
-  }
-
-  .place-card-media {
-    height: 100%;
-  }
-
-  .place-card-body {
-    padding: 1.25rem 1.5rem;
-  }
-}
-
-.place-card-media img {
-    height: 190px;
-    object-fit: cover;
-}
-
-.place-card-placeholder {
-    height: 190px;
-    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
-}
-
-/* Acciones de resultados cercanos (Actualizar ubicación / Ver todos los lugares) */
-.nearby-actions {
-    max-width: 480px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-@media (max-width: 767.98px) {
-    .nearby-actions .btn {
-        width: 100%;
-    }
-}
-
-.place-card-rating {
-    position: absolute;
-    right: 12px;
-    bottom: 12px;
-    background: #ffffff;
-    color: #11998e;
-    font-size: 0.8rem;
-    padding: 0.35rem 0.75rem;
-    box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
-    border: 1px solid rgba(17, 153, 142, 0.2);
-    font-weight: 600;
-}
-
-.place-card-body {
-    padding-top: 0.9rem;
-}
-
-.place-card-title {
-    color: #0f172a;
-    font-weight: 600;
-}
-
-.place-type-pill {
-    background: rgba(17, 153, 142, 0.1);
-    border-radius: 999px;
-    color: #11998e;
-    border: 1px solid rgba(17, 153, 142, 0.3);
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.place-flag-pill {
-    border-radius: 999px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.place-flag-featured {
-    background: rgba(250, 204, 21, 0.15);
-    color: #ca8a04;
-    border: 1px solid rgba(250, 204, 21, 0.4);
-}
-
-.place-flag-exclusive {
-    background: rgba(17, 153, 142, 0.15);
-    color: #11998e;
-    border: 1px solid rgba(17, 153, 142, 0.4);
-}
-
-.place-card-address {
-    color: #64748b !important;
-}
-
-.place-card-cta {
-    font-weight: 600;
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border: none;
-    color: white;
-    transition: all 0.3s ease;
-}
-
-.place-card-cta:hover {
-    background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
-    color: white;
-}
+/* Acciones de resultados cercanos */
+.nearby-actions { max-width: 480px; margin-left: auto; margin-right: auto; }
+@media (max-width: 767.98px) { .nearby-actions .btn { width: 100%; } }
 
 /* Search Autocomplete Styling */
 
@@ -1302,6 +1062,90 @@ function formatPriceRangeJs(raw) {
     if (map[val]) return map[val];
     if (/^\$+$/.test(val) && val.length <= 4) return val;
     return '';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FUNCIÓN GLOBAL: Genera HTML de card idéntica al componente place_card.html
+// Usa clases BEM: place-card__* para consistencia total
+// ═══════════════════════════════════════════════════════════════════
+function generarPlaceCardHtml(lugar, opciones = {}) {
+    const T = {
+        viewDetails: opciones.viewDetails || '{% trans "Ver detalles" %}',
+        featured: opciones.featured || '{% trans "Destacado" %}',
+        exclusive: opciones.exclusive || '{% trans "Exclusivo" %}',
+        top: opciones.top || 'Top'
+    };
+    
+    // Distancia formateada
+    const distancia = lugar.distancia_km || lugar.distancia;
+    const distanciaStr = distancia ? (distancia < 1 ? `${Math.round(distancia * 1000)} m` : `${Number(distancia).toFixed(1)} km`) : '';
+    
+    // Precio formateado
+    const precio = formatPriceRangeJs(lugar.precio);
+    
+    // URL
+    const url = lugar.url || (typeof buildPlaceUrl === 'function' ? buildPlaceUrl(lugar.slug, null) : `/lugar/${lugar.slug}/`);
+    
+    // Imagen
+    const imagenHtml = lugar.imagen 
+        ? `<img src="${lugar.imagen}" class="place-card__img" alt="${lugar.nombre}" loading="lazy">`
+        : `<div class="place-card__placeholder"><i class="bi bi-image"></i></div>`;
+    
+    // Rating badge
+    const ratingHtml = typeof lugar.rating === 'number' 
+        ? `<div class="place-card__rating"><i class="bi bi-star-fill"></i><span>${lugar.rating.toFixed(1)}</span></div>` 
+        : '';
+    
+    // Distance badge
+    const distanceHtml = distanciaStr 
+        ? `<div class="place-card__distance"><i class="bi bi-geo-alt"></i><span>${distanciaStr}</span></div>` 
+        : '';
+    
+    // Badges
+    let badgesHtml = `<span class="place-card__badge place-card__badge--type"><i class="bi bi-geo-alt"></i>${lugar.tipo || ''}</span>`;
+    if (lugar.es_destacado) {
+        badgesHtml += `<span class="place-card__badge place-card__badge--featured"><i class="bi bi-star-fill"></i>${T.featured}</span>`;
+    }
+    if (lugar.es_exclusivo) {
+        badgesHtml += `<span class="place-card__badge place-card__badge--exclusive"><i class="bi bi-gem"></i>${T.exclusive}</span>`;
+    }
+    if (typeof lugar.rating === 'number' && lugar.rating >= 4.5) {
+        badgesHtml += `<span class="place-card__badge place-card__badge--top-rated"><i class="bi bi-award"></i>${T.top}</span>`;
+    }
+    
+    // Precio
+    const precioHtml = precio 
+        ? `<div class="place-card__meta"><i class="bi bi-cash-stack"></i><span>${precio}</span></div>` 
+        : '';
+    
+    // Dirección (truncada a 45 chars)
+    const direccion = lugar.direccion ? lugar.direccion.substring(0, 45) + (lugar.direccion.length > 45 ? '...' : '') : '';
+    const direccionHtml = direccion 
+        ? `<div class="place-card__address"><i class="bi bi-map"></i><span>${direccion}</span></div>` 
+        : '';
+    
+    // CTA
+    const ctaHtml = lugar.slug 
+        ? `<a href="${url}" class="place-card__cta"><i class="bi bi-eye"></i>${T.viewDetails}</a>` 
+        : '';
+    
+    return `
+        <div class="place-card-wrapper">
+            <article class="place-card place-card--horizontal">
+                <div class="place-card__media">
+                    ${imagenHtml}
+                    ${ratingHtml}
+                    ${distanceHtml}
+                </div>
+                <div class="place-card__body">
+                    <h3 class="place-card__title">${lugar.nombre}</h3>
+                    <div class="place-card__badges">${badgesHtml}</div>
+                    ${precioHtml}
+                    ${direccionHtml}
+                    ${ctaHtml}
+                </div>
+            </article>
+        </div>`;
 }
 
 // Helper para construir la URL del detalle de un lugar
@@ -1716,65 +1560,9 @@ $(document).ready(function() {
                 <div class="semantic-home-grid lugares-grid">
         `;
         
+        // Usar función estandarizada para generar cards
         data.lugares.forEach(lugar => {
-            html += `
-                <div class="semantic-home-item lugar-card-wrapper">
-                    <div class="card h-100 shadow-sm border-0 rounded-4 place-card semantic-home-card">
-                        <div class="place-card-media position-relative">
-                            ${lugar.imagen ? 
-                                `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${lugar.nombre}" loading="lazy">` :
-                                `<div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-image text-muted fs-2"></i>
-                                </div>`
-                            }
-                            ${typeof lugar.rating === 'number' ? `
-                                <div class="place-card-rating badge rounded-pill">
-                                    <i class="bi bi-star-fill me-1"></i>
-                                    <span class="fw-semibold">${lugar.rating.toFixed(1)}</span>
-                                </div>` : ''
-                            }
-                        </div>
-
-                        <div class="card-body d-flex flex-column place-card-body">
-                            <h5 class="card-title fw-semibold mb-2 place-card-title">${lugar.nombre}</h5>
-                            
-                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                                ${lugar.tipo ? `<span class="badge place-type-pill"><i class="bi bi-geo-alt me-1"></i>${lugar.tipo}</span>` : ''}
-                                ${lugar.es_destacado ? `<span class="badge place-flag-pill place-flag-featured"><i class="bi bi-star-fill me-1"></i>${gettext('Destacado')}</span>` : ''}
-                                ${lugar.es_exclusivo ? `<span class="badge place-flag-pill place-flag-exclusive"><i class="bi bi-gem me-1"></i>${gettext('Exclusivo')}</span>` : ''}
-                            </div>
-
-                            ${typeof lugar.rating === 'number' ? `
-                                <div class="small text-muted mb-2">
-                                    <i class="bi bi-star-fill text-warning me-1"></i>
-                                    <span class="fw-semibold">${lugar.rating.toFixed(1)}</span>/5
-                                </div>` : ''
-                            }
-                            
-                            ${(() => {
-                                const price = formatPriceRangeJs(lugar.precio);
-                                if (!price) return '';
-                                return `<div class="d-flex flex-wrap align-items-center gap-3 mb-2 small place-card-meta">
-                                    <span class="text-muted"><i class="bi bi-cash-stack me-1"></i>${price}</span>
-                                </div>`;
-                            })()}
-
-                            ${lugar.direccion ? `
-                                <div class="small text-muted mb-2 place-card-address">
-                                    <i class="bi bi-map me-1"></i>${lugar.direccion}
-                                </div>` : ''
-                            }
-
-                            ${lugar.slug ? 
-                                `<a href="${buildPlaceUrl(lugar.slug, lugar.url)}" class="btn mt-auto w-100 rounded-pill place-card-cta">
-                                    <i class="bi bi-eye me-1"></i>${gettext('Ver detalles')}
-                                </a>` :
-                                `<span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">${gettext('Sin detalles')}</span>`
-                            }
-                        </div>
-                    </div>
-                </div>
-            `;
+            html += generarPlaceCardHtml(lugar);
         });
         
         html += `
@@ -2353,68 +2141,9 @@ $(document).ready(function() {
                 <div class="semantic-home-grid lugares-grid">
         `;
         
+        // Usar función estandarizada para generar cards
         data.lugares.forEach(lugar => {
-            html += `
-                <div class="semantic-home-item lugar-card-wrapper">
-                    <div class="card h-100 shadow-sm border-0 rounded-4 place-card semantic-home-card">
-                        <div class="place-card-media position-relative">
-                            ${lugar.imagen ? 
-                                `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${lugar.nombre}" loading="lazy">` :
-                                `<div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-image text-muted fs-2"></i>
-                                </div>`
-                            }
-                            
-                            <div class="badge-overlay">
-                                <span class="badge bg-primary rounded-pill">
-                                    <i class="bi bi-geo-alt me-1"></i>${lugar.distancia < 1 ? Math.round(lugar.distancia * 1000) + 'm' : lugar.distancia + 'km'}
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <div class="card-body d-flex flex-column place-card-body">
-                            <h5 class="card-title fw-semibold mb-2 place-card-title">${lugar.nombre}</h5>
-                            
-                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2 small">
-                                <span class="badge place-type-pill">
-                                    <i class="bi bi-geo-alt me-1"></i>${lugar.tipo}
-                                </span>
-                                ${lugar.es_destacado ? `<span class="badge place-flag-pill place-flag-featured"><i class="bi bi-star-fill me-1"></i>${T_FEATURED}</span>` : ''}
-                                ${lugar.es_exclusivo ? `<span class="badge place-flag-pill place-flag-exclusive"><i class="bi bi-gem me-1"></i>${T_EXCLUSIVE}</span>` : ''}
-                                ${lugar.rating >= 4.5 ? `<span class="badge place-flag-pill place-flag-featured"><i class="bi bi-award me-1"></i>${T_TOP_RATED}</span>` : ''}
-                            </div>
-
-                            ${typeof lugar.rating === 'number' ? `
-                                <div class="small text-muted mb-2">
-                                    <i class="bi bi-star-fill text-warning me-1"></i>
-                                    <span class="fw-semibold">${lugar.rating.toFixed(1)}</span>/5
-                                </div>` : ''
-                            }
-
-                            ${(() => {
-                                const price = formatPriceRangeJs(lugar.precio);
-                                if (!price) return '';
-                                return '<div class="d-flex flex-wrap align-items-center gap-3 mb-2 small place-card-meta">' +
-                                         '<span class="text-muted"><i class="bi bi-cash-stack me-1"></i>' + price + '</span>' +
-                                       '</div>';
-                            })()}
-                            
-                            ${lugar.direccion ? `
-                                <div class="small text-muted mb-3 place-card-address">
-                                    <i class="bi bi-map me-1"></i>${lugar.direccion}
-                                </div>` : ''
-                            }
-
-                            ${lugar.slug ? 
-                                `<a href="${buildPlaceUrl(lugar.slug, lugar.url)}" class="btn mt-auto w-100 rounded-pill place-card-cta">
-                                    <i class="bi bi-eye me-1"></i>${T_VIEW_DETAILS}
-                                </a>` :
-                                `<span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">${T_NO_DETAILS}</span>`
-                            }
-                        </div>
-                    </div>
-                </div>
-            `;
+            html += generarPlaceCardHtml(lugar);
         });
         
         html += `
@@ -2497,56 +2226,9 @@ $(document).ready(function() {
     }
     
     // Helper para generar HTML de una card
-    function generarCardHtml(lugar, T_VIEW_DETAILS, T_NO_DETAILS, T_FEATURED, T_EXCLUSIVE, T_TOP_RATED) {
-        const price = formatPriceRangeJs(lugar.precio);
-        return `
-            <div class="semantic-home-item lugar-card-wrapper">
-                <div class="card h-100 shadow-sm border-0 rounded-4 place-card semantic-home-card">
-                    <div class="place-card-media position-relative">
-                        ${lugar.imagen ? 
-                            `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${lugar.nombre}" loading="lazy">` :
-                            `<div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
-                                <i class="bi bi-image text-muted fs-2"></i>
-                            </div>`
-                        }
-                        <div class="badge-overlay">
-                            <span class="badge bg-primary rounded-pill">
-                                <i class="bi bi-geo-alt me-1"></i>${lugar.distancia < 1 ? Math.round(lugar.distancia * 1000) + 'm' : lugar.distancia + 'km'}
-                            </span>
-                    </div>
-                </div>
-                    <div class="card-body d-flex flex-column place-card-body">
-                        <h5 class="card-title fw-semibold mb-2 place-card-title">${lugar.nombre}</h5>
-                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2 small">
-                            <span class="badge place-type-pill"><i class="bi bi-geo-alt me-1"></i>${lugar.tipo}</span>
-                            ${lugar.es_destacado ? `<span class="badge place-flag-pill place-flag-featured"><i class="bi bi-star-fill me-1"></i>${T_FEATURED}</span>` : ''}
-                            ${lugar.es_exclusivo ? `<span class="badge place-flag-pill place-flag-exclusive"><i class="bi bi-gem me-1"></i>${T_EXCLUSIVE}</span>` : ''}
-                            ${lugar.rating >= 4.5 ? `<span class="badge place-flag-pill place-flag-featured"><i class="bi bi-award me-1"></i>${T_TOP_RATED}</span>` : ''}
-            </div>
-                        ${typeof lugar.rating === 'number' ? `
-                            <div class="small text-muted mb-2">
-                                <i class="bi bi-star-fill text-warning me-1"></i>
-                                <span class="fw-semibold">${lugar.rating.toFixed(1)}</span>/5
-                            </div>` : ''
-                        }
-                        ${price ? `<div class="d-flex flex-wrap align-items-center gap-3 mb-2 small place-card-meta">
-                            <span class="text-muted"><i class="bi bi-cash-stack me-1"></i>${price}</span>
-                        </div>` : ''}
-                        ${lugar.direccion ? `
-                            <div class="small text-muted mb-3 place-card-address">
-                                <i class="bi bi-map me-1"></i>${lugar.direccion}
-                            </div>` : ''
-                        }
-                        ${lugar.slug ? 
-                            `<a href="${buildPlaceUrl(lugar.slug, lugar.url)}" class="btn mt-auto w-100 rounded-pill place-card-cta">
-                                <i class="bi bi-eye me-1"></i>${T_VIEW_DETAILS}
-                            </a>` :
-                            `<span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">${T_NO_DETAILS}</span>`
-                        }
-                    </div>
-                </div>
-            </div>
-        `;
+    // Esta función ahora usa generarPlaceCardHtml para mantener consistencia
+    function generarCardHtml(lugar) {
+        return generarPlaceCardHtml(lugar);
     }
 
     function renderizarResultadosSemanticos(data) {
@@ -2576,63 +2258,9 @@ $(document).ready(function() {
                 <div class="semantic-home-grid lugares-grid">
         `;
         
+        // Usar función estandarizada para generar cards
         (data.lugares || []).forEach(lugar => {
-            html += `
-                <div class="semantic-home-item lugar-card-wrapper">
-                    <div class="card h-100 shadow-sm border-0 rounded-4 place-card semantic-home-card">
-                        <div class="place-card-media position-relative">
-                            ${lugar.imagen ? 
-                                `<img src="${lugar.imagen}" class="card-img-top rounded-top-4" alt="${lugar.nombre || ''}" loading="lazy">` :
-                                `<div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-image text-muted fs-2"></i>
-                                </div>`
-                            }
-                            ${typeof lugar.rating === 'number' ? `
-                                <div class="place-card-rating badge rounded-pill">
-                                    <i class="bi bi-star-fill me-1"></i><span class="fw-semibold">${lugar.rating.toFixed(1)}</span>
-                                </div>` : ''
-                            }
-                        </div>
-
-                        <div class="card-body d-flex flex-column place-card-body">
-                            <h5 class="card-title fw-semibold mb-2 place-card-title">${lugar.nombre || ''}</h5>
-                            
-                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                                ${lugar.tipo ? `<span class="badge place-type-pill"><i class="bi bi-geo-alt me-1"></i>${lugar.tipo}</span>` : ''}
-                                ${lugar.es_destacado ? `<span class="badge place-flag-pill place-flag-featured"><i class="bi bi-star-fill me-1"></i>${gettext('Destacado')}</span>` : ''}
-                                ${lugar.es_exclusivo ? `<span class="badge place-flag-pill place-flag-exclusive"><i class="bi bi-gem me-1"></i>${gettext('Exclusivo')}</span>` : ''}
-                            </div>
-
-                            ${typeof lugar.rating === 'number' ? `
-                                <div class="small text-muted mb-2">
-                                    <i class="bi bi-star-fill text-warning me-1"></i><span class="fw-semibold">${lugar.rating.toFixed(1)}</span>/5
-                                </div>` : ''
-                            }
-
-                            ${(() => {
-                                const price = formatPriceRangeJs(lugar.precio);
-                                if (!price) return '';
-                                return '<div class="d-flex flex-wrap align-items-center gap-3 mb-2 small place-card-meta">' +
-                                         '<span class="text-muted"><i class="bi bi-cash-stack me-1"></i>' + price + '</span>' +
-                                       '</div>';
-                            })()}
-
-                            ${lugar.direccion ? `
-                                <div class="small text-muted mb-3 place-card-address">
-                                    <i class="bi bi-map me-1"></i>${lugar.direccion}
-                                </div>` : ''
-                            }
-
-                            ${lugar.slug ? 
-                                `<a href="${buildPlaceUrl(lugar.slug, lugar.url)}" class="btn mt-auto w-100 rounded-pill place-card-cta">
-                                    <i class="bi bi-eye me-1"></i>${T_VIEW_DETAILS}
-                                </a>` :
-                                `<span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">${T_NO_DETAILS}</span>`
-                            }
-                        </div>
-                    </div>
-                </div>
-            `;
+            html += generarPlaceCardHtml(lugar);
         });
         
         html += `

@@ -3,23 +3,39 @@ from django.urls import path, include, re_path
 from django.conf.urls.i18n import i18n_patterns
 from django.views.i18n import JavaScriptCatalog
 from django.contrib.sitemaps.views import sitemap
-from django.views.generic import RedirectView
-from explorer.sitemaps import StaticViewSitemap, PlacesSitemap, ComunasSitemap
+from django.views.generic import RedirectView, TemplateView
+from explorer.sitemaps import (
+    StaticViewSitemap, PlacesSitemap, ComunasSitemap,
+    ImagesSitemap, PlacesSitemapEN, StaticViewSitemapEN
+)
 from explorer import views as explorer_views
 from django.conf import settings
 from django.conf.urls.static import static
 
 
+# Sitemaps organizados
+sitemaps = {
+    'static': StaticViewSitemap,
+    'static-en': StaticViewSitemapEN,
+    'places': PlacesSitemap,
+    'places-en': PlacesSitemapEN,
+    'comunas': ComunasSitemap,
+    'images': ImagesSitemap,
+}
+
 urlpatterns = [
+    # robots.txt
+    path('robots.txt', TemplateView.as_view(
+        template_name='robots.txt',
+        content_type='text/plain'
+    ), name='robots_txt'),
+    
     # utilidades de i18n
     path('i18n/', include('django.conf.urls.i18n')),
-    path('sitemap.xml', sitemap, {
-        'sitemaps': {
-            'static': StaticViewSitemap,
-            'places': PlacesSitemap,
-            'comunas': ComunasSitemap,
-        }
-    }, name='django.contrib.sitemaps.views.sitemap'),
+    
+    # Sitemaps
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, 
+         name='django.contrib.sitemaps.views.sitemap'),
 
     # Redirects antiguos SOLO para inglés (compatibilidad con URLs viejas)
     re_path(

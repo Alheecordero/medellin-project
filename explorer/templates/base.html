@@ -7,14 +7,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% trans "ViveMedellín - Tu Guía de la Ciudad" %}{% endblock %}</title>
+    <title>{% block title %}{% trans "ViveMedellín | Descubre Bares, Restaurantes y Vida Nocturna" %}{% endblock %}</title>
         
-    <!-- Meta SEO -->
-    <meta name="description" content="{% block meta_description %}{% trans "Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín." %}{% endblock %}">
-    <meta name="keywords" content="{% block meta_keywords %}{% trans "Medellín, turismo, lugares, bares, restaurantes, discotecas, que hacer en Medellín" %}{% endblock %}">
-    <meta name="author" content="Vivemedellín">
-    <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#0a1628">
+    <!-- Meta SEO Optimizado -->
+    <meta name="description" content="{% block meta_description %}{% trans "Guía completa de Medellín: los mejores bares, restaurantes, rooftops y discotecas. Ratings reales, horarios y ubicación exacta. ¡Explora como un local!" %}{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}{% trans "bares Medellín, restaurantes Medellín, rooftops Medellín, discotecas El Poblado, dónde comer Medellín, vida nocturna Medellín, mejores lugares Medellín" %}{% endblock %}">
+    <meta name="author" content="ViveMedellín">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+    <meta name="theme-color" content="#11998e">
+    <meta name="geo.region" content="CO-ANT">
+    <meta name="geo.placename" content="Medellín">
+    <meta name="geo.position" content="6.2442;-75.5812">
+    <meta name="ICBM" content="6.2442, -75.5812">
     
     <!-- Favicons & PWA -->
     <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}?v={{ STATIC_BUST }}">
@@ -22,19 +26,26 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}?v={{ STATIC_BUST }}">
     <link rel="manifest" href="{% static 'site.webmanifest' %}?v={{ STATIC_BUST }}">
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
-    <meta property="og:title" content="{% block og_title %}{% trans "ViveMedellín - Tu Guía de la Ciudad" %}{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}{% trans "Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín." %}{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/medellin.jpg' %}{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}{% trans "ViveMedellín | Los Mejores Lugares de Medellín" %}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{% trans "Descubre bares, restaurantes, rooftops y discotecas en Medellín. Ratings reales y horarios actualizados." %}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}{% endblock %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{% block og_image_alt %}{% trans "ViveMedellín - Guía de lugares en Medellín" %}{% endblock %}">
+    <meta property="og:locale" content="{{ LANGUAGE_CODE }}">
+    <meta property="og:locale:alternate" content="{% if LANGUAGE_CODE == 'es' %}en{% else %}es{% endif %}">
+    <meta property="og:site_name" content="ViveMedellín">
     
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
-    <meta property="twitter:title" content="{% block twitter_title %}{% trans "ViveMedellín - Tu Guía de la Ciudad" %}{% endblock %}">
-    <meta property="twitter:description" content="{% block twitter_description %}{% trans "Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de Medellín." %}{% endblock %}">
-    <meta property="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/medellin.jpg' %}{% endblock %}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@vivemedellin">
+    <meta name="twitter:url" content="{{ request.build_absolute_uri }}">
+    <meta name="twitter:title" content="{% block twitter_title %}{% trans "ViveMedellín | Los Mejores Lugares de Medellín" %}{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}{% trans "Descubre bares, restaurantes, rooftops y discotecas en Medellín. Ratings reales y horarios actualizados." %}{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}{% endblock %}">
 
     <!-- Django JS i18n -->
     <script src="{% url 'javascript-catalog' %}?v={{ STATIC_BUST }}"></script>
@@ -125,6 +136,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+    <!-- CSS Design System -->
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}?v={{ STATIC_BUST }}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v={{ STATIC_BUST }}">
     <link rel="stylesheet" href="{% static 'css/components.css' %}?v={{ STATIC_BUST }}">
     

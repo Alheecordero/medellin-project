@@ -162,307 +162,90 @@
 
 {% block extra_css %}
 <style>
-/* Reutilizar estilo general de listados: mismo fondo y card contenedor */
+/* Estilos específicos de página - Cards base vienen de components.css */
 .places-section {
-    background:
-        radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
-        linear-gradient(135deg, #0a1628 0%, #0a3d32 35%, #0d5f4a 100%);
-    min-height: 100vh;
-    padding-top: 2rem;
-    padding-bottom: 3rem;
+  background: var(--gradient-glow), var(--gradient-dark-bg);
+  min-height: 100vh;
+  padding: var(--space-8) 0 var(--space-12);
 }
 
-.places-section .container {
-    max-width: 1200px;
-}
-
-.places-main-wrapper {
-    max-width: 1120px;
-    margin: 0 auto;
-}
+.places-section .container { max-width: 1200px; }
+.places-main-wrapper { max-width: 1120px; margin: 0 auto; }
 
 .places-main-card {
-    background: rgba(4, 20, 12, 0.75);
-    border-radius: 28px;
-    padding: 2.5rem 2rem;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+  background: var(--dark-card-80);
+  border-radius: var(--radius-4xl);
+  padding: var(--space-10) var(--space-8);
+  box-shadow: var(--shadow-3xl);
+  border: 1px solid var(--white-12);
+  backdrop-filter: var(--backdrop-blur-xl);
 }
 
 @media (min-width: 992px) {
-    .places-main-card {
-        padding: 3rem 2.5rem;
-    }
+  .places-main-card { padding: var(--space-12) var(--space-10); }
 }
 
-/* Botón principal verde reutilizable (volver / CTAs secundarios) */
-.btn-gradient-purple {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border: none;
-    color: white;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
-}
-
-.btn-gradient-purple:hover {
-    background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
-    color: white;
-}
-
-/* Botones de idioma (mismo estilo que en otras vistas) */
-.home-lang-switch .btn-lang-home {
-    border-radius: 999px;
-    padding: 0.35rem 0.9rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    background: rgba(0, 0, 0, 0.25);
-    color: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-}
-
-.home-lang-switch .btn-lang-home.active {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border-color: transparent;
-    color: #03120a;
-}
-
-.home-lang-switch .btn-lang-home.inactive:hover {
-    background: rgba(255, 255, 255, 0.18);
-}
-
+/* Título */
 .places-title {
-    font-size: 2.5rem;
-    line-height: 1.3;
-    letter-spacing: -0.02em;
-    margin-bottom: 1rem;
-    font-weight: 800;
-    color: #ffffff;
-    text-shadow: 
-      0 0 20px rgba(56, 239, 125, 0.4),
-      0 2px 4px rgba(0, 0, 0, 0.5);
-    position: relative;
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-white);
+  text-shadow: 0 0 20px var(--accent-40), 0 2px 4px var(--black-50);
+  position: relative;
+  margin-bottom: var(--space-4);
 }
 
 .places-title::after {
-    content: '';
-    position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, #11998e, #38ef7d, transparent);
-    border-radius: 2px;
-    box-shadow: 0 0 12px rgba(56, 239, 125, 0.6);
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-accent), transparent);
+  border-radius: 2px;
+  box-shadow: 0 0 12px var(--accent-60);
 }
 
 .title-main {
-    background: linear-gradient(135deg, #ffffff 0%, #38ef7d 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  background: linear-gradient(135deg, var(--color-white) 0%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .semantic-query {
-    font-weight: 600;
-    color: #a5f3fc;
+  font-weight: var(--font-weight-semibold);
+  color: #a5f3fc;
 }
 
-.text-white-50 {
-    color: rgba(255, 255, 255, 0.7) !important;
-}
-
-/* Card Inferior: Grid de Lugares (reutilizada) */
+/* Grid Card */
 .places-grid-card {
-    background: rgba(4, 20, 12, 0.75);
-    border-radius: 28px;
-    padding: 2rem 1.5rem;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+  background: var(--dark-card-80);
+  border-radius: var(--radius-4xl);
+  padding: var(--space-8) var(--space-6);
+  box-shadow: var(--shadow-3xl);
+  border: 1px solid var(--white-12);
+  backdrop-filter: var(--backdrop-blur-xl);
 }
 
 @media (min-width: 992px) {
-    .places-grid-card {
-        padding: 2.5rem 2rem;
-    }
+  .places-grid-card { padding: var(--space-10) var(--space-8); }
 }
 
-/* Cards de lugares en tonos blancos con detalles verdes */
-.places-section .card {
-    background: #ffffff;
-    border-radius: 20px;
-    border: 2px solid rgba(17, 153, 142, 0.2);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-}
+/* Nav links */
+/* Nav Links - estilos en components.css */
 
-.places-section .card-body {
-    background: transparent;
-}
-
-.places-section .card-title {
-    color: #0f172a;
-    font-weight: 600;
-}
-
-.places-section .card-text,
-.places-section .small.text-muted {
-    color: #64748b !important;
-}
-
-.places-section .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 32px rgba(17, 153, 142, 0.25) !important;
-    border-color: rgba(17, 153, 142, 0.5);
-}
-
-/* Grid de lugares en resultados semánticos: lista vertical */
-.lugares-grid {
-  padding: 0.5rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.lugar-card-wrapper {
-  width: 100%;
-}
-
-@media (min-width: 992px) {
-  .place-card {
-    display: grid;
-    grid-template-columns: 280px minmax(0, 1fr);
-  }
-
-  .place-card-media img,
-  .place-card-placeholder {
-    height: 100%;
-    min-height: 190px;
-    max-height: 220px;
-    border-radius: 1.25rem 0 0 1.25rem;
-  }
-
-  .place-card-media {
-    height: 100%;
-  }
-
-  .place-card-body {
-    padding: 1.25rem 1.5rem;
-  }
-}
-
-.place-card-media img {
-    height: 190px;
-    object-fit: cover;
-}
-
-.place-card-placeholder {
-    height: 190px;
-    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
-}
-
-.place-card-rating {
-    position: absolute;
-    right: 12px;
-    bottom: 12px;
-    background: #ffffff;
-    color: #11998e;
-    font-size: 0.8rem;
-    padding: 0.35rem 0.75rem;
-    box-shadow: 0 4px 12px rgba(17, 153, 142, 0.3);
-    border: 1px solid rgba(17, 153, 142, 0.2);
-    font-weight: 600;
-}
-
-.place-card-body {
-    padding-top: 0.9rem;
-}
-
-.place-card-title {
-    color: #0f172a;
-    font-weight: 600;
-}
-
-.place-type-pill {
-    background: rgba(17, 153, 142, 0.1);
-    border-radius: 999px;
-    color: #11998e;
-    border: 1px solid rgba(17, 153, 142, 0.3);
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.place-flag-pill {
-    border-radius: 999px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.place-flag-featured {
-    background: rgba(250, 204, 21, 0.15);
-    color: #ca8a04;
-    border: 1px solid rgba(250, 204, 21, 0.4);
-}
-
-.place-flag-exclusive {
-    background: rgba(17, 153, 142, 0.15);
-    color: #11998e;
-    border: 1px solid rgba(17, 153, 142, 0.4);
-}
-
-.place-card-address {
-    color: #64748b !important;
-}
-
-.place-card-meta .place-open-badge {
-    background: rgba(22, 163, 74, 0.12);
-    color: #16a34a;
-    border: 1px solid rgba(22, 163, 74, 0.4);
-}
-
-.place-card-meta .place-closed-badge {
-    background: rgba(15, 23, 42, 0.9);
-    color: #e5e7eb;
-    border: 1px solid rgba(148, 163, 184, 0.5);
-}
-
-.place-card-description {
-    color: #4b5563;
-}
-
+/* Contact link */
 .place-card-link {
-    color: #0f766e;
-    text-decoration: none;
+  color: var(--color-primary);
+  text-decoration: none;
 }
 
 .place-card-link:hover {
-    color: #22c55e;
-    text-decoration: underline;
-}
-
-.place-card-cta {
-    font-weight: 600;
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border: none;
-    color: white;
-    transition: all 0.3s ease;
-}
-
-.place-card-cta:hover {
-    background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
-    color: white;
+  color: var(--color-success);
+  text-decoration: underline;
 }
 </style>
 {% endblock %}

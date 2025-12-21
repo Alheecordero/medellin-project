@@ -5,19 +5,20 @@
 {% load form_tags %}
 {% load i18n_extras %}
 
-{% block title %}{{ lugar.nombre }} | {% trans "ViveMedellín" %}{% endblock %}
+{% block title %}{{ lugar.nombre }} - {{ lugar|place_type_label }} en {% if lugar.comuna %}{{ lugar.comuna.name }}{% else %}Medellín{% endif %} | ViveMedellín{% endblock %}
 
 {% block meta_description %}
-  {% blocktrans %}{{ lugar.nombre }} en Medellín. Descubre este {{ lugar.get_tipo_display|default:lugar.tipo }} con puntuación de {{ lugar.rating|default:"-" }} estrellas. Dirección: {{ lugar.direccion|default:"no disponible" }}.{% endblocktrans %}
+{{ lugar.nombre }}{% if lugar.rating %} ⭐ {{ lugar.rating|floatformat:1 }}{% endif %} - {{ lugar|place_type_label }} en {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if lugar.direccion %} 📍 {{ lugar.direccion|truncatechars:60 }}{% endif %}{% if lugar.precio %} 💰 {{ lugar.precio|format_price_range }}{% endif %}
 {% endblock %}
 
 {% block meta_keywords %}
-  {% blocktrans %}{{ lugar.nombre }}, {{ lugar.get_tipo_display|default:lugar.tipo }}, lugares Medellín, {{ lugar.get_tipo_display|default:lugar.tipo }} Medellín, mejores lugares en Medellín{% endblocktrans %}
+{{ lugar.nombre }}, {{ lugar|place_type_label }} Medellín, {{ lugar|place_type_label }} {% if lugar.comuna %}{{ lugar.comuna.name }}{% endif %}, mejores {{ lugar|place_type_label|lower }}s Medellín{% if lugar.outdoor_seating %}, terraza{% endif %}{% if lugar.live_music %}, música en vivo{% endif %}{% if lugar.delivery %}, delivery{% endif %}
 {% endblock %}
 
-{% block og_title %}{{ lugar.nombre }} | {% trans "ViveMedellín" %}{% endblock %}
+{% block og_type %}place{% endblock %}
+{% block og_title %}{{ lugar.nombre }} - {{ lugar|place_type_label }} en Medellín | ViveMedellín{% endblock %}
 {% block og_description %}
-  {% blocktrans %}Conoce {{ lugar.nombre }}, un destacado {{ lugar.get_tipo_display|default:lugar.tipo }} en Medellín con rating de {{ lugar.rating|default:"-" }}.{% endblocktrans %}
+{% if lugar.rating %}⭐ {{ lugar.rating|floatformat:1 }} - {% endif %}{{ lugar|place_type_label }} en {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if lugar.descripcion %} {{ lugar.descripcion|truncatechars:100 }}{% endif %}
 {% endblock %}
 
 {% block og_image %}
@@ -35,6 +36,9 @@
 {% block content %}
 {% get_current_language as LANGUAGE_CODE %}
 
+<!-- Schema.org JSON-LD para SEO -->
+{% include 'components/schema_org.html' with schema_type='place' lugar=lugar %}
+
 <section class="detail-section">
   <div class="container py-4">
     <div class="detail-main-wrapper">
@@ -48,11 +52,11 @@
             <i class="bi bi-arrow-left me-2"></i>{% trans "Volver" %}
           </a>
           <div class="nav-links">
-            <a href="{% url 'explorer:home' %}" class="nav-link-item">{% trans "Inicio" %}</a>
+            <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">{% trans "Inicio" %}</a>
             {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-              <a href="{% url 'explorer:about' %}" class="nav-link-item">{% trans "Nosotros" %}</a>
+              <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">{% trans "Nosotros" %}</a>
             {% else %}
-              <a href="{% url 'explorer:about_es' %}" class="nav-link-item">{% trans "Nosotros" %}</a>
+              <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">{% trans "Nosotros" %}</a>
             {% endif %}
             {% include 'components/lang_switcher.html' %}
           </div>
@@ -213,10 +217,8 @@
                 {% trans "Waze" %}
               </button>
               {% endif %}
-              <div class="share-row">
-                <a href="https://wa.me/?text={{ lugar.nombre|urlencode }}%0A{% trans 'Explóralo:' %}%20{{ request.build_absolute_uri }}" target="_blank" class="share-btn" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
-                <button onclick="copyToClipboard()" class="share-btn" title="{% trans 'Copiar enlace' %}"><i class="bi bi-link-45deg"></i></button>
-              </div>
+              <!-- Botones de compartir -->
+              {% include 'components/share_buttons.html' with title=lugar.nombre url=request.build_absolute_uri %}
             </div>
 
           </div>
@@ -295,8 +297,8 @@ const lng = {{ lugar.ubicacion.x|unlocalize }};
 document.addEventListener("DOMContentLoaded", () => {
   // Mapa
   const map = L.map("mapa", { center: [lat, lng], zoom: 16, scrollWheelZoom: false });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© CARTO', maxZoom: 19
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '© CARTO | vivemedellin.co', maxZoom: 19
   }).addTo(map);
   const icon = L.divIcon({
     className: 'custom-marker',
@@ -380,6 +382,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const prefix = lang === 'es' ? '' : '/en';
   const loaded = {};
 
+  // Textos traducidos
+  const T = {
+    viewDetails: '{% trans "Ver detalles" %}',
+    featured: '{% trans "Destacado" %}',
+    exclusive: '{% trans "Exclusivo" %}'
+  };
+
+  // Helper para formatear precios
+  function formatPrice(raw) {
+    if (!raw) return '';
+    const val = String(raw).toUpperCase();
+    const map = {'$':'$','$$':'$$','$$$':'$$$','$$$$':'$$$$',
+      'PRICE_LEVEL_INEXPENSIVE':'$','PRICE_LEVEL_MODERATE':'$$',
+      'PRICE_LEVEL_EXPENSIVE':'$$$','PRICE_LEVEL_VERY_EXPENSIVE':'$$$$'};
+    return map[val] || (/^\$+$/.test(val) && val.length <= 4 ? val : '');
+  }
+
   function dist(km) {
     if (!km) return '';
     const d = Number(km);
@@ -387,21 +406,58 @@ document.addEventListener("DOMContentLoaded", () => {
     return d < 1 ? `${Math.round(d * 1000)} m` : `${d.toFixed(1)} km`;
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  // Función estandarizada para generar HTML de card
+  // Usa las mismas clases BEM que place_card.html pero compactas
+  // ═══════════════════════════════════════════════════════════════
   function card(p) {
-    // Usar imagen optimizada (thumbnail) del backend
-    const img = p.imagen ? `<img src="${p.imagen}" alt="${p.nombre}" loading="lazy">` : `<div class="placeholder-img"><i class="bi bi-image"></i></div>`;
-    const rating = typeof p.rating === 'number' ? `<div class="card-rating-badge"><i class="bi bi-star-fill"></i> ${p.rating.toFixed(1)}</div>` : '';
+    // Imagen
+    const imagenHtml = p.imagen 
+      ? `<img src="${p.imagen}" class="place-card__img" alt="${p.nombre}" loading="lazy">` 
+      : `<div class="place-card__placeholder"><i class="bi bi-image"></i></div>`;
+    
+    // Rating badge
+    const ratingHtml = typeof p.rating === 'number' 
+      ? `<div class="place-card__rating"><i class="bi bi-star-fill"></i><span>${p.rating.toFixed(1)}</span></div>` 
+      : '';
+    
+    // Distancia badge
     const d = dist(p.distancia_km || p.distancia);
-    const distBadge = d ? `<div class="card-dist-badge"><i class="bi bi-geo-alt me-1"></i>${d}</div>` : '';
+    const distanceHtml = d ? `<div class="place-card__distance"><i class="bi bi-geo-alt"></i><span>${d}</span></div>` : '';
+    
+    // URL
     const url = p.url || `${prefix}/${lang === 'es' ? 'lugar' : 'place'}/${p.slug}/`;
+    
+    // Badges (tipo + destacado + exclusivo + top)
+    let badgesHtml = `<span class="place-card__badge place-card__badge--type"><i class="bi bi-geo-alt"></i>${p.tipo || ''}</span>`;
+    if (p.es_destacado) badgesHtml += `<span class="place-card__badge place-card__badge--featured"><i class="bi bi-star-fill"></i>${T.featured}</span>`;
+    if (p.es_exclusivo) badgesHtml += `<span class="place-card__badge place-card__badge--exclusive"><i class="bi bi-gem"></i>${T.exclusive}</span>`;
+    if (typeof p.rating === 'number' && p.rating >= 4.5) badgesHtml += `<span class="place-card__badge place-card__badge--top-rated"><i class="bi bi-award"></i>Top</span>`;
+    
+    // Precio
+    const precio = formatPrice(p.precio);
+    const precioHtml = precio ? `<div class="place-card__meta"><i class="bi bi-cash-stack"></i><span>${precio}</span></div>` : '';
+    
+    // Dirección (truncada a 35 chars para cards compactas)
+    const direccion = p.direccion ? p.direccion.substring(0, 35) + (p.direccion.length > 35 ? '...' : '') : '';
+    const direccionHtml = direccion ? `<div class="place-card__address"><i class="bi bi-map"></i><span>${direccion}</span></div>` : '';
+    
     return `
-      <div class="related-card">
-        <div class="related-card-img">${img}${rating}${distBadge}</div>
-        <div class="related-card-body">
-          <h5 class="related-card-title">${p.nombre}</h5>
-          <div class="related-card-type"><i class="bi bi-geo-alt me-1"></i>${p.tipo}</div>
-          <a href="${url}" class="btn-related-cta"><i class="bi bi-eye me-1"></i>{% trans "Ver detalles" %}</a>
-        </div>
+      <div class="place-card-wrapper">
+        <article class="place-card place-card--compact">
+          <div class="place-card__media">
+            ${imagenHtml}
+            ${ratingHtml}
+            ${distanceHtml}
+          </div>
+          <div class="place-card__body">
+            <h3 class="place-card__title">${p.nombre}</h3>
+            <div class="place-card__badges">${badgesHtml}</div>
+            ${precioHtml}
+            ${direccionHtml}
+            <a href="${url}" class="place-card__cta"><i class="bi bi-eye"></i>${T.viewDetails}</a>
+          </div>
+        </article>
       </div>`;
   }
 
@@ -434,13 +490,13 @@ document.addEventListener("DOMContentLoaded", () => {
 {% block extra_css %}
 <style>
 /* ═══════════════════════════════════════════════════════════════════
-   PLACES DETAIL - Diseño Limpio y Simétrico
+   PLACES DETAIL - Usa variables de variables.css
    ═══════════════════════════════════════════════════════════════════ */
 
 .detail-section {
-  background: linear-gradient(135deg, #0a1628 0%, #0a3d32 35%, #0d5f4a 100%);
+  background: var(--gradient-dark-bg);
   min-height: 100vh;
-  padding: 1.5rem 0 3rem;
+  padding: var(--space-6) 0 var(--space-12);
 }
 
 .detail-main-wrapper {
@@ -468,29 +524,7 @@ document.addEventListener("DOMContentLoaded", () => {
   color: #fff;
 }
 
-/* Lang Switcher en detail */
-.detail-nav .btn-lang-home {
-  border-radius: 999px;
-  padding: 0.3rem 0.65rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(0, 0, 0, 0.2);
-  color: rgba(255, 255, 255, 0.8);
-  transition: all 0.2s ease;
-}
-
-.detail-nav .btn-lang-home.active {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  border-color: transparent;
-  color: #03120a;
-}
-
-.detail-nav .btn-lang-home.inactive:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
+/* Lang Switcher - estilos en components.css */
 
 /* CARD PRINCIPAL */
 .detail-main-card {
@@ -523,22 +557,7 @@ document.addEventListener("DOMContentLoaded", () => {
   flex-wrap: wrap;
 }
 
-.nav-link-item {
-  padding: 0.35rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: none;
-  border-radius: 999px;
-  transition: all 0.2s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.nav-link-item:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-}
+/* Nav links usan .btn-lang-home de components.css */
 
 /* HERO: Galería Grande */
 .detail-hero {
@@ -581,8 +600,8 @@ document.addEventListener("DOMContentLoaded", () => {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 120px;
-  background: linear-gradient(to top, rgba(4, 20, 12, 0.95), transparent);
+  height: 80px;
+  background: linear-gradient(to top, rgba(4, 20, 12, 0.7), transparent);
   pointer-events: none;
 }
 
@@ -788,7 +807,23 @@ document.addEventListener("DOMContentLoaded", () => {
 /* Map */
 .map-block { padding: 0; overflow: hidden; }
 .map-block .block-title { padding: 1.25rem 1.25rem 1rem; margin: 0; }
-.map-container { height: 280px; width: 100%; }
+.map-container { 
+  height: 280px; 
+  width: 100%; 
+  border-radius: 0;
+}
+
+.map-container .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  color: #333;
+}
+
+.map-container .leaflet-control-attribution a {
+  color: #11998e;
+  font-weight: 600;
+}
 
 @media (min-width: 768px) {
   .map-container { height: 320px; }
@@ -1046,102 +1081,7 @@ document.addEventListener("DOMContentLoaded", () => {
   .related-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
-.related-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  overflow: hidden;
-  transition: all 0.2s ease;
-}
-
-.related-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(17, 153, 142, 0.3);
-  border-color: rgba(17, 153, 142, 0.4);
-}
-
-.related-card-img {
-  position: relative;
-  height: 120px;
-  overflow: hidden;
-}
-
-.related-card-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.card-rating-badge {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  color: #fbbf24;
-  padding: 0.25rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.2rem;
-}
-
-.card-dist-badge {
-  position: absolute;
-  bottom: 0.5rem;
-  left: 0.5rem;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  color: #22c55e;
-  padding: 0.25rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  border: 1px solid rgba(34, 197, 94, 0.3);
-}
-
-.related-card-body {
-  padding: 0.75rem;
-}
-
-.related-card-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 0.25rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.related-card-type {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 0.5rem;
-}
-
-.btn-related-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  padding: 0.4rem 0.7rem;
-  background: linear-gradient(135deg, #11998e, #38ef7d);
-  color: #fff;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-.btn-related-cta:hover {
-  transform: translateX(2px);
-  color: #fff;
-}
+/* Related cards ahora usan .place-card--compact de components.css */
 
 /* Skeleton & Empty */
 .skeleton-card {
@@ -1264,7 +1204,6 @@ document.addEventListener("DOMContentLoaded", () => {
   .detail-grid { padding: 1rem; gap: 1rem; }
   .info-block { padding: 0.875rem; }
   .btn-back { padding: 0.35rem 0.75rem; font-size: 0.75rem; }
-  .nav-link-item { padding: 0.3rem 0.5rem; font-size: 0.7rem; }
 }
 </style>
 {% endblock %}

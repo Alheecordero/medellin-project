@@ -19,6 +19,8 @@ settings_dev.py
 coordenadas_guardadas.json
 medellin_grid_500m.geojson
 /tourism/
+/media/
+thumbs.log
 
 # Archivos de sistema operativo
 .DS_Store
