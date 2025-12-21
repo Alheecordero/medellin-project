@@ -412,7 +412,8 @@ function copyToClipboard() {
   const T = {
     viewDetails: '{% trans "Ver detalles" %}',
     featured: '{% trans "Destacado" %}',
-    exclusive: '{% trans "Exclusivo" %}'
+    exclusive: '{% trans "Exclusivo" %}',
+    top: '{% trans "Top" %}'
   };
 
   // Helper para formatear precios
@@ -460,7 +461,7 @@ function copyToClipboard() {
     let badgesHtml = `<span class="place-card__badge place-card__badge--type"><i class="bi bi-geo-alt"></i>${p.tipo || ''}</span>`;
     if (p.es_destacado) badgesHtml += `<span class="place-card__badge place-card__badge--featured"><i class="bi bi-star-fill"></i>${T.featured}</span>`;
     if (p.es_exclusivo) badgesHtml += `<span class="place-card__badge place-card__badge--exclusive"><i class="bi bi-gem"></i>${T.exclusive}</span>`;
-    if (typeof p.rating === 'number' && p.rating >= 4.5) badgesHtml += `<span class="place-card__badge place-card__badge--top-rated"><i class="bi bi-award"></i>Top</span>`;
+    if (typeof p.rating === 'number' && p.rating >= 4.5) badgesHtml += `<span class="place-card__badge place-card__badge--top-rated"><i class="bi bi-award"></i>${T.top}</span>`;
     
     // Precio
     const precio = formatPrice(p.precio);

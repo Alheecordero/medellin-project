@@ -760,7 +760,7 @@ msgstr ""
 
 #: explorer/templates/home.html:88
 msgid "Busca bares, restaurantes, lugares..."
-msgstr "Search for bars, restaurants, places..."
+msgstr "Look for bars, restaurants, places..."
 
 #: explorer/templates/home.html:104
 #: explorer/templates/lugares/places_list.html:88
@@ -810,7 +810,7 @@ msgstr "Near Me"
 
 #: explorer/templates/home.html:243 explorer/templates/home.html:2409
 msgid "Ver Todos los Lugares"
-msgstr "View All Places"
+msgstr "See All Places"
 
 #: explorer/templates/home.html:251
 #: explorer/templates/lugares/places_detail.html:246
@@ -828,7 +828,7 @@ msgstr "This may take a few seconds"
 
 #: explorer/templates/home.html:300
 msgid "Ver todas las áreas"
-msgstr "View all areas"
+msgstr "See all areas"
 
 #: explorer/templates/home.html:319
 msgid "Obteniendo ubicación..."
@@ -867,11 +867,11 @@ msgstr "Connection error"
 
 #: explorer/templates/home.html:327
 msgid "No hay lugares cercanos disponibles en este momento."
-msgstr "No nearby places available at this time."
+msgstr "There are no places available"
 
 #: explorer/templates/home.html:328
 msgid "Error al cargar lugares cercanos."
-msgstr "Error loading nearby places."
+msgstr "Error searching for nearby places: %(err)s"
 
 #: explorer/templates/home.html:329
 msgid "Reintentar"
@@ -879,11 +879,11 @@ msgstr "Retry"
 
 #: explorer/templates/home.html:330
 msgid "No hay lugares similares disponibles en este momento."
-msgstr "No similar places available at this time."
+msgstr "There are no places available"
 
 #: explorer/templates/home.html:331
 msgid "Error al cargar lugares similares."
-msgstr "Error loading similar places."
+msgstr "Error searching for nearby places: %(err)s"
 
 #: explorer/templates/home.html:332
 msgid "No hay más lugares en esta zona disponibles en este momento."
@@ -891,7 +891,7 @@ msgstr "There are no more places available in this area at this time."
 
 #: explorer/templates/home.html:333
 msgid "Error al cargar lugares de la zona."
-msgstr "Error loading places in this area."
+msgstr "Error searching for nearby places: %(err)s"
 
 #: explorer/templates/home.html:1704
 msgid "Resultados de tu Búsqueda"
@@ -899,7 +899,7 @@ msgstr "Your Search Results"
 
 #: explorer/templates/home.html:1792
 msgid "Ver Todos los Resultados"
-msgstr "View All Results"
+msgstr "See All Results"
 
 #: explorer/templates/home.html:1813
 msgid "¡Ups! Algo salió mal"
@@ -1192,7 +1192,7 @@ msgstr "A network error occurred while trying to save the coordinate."
 #: explorer/templates/lugares/buscar_autocompletar.html:8
 #: explorer/templates/lugares/buscar_autocompletar.html:15
 msgid "Buscar lugar"
-msgstr "Search for a place"
+msgstr "Find a place"
 
 #: explorer/templates/lugares/buscar_autocompletar.html:18
 msgid "Escribe un lugar..."
@@ -1481,7 +1481,7 @@ msgstr "All areas"
 
 #: explorer/templates/lugares/places_list.html:96
 msgid "Ver todo Medellín"
-msgstr "View all of Medellín"
+msgstr "in Medellín"
 
 #: explorer/templates/lugares/places_list.html:179 explorer/views.py:262
 msgid "Servicios de Entrega"
@@ -1505,7 +1505,7 @@ msgstr "No locations were found that match your search."
 
 #: explorer/templates/lugares/places_list.html:321
 msgid "Ver todos los lugares"
-msgstr "View All Places"
+msgstr "See All Places"
 
 #: explorer/templates/lugares/reviews_lugar.html:7
 msgid "Reseñas de"
@@ -1661,7 +1661,7 @@ msgstr ""
 
 #: explorer/templates/newsletter/confirmation_success.html:35
 msgid "Ver Todos"
-msgstr "View All"
+msgstr "See All"
 
 #: explorer/templates/newsletter/unsubscribe_success.html:5
 msgid "Te hemos dado de baja - ViveMedellín"
@@ -2221,10 +2221,7 @@ msgstr "Best %(tipo)s in Medellín"
 msgid "Descubre los mejores %(tipo)s en la ciudad"
 msgstr "Discover the best %(tipo)s in the city"
 
-
-msgid "Top"
-msgstr "Top"
-
+#~| msgid "Imagen de"
 #~ msgid "Image"
 #~ msgstr "Image of"
 
