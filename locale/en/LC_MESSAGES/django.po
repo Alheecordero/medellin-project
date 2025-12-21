@@ -782,8 +782,6 @@ msgid "Otras áreas de Antioquia"
 msgstr "Other areas of Antioquia"
 
 #: explorer/templates/home.html:144
-#, fuzzy
-#| msgid "Explorar esta zona"
 msgid "Explorar esta área"
 msgstr "Explore this area"
 
@@ -868,14 +866,10 @@ msgid "Error de conexión"
 msgstr "Connection error"
 
 #: explorer/templates/home.html:327
-#, fuzzy
-#| msgid "No hay lugares disponibles"
 msgid "No hay lugares cercanos disponibles en este momento."
 msgstr "There are no places available"
 
 #: explorer/templates/home.html:328
-#, fuzzy
-#| msgid "Error al buscar lugares cercanos: %(err)s"
 msgid "Error al cargar lugares cercanos."
 msgstr "Error searching for nearby places: %(err)s"
 
@@ -884,14 +878,10 @@ msgid "Reintentar"
 msgstr "Retry"
 
 #: explorer/templates/home.html:330
-#, fuzzy
-#| msgid "No hay lugares disponibles"
 msgid "No hay lugares similares disponibles en este momento."
 msgstr "There are no places available"
 
 #: explorer/templates/home.html:331
-#, fuzzy
-#| msgid "Error al buscar lugares cercanos: %(err)s"
 msgid "Error al cargar lugares similares."
 msgstr "Error searching for nearby places: %(err)s"
 
@@ -900,8 +890,6 @@ msgid "No hay más lugares en esta zona disponibles en este momento."
 msgstr "There are no more places available in this area at this time."
 
 #: explorer/templates/home.html:333
-#, fuzzy
-#| msgid "Error al buscar lugares cercanos: %(err)s"
 msgid "Error al cargar lugares de la zona."
 msgstr "Error searching for nearby places: %(err)s"
 
@@ -1052,8 +1040,6 @@ msgid "Tarjetas de Crédito"
 msgstr "Credit Cards"
 
 #: explorer/templates/home.html:1873
-#, fuzzy
-#| msgid "Cargando..."
 msgid "Localizando..."
 msgstr "Loading..."
 
@@ -1070,10 +1056,6 @@ msgid "Error de ubicación"
 msgstr "Location error"
 
 #: explorer/templates/home.html:1928
-#, fuzzy
-#| msgid ""
-#| "Permiso de ubicación denegado. Por favor, habilita la ubicación en tu "
-#| "navegador."
 msgid "Permiso denegado. Habilita la ubicación."
 msgstr ""
 "Location permission denied. Please enable location services in your browser."
@@ -1146,7 +1128,6 @@ msgid "Tipo"
 msgstr "Type"
 
 #: explorer/templates/home.html:2132
-#| msgid "Cerrado"
 msgid "Cerrar"
 msgstr "Close"
 
@@ -1156,20 +1137,14 @@ msgid "Todos los tipos"
 msgstr "All types"
 
 #: explorer/templates/home.html:2160
-#, fuzzy
-#| msgid "Comida Rápida"
 msgid "Comida & Bebida"
 msgstr "Fast food"
 
 #: explorer/templates/home.html:2194
-#, fuzzy
-#| msgid "Centro de entretenimiento"
 msgid "Entretenimiento"
 msgstr "Amusement center"
 
 #: explorer/templates/home.html:2208
-#, fuzzy
-#| msgid "Cultura y atracciones"
 msgid "Cultura & Arte"
 msgstr "Culture & attractions"
 
@@ -1292,8 +1267,6 @@ msgid "Siguiente"
 msgstr "Next"
 
 #: explorer/templates/lugares/lugares_por_comuna.html:177
-#, fuzzy
-#| msgid "Más lugares en"
 msgid "Cargar más lugares"
 msgstr "More places in"
 
@@ -1367,14 +1340,10 @@ msgid "Niños Bienvenidos"
 msgstr "Kids welcome"
 
 #: explorer/templates/lugares/places_detail.html:179
-#, fuzzy
-#| msgid "Accesibles"
 msgid "Accesible"
 msgstr "Accessible"
 
 #: explorer/templates/lugares/places_detail.html:180
-#, fuzzy
-#| msgid "Aceptan Tarjetas"
 msgid "Tarjetas"
 msgstr "Cards accepted"
 
@@ -1483,8 +1452,6 @@ msgid "Cerrado"
 msgstr "Closed"
 
 #: explorer/templates/lugares/places_detail.html:475
-#, fuzzy
-#| msgid "Viernes"
 msgid "Ver"
 msgstr "Friday"
 
@@ -1497,10 +1464,6 @@ msgid "Encuentra los lugares mejor valorados en ViveMedellín."
 msgstr "Find the best-rated places on ViveMedellín."
 
 #: explorer/templates/lugares/places_list.html:16
-#, fuzzy
-#| msgid ""
-#| "bares Medellín, discotecas Medellín, restaurantes Medellín, lugares por "
-#| "comuna, mapa interactivo Medellín"
 msgid ""
 "lugares Medellín, bares Medellín, restaurantes Medellín, sitios para salir "
 "en Medellín"
@@ -1517,8 +1480,6 @@ msgid "Todas las áreas"
 msgstr "All areas"
 
 #: explorer/templates/lugares/places_list.html:96
-#, fuzzy
-#| msgid "en Medellín"
 msgid "Ver todo Medellín"
 msgstr "in Medellín"
 
@@ -1725,32 +1686,22 @@ msgid ""
 msgstr "If you change your mind, you can always re-subscribe on our website."
 
 #: explorer/templates/semantic_results.html:9
-#, fuzzy, python-format
-#| msgid "Resultados para \"%(query)s\""
 msgid "Resultados para \"%(query)s\" en ViveMedellín"
 msgstr "Results for \"%(query)s\""
 
 #: explorer/templates/semantic_results.html:11
-#, fuzzy
-#| msgid "Resultados Semánticos"
 msgid "Resultados semánticos en ViveMedellín"
 msgstr "Semantic Results"
 
 #: explorer/templates/semantic_results.html:60
-#, fuzzy
-#| msgid "Resultados Semánticos"
 msgid "Resultados semánticos"
 msgstr "Semantic Results"
 
 #: explorer/templates/semantic_results.html:63
-#, fuzzy
-#| msgid "Resultados de tu Búsqueda"
 msgid "Resultados inteligentes para la búsqueda"
 msgstr "Your Search Results"
 
 #: explorer/templates/semantic_results.html:148
-#, fuzzy
-#| msgid "Sitio Web:"
 msgid "Sitio web"
 msgstr "website"
 
@@ -1891,9 +1842,6 @@ msgid "Error en la búsqueda: %(err)s"
 msgstr "Search error: %(err)s"
 
 #: explorer/views.py:1291
-#, fuzzy, python-format
-#| msgid "Encontramos %(count)s lugar en un radio de %(dist)s"
-#| msgid_plural "Encontramos %(count)s lugares en un radio de %(dist)s"
 msgid "Encontramos %(count)s %(tipo)s en un radio de %(dist)s"
 msgid_plural "Encontramos %(count)s %(tipo)s en un radio de %(dist)s"
 msgstr[0] "We found %(count)s place within %(dist)s"
@@ -2273,42 +2221,34 @@ msgstr "Best %(tipo)s in Medellín"
 msgid "Descubre los mejores %(tipo)s en la ciudad"
 msgstr "Discover the best %(tipo)s in the city"
 
-#, fuzzy
 #~| msgid "Imagen de"
 #~ msgid "Image"
 #~ msgstr "Image of"
 
-#, fuzzy
 #~| msgid "Bar"
 #~ msgid "mar"
 #~ msgstr "Bar"
 
-#, fuzzy
 #~| msgid "Bar"
 #~ msgid "apr"
 #~ msgstr "Bar"
 
-#, fuzzy
 #~| msgid "de"
 #~ msgid "dec"
 #~ msgstr "of"
 
-#, fuzzy
 #~| msgid "No especificado"
 #~ msgid "No year specified"
 #~ msgstr "Not specified"
 
-#, fuzzy
 #~| msgid "No especificado"
 #~ msgid "No month specified"
 #~ msgstr "Not specified"
 
-#, fuzzy
 #~| msgid "No especificado"
 #~ msgid "No day specified"
 #~ msgstr "Not specified"
 
-#, fuzzy
 #~| msgid "No especificado"
 #~ msgid "No week specified"
 #~ msgstr "Not specified"
@@ -2340,7 +2280,6 @@ msgstr "Discover the best %(tipo)s in the city"
 #~ "Your ultimate guide to discovering the best places in the City of Eternal "
 #~ "Spring"
 
-#, fuzzy
 #~| msgid "Error de Confirmación"
 #~ msgid "Error de Geolocalización"
 #~ msgstr "Confirmation Error"
