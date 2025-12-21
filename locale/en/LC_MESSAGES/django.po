@@ -2723,3 +2723,27 @@ msgstr "Showing all %(count)s available reviews"
 
 msgid "Selección de reseñas destacadas. El rating refleja el promedio de todas las opiniones."
 msgstr "Featured reviews selection. The rating reflects the average of all reviews."
+
+#: explorer/templates/components/share_buttons.html:7
+msgid "Compartir"
+msgstr "Share"
+
+#: explorer/templates/components/share_buttons.html:14
+msgid "Compartir en WhatsApp"
+msgstr "Share on WhatsApp"
+
+#: explorer/templates/components/share_buttons.html:24
+msgid "Compartir en Facebook"
+msgstr "Share on Facebook"
+
+#: explorer/templates/components/share_buttons.html:34
+msgid "Compartir en Twitter"
+msgstr "Share on Twitter"
+
+#: explorer/templates/components/share_buttons.html:44
+msgid "Compartir en Telegram"
+msgstr "Share on Telegram"
+
+#: explorer/templates/components/share_buttons.html:53
+msgid "Copiar enlace"
+msgstr "Copy link"
