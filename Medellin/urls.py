@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf.urls.i18n import i18n_patterns
 from django.views.i18n import JavaScriptCatalog
-from django.contrib.sitemaps.views import sitemap
+from django.contrib.sitemaps.views import index as sitemap_index, sitemap
 from django.views.generic import RedirectView, TemplateView
 from explorer.sitemaps import (
     StaticViewSitemap, PlacesSitemap, ComunasSitemap,

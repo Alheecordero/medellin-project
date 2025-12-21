@@ -20,7 +20,7 @@ class PlacesSitemap(Sitemap):
     """Sitemap para lugares individuales con alta prioridad para lugares destacados."""
     changefreq = "weekly"
     priority = 0.8
-    limit = 5000  # Límite por sitemap
+    limit = 2000  # Límite por sitemap (reducido para evitar timeout)
 
     def items(self):
         return Places.objects.filter(
@@ -68,7 +68,7 @@ class ImagesSitemap(Sitemap):
     """Sitemap de imágenes para Google Images."""
     changefreq = "monthly"
     priority = 0.5
-    limit = 10000
+    limit = 2000  # Reducido para evitar timeout
 
     def items(self):
         return Foto.objects.exclude(
