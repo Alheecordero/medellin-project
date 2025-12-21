@@ -27,3 +27,27 @@ msgstr[1] "We found %s places that match your filters"
 msgid "Sin filtro especial"
 msgstr "No special filter"
 
+msgid "Resultados Semánticos"
+msgstr "Semantic Results"
+
+msgid "Características"
+msgstr "Features"
+
+msgid "Características (Opcional)"
+msgstr "Features (Optional)"
+
+msgid "Consulta"
+msgstr "Search"
+
+msgid "Error de conexión"
+msgstr "Connection error"
+
+msgid "Error en búsqueda semántica"
+msgstr "Semantic search error"
+
+msgid "Seleccionar Área"
+msgstr "Select Area"
+
+msgid "Seleccionar Tipo"
+msgstr "Select Type"
+
