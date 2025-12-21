@@ -27,12 +27,15 @@ class PlacesSitemap(Sitemap):
     # Django automáticamente paginará si hay más de 50,000 URLs
 
     def items(self):
+        # Optimizado: solo cargar campos necesarios para evitar timeout
         return Places.objects.filter(
             slug__isnull=False
         ).exclude(
             slug=""
         ).filter(
             Q(rating__gte=2.0) | Q(rating__isnull=True)
+        ).only(
+            'slug', 'es_destacado', 'rating', 'id'
         ).order_by("-es_destacado", "-rating", "-id")
 
     def location(self, obj):
