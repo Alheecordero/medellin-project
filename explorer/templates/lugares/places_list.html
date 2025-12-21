@@ -469,10 +469,12 @@ function generarPlaceCardHtml(lugar, opciones = {}) {
         ? `<img src="${lugar.imagen}" class="place-card__img" alt="${lugar.nombre}" loading="lazy">`
         : `<div class="place-card__placeholder"><i class="bi bi-image"></i></div>`;
     
-    // Rating badge
-    const ratingHtml = typeof lugar.rating === 'number' 
-        ? `<div class="place-card__rating"><i class="bi bi-star-fill"></i><span>${lugar.rating.toFixed(1)}</span></div>` 
-        : '';
+    // Rating badge con número de reviews
+    let ratingHtml = '';
+    if (typeof lugar.rating === 'number') {
+        const reviewsCount = lugar.total_reviews ? `<small class="place-card__reviews">(${lugar.total_reviews})</small>` : '';
+        ratingHtml = `<div class="place-card__rating"><i class="bi bi-star-fill"></i><span>${lugar.rating.toFixed(1)}</span>${reviewsCount}</div>`;
+    }
     
     // Distance badge
     const distanceHtml = distanciaStr 

@@ -126,6 +126,13 @@
   font-size: 0.9em;
 }
 
+.place-card__reviews {
+  font-size: 0.75em;
+  opacity: 0.7;
+  margin-left: 0.15rem;
+  font-weight: var(--font-weight-normal);
+}
+
 /* === DISTANCE BADGE === */
 .place-card__distance {
   position: absolute;

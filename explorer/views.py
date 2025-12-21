@@ -224,7 +224,7 @@ class HomeView(TemplateView):
                     comuna_osm_id=region.osm_id,
                     tiene_fotos=True,
                     show_in_home=True
-                ).prefetch_related('fotos').order_by('-es_destacado', '-rating')[:6]
+                ).prefetch_related('fotos').order_by('-es_destacado', '-weighted_rating', '-rating')[:6]
                 
                 # Si no hay lugares con show_in_home en esta región, usar los mejores
                 if not lugares_region.exists():
@@ -232,7 +232,7 @@ class HomeView(TemplateView):
                         comuna_osm_id=region.osm_id,
                         tiene_fotos=True,
                         rating__gte=4.0
-                    ).prefetch_related('fotos').order_by('-es_destacado', '-rating')[:6]
+                    ).prefetch_related('fotos').order_by('-es_destacado', '-weighted_rating', '-rating')[:6]
                 
                 if lugares_region.exists():
                     # Procesar lugares de la región
@@ -406,7 +406,7 @@ class PlacesListView(ListView):
             tipo__in=TIPOS_EXCLUIDOS
         ).filter(
             Q(rating__gte=2.0) | Q(rating__isnull=True)
-        ).prefetch_related('fotos').order_by('-es_destacado', '-rating', 'nombre')
+        ).prefetch_related('fotos').order_by('-es_destacado', '-weighted_rating', '-rating', 'nombre')
 
         # Búsqueda por nombre
         q = self.request.GET.get("q")
@@ -824,7 +824,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
                 Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura')[:1], to_attr='cached_fotos')
             ).annotate(
                 distancia_metros=GeoDistance('ubicacion', lugar.ubicacion)
-            ).order_by('distancia_metros', '-es_destacado', '-rating')[:limit])
+            ).order_by('distancia_metros', '-es_destacado', '-weighted_rating', '-rating')[:limit])
             
             cache.set(cache_key, result, 3600)
         
@@ -875,7 +875,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
                         to_attr="cached_fotos",
                     )
                 )
-                .order_by("-es_destacado", "-rating")[:limit]
+                .order_by("-es_destacado", "-weighted_rating", "-rating")[:limit]
             )
             
             cache.set(cache_key, result, 3600)  # 1 hora de caché
@@ -900,7 +900,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
                 'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo'
             ).prefetch_related(
                 Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura')[:1], to_attr='cached_fotos')
-            ).order_by('-es_destacado', '-rating')[:limit])
+            ).order_by('-es_destacado', '-weighted_rating', '-rating')[:limit])
             
             cache.set(cache_key, result, 3600)
         
@@ -1141,7 +1141,7 @@ def lugares_por_comuna(request, comuna_slug):
             qs = Places.objects.filter(
                 tiene_fotos=True,
                 comuna_osm_id=region.osm_id
-            ).prefetch_related('fotos').order_by('-es_destacado', '-rating', 'nombre')
+            ).prefetch_related('fotos').order_by('-es_destacado', '-weighted_rating', '-rating', 'nombre')
             
             # Aplicar filtros adicionales de la URL
             q = self.request.GET.get("q")
@@ -1321,7 +1321,7 @@ def filtros_ajax_view(request):
             qs = qs.filter(**{caracteristica: True})
         
         # Obtener resultados con prefetch, priorizando destacados
-        lugares = qs.prefetch_related('fotos').order_by('-es_destacado', '-rating', 'nombre')[:12]
+        lugares = qs.prefetch_related('fotos').order_by('-es_destacado', '-weighted_rating', '-rating', 'nombre')[:12]
         
         # Formatear datos para JSON
         resultados = []
@@ -1458,7 +1458,7 @@ def places_filter_ajax(request):
                 })
         
         # Ordenar
-        qs = qs.prefetch_related('fotos').order_by('-es_destacado', '-rating', 'nombre')
+        qs = qs.prefetch_related('fotos').order_by('-es_destacado', '-weighted_rating', '-rating', 'nombre')
         
         # Paginación
         total_count = qs.count()
@@ -1656,7 +1656,7 @@ def lugares_cercanos_ajax_view(request):
         
         lugares_cercanos = qs.prefetch_related('fotos').annotate(
             distancia_metros=Distance('ubicacion', user_location)
-        ).order_by('distancia_metros', '-es_destacado', '-rating')[:15]
+        ).order_by('distancia_metros', '-es_destacado', '-weighted_rating', '-rating')[:15]
         
         # Formatear resultados
         resultados = []
@@ -1836,6 +1836,7 @@ def lugares_cercanos_ajax(request, slug):
                 'slug': lugar_cercano.slug,
                 'tipo': get_localized_place_type(lugar_cercano),
                 'rating': lugar_cercano.rating,
+                'total_reviews': lugar_cercano.total_reviews or 0,
                 'es_destacado': lugar_cercano.es_destacado,
                 'es_exclusivo': lugar_cercano.es_exclusivo,
                 **get_optimized_image_urls(foto, 'thumb'),
@@ -1870,6 +1871,7 @@ def lugares_similares_ajax(request, slug):
                 'slug': lugar_similar.slug,
                 'tipo': get_localized_place_type(lugar_similar),
                 'rating': lugar_similar.rating,
+                'total_reviews': lugar_similar.total_reviews or 0,
                 'es_destacado': lugar_similar.es_destacado,
                 'es_exclusivo': lugar_similar.es_exclusivo,
                 **get_optimized_image_urls(foto, 'thumb'),
@@ -1903,6 +1905,7 @@ def lugares_comuna_ajax(request, slug):
                 'slug': lugar_comuna_item.slug,
                 'tipo': get_localized_place_type(lugar_comuna_item),
                 'rating': lugar_comuna_item.rating,
+                'total_reviews': lugar_comuna_item.total_reviews or 0,
                 'es_destacado': lugar_comuna_item.es_destacado,
                 'es_exclusivo': lugar_comuna_item.es_exclusivo,
                 **get_optimized_image_urls(foto, 'thumb'),

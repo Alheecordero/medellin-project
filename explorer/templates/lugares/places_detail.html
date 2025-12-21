@@ -98,7 +98,7 @@
               <span class="detail-badge type">{{ lugar|place_type_label }}</span>
             </div>
             <div class="hero-photo-count"><i class="bi bi-images me-1"></i>{{ lugar.get_fotos|length }}</div>
-            {% if lugar.rating %}<div class="hero-rating"><i class="bi bi-star-fill me-1"></i>{{ lugar.rating|floatformat:1 }}</div>{% endif %}
+            {% if lugar.rating %}<div class="hero-rating"><i class="bi bi-star-fill me-1"></i>{{ lugar.rating|floatformat:1 }}{% if lugar.total_reviews %}<small class="hero-reviews">({{ lugar.total_reviews }})</small>{% endif %}</div>{% endif %}
           </div>
           {% endif %}
         </div>
@@ -416,10 +416,12 @@ document.addEventListener("DOMContentLoaded", () => {
       ? `<img src="${p.imagen}" class="place-card__img" alt="${p.nombre}" loading="lazy">` 
       : `<div class="place-card__placeholder"><i class="bi bi-image"></i></div>`;
     
-    // Rating badge
-    const ratingHtml = typeof p.rating === 'number' 
-      ? `<div class="place-card__rating"><i class="bi bi-star-fill"></i><span>${p.rating.toFixed(1)}</span></div>` 
-      : '';
+    // Rating badge con número de reviews
+    let ratingHtml = '';
+    if (typeof p.rating === 'number') {
+      const reviewsCount = p.total_reviews ? `<small class="place-card__reviews">(${p.total_reviews})</small>` : '';
+      ratingHtml = `<div class="place-card__rating"><i class="bi bi-star-fill"></i><span>${p.rating.toFixed(1)}</span>${reviewsCount}</div>`;
+    }
     
     // Distancia badge
     const d = dist(p.distancia_km || p.distancia);
@@ -672,6 +674,15 @@ document.addEventListener("DOMContentLoaded", () => {
   font-weight: 700;
   z-index: 5;
   box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.hero-reviews {
+  font-size: 0.75em;
+  font-weight: 500;
+  opacity: 0.8;
 }
 
 /* HEADER: Título y Meta */

@@ -28,11 +28,14 @@
         </div>
       {% endif %}
       
-      {# Rating Badge #}
+      {# Rating Badge con número de reviews #}
       {% if lugar.rating %}
         <div class="place-card__rating">
           <i class="bi bi-star-fill"></i>
           <span>{{ lugar.rating|floatformat:1 }}</span>
+          {% if lugar.total_reviews %}
+            <small class="place-card__reviews">({{ lugar.total_reviews }})</small>
+          {% endif %}
         </div>
       {% endif %}
       

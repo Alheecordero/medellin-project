@@ -162,6 +162,12 @@ class Places(models.Model):
 
     rating = models.FloatField(null=True, blank=True)
     total_reviews = models.IntegerField(null=True, blank=True)
+    weighted_rating = models.FloatField(
+        null=True, 
+        blank=True, 
+        db_index=True,
+        help_text="Rating ponderado usando Bayesian Average (considera cantidad de reviews)"
+    )
 
     # Campos de organización y filtrado
     tiene_fotos = models.BooleanField(default=False, help_text="Indica si el lugar tiene fotos asociadas")
@@ -248,7 +254,7 @@ class Places(models.Model):
     objects = PlacesManager()
 
     class Meta:
-        ordering = ["-rating", "nombre"]
+        ordering = ["-weighted_rating", "-rating", "nombre"]
         indexes = [
             Index(fields=["nombre"], name="nombre_idx"),
             Index(fields=["tipo"], name="tipo_idx"),
