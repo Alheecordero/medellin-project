@@ -1,21 +1,27 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "ViveMedellín - Bares, Restaurantes y Vida Nocturna",
+  "short_name": "ViveMedellín",
+  "description": "Descubre los mejores bares, restaurantes y lugares de Medellín",
   "icons": [
     {
-      "src": "/web-app-manifest-192x192.png",
+      "src": "/static/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/web-app-manifest-512x512.png",
+      "src": "/static/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  "start_url": "/",
+  "scope": "/",
+  "theme_color": "#11998e",
+  "background_color": "#0a1628",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "categories": ["food", "lifestyle", "travel"]
 }

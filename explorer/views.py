@@ -53,6 +53,76 @@ TIPOS_EXCLUIDOS = [
 
 
 # ────────────────────────────────────────────────────────────────────────
+# Rate Limiting para Protección contra Bots
+# ────────────────────────────────────────────────────────────────────────
+
+def get_client_ip(request):
+    """Obtiene la IP real del cliente (incluso tras proxy)."""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0].strip()
+    else:
+        ip = request.META.get('REMOTE_ADDR', '127.0.0.1')
+    return ip
+
+
+def rate_limit(requests_per_minute=30, key_prefix='rl'):
+    """
+    Decorador de rate limiting basado en cache.
+    
+    Args:
+        requests_per_minute: Número máximo de requests por minuto
+        key_prefix: Prefijo para la clave de cache
+    """
+    def decorator(view_func):
+        def wrapper(request, *args, **kwargs):
+            ip = get_client_ip(request)
+            cache_key = f"{key_prefix}:{ip}"
+            
+            # Obtener contador actual
+            current = cache.get(cache_key, 0)
+            
+            if current >= requests_per_minute:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Rate limit exceeded. Please try again later.',
+                    'retry_after': 60
+                }, status=429)
+            
+            # Incrementar contador
+            cache.set(cache_key, current + 1, timeout=60)
+            
+            return view_func(request, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def is_suspicious_request(request):
+    """
+    Detecta requests sospechosos de bots maliciosos.
+    Retorna True si la request parece sospechosa.
+    """
+    user_agent = request.META.get('HTTP_USER_AGENT', '').lower()
+    
+    # Bots conocidos maliciosos
+    bad_bots = [
+        'scrapy', 'python-requests', 'curl/', 'wget/', 
+        'sqlmap', 'nikto', 'nmap', 'masscan',
+        'zgrab', 'gobuster', 'dirbuster'
+    ]
+    
+    for bot in bad_bots:
+        if bot in user_agent:
+            return True
+    
+    # Sin User-Agent
+    if not user_agent or len(user_agent) < 10:
+        return True
+    
+    return False
+
+
+# ────────────────────────────────────────────────────────────────────────
 # Helpers para Imágenes Optimizadas
 # ────────────────────────────────────────────────────────────────────────
 
@@ -268,7 +338,7 @@ class HomeView(TemplateView):
         """Obtiene datos para los filtros del home."""
         # 1. ÁREAS - Dropdown debe mostrar listas completas; chips pueden ser una selección.
         from django.db.models import Case, When, IntegerField
-
+        
         regiones_con_lugares = Places.objects.filter(tiene_fotos=True).values_list('comuna_osm_id', flat=True).distinct()
 
         regiones_qs = RegionOSM.objects.filter(
@@ -1217,7 +1287,7 @@ def lugares_por_comuna(request, comuna_slug):
             for filtro, nombre in filtros_especiales_map.items():
                 if self.request.GET.get(filtro) == 'true':
                     filtros_activos.append(nombre)
-            
+
             # Obtener label traducido del tipo actual (para tipos no predefinidos)
             tipo_label_traducido = None
             if tipo_actual:
@@ -1232,13 +1302,13 @@ def lugares_por_comuna(request, comuna_slug):
             filtros_text = _(' y ').join(filtros_activos[:2]) if filtros_activos else ''
             
             if busqueda_actual:
-                titulo_pagina = _('Resultados para "%(query)s" en %(comuna)s') % {
-                    'query': busqueda_actual,
-                    'comuna': region.name,
-                }
-                descripcion_pagina = _('Lugares que coinciden con tu búsqueda en %(comuna)s') % {
-                    'comuna': region.name,
-                }
+                    titulo_pagina = _('Resultados para "%(query)s" en %(comuna)s') % {
+                        'query': busqueda_actual,
+                        'comuna': region.name,
+                    }
+                    descripcion_pagina = _('Lugares que coinciden con tu búsqueda en %(comuna)s') % {
+                        'comuna': region.name,
+                    }
             elif tipo_actual:
                 if tipo_actual in tipos_info:
                     # Tipo predefinido - usar título + " en {comuna}"
@@ -1372,6 +1442,7 @@ def filtros_ajax_view(request):
 
 
 @require_GET
+@rate_limit(requests_per_minute=60, key_prefix='places_filter')
 def places_filter_ajax(request):
     """
     API AJAX profesional para filtrado dinámico en places_list.
@@ -1547,6 +1618,7 @@ def places_filter_ajax(request):
 
 
 @require_GET
+@rate_limit(requests_per_minute=30, key_prefix='near_me')
 def lugares_cercanos_ajax_view(request):
     """API AJAX para lugares cercanos basados en geolocalización."""
     from django.http import JsonResponse
@@ -1924,6 +1996,7 @@ def _build_genai_client():
 	return ('genai', genai_vertex)
 
 @require_GET
+@rate_limit(requests_per_minute=20, key_prefix='semantic')
 def semantic_search_ajax(request):
 	from django.http import JsonResponse
 	from google import genai as vertex_genai
@@ -2195,6 +2268,7 @@ def _translate_with_mymemory(text: str, target: str) -> str | None:
 
 
 @require_POST
+@rate_limit(requests_per_minute=15, key_prefix='translate')
 def translate_review_api(request):
     """Proxy seguro para traducir texto de reseñas con caché y rate limit.
 

@@ -313,9 +313,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .place-card--compact .place-card__badges {
@@ -687,7 +687,7 @@
 
 .btn-primary-gradient {
   background: var(--gradient-primary);
-  border: none;
+    border: none;
   color: var(--color-white);
   padding: var(--btn-padding-y) var(--btn-padding-x);
   border-radius: var(--btn-radius);
@@ -697,7 +697,7 @@
 
 .btn-primary-gradient:hover {
   background: var(--gradient-primary-hover);
-  transform: translateY(-2px);
+    transform: translateY(-2px);
   box-shadow: var(--shadow-primary-md);
   color: var(--color-white);
 }
@@ -756,7 +756,7 @@
   padding: var(--space-3) var(--space-6);
   border-radius: var(--radius-full);
   transition: var(--transition-all);
-  box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -793,7 +793,7 @@
   min-width: 300px;
   max-width: 380px;
   background: var(--color-white);
-  border: none;
+    border: none;
   box-shadow: var(--shadow-xl);
   max-height: 400px;
   overflow-y: auto;
@@ -917,8 +917,8 @@
   box-shadow: var(--shadow-md);
   transition: var(--transition-base);
   text-decoration: none;
-}
-
+    }
+    
 .home-lang-switch .btn-lang-home.active,
 .btn-lang-home.active {
   background: var(--gradient-primary);
@@ -950,7 +950,7 @@
   background: var(--gradient-primary);
   border-color: transparent;
   color: var(--color-dark);
-}
+    }
 
 .btn-lang:hover:not(.active) {
   background: var(--white-15);

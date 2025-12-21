@@ -98,7 +98,7 @@ fi
 echo -e "${GREEN}Enviando a GitHub...${NC}"
 if ! git push origin "$BRANCH"; then
     echo -e "${RED}ERROR: No se pudo enviar a GitHub${NC}"
-    exit 1
+	exit 1
 fi
 
 LOCAL_COMMIT=$(git rev-parse --short HEAD)
@@ -139,7 +139,7 @@ ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc '
 if [ $? -ne 0 ]; then
     echo -e "${RED}ERROR: La configuración del servidor no es válida${NC}"
     echo -e "${YELLOW}Corrige el .env del servidor antes de continuar${NC}"
-    exit 1
+	exit 1
 fi
 
 # ═══════════════════════════════════════════════════════════════════

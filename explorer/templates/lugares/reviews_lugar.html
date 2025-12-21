@@ -42,18 +42,18 @@
     <!-- Navegación Superior -->
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
       <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="btn btn-gradient-green rounded-pill">
-        <i class="bi bi-arrow-left me-1"></i>{% trans "Volver al lugar" %}
-      </a>
-      <div class="home-lang-switch d-flex flex-wrap gap-2">
+            <i class="bi bi-arrow-left me-1"></i>{% trans "Volver al lugar" %}
+          </a>
+        <div class="home-lang-switch d-flex flex-wrap gap-2">
         <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">{% trans "Inicio" %}</a>
-        {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
           <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">{% trans "Nosotros" %}</a>
-        {% else %}
+          {% else %}
           <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">{% trans "Nosotros" %}</a>
-        {% endif %}
+          {% endif %}
         {% include 'components/lang_switcher.html' %}
+        </div>
       </div>
-    </div>
 
     <!-- Header Compacto -->
     <div class="reviews-header">
@@ -360,7 +360,7 @@
   font-size: 0.8125rem;
   font-weight: 700;
   margin-bottom: 0.625rem;
-}
+  }
 
 .selection-note {
   color: rgba(255, 255, 255, 0.75);
@@ -611,12 +611,12 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
+  }
 
-.review-item {
+  .review-item {
   animation: fadeIn 0.3s ease-in;
-  width: 100%;
-}
+    width: 100%;
+  }
 
 /* Responsive Compacto */
 @media (max-width: 991px) {
@@ -653,11 +653,11 @@
     padding: 0.875rem 1rem;
     margin-bottom: 1.25rem;
   }
-
+  
   .reviews-track {
     gap: 0.875rem;
   }
-
+  
   .review-card {
     padding: 1.25rem;
     border-radius: 18px;
@@ -739,7 +739,7 @@
     margin-bottom: 0.875rem;
     padding-bottom: 0.75rem;
   }
-
+  
   .reviewer-avatar,
   .reviewer-avatar-placeholder {
     width: 40px;

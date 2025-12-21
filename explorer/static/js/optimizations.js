@@ -4,32 +4,32 @@
 $(document).ready(function () {
   // Guard: solo inicializar autocomplete si jQuery UI está disponible
   if (typeof $.fn.autocomplete === 'function') {
-    $("#search-places").autocomplete({
-      source: function (request, response) {
-        $.ajax({
+  $("#search-places").autocomplete({
+    source: function (request, response) {
+      $.ajax({
           url: "/api/lugares/autocompletar/",
-          dataType: "json",
-          data: { term: request.term },
-          success: function (data) {
-            response(
-              $.map(data, function (item) {
-                return {
-                  label: item.label,
-                  value: item.label,
-                  slug: item.slug,
-                };
-              })
-            );
-          },
-        });
-      },
-      minLength: 2,
-      select: function (event, ui) {
-        if (ui.item.slug) {
-          window.location.href = "/lugar/" + ui.item.slug + "/";
-        }
-      },
-    });
+        dataType: "json",
+        data: { term: request.term },
+        success: function (data) {
+          response(
+            $.map(data, function (item) {
+              return {
+                label: item.label,
+                value: item.label,
+                slug: item.slug,
+              };
+            })
+          );
+        },
+      });
+    },
+    minLength: 2,
+    select: function (event, ui) {
+      if (ui.item.slug) {
+        window.location.href = "/lugar/" + ui.item.slug + "/";
+      }
+    },
+  });
   }
 
   // Smooth scroll for anchor links

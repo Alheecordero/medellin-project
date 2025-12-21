@@ -48,27 +48,27 @@
         
         <!-- Navegación Interior -->
         <div class="detail-nav">
-          <a href="{% url 'explorer:lugares_list' %}" class="btn btn-back">
-            <i class="bi bi-arrow-left me-2"></i>{% trans "Volver" %}
-          </a>
+        <a href="{% url 'explorer:lugares_list' %}" class="btn btn-back">
+          <i class="bi bi-arrow-left me-2"></i>{% trans "Volver" %}
+        </a>
           <div class="nav-links">
-            <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">{% trans "Inicio" %}</a>
-            {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+          <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">{% trans "Inicio" %}</a>
+          {% if LANGUAGE_CODE|slice:":2" == 'en' %}
               <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">{% trans "Nosotros" %}</a>
-            {% else %}
-              <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">{% trans "Nosotros" %}</a>
-            {% endif %}
+          {% else %}
+            <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">{% trans "Nosotros" %}</a>
+          {% endif %}
             {% include 'components/lang_switcher.html' %}
-          </div>
         </div>
-        
+      </div>
+
         <!-- HERO: Galería Grande + Info Superpuesta -->
         <div class="detail-hero">
           {% if lugar.get_fotos %}
           <div id="carouselFotos" class="carousel slide hero-carousel" data-bs-ride="carousel">
-            <div class="carousel-inner">
-              {% for foto in lugar.get_fotos %}
-              <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <div class="carousel-inner">
+                {% for foto in lugar.get_fotos %}
+                  <div class="carousel-item {% if forloop.first %}active{% endif %}">
                 <img src="{{ foto.imagen_mediana|default:foto.imagen }}" 
                      {% if foto.imagen_mediana %}
                      srcset="{{ foto.imagen_mediana }} 800w, {{ foto.imagen }} 1600w"
@@ -80,23 +80,23 @@
                      data-bs-target="#imagenModal" 
                      data-img-src="{{ foto.imagen }}"
                      {% if forloop.first %}loading="eager"{% else %}loading="lazy"{% endif %}>
+                  </div>
+                {% endfor %}
               </div>
-              {% endfor %}
-            </div>
-            {% if lugar.get_fotos|length > 1 %}
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselFotos" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselFotos" data-bs-slide="next">
-              <span class="carousel-control-next-icon"></span>
-            </button>
-            {% endif %}
+              {% if lugar.get_fotos|length > 1 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselFotos" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselFotos" data-bs-slide="next">
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+              {% endif %}
             <div class="hero-overlay"></div>
             <div class="hero-badges">
               {% if lugar.es_destacado %}<span class="detail-badge featured"><i class="bi bi-star-fill me-1"></i>{% trans "Destacado" %}</span>{% endif %}
               {% if lugar.es_exclusivo %}<span class="detail-badge exclusive"><i class="bi bi-gem me-1"></i>{% trans "Exclusivo" %}</span>{% endif %}
               <span class="detail-badge type">{{ lugar|place_type_label }}</span>
-            </div>
+              </div>
             <div class="hero-photo-count"><i class="bi bi-images me-1"></i>{{ lugar.get_fotos|length }}</div>
             {% if lugar.rating %}<div class="hero-rating"><i class="bi bi-star-fill me-1"></i>{{ lugar.rating|floatformat:1 }}{% if lugar.total_reviews %}<small class="hero-reviews">({{ lugar.total_reviews }})</small>{% endif %}</div>{% endif %}
           </div>
@@ -154,8 +154,8 @@
               <h3 class="block-title"><i class="bi bi-map-fill me-2"></i>{% trans "Ubicación" %}</h3>
               <div id="mapa" class="map-container"></div>
               {% if lugar.direccion %}<div class="map-address"><i class="bi bi-geo-alt-fill me-2"></i>{{ lugar.direccion }}</div>{% endif %}
+              </div>
             </div>
-          </div>
 
           <!-- SIDEBAR -->
           <div class="detail-sidebar">
@@ -173,36 +173,36 @@
                 <i class="bi bi-globe2"></i>
                 <span>{% trans "Visitar Web" %}</span>
               </a>
-              {% endif %}
+            {% endif %}
             </div>
 
             {% if horarios or lugar.horario_texto %}
             <div class="sidebar-block">
               <h4 class="sidebar-title"><i class="bi bi-clock me-2"></i>{% trans "Horarios" %}</h4>
               <div class="schedule-list" id="scheduleList">
-                {% if horarios %}
-                  {% for h in horarios %}
-                    {% with linea=h.dia|add:": "|add:h.horario %}
-                    <div class="schedule-row" data-linea="{{ linea }}">
+            {% if horarios %}
+              {% for h in horarios %}
+                {% with linea=h.dia|add:": "|add:h.horario %}
+                  <div class="schedule-row" data-linea="{{ linea }}">
                       <span class="day-text">{% trans "Cargando..." %}</span>
                       <span class="hours-text">...</span>
-                    </div>
-                    {% endwith %}
-                  {% endfor %}
-                {% elif lugar.horario_texto %}
-                  {% for linea in lugar.horario_texto.splitlines %}
-                    {% if linea and linea != 'None' and linea.strip %}
-                    <div class="schedule-row" data-linea="{{ linea }}">
+                  </div>
+                {% endwith %}
+              {% endfor %}
+            {% elif lugar.horario_texto %}
+              {% for linea in lugar.horario_texto.splitlines %}
+                {% if linea and linea != 'None' and linea.strip %}
+                  <div class="schedule-row" data-linea="{{ linea }}">
                       <span class="day-text">{% trans "Cargando..." %}</span>
                       <span class="hours-text">...</span>
-                    </div>
-                    {% endif %}
-                  {% endfor %}
+                  </div>
                 {% endif %}
-              </div>
-            </div>
+              {% endfor %}
             {% endif %}
-
+          </div>
+        </div>
+            {% endif %}
+            
             <!-- Acciones -->
             <div class="sidebar-block actions-block">
               {% if lugar.reviews %}
@@ -220,9 +220,9 @@
               <!-- Botones de compartir -->
               {% include 'components/share_buttons.html' with title=lugar.nombre url=request.build_absolute_uri %}
             </div>
-
+      
           </div>
-        </div>
+    </div>
 
       </div>
 
@@ -233,39 +233,39 @@
           <div class="related-tabs">
             <button class="tab-btn active" data-target="cercanos">
               <i class="bi bi-geo-alt me-1"></i>{% trans "Cercanos" %}
-            </button>
+        </button>
             <button class="tab-btn" data-target="similares">
               <i class="bi bi-collection me-1"></i>{% trans "Similares" %}
-            </button>
+        </button>
             <button class="tab-btn" data-target="zona">
               <i class="bi bi-map me-1"></i>{% trans "En" %} <span id="zona-name">{{ lugar.comuna.name|default:_("la zona") }}</span>
-            </button>
-          </div>
-        </div>
+        </button>
+      </div>
+    </div>
 
         <!-- Contenedores -->
         <div class="related-panel active" id="panel-cercanos">
           <div class="related-grid" id="lugares-cercanos-container">
             {% for i in "123" %}<div class="skeleton-card"></div>{% endfor %}
+    </div>
           </div>
-        </div>
 
         <div class="related-panel" id="panel-similares">
           <div class="related-grid" id="lugares-similares-container">
             {% for i in "123" %}<div class="skeleton-card"></div>{% endfor %}
-          </div>
         </div>
+      </div>
 
         <div class="related-panel" id="panel-zona">
           <div class="related-grid" id="lugares-zona-container">
             {% for i in "123" %}<div class="skeleton-card"></div>{% endfor %}
+    </div>
           </div>
         </div>
-      </div>
 
     </div>
-  </div>
-</section>
+    </div>
+  </section>
 
 <!-- Modal Galería -->
 <div class="modal fade" id="imagenModal" tabindex="-1" aria-hidden="true">
@@ -290,22 +290,48 @@
 <script>
 const gettext = window.gettext || (s => s);
 
-{% if lugar.ubicacion %}
-const lat = {{ lugar.ubicacion.y|unlocalize }};
-const lng = {{ lugar.ubicacion.x|unlocalize }};
+  {% if lugar.ubicacion %}
+  const lat = {{ lugar.ubicacion.y|unlocalize }};
+  const lng = {{ lugar.ubicacion.x|unlocalize }};
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Mapa
-  const map = L.map("mapa", { center: [lat, lng], zoom: 16, scrollWheelZoom: false });
+  // Mapa - zoom 14 para vista más amplia del contexto
+  const map = L.map("mapa", { center: [lat, lng], zoom: 14, scrollWheelZoom: false });
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     attribution: '© CARTO | vivemedellin.co', maxZoom: 19
   }).addTo(map);
+  
   const icon = L.divIcon({
     className: 'custom-marker',
-    html: '<div style="width:36px;height:36px;background:linear-gradient(135deg,#22c55e,#14b8a6);border-radius:50%;border:3px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;"><i class="bi bi-geo-alt-fill" style="color:#fff;font-size:16px;"></i></div>',
-    iconSize: [36, 36], iconAnchor: [18, 36]
+    html: '<div style="width:40px;height:40px;background:linear-gradient(135deg,#22c55e,#14b8a6);border-radius:50%;border:3px solid #fff;box-shadow:0 4px 15px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="bi bi-geo-alt-fill" style="color:#fff;font-size:18px;"></i></div>',
+    iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40]
   });
-  L.marker([lat, lng], {icon}).addTo(map);
+  
+  // Info del lugar para popup
+  const nombreLugar = '{{ lugar.nombre|escapejs }}';
+  const direccionLugar = '{{ lugar.direccion|default:""|escapejs }}';
+  const tipoLugar = '{{ lugar|place_type_label|escapejs }}';
+  
+  // Popup con info y opciones de navegación
+  const popupContent = `
+    <div class="map-popup">
+      <h4 class="popup-title">${nombreLugar}</h4>
+      <p class="popup-type"><i class="bi bi-tag-fill"></i> ${tipoLugar}</p>
+      ${direccionLugar ? `<p class="popup-address"><i class="bi bi-geo-alt"></i> ${direccionLugar}</p>` : ''}
+      <div class="popup-actions">
+        <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" class="popup-btn google">
+          <i class="bi bi-google"></i> Google Maps
+        </a>
+        <a href="https://waze.com/ul?ll=${lat},${lng}&navigate=yes" target="_blank" class="popup-btn waze">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 12c0-4.418-3.582-8-8-8-4.163 0-7.598 3.188-7.973 7.268C3.6 11.093 3 11.982 3 13c0 1.657 1.343 3 3 3h1.25c.414 0 .75.336.75.75 0 1.379 1.121 2.5 2.5 2.5.96 0 1.792-.548 2.206-1.352.128-.245.387-.398.668-.398h1.126c1.287 0 2.5-.556 3.327-1.506.994-1.142 1.173-2.374 1.173-3.494z"/></svg>
+          Waze
+        </a>
+      </div>
+    </div>
+  `;
+  
+  const marker = L.marker([lat, lng], {icon}).addTo(map);
+  marker.bindPopup(popupContent, { className: 'custom-popup', maxWidth: 280 });
 
   // Waze
   const wazeBtn = document.getElementById('waze-btn');
@@ -320,9 +346,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-{% endif %}
+        {% endif %}
 
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
   // Schedule
   const scheduleList = document.getElementById('scheduleList');
   if (scheduleList) {
@@ -376,7 +402,7 @@ function copyToClipboard() {
 
 <script>
 // Progressive Loading
-document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
   const slug = '{{ lugar.slug }}';
   const lang = '{{ LANGUAGE_CODE|default:"es" }}';
   const prefix = lang === 'es' ? '' : '/en';
@@ -451,7 +477,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ${imagenHtml}
             ${ratingHtml}
             ${distanceHtml}
-          </div>
+        </div>
           <div class="place-card__body">
             <h3 class="place-card__title">${p.nombre}</h3>
             <div class="place-card__badges">${badgesHtml}</div>
@@ -562,7 +588,7 @@ document.addEventListener("DOMContentLoaded", () => {
 /* Nav links usan .btn-lang-home de components.css */
 
 /* HERO: Galería Grande */
-.detail-hero {
+  .detail-hero {
   position: relative;
   overflow: hidden;
 }
@@ -573,7 +599,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 .hero-carousel .carousel-inner {
   height: 300px;
-}
+  }
 
 .hero-carousel .carousel-item {
   height: 300px;
@@ -836,6 +862,100 @@ document.addEventListener("DOMContentLoaded", () => {
   font-weight: 600;
 }
 
+/* Popup del mapa */
+.custom-popup .leaflet-popup-content-wrapper {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  padding: 0;
+}
+
+.custom-popup .leaflet-popup-content {
+  margin: 0;
+  padding: 0;
+}
+
+.custom-popup .leaflet-popup-tip {
+  background: #fff;
+}
+
+.map-popup {
+  padding: 1rem;
+  min-width: 200px;
+}
+
+.popup-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.5rem;
+  line-height: 1.3;
+}
+
+.popup-type {
+  font-size: 0.8rem;
+  color: #11998e;
+  margin: 0 0 0.375rem;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.popup-address {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0 0 0.75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  line-height: 1.4;
+}
+
+.popup-address i { 
+  color: #22c55e;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.popup-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.popup-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.popup-btn.google {
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+  color: #fff;
+}
+
+.popup-btn.google:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4);
+}
+
+.popup-btn.waze {
+  background: #33ccff;
+  color: #fff;
+}
+
+.popup-btn.waze:hover {
+  background: #29b8e8;
+  transform: translateY(-1px);
+}
+
 @media (min-width: 768px) {
   .map-container { height: 320px; }
 }
@@ -903,7 +1023,7 @@ document.addEventListener("DOMContentLoaded", () => {
   font-size: 1rem;
   width: 20px;
   text-align: center;
-}
+  }
 
 .contact-item span {
   font-size: 0.85rem;
@@ -1027,33 +1147,33 @@ document.addEventListener("DOMContentLoaded", () => {
   padding: 1.5rem;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
+  }
+  
 @media (min-width: 768px) {
   .related-main-card { padding: 2rem; }
-}
-
-.related-header {
-  margin-bottom: 1.5rem;
+  }
+  
+  .related-header {
+    margin-bottom: 1.5rem;
   text-align: center;
-}
-
-.related-title {
+  }
+  
+  .related-title {
   font-size: 1.5rem;
   font-weight: 800;
   color: #fff;
-  margin-bottom: 1rem;
-}
-
-.related-tabs {
+    margin-bottom: 1rem;
+  }
+  
+  .related-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+    gap: 0.5rem;
   justify-content: center;
-}
-
-.tab-btn {
-  padding: 0.5rem 1rem;
+  }
+  
+  .tab-btn {
+    padding: 0.5rem 1rem;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 999px;
@@ -1174,10 +1294,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 .hero-carousel .carousel-control-prev:hover,
 .hero-carousel .carousel-control-next:hover {
-  opacity: 1;
+    opacity: 1;
   background: rgba(0, 0, 0, 0.7);
-}
-
+  }
+  
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
   width: 18px;
@@ -1185,7 +1305,7 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 
 /* Custom Marker */
-.custom-marker {
+.custom-marker { 
   background: none !important;
   border: none !important;
 }
