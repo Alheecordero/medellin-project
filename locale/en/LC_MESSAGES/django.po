@@ -2762,3 +2762,13 @@ msgstr "restaurants"
 
 msgid "vida nocturna"
 msgstr "nightlife"
+
+#: explorer/templates/semantic_results.html (SEO)
+msgid "Encuentra los mejores lugares en Medellín para \"%(query)s\". Bares, restaurantes y más con ratings reales."
+msgstr "Find the best places in Medellín for \"%(query)s\". Bars, restaurants and more with real ratings."
+
+msgid "Resultados de búsqueda inteligente en Medellín. Descubre lugares únicos basados en tu consulta."
+msgstr "Smart search results in Medellín. Discover unique places based on your query."
+
+msgid "búsqueda Medellín, lugares Medellín, bares restaurantes Medellín"
+msgstr "search Medellín, places Medellín, bars restaurants Medellín"

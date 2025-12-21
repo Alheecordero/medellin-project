@@ -12,6 +12,18 @@
   {% endif %}
 {% endblock %}
 
+{% block meta_description %}
+  {% if query %}
+    {% blocktrans %}Encuentra los mejores lugares en Medellín para "{{ query }}". Bares, restaurantes y más con ratings reales.{% endblocktrans %}
+  {% else %}
+    {% blocktrans %}Resultados de búsqueda inteligente en Medellín. Descubre lugares únicos basados en tu consulta.{% endblocktrans %}
+  {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+  {% if query %}{{ query }}, {% endif %}{% trans "búsqueda Medellín, lugares Medellín, bares restaurantes Medellín" %}
+{% endblock %}
+
 {% block content %}
 <section class="places-section">
   <div class="container py-5">
