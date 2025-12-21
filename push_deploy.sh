@@ -201,8 +201,9 @@ ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc '
   fi
   
   if $DO_STATIC; then
-    echo \"Recolectando archivos estáticos...\"
-    python manage.py collectstatic --noinput
+    echo \"Limpiando y recolectando archivos estáticos...\"
+    rm -rf staticfiles/*
+    python manage.py collectstatic --noinput --clear
   fi
 '"
 
