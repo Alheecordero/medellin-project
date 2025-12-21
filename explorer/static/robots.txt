@@ -33,5 +33,4 @@ Crawl-delay: 1
 
 # Sitemaps
 Sitemap: https://vivemedellin.co/sitemap.xml
-Sitemap: https://vivemedellin.co/sitemap-images.xml
 
