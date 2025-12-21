@@ -2390,8 +2390,6 @@ msgstr "Discover the best %(tipo)s in the city"
 #~ msgid "Servicios y Características"
 #~ msgstr "Services and Features"
 
-#~ msgid "Compartir en WhatsApp"
-#~ msgstr "Share on WhatsApp"
 
 #~ msgid "Área"
 #~ msgstr "Area"
@@ -2743,7 +2741,3 @@ msgstr "Share on Twitter"
 #: explorer/templates/components/share_buttons.html:44
 msgid "Compartir en Telegram"
 msgstr "Share on Telegram"
-
-#: explorer/templates/components/share_buttons.html:53
-msgid "Copiar enlace"
-msgstr "Copy link"
