@@ -33,8 +33,10 @@ urlpatterns = [
     # utilidades de i18n
     path('i18n/', include('django.conf.urls.i18n')),
     
-    # Sitemaps
-    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, 
+    # Sitemaps - usando índice paginado para mejor rendimiento con muchas URLs
+    path('sitemap.xml', sitemap_index, {'sitemaps': sitemaps},
+         name='django.contrib.sitemaps.views.index'),
+    path('sitemap-<section>.xml', sitemap, {'sitemaps': sitemaps},
          name='django.contrib.sitemaps.views.sitemap'),
 
     # Redirects antiguos SOLO para inglés (compatibilidad con URLs viejas)

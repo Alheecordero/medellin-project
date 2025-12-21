@@ -19,12 +19,12 @@ class StaticViewSitemap(Sitemap):
 class PlacesSitemap(Sitemap):
     """Sitemap para lugares individuales con alta prioridad para lugares destacados.
     
-    Django automáticamente crea múltiples sitemaps si hay más de 50,000 URLs.
+    Django automáticamente pagina si hay más URLs que el límite.
     El orden prioriza lugares destacados y con mejor rating primero.
     """
     changefreq = "weekly"
     priority = 0.8
-    # Django automáticamente paginará si hay más de 50,000 URLs
+    limit = 5000  # Límite por página de sitemap para mejor rendimiento
 
     def items(self):
         # Optimizado: solo cargar campos necesarios para evitar timeout
