@@ -79,6 +79,7 @@
                      data-bs-toggle="modal" 
                      data-bs-target="#imagenModal" 
                      data-img-src="{{ foto.imagen }}"
+                     onerror="this.onerror=null; this.srcset=''; this.src='{{ foto.imagen }}';"
                      {% if forloop.first %}loading="eager"{% else %}loading="lazy"{% endif %}>
                   </div>
                 {% endfor %}

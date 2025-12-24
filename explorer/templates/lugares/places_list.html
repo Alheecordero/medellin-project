@@ -458,9 +458,10 @@ function generarPlaceCardHtml(lugar, opciones = {}) {
     // URL
     const url = lugar.url || `/lugar/${lugar.slug}/`;
     
-    // Imagen
+    // Imagen con fallback a original si falla
+    const imagenFull = lugar.imagen_full || lugar.imagen;
     const imagenHtml = lugar.imagen 
-        ? `<img src="${lugar.imagen}" class="place-card__img" alt="${lugar.nombre}" loading="lazy">`
+        ? `<img src="${lugar.imagen}" class="place-card__img" alt="${lugar.nombre}" loading="lazy" onerror="this.onerror=null; this.src='${imagenFull}';">`
         : `<div class="place-card__placeholder"><i class="bi bi-image"></i></div>`;
     
     // Rating badge con número de reviews

@@ -21,6 +21,7 @@
           class="place-card__img" 
           alt="{{ lugar.nombre }}"
           loading="lazy"
+          onerror="this.onerror=null; this.srcset=''; this.src='{{ foto.imagen }}';"
         >
       {% else %}
         <div class="place-card__placeholder">
