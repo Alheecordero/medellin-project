@@ -339,15 +339,39 @@ try:
         GS_BUCKET_NAME = 'vivemedellin-bucket'
         GS_CREDENTIALS = service_account.Credentials.from_service_account_file(GS_CREDENTIALS_PATH)
         GS_LOCATION = 'us-central1'
-        DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
         GS_CUSTOM_ENDPOINT = f'https://storage.googleapis.com/{GS_BUCKET_NAME}'
-        GS_DEFAULT_ACL = 'publicRead'
+        # No usar ACLs por objeto - el bucket usa uniform bucket-level access
+        GS_DEFAULT_ACL = None
+        GS_QUERYSTRING_AUTH = False  # URLs públicas sin firma
+        # Django 5.x usa STORAGES en lugar de DEFAULT_FILE_STORAGE
+        STORAGES = {
+            "default": {
+                "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+            },
+            "staticfiles": {
+                "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+            },
+        }
     else:
         # Usar almacenamiento local si no están las credenciales de GCS
-        DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+        STORAGES = {
+            "default": {
+                "BACKEND": "django.core.files.storage.FileSystemStorage",
+            },
+            "staticfiles": {
+                "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+            },
+        }
 except ImportError:
     # Usar almacenamiento local si no están instaladas las librerías de Google
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 # --- End Google Cloud Storage Configuration ---
 
 

@@ -2795,3 +2795,24 @@ msgstr "Visit Website"
 msgid "Compartir en Telegram"
 msgstr "Share on Telegram"
 
+# ═══════════════════════════════════════════════════════════════════
+# LEGAL PAGES (Privacy Policy, Terms, Contact)
+# Required for Google AdSense compliance
+# ═══════════════════════════════════════════════════════════════════
+
+#: explorer/templates/footer.html
+msgid "Política de Privacidad"
+msgstr "Privacy Policy"
+
+#: explorer/templates/footer.html
+msgid "Términos y Condiciones"
+msgstr "Terms and Conditions"
+
+#: explorer/templates/footer.html
+msgid "Contacto"
+msgstr "Contact"
+
+#: explorer/templates/legal/privacy_policy.html
+msgid "Volver al inicio"
+msgstr "Back to home"
+

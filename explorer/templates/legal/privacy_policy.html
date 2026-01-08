@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block navbar %}{% endblock %}
+
+{% block title %}Política de Privacidad | ViveMedellín{% endblock %}
+
+{% block meta_description %}Política de privacidad de ViveMedellín. Información sobre cómo recopilamos, usamos y protegemos tus datos personales, incluyendo el uso de cookies y publicidad de Google AdSense.{% endblock %}
+
+{% block content %}
+{% get_current_language as LANGUAGE_CODE %}
+<section class="legal-section">
+  <div class="container py-5">
+    <div class="legal-main-card mx-auto">
+      
+      <!-- Navegación superior -->
+      <nav class="d-flex justify-content-end mb-4 home-lang-switch gap-2 flex-wrap" aria-label="Navegación principal">
+        <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">Inicio</a>
+        <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">Nosotros</a>
+        {% include 'components/lang_switcher.html' %}
+      </nav>
+
+      <!-- Contenido -->
+      <header class="legal-hero text-center mb-5">
+        <div class="legal-badge mb-3">
+          <i class="bi bi-shield-lock me-2"></i>
+          Documento Legal
+        </div>
+        <h1 class="legal-title mb-3">Política de Privacidad</h1>
+        <p class="legal-subtitle">
+          Última actualización: {% now "j \d\e F \d\e Y" %}
+        </p>
+      </header>
+
+      <article class="legal-content">
+        
+        <section class="legal-block">
+          <h2><i class="bi bi-info-circle me-2"></i>1. Información General</h2>
+          <p>
+            En <strong>ViveMedellín</strong> (en adelante, "el sitio", "nosotros" o "nuestro servicio") nos comprometemos a proteger tu privacidad. Este documento explica qué información recopilamos, cómo la utilizamos y cuáles son tus derechos respecto a ella.
+          </p>
+          <p>
+            ViveMedellín es un directorio de lugares de interés en Medellín y sus alrededores, incluyendo restaurantes, bares, cafés y otros establecimientos. Al usar nuestro sitio, aceptas las prácticas descritas en esta política.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-collection me-2"></i>2. Información que Recopilamos</h2>
+          
+          <h3>2.1 Información proporcionada voluntariamente</h3>
+          <p>Cuando utilizas nuestro formulario de contacto, puedes proporcionarnos:</p>
+          <ul>
+            <li>Tu nombre</li>
+            <li>Dirección de correo electrónico</li>
+            <li>Mensaje o consulta</li>
+          </ul>
+
+          <h3>2.2 Información recopilada automáticamente</h3>
+          <p>Al navegar por el sitio, recopilamos automáticamente cierta información técnica:</p>
+          <ul>
+            <li>Dirección IP (anonimizada cuando es posible)</li>
+            <li>Tipo de navegador y dispositivo</li>
+            <li>Páginas visitadas y tiempo de permanencia</li>
+            <li>Ubicación aproximada (si otorgas permiso para la función "Cerca de mí")</li>
+            <li>Idioma preferido del navegador</li>
+          </ul>
+
+          <h3>2.3 Datos de geolocalización</h3>
+          <p>
+            Nuestra función "Cerca de mí" utiliza tu ubicación <strong>únicamente cuando tú lo autorizas expresamente</strong> en tu navegador. Esta información se usa exclusivamente para mostrarte lugares cercanos y <strong>no se almacena en nuestros servidores</strong>.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-gear me-2"></i>3. Cómo Usamos tu Información</h2>
+          <p>Utilizamos la información recopilada para:</p>
+          <ul>
+            <li>Responder tus consultas a través del formulario de contacto</li>
+            <li>Mejorar la experiencia de navegación en el sitio</li>
+            <li>Analizar el uso del sitio mediante herramientas como Google Analytics</li>
+            <li>Mostrarte publicidad relevante a través de Google AdSense</li>
+            <li>Proteger el sitio contra fraude y uso indebido</li>
+            <li>Cumplir con obligaciones legales</li>
+          </ul>
+        </section>
+
+        <section class="legal-block highlight-block">
+          <h2><i class="bi bi-cookie me-2"></i>4. Cookies y Tecnologías Similares</h2>
+          <p>
+            ViveMedellín utiliza cookies propias y de terceros para mejorar tu experiencia y mostrar publicidad personalizada.
+          </p>
+
+          <h3>4.1 ¿Qué son las cookies?</h3>
+          <p>
+            Las cookies son pequeños archivos de texto que los sitios web almacenan en tu dispositivo para recordar tus preferencias y mejorar tu navegación.
+          </p>
+
+          <h3>4.2 Tipos de cookies que utilizamos</h3>
+          
+          <div class="cookie-table">
+            <div class="cookie-row">
+              <div class="cookie-type">
+                <strong>Cookies esenciales</strong>
+              </div>
+              <div class="cookie-desc">
+                Necesarias para el funcionamiento del sitio. Incluyen preferencias de idioma y seguridad.
+              </div>
+            </div>
+            <div class="cookie-row">
+              <div class="cookie-type">
+                <strong>Cookies de análisis (Google Analytics)</strong>
+              </div>
+              <div class="cookie-desc">
+                Nos ayudan a entender cómo los visitantes interactúan con el sitio. Los datos se recopilan de forma agregada y anónima.
+              </div>
+            </div>
+            <div class="cookie-row">
+              <div class="cookie-type">
+                <strong>Cookies de publicidad (Google AdSense)</strong>
+              </div>
+              <div class="cookie-desc">
+                Utilizadas para mostrar anuncios relevantes basados en tus intereses. Google y sus socios pueden usar cookies para personalizar los anuncios.
+              </div>
+            </div>
+          </div>
+
+          <h3>4.3 Google AdSense y publicidad de terceros</h3>
+          <p>
+            Este sitio utiliza <strong>Google AdSense</strong> para mostrar anuncios publicitarios. Google, como proveedor externo, utiliza cookies para publicar anuncios basados en las visitas previas del usuario a este sitio y a otros sitios en Internet.
+          </p>
+          <p>
+            <strong>Importante:</strong> Los usuarios pueden inhabilitar el uso de cookies de Google para publicidad personalizada visitando la <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" class="legal-link">configuración de anuncios de Google</a> o la página de inhabilitación de <a href="https://www.aboutads.info/" target="_blank" rel="noopener noreferrer" class="legal-link">Network Advertising Initiative</a>.
+          </p>
+
+          <h3>4.4 Cómo gestionar las cookies</h3>
+          <p>
+            Puedes configurar tu navegador para rechazar cookies o alertarte cuando se envíen. Ten en cuenta que algunas funciones del sitio pueden no funcionar correctamente sin cookies.
+          </p>
+          <ul>
+            <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" class="legal-link">Gestionar cookies en Chrome</a></li>
+            <li><a href="https://support.mozilla.org/es/kb/habilitar-y-deshabilitar-cookies-sitios-web-rastrear-preferencias" target="_blank" rel="noopener noreferrer" class="legal-link">Gestionar cookies en Firefox</a></li>
+            <li><a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer" class="legal-link">Gestionar cookies en Safari</a></li>
+          </ul>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-people me-2"></i>5. Compartir Información con Terceros</h2>
+          <p>No vendemos ni alquilamos tu información personal. Podemos compartir datos con:</p>
+          <ul>
+            <li><strong>Google Analytics:</strong> Para análisis de tráfico y comportamiento del sitio</li>
+            <li><strong>Google AdSense:</strong> Para mostrar publicidad personalizada</li>
+            <li><strong>Proveedores de hosting:</strong> Para almacenar y procesar datos del sitio</li>
+            <li><strong>Autoridades legales:</strong> Si es requerido por ley</li>
+          </ul>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-lock me-2"></i>6. Seguridad de los Datos</h2>
+          <p>
+            Implementamos medidas de seguridad técnicas y organizativas para proteger tu información contra acceso no autorizado, alteración, divulgación o destrucción. Sin embargo, ningún sistema es 100% seguro, por lo que no podemos garantizar seguridad absoluta.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-clock-history me-2"></i>7. Retención de Datos</h2>
+          <p>
+            Conservamos tu información solo durante el tiempo necesario para cumplir los propósitos descritos en esta política, a menos que la ley requiera o permita un período de retención más largo.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-person-check me-2"></i>8. Tus Derechos</h2>
+          <p>Dependiendo de tu ubicación, puedes tener derecho a:</p>
+          <ul>
+            <li><strong>Acceso:</strong> Solicitar una copia de la información que tenemos sobre ti</li>
+            <li><strong>Rectificación:</strong> Corregir datos inexactos</li>
+            <li><strong>Eliminación:</strong> Solicitar que eliminemos tu información</li>
+            <li><strong>Oposición:</strong> Oponerte al procesamiento de tus datos</li>
+            <li><strong>Portabilidad:</strong> Recibir tus datos en un formato estructurado</li>
+          </ul>
+          <p>
+            Para ejercer estos derechos, contáctanos a través de nuestra <a href="{% url 'explorer:contact' %}" class="legal-link">página de contacto</a>.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-person-x me-2"></i>9. Menores de Edad</h2>
+          <p>
+            Este sitio no está dirigido a menores de 13 años. No recopilamos conscientemente información de menores de esta edad. Si descubrimos que hemos recopilado datos de un menor sin verificación del consentimiento parental, tomaremos medidas para eliminar esa información.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-link-45deg me-2"></i>10. Enlaces Externos</h2>
+          <p>
+            Nuestro sitio puede contener enlaces a sitios web externos (Google Maps, establecimientos, redes sociales). No somos responsables de las prácticas de privacidad de estos sitios. Te recomendamos leer sus políticas de privacidad.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-pencil-square me-2"></i>11. Cambios a esta Política</h2>
+          <p>
+            Podemos actualizar esta política de privacidad ocasionalmente. Publicaremos los cambios en esta página con la nueva fecha de "última actualización". Te recomendamos revisarla periódicamente.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-envelope me-2"></i>12. Contacto</h2>
+          <p>
+            Si tienes preguntas sobre esta política de privacidad o deseas ejercer tus derechos, puedes contactarnos a través de:
+          </p>
+          <ul>
+            <li>Nuestra <a href="{% url 'explorer:contact' %}" class="legal-link">página de contacto</a></li>
+            <li>Correo electrónico: <a href="mailto:info@vivemedellin.co" class="legal-link">info@vivemedellin.co</a></li>
+          </ul>
+        </section>
+
+      </article>
+
+      <!-- Botón volver -->
+      <div class="text-center mt-5">
+        <a href="{% url 'explorer:home' %}" class="btn btn-back">
+          <i class="bi bi-arrow-left me-2"></i>
+          Volver al inicio
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+{% include 'legal/legal_styles.html' %}
+{% endblock %}
+

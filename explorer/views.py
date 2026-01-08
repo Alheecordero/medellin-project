@@ -1325,19 +1325,19 @@ def lugares_por_comuna(request, comuna_slug):
                     titulo_pagina = str(titulo_pagina) + ' ' + filtros_text
             
             elif filtros_activos:
-                    titulo_pagina = _('Lugares %(filters)s en %(comuna)s') % {
+                titulo_pagina = _('Lugares %(filters)s en %(comuna)s') % {
                     'filters': filtros_text,
-                        'comuna': region.name,
-                    }
-                    descripcion_pagina = _('Lugares especializados en %(comuna)s que cumplen tus criterios') % {
+                    'comuna': region.name,
+                }
+                descripcion_pagina = _('Lugares especializados en %(comuna)s que cumplen tus criterios') % {
                         'comuna': region.name,
                     }
             else:
                 titulo_pagina = _('Los Mejores Lugares en %(comuna)s') % {
-                        'comuna': region.name,
-                    }
+                    'comuna': region.name,
+                }
                 descripcion_pagina = _('Descubre los sitios más destacados de %(comuna)s') % {
-                        'comuna': region.name,
+                    'comuna': region.name,
                 }
             
             # Actualizar contexto
@@ -2365,4 +2365,28 @@ def translate_review_api(request):
 # 	all_reviews = _serialize_reviews(lugar)
 # 	total = len(all_reviews)
 # 	chunk = all_reviews[offset:offset+limit]
-# 	return JsonResponse({'success': True, 'total': total, 'count': len(chunk), 'offset': offset, 'limit': limit, 'reviews': chunk}) 
+# 	return JsonResponse({'success': True, 'total': total, 'count': len(chunk), 'offset': offset, 'limit': limit, 'reviews': chunk})
+
+
+# ────────────────────────────────────────────────────────────────────────
+# Páginas Legales (Privacy Policy, Terms, Contact)
+# Requeridas para Google AdSense
+# ────────────────────────────────────────────────────────────────────────
+
+@require_GET
+def privacy_policy(request):
+    """Página de Política de Privacidad."""
+    return render(request, 'legal/privacy_policy.html')
+
+
+@require_GET
+def terms(request):
+    """Página de Términos y Condiciones."""
+    return render(request, 'legal/terms.html')
+
+
+@require_GET
+def contact(request):
+    """Página de Contacto con formulario."""
+    return render(request, 'legal/contact.html')
+

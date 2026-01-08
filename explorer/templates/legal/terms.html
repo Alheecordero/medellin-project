@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block navbar %}{% endblock %}
+
+{% block title %}Términos y Condiciones | ViveMedellín{% endblock %}
+
+{% block meta_description %}Términos y condiciones de uso de ViveMedellín. Conoce las reglas que rigen el uso de nuestro directorio de lugares en Medellín.{% endblock %}
+
+{% block content %}
+{% get_current_language as LANGUAGE_CODE %}
+<section class="legal-section">
+  <div class="container py-5">
+    <div class="legal-main-card mx-auto">
+      
+      <!-- Navegación superior -->
+      <nav class="d-flex justify-content-end mb-4 home-lang-switch gap-2 flex-wrap" aria-label="Navegación principal">
+        <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">Inicio</a>
+        <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">Nosotros</a>
+        {% include 'components/lang_switcher.html' %}
+      </nav>
+
+      <!-- Contenido -->
+      <header class="legal-hero text-center mb-5">
+        <div class="legal-badge mb-3">
+          <i class="bi bi-file-text me-2"></i>
+          Documento Legal
+        </div>
+        <h1 class="legal-title mb-3">Términos y Condiciones</h1>
+        <p class="legal-subtitle">
+          Última actualización: {% now "j \d\e F \d\e Y" %}
+        </p>
+      </header>
+
+      <article class="legal-content">
+        
+        <section class="legal-block">
+          <h2><i class="bi bi-check-circle me-2"></i>1. Aceptación de los Términos</h2>
+          <p>
+            Bienvenido a <strong>ViveMedellín</strong>. Al acceder y utilizar este sitio web, aceptas cumplir con estos términos y condiciones de uso. Si no estás de acuerdo con alguna parte de estos términos, te pedimos que no utilices el sitio.
+          </p>
+          <p>
+            Estos términos constituyen un acuerdo legal vinculante entre tú (el usuario) y ViveMedellín. Nos reservamos el derecho de modificar estos términos en cualquier momento.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-info-square me-2"></i>2. Descripción del Servicio</h2>
+          <p>
+            ViveMedellín es un <strong>directorio informativo gratuito</strong> que recopila y presenta información sobre restaurantes, bares, cafés, rooftops y otros establecimientos en Medellín y sus alrededores.
+          </p>
+          <p>Nuestros servicios incluyen:</p>
+          <ul>
+            <li>Listado de lugares organizados por zonas y categorías</li>
+            <li>Información como direcciones, horarios, tipos de cocina y servicios</li>
+            <li>Búsqueda semántica inteligente</li>
+            <li>Función de geolocalización "Cerca de mí"</li>
+            <li>Enlaces a Google Maps y Waze para navegación</li>
+          </ul>
+        </section>
+
+        <section class="legal-block highlight-block">
+          <h2><i class="bi bi-exclamation-triangle me-2"></i>3. Descargo de Responsabilidad</h2>
+          
+          <h3>3.1 Exactitud de la información</h3>
+          <p>
+            La información presentada en ViveMedellín se obtiene de fuentes públicas (como Google Places y OpenStreetMap) y contribuciones de usuarios. <strong>No garantizamos</strong> que la información sea completa, exacta o actualizada.
+          </p>
+          
+          <h3>3.2 Cambios en establecimientos</h3>
+          <p>
+            Los horarios, precios, menús y disponibilidad de los establecimientos pueden cambiar sin previo aviso. <strong>Recomendamos verificar directamente</strong> con cada establecimiento antes de visitarlo.
+          </p>
+          
+          <h3>3.3 Reseñas y opiniones</h3>
+          <p>
+            Las reseñas mostradas provienen de fuentes externas (Google) y no representan las opiniones de ViveMedellín. No somos responsables del contenido de estas reseñas.
+          </p>
+          
+          <h3>3.4 Decisiones del usuario</h3>
+          <p>
+            Las decisiones que tomes basándote en la información de este sitio son tu responsabilidad. ViveMedellín no se hace responsable de experiencias insatisfactorias en los establecimientos listados.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-person-badge me-2"></i>4. Uso Aceptable</h2>
+          <p>Al utilizar ViveMedellín, te comprometes a:</p>
+          <ul>
+            <li>Usar el sitio solo para fines legales y personales</li>
+            <li>No intentar acceder a áreas restringidas del sitio</li>
+            <li>No realizar acciones que puedan dañar, deshabilitar o sobrecargar el sitio</li>
+            <li>No usar sistemas automatizados (bots, scrapers) sin autorización</li>
+            <li>No enviar contenido ofensivo, ilegal o difamatorio a través del formulario de contacto</li>
+            <li>No suplantar identidades o proporcionar información falsa</li>
+          </ul>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-c-circle me-2"></i>5. Propiedad Intelectual</h2>
+          
+          <h3>5.1 Contenido de ViveMedellín</h3>
+          <p>
+            El diseño, logotipos, textos originales, código y estructura del sitio son propiedad de ViveMedellín y están protegidos por leyes de propiedad intelectual.
+          </p>
+          
+          <h3>5.2 Contenido de terceros</h3>
+          <p>
+            Las imágenes, reseñas y datos de establecimientos pueden provenir de fuentes externas y pertenecen a sus respectivos propietarios. ViveMedellín respeta los derechos de autor y actúa bajo los términos de uso de las APIs utilizadas (Google Places, OpenStreetMap).
+          </p>
+          
+          <h3>5.3 Uso permitido</h3>
+          <p>
+            Puedes ver y usar el sitio para consulta personal. Queda prohibido copiar, reproducir, distribuir o crear obras derivadas del contenido sin autorización expresa.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-link me-2"></i>6. Enlaces Externos</h2>
+          <p>
+            ViveMedellín incluye enlaces a sitios web de terceros (Google Maps, Waze, sitios de establecimientos, redes sociales). Estos enlaces se proporcionan para tu conveniencia.
+          </p>
+          <p>
+            <strong>No controlamos</strong> el contenido de estos sitios externos y no somos responsables de sus políticas de privacidad, términos de uso o el contenido que publiquen.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-megaphone me-2"></i>7. Publicidad</h2>
+          <p>
+            ViveMedellín muestra anuncios publicitarios a través de <strong>Google AdSense</strong>. Estos anuncios pueden ser personalizados según tu historial de navegación.
+          </p>
+          <p>
+            No controlamos el contenido de los anuncios mostrados por Google. Si encuentras un anuncio inapropiado, puedes reportarlo directamente a Google.
+          </p>
+          <p>
+            Para más información sobre la publicidad y cookies, consulta nuestra <a href="{% url 'explorer:privacy_policy' %}" class="legal-link">Política de Privacidad</a>.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-shield-x me-2"></i>8. Limitación de Responsabilidad</h2>
+          <p>
+            En la máxima medida permitida por la ley, ViveMedellín, sus propietarios, empleados y colaboradores <strong>no serán responsables</strong> por:
+          </p>
+          <ul>
+            <li>Daños directos, indirectos, incidentales o consecuentes derivados del uso del sitio</li>
+            <li>Pérdidas económicas por decisiones basadas en la información del sitio</li>
+            <li>Experiencias negativas en los establecimientos listados</li>
+            <li>Errores, omisiones o inexactitudes en la información</li>
+            <li>Interrupciones o fallas técnicas del servicio</li>
+            <li>Virus u otros componentes dañinos que puedas adquirir al acceder al sitio</li>
+          </ul>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-building me-2"></i>9. Para Propietarios de Establecimientos</h2>
+          <p>
+            Si eres propietario o representante de un establecimiento listado en ViveMedellín:
+          </p>
+          <ul>
+            <li>Puedes solicitar la <strong>actualización de información</strong> incorrecta a través de nuestra página de contacto</li>
+            <li>Puedes solicitar la <strong>eliminación</strong> de tu establecimiento del directorio</li>
+            <li>No garantizamos posicionamiento preferencial en los resultados</li>
+          </ul>
+          <p>
+            Para solicitudes comerciales o de destacar tu establecimiento, contáctanos directamente.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-pause-circle me-2"></i>10. Suspensión del Servicio</h2>
+          <p>
+            Nos reservamos el derecho de:
+          </p>
+          <ul>
+            <li>Modificar, suspender o descontinuar el servicio en cualquier momento</li>
+            <li>Restringir el acceso a usuarios que violen estos términos</li>
+            <li>Bloquear direcciones IP que realicen uso abusivo del sitio</li>
+          </ul>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-arrows-angle-contract me-2"></i>11. Indemnización</h2>
+          <p>
+            Aceptas indemnizar y mantener libre de responsabilidad a ViveMedellín y sus asociados frente a cualquier reclamación, demanda, pérdida o gasto (incluidos honorarios legales) que surjan de tu uso del sitio o violación de estos términos.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-globe me-2"></i>12. Legislación Aplicable</h2>
+          <p>
+            Estos términos se rigen por las leyes de la República de Colombia. Cualquier disputa relacionada con el uso del sitio se someterá a la jurisdicción de los tribunales competentes de Medellín, Colombia.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-arrow-repeat me-2"></i>13. Cambios a los Términos</h2>
+          <p>
+            Podemos modificar estos términos en cualquier momento. Los cambios entrarán en vigor inmediatamente después de su publicación en el sitio. El uso continuado del sitio después de los cambios constituye tu aceptación de los nuevos términos.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-puzzle me-2"></i>14. Divisibilidad</h2>
+          <p>
+            Si alguna disposición de estos términos se considera inválida o inaplicable, las disposiciones restantes continuarán en pleno vigor y efecto.
+          </p>
+        </section>
+
+        <section class="legal-block">
+          <h2><i class="bi bi-envelope me-2"></i>15. Contacto</h2>
+          <p>
+            Si tienes preguntas sobre estos términos y condiciones, puedes contactarnos a través de:
+          </p>
+          <ul>
+            <li>Nuestra <a href="{% url 'explorer:contact' %}" class="legal-link">página de contacto</a></li>
+            <li>Correo electrónico: <a href="mailto:info@vivemedellin.co" class="legal-link">info@vivemedellin.co</a></li>
+          </ul>
+        </section>
+
+      </article>
+
+      <!-- Botón volver -->
+      <div class="text-center mt-5">
+        <a href="{% url 'explorer:home' %}" class="btn btn-back">
+          <i class="bi bi-arrow-left me-2"></i>
+          Volver al inicio
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+{% include 'legal/legal_styles.html' %}
+{% endblock %}
+

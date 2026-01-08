@@ -10,7 +10,14 @@ class StaticViewSitemap(Sitemap):
     priority = 1.0
 
     def items(self):
-        return ["explorer:home", "explorer:lugares_list", "explorer:about_es"]
+        return [
+            "explorer:home",
+            "explorer:lugares_list",
+            "explorer:about_es",
+            "explorer:privacy_policy",
+            "explorer:terms",
+            "explorer:contact",
+        ]
 
     def location(self, item):
         return reverse(item)

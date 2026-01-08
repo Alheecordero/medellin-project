@@ -32,4 +32,11 @@ urlpatterns = [
     path('api/lugares/<slug:slug>/cercanos/', views.lugares_cercanos_ajax, name='lugares_cercanos_ajax_slug'),
     path('api/lugares/<slug:slug>/similares/', views.lugares_similares_ajax, name='lugares_similares_ajax_slug'),
     path('api/lugares/<slug:slug>/comuna/', views.lugares_comuna_ajax, name='lugares_comuna_ajax_slug'),
+    
+    # ────────────────────────────────────────────────────────────────────────
+    # Páginas Legales (requeridas para AdSense)
+    # ────────────────────────────────────────────────────────────────────────
+    path('politica-de-privacidad/', views.privacy_policy, name='privacy_policy'),
+    path('terminos-y-condiciones/', views.terms, name='terms'),
+    path('contacto/', views.contact, name='contact'),
 ]

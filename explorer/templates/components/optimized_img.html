@@ -5,7 +5,8 @@
      alt="{{ alt }}"
      class="{{ css_class }}"
      loading="{{ loading }}"
-     {% if data_full %}data-full="{{ data_full }}"{% endif %}>
+     {% if data_full %}data-full="{{ data_full }}"{% endif %}
+     onerror="this.onerror=null; this.srcset=''; this.src='{{ data_full|default:src }}';">
 {% else %}
 <div class="placeholder-img {{ css_class }}">
     <i class="bi bi-image"></i>

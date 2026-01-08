@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block navbar %}{% endblock %}
+
+{% block title %}Contacto | ViveMedellín{% endblock %}
+
+{% block meta_description %}Contáctanos en ViveMedellín. Estamos aquí para responder tus preguntas sobre lugares en Medellín, sugerencias o reportar información incorrecta.{% endblock %}
+
+{% block content %}
+{% get_current_language as LANGUAGE_CODE %}
+<section class="legal-section">
+  <div class="container py-5">
+    <div class="legal-main-card mx-auto">
+      
+      <!-- Navegación superior -->
+      <nav class="d-flex justify-content-end mb-4 home-lang-switch gap-2 flex-wrap" aria-label="Navegación principal">
+        <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">Inicio</a>
+        <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">Nosotros</a>
+        {% include 'components/lang_switcher.html' %}
+      </nav>
+
+      <!-- Contenido -->
+      <header class="legal-hero text-center mb-5">
+        <div class="legal-badge mb-3">
+          <i class="bi bi-chat-dots me-2"></i>
+          Hablemos
+        </div>
+        <h1 class="legal-title mb-3">Contacto</h1>
+        <p class="legal-subtitle">
+          ¿Tienes preguntas, sugerencias o encontraste un error? Nos encantaría escucharte.
+        </p>
+      </header>
+
+      <div class="row justify-content-center">
+        
+        <!-- Información de contacto -->
+        <div class="col-lg-8">
+          <div class="contact-info-card">
+            
+            <!-- Creador -->
+            <div class="creator-section text-center mb-4">
+              <div class="creator-icon mb-3">
+                <i class="bi bi-person-circle"></i>
+              </div>
+              <h2 class="creator-name">Alexander Cordero</h2>
+              <p class="creator-role">Creador de ViveMedellín</p>
+            </div>
+
+            <hr class="contact-divider">
+
+            <h2 class="contact-section-title">
+              <i class="bi bi-envelope-open me-2"></i>
+              Escríbenos
+            </h2>
+            
+            <div class="contact-method">
+              <div class="contact-icon">
+                <i class="bi bi-envelope-fill"></i>
+              </div>
+              <div class="contact-details">
+                <h3>Correo electrónico</h3>
+                <a href="mailto:info@vivemedellin.co" class="contact-link">info@vivemedellin.co</a>
+                <p class="contact-note">Respondemos en menos de 48 horas</p>
+              </div>
+            </div>
+
+            <div class="contact-method">
+              <div class="contact-icon">
+                <i class="bi bi-geo-alt-fill"></i>
+              </div>
+              <div class="contact-details">
+                <h3>Ubicación</h3>
+                <p>Medellín, Antioquia<br>Colombia</p>
+              </div>
+            </div>
+
+            <hr class="contact-divider">
+
+            <h2 class="contact-section-title">
+              <i class="bi bi-question-circle me-2"></i>
+              ¿Cómo podemos ayudarte?
+            </h2>
+
+            <div class="help-topics">
+              <div class="help-topic">
+                <i class="bi bi-building"></i>
+                <span><strong>Propietarios:</strong> Actualiza o reclama tu establecimiento</span>
+              </div>
+              <div class="help-topic">
+                <i class="bi bi-exclamation-diamond"></i>
+                <span><strong>Errores:</strong> Reporta información incorrecta</span>
+              </div>
+              <div class="help-topic">
+                <i class="bi bi-lightbulb"></i>
+                <span><strong>Sugerencias:</strong> Propón nuevos lugares o funciones</span>
+              </div>
+              <div class="help-topic">
+                <i class="bi bi-megaphone"></i>
+                <span><strong>Publicidad:</strong> Consultas comerciales</span>
+              </div>
+              <div class="help-topic">
+                <i class="bi bi-shield-check"></i>
+                <span><strong>Privacidad:</strong> Solicitudes sobre tus datos</span>
+              </div>
+            </div>
+
+            <!-- CTA de email -->
+            <div class="email-cta text-center mt-4">
+              <a href="mailto:info@vivemedellin.co" class="btn btn-email">
+                <i class="bi bi-envelope me-2"></i>
+                Enviar correo a info@vivemedellin.co
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Botón volver -->
+      <div class="text-center mt-5">
+        <a href="{% url 'explorer:home' %}" class="btn btn-back">
+          <i class="bi bi-arrow-left me-2"></i>
+          Volver al inicio
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+{% include 'legal/legal_styles.html' %}
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   CONTACT PAGE - ESTILOS
+   ═══════════════════════════════════════════════════════════════ */
+
+.contact-info-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 2.5rem;
+}
+
+/* Sección del creador */
+.creator-section {
+  padding: 1rem 0;
+}
+
+.creator-icon {
+  font-size: 4rem;
+  color: #4ade80;
+  opacity: 0.9;
+}
+
+.creator-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 0.25rem;
+}
+
+.creator-role {
+  font-size: 1rem;
+  color: #94a3b8;
+  margin-bottom: 0;
+}
+
+.contact-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.contact-section-title i {
+  color: #4ade80;
+}
+
+.contact-method {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.contact-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(34, 211, 238, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: #4ade80;
+  flex-shrink: 0;
+}
+
+.contact-details h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 0.25rem;
+}
+
+.contact-details p {
+  color: #94a3b8;
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.contact-link {
+  color: #4ade80 !important;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+}
+
+.contact-link:hover {
+  color: #22d3ee !important;
+  text-decoration: underline;
+}
+
+.contact-note {
+  font-size: 0.8rem !important;
+  color: #64748b !important;
+  margin-top: 0.25rem;
+}
+
+.contact-divider {
+  border-color: rgba(255, 255, 255, 0.1);
+  margin: 1.5rem 0;
+}
+
+.help-topics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.help-topic {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.help-topic i {
+  color: #4ade80;
+  font-size: 1rem;
+  margin-top: 2px;
+}
+
+.help-topic strong {
+  color: #e5e7eb;
+}
+
+/* Botón de email CTA */
+.btn-email {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: #0f172a;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  border: none;
+  font-size: 1rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s;
+}
+
+.btn-email:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(56, 239, 125, 0.3);
+  color: #0f172a;
+}
+
+@media (max-width: 768px) {
+  .contact-info-card {
+    padding: 1.5rem;
+  }
+  
+  .creator-icon {
+    font-size: 3rem;
+  }
+  
+  .creator-name {
+    font-size: 1.25rem;
+  }
+  
+  .btn-email {
+    width: 100%;
+    justify-content: center;
+  }
+}
+</style>
+{% endblock %}
