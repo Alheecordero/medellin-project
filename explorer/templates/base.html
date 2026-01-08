@@ -92,6 +92,10 @@
       {% endif %}
     {% endif %}
 
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3335839352613150"
+         crossorigin="anonymous"></script>
+
     <!-- Canonical sin parámetros de consulta -->
     {% if request %}
       {% with canonical_url=request.build_absolute_uri|cut:'?' %}

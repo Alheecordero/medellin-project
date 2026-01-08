@@ -29,6 +29,12 @@ urlpatterns = [
         content_type='text/plain'
     ), name='robots_txt'),
     
+    # ads.txt (Google AdSense)
+    path('ads.txt', TemplateView.as_view(
+        template_name='ads.txt',
+        content_type='text/plain'
+    ), name='ads_txt'),
+    
     # utilidades de i18n
     path('i18n/', include('django.conf.urls.i18n')),
     
