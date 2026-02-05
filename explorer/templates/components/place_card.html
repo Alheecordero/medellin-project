@@ -21,8 +21,11 @@
           class="place-card__img" 
           alt="{{ lugar.nombre }}"
           loading="lazy"
-          onerror="this.onerror=null; this.srcset=''; this.src='{{ foto.imagen }}';"
+          onerror="this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='flex';};this.srcset='';this.src='{{ foto.imagen }}';"
         >
+        <div class="place-card__placeholder" style="display:none;">
+          <i class="bi bi-image"></i>
+        </div>
       {% else %}
         <div class="place-card__placeholder">
           <i class="bi bi-image"></i>

@@ -439,10 +439,30 @@ function copyToClipboard() {
   // Usa las mismas clases BEM que place_card.html pero compactas
   // ═══════════════════════════════════════════════════════════════
   function card(p) {
-    // Imagen
-    const imagenHtml = p.imagen 
-      ? `<img src="${p.imagen}" class="place-card__img" alt="${p.nombre}" loading="lazy">` 
-      : `<div class="place-card__placeholder"><i class="bi bi-image"></i></div>`;
+    // Imagen con manejo de errores y fallback
+    // 1. Intenta imagen (miniatura optimizada)
+    // 2. Si falla, intenta imagen_full (original)
+    // 3. Si ambas fallan, muestra placeholder
+    const imgFull = p.imagen_full || '';
+    const imgAlt = (p.nombre || '').replace(/"/g, '&quot;');
+    
+    let imagenHtml;
+    if (p.imagen) {
+      // onerror: intenta fallback a imagen_full, si falla muestra placeholder
+      const errorHandler = imgFull 
+        ? `this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='flex';};this.src='${imgFull}';`
+        : `this.style.display='none';this.nextElementSibling.style.display='flex';`;
+      
+      imagenHtml = `
+        <img src="${p.imagen}" 
+             class="place-card__img" 
+             alt="${imgAlt}" 
+             loading="lazy"
+             onerror="${errorHandler}">
+        <div class="place-card__placeholder" style="display:none;"><i class="bi bi-image"></i></div>`;
+    } else {
+      imagenHtml = `<div class="place-card__placeholder"><i class="bi bi-image"></i></div>`;
+    }
     
     // Rating badge con número de reviews
     let ratingHtml = '';

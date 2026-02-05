@@ -458,11 +458,20 @@ function generarPlaceCardHtml(lugar, opciones = {}) {
     // URL
     const url = lugar.url || `/lugar/${lugar.slug}/`;
     
-    // Imagen con fallback a original si falla
-    const imagenFull = lugar.imagen_full || lugar.imagen;
-    const imagenHtml = lugar.imagen 
-        ? `<img src="${lugar.imagen}" class="place-card__img" alt="${lugar.nombre}" loading="lazy" onerror="this.onerror=null; this.src='${imagenFull}';">`
-        : `<div class="place-card__placeholder"><i class="bi bi-image"></i></div>`;
+    // Imagen con fallback a original si falla, luego placeholder
+    const imagenFull = lugar.imagen_full || '';
+    const imgAlt = (lugar.nombre || '').replace(/"/g, '&quot;');
+    let imagenHtml;
+    if (lugar.imagen) {
+        const errorHandler = imagenFull 
+            ? `this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='flex';};this.src='${imagenFull}';`
+            : `this.style.display='none';this.nextElementSibling.style.display='flex';`;
+        imagenHtml = `
+            <img src="${lugar.imagen}" class="place-card__img" alt="${imgAlt}" loading="lazy" onerror="${errorHandler}">
+            <div class="place-card__placeholder" style="display:none;"><i class="bi bi-image"></i></div>`;
+    } else {
+        imagenHtml = `<div class="place-card__placeholder"><i class="bi bi-image"></i></div>`;
+    }
     
     // Rating badge con número de reviews
     let ratingHtml = '';
