@@ -62,8 +62,8 @@
         </div>
       </div>
 
-        <!-- HERO: Galería Grande + Info Superpuesta -->
-        <div class="detail-hero">
+        <!-- HERO: Galería Grande + Info Superpuesta (excluir de Auto Ads) -->
+        <div class="detail-hero" data-nosnippet data-ad-layout="-exclude">
           {% if lugar.get_fotos %}
           <div id="carouselFotos" class="carousel slide hero-carousel" data-bs-ride="carousel">
               <div class="carousel-inner">
@@ -104,8 +104,8 @@
           {% endif %}
         </div>
 
-        <!-- TÍTULO Y META -->
-        <div class="detail-header">
+        <!-- TÍTULO Y META (excluir de Auto Ads) -->
+        <div class="detail-header" data-nosnippet>
           <h1 class="detail-title">{{ lugar.nombre }}</h1>
           <div class="detail-meta">
             {% if lugar.comuna %}<a href="{% url 'explorer:lugares_por_comuna' lugar.comuna.slug %}" class="meta-chip"><i class="bi bi-geo-alt me-1"></i>{{ lugar.comuna.name }}</a>{% endif %}
@@ -151,15 +151,15 @@
             </div>
             {% endif %}
 
-            <div class="info-block map-block">
+            <div class="info-block map-block" data-nosnippet data-ad-layout="-exclude">
               <h3 class="block-title"><i class="bi bi-map-fill me-2"></i>{% trans "Ubicación" %}</h3>
               <div id="mapa" class="map-container"></div>
               {% if lugar.direccion %}<div class="map-address"><i class="bi bi-geo-alt-fill me-2"></i>{{ lugar.direccion }}</div>{% endif %}
               </div>
             </div>
 
-          <!-- SIDEBAR -->
-          <div class="detail-sidebar">
+          <!-- SIDEBAR (excluir de Auto Ads) -->
+          <div class="detail-sidebar" data-nosnippet data-ad-layout="-exclude">
             
             <!-- Contacto -->
             <div class="sidebar-block">

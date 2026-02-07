@@ -102,7 +102,7 @@
         <div class="col-lg-4">
           {% with foto=lugar.get_primera_foto %}
           {% if foto %}
-            <div class="place-preview">
+            <div class="place-preview" data-nosnippet data-ad-layout="-exclude">
               <img src="{{ foto.imagen_mediana|default:foto.imagen }}" 
                    {% if foto.imagen_miniatura and foto.imagen_mediana %}
                    srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen_mediana }} 800w"
