@@ -26,6 +26,62 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ADSENSE AUTO ADS - Contener para que no rompan el diseño
+   Google Auto Ads inyecta <ins class="adsbygoogle"> dinámicamente.
+   Sin estas reglas, los anuncios desbordan en mobile.
+   ═══════════════════════════════════════════════════════════════════ */
+ins.adsbygoogle,
+ins.adsbygoogle[data-ad-status],
+ins.adsbygoogle[data-ad-format] {
+  display: block;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Contenedor padre que Google crea alrededor de auto ads */
+div[id^="google_ads"],
+div[id^="aswift_"],
+iframe[id^="aswift_"],
+iframe[id^="google_ads"] {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Vignette/overlay ads: no dejar que muevan el contenido */
+.adsbygoogle[data-ad-format="auto"],
+.adsbygoogle[data-ad-format="fluid"],
+.adsbygoogle[data-ad-format="autorelaxed"] {
+  max-width: 100% !important;
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Anchor ads (los que aparecen fijos abajo): limitar en mobile */
+@media (max-width: 768px) {
+  /* Auto ads que se insertan entre contenido */
+  ins.adsbygoogle {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+  
+  /* iframes de ads que desbordan */
+  ins.adsbygoogle iframe,
+  ins.adsbygoogle > div,
+  ins.adsbygoogle > div > iframe {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
 }
 
 body {

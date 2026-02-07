@@ -59,12 +59,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     
-    <!-- CSS crítico inline para evitar FOUC -->
+    <!-- CSS crítico inline para evitar FOUC + contener AdSense Auto Ads -->
     <style>
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
             background-color: #0a1628;
+            overflow-x: hidden;
+        }
+        /* Evitar que AdSense Auto Ads generen scroll horizontal */
+        main {
+            overflow-x: hidden;
+            max-width: 100vw;
         }
     </style>
     
