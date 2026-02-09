@@ -47,8 +47,8 @@
     <meta name="twitter:description" content="{% block twitter_description %}{% trans "Descubre bares, restaurantes, rooftops y discotecas en Medellín. Ratings reales y horarios actualizados." %}{% endblock %}">
     <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}{% endblock %}">
 
-    <!-- Django JS i18n -->
-    <script src="{% url 'javascript-catalog' %}?v={{ STATIC_BUST }}"></script>
+    <!-- Django JS i18n (defer para no bloquear LCP) -->
+    <script src="{% url 'javascript-catalog' %}?v={{ STATIC_BUST }}" defer></script>
 
     <!-- Preload recursos críticos -->
     <link rel="preload" href="{% static 'css/style.css' %}?v={{ STATIC_BUST }}" as="style">
@@ -58,6 +58,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://storage.googleapis.com">
+    {% block preload_lcp %}{% endblock %}
     
     <!-- CSS crítico inline para evitar FOUC + contener AdSense Auto Ads -->
     <style>

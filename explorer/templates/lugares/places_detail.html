@@ -7,6 +7,14 @@
 
 {% block title %}{{ lugar.nombre }} - {{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}{% else %}Medellín{% endif %} | ViveMedellín{% endblock %}
 
+{% block preload_lcp %}
+{% with foto=lugar.get_primera_foto %}
+{% if foto %}
+<link rel="preload" as="image" href="{{ foto.imagen_mediana|default:foto.imagen }}" {% if foto.imagen_miniatura and foto.imagen_mediana %}imagesrcset="{{ foto.imagen_miniatura }} 400w, {{ foto.imagen_mediana }} 800w, {{ foto.imagen }} 1600w" imagesizes="(max-width: 576px) 100vw, (max-width: 992px) 100vw, 1100px"{% endif %} fetchpriority="high">
+{% endif %}
+{% endwith %}
+{% endblock %}
+
 {% block meta_description %}
 {{ lugar.nombre }}{% if lugar.rating %} ⭐ {{ lugar.rating|floatformat:1 }}{% endif %} - {{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if lugar.direccion %} 📍 {{ lugar.direccion|truncatechars:60 }}{% endif %}{% if lugar.precio %} 💰 {{ lugar.precio|format_price_range }}{% endif %}
 {% endblock %}
@@ -69,18 +77,20 @@
               <div class="carousel-inner">
                 {% for foto in lugar.get_fotos %}
                   <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                <img src="{{ foto.imagen_mediana|default:foto.imagen }}" 
-                     {% if foto.imagen_mediana %}
+                <img src="{% if forloop.first %}{{ foto.imagen_mediana|default:foto.imagen }}{% else %}{{ foto.imagen_miniatura|default:foto.imagen_mediana|default:foto.imagen }}{% endif %}" 
+                     {% if foto.imagen_miniatura and foto.imagen_mediana %}
+                     srcset="{{ foto.imagen_miniatura }} 400w, {{ foto.imagen_mediana }} 800w, {{ foto.imagen }} 1600w"
+                     {% elif foto.imagen_mediana %}
                      srcset="{{ foto.imagen_mediana }} 800w, {{ foto.imagen }} 1600w"
                      {% endif %}
-                     sizes="100vw"
+                     sizes="(max-width: 576px) 100vw, (max-width: 992px) 100vw, 1100px"
                      class="hero-img" 
                      alt="{{ lugar.nombre }}" 
                      data-bs-toggle="modal" 
                      data-bs-target="#imagenModal" 
                      data-img-src="{{ foto.imagen }}"
                      onerror="this.onerror=null; this.srcset=''; this.src='{{ foto.imagen }}';"
-                     {% if forloop.first %}loading="eager"{% else %}loading="lazy"{% endif %}>
+                     {% if forloop.first %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
                   </div>
                 {% endfor %}
               </div>
