@@ -137,6 +137,47 @@ iframe[id^="google_ads"] {
   max-width: 100% !important;
 }
 
+/* Unidades manuales/fijas de AdSense (in-content) */
+.adsense-fixed-unit {
+  max-width: 100%;
+  overflow: hidden;
+  padding: 0 12px;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.adsense-fixed-unit ins.adsbygoogle {
+  min-height: 100px; /* reduce CLS inicial */
+  border-radius: 12px;
+  overflow: hidden !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+.adsense-fixed-unit--global {
+  max-width: 1180px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Si Google no llena el anuncio, no dejar hueco visual */
+.adsense-fixed-unit ins.adsbygoogle[data-ad-status="unfilled"] {
+  display: none !important;
+  min-height: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .adsense-fixed-unit {
+    padding: 0 8px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  .adsense-fixed-unit ins.adsbygoogle {
+    min-height: 90px;
+    border-radius: 10px;
+  }
+}
+
 /* Google a veces crea wrappers con google-auto-placed */
 div.google-auto-placed {
   max-width: 100% !important;

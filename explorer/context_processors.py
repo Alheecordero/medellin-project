@@ -44,6 +44,11 @@ def settings_context(request):
     return {
         'settings': {
             'GOOGLE_ANALYTICS_ID': getattr(settings, 'GOOGLE_ANALYTICS_ID', None),
+            'ADSENSE_CLIENT': getattr(settings, 'ADSENSE_CLIENT', None),
+            'ADSENSE_SLOT_HOME': getattr(settings, 'ADSENSE_SLOT_HOME', ''),
+            'ADSENSE_SLOT_LIST': getattr(settings, 'ADSENSE_SLOT_LIST', ''),
+            'ADSENSE_SLOT_DETAIL': getattr(settings, 'ADSENSE_SLOT_DETAIL', ''),
+            'ADSENSE_SLOT_GLOBAL': getattr(settings, 'ADSENSE_SLOT_GLOBAL', ''),
             'DEBUG': getattr(settings, 'DEBUG', False),
         }
     }

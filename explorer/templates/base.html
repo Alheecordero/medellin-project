@@ -101,7 +101,7 @@
     {% endif %}
 
     <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3335839352613150"
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ settings.ADSENSE_CLIENT|default:'ca-pub-3335839352613150' }}"
          crossorigin="anonymous"></script>
 
     <!-- Canonical sin parámetros de consulta -->
@@ -162,6 +162,8 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+
+    {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_GLOBAL placement='global' label='Publicidad' exclude_auto=True extra_class='adsense-fixed-unit--global' %}
 
     <!-- Footer -->
     {% include 'footer.html' %}

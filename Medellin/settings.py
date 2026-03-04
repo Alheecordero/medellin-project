@@ -248,6 +248,14 @@ GOOGLE_API_KEY=env('GOOGLE_API_KEY')
 # Google Analytics 
 GOOGLE_ANALYTICS_ID = env('GOOGLE_ANALYTICS_ID', default=None)
 
+# Google AdSense (manual/fijo)
+# Puedes dejar slots vacíos para no renderizar ese bloque en templates.
+ADSENSE_CLIENT = env('ADSENSE_CLIENT', default='ca-pub-3335839352613150')
+ADSENSE_SLOT_HOME = env('ADSENSE_SLOT_HOME', default='1720527039')
+ADSENSE_SLOT_LIST = env('ADSENSE_SLOT_LIST', default='5029216659')
+ADSENSE_SLOT_DETAIL = env('ADSENSE_SLOT_DETAIL', default='8949589876')
+ADSENSE_SLOT_GLOBAL = env('ADSENSE_SLOT_GLOBAL', default='6541608871')
+
 LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'

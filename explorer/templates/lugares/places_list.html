@@ -248,6 +248,8 @@
         {% endif %}
       </div>
 
+      {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST placement='list' label='Publicidad' exclude_auto=True %}
+
     </div>
   </div>
 </section>

@@ -281,6 +281,8 @@
     </div>
 </section>
 
+{% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_HOME placement='home' label='Publicidad' exclude_auto=True %}
+
 <!-- Sección separada para resultados dinámicos (semánticos, cerca de mí, etc.) -->
 <section id="search-results-section" style="display: none;">
     <div id="ajax-results"></div>
