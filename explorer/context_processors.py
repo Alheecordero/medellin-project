@@ -49,6 +49,9 @@ def settings_context(request):
             'ADSENSE_SLOT_LIST': getattr(settings, 'ADSENSE_SLOT_LIST', ''),
             'ADSENSE_SLOT_DETAIL': getattr(settings, 'ADSENSE_SLOT_DETAIL', ''),
             'ADSENSE_SLOT_GLOBAL': getattr(settings, 'ADSENSE_SLOT_GLOBAL', ''),
+            'ADSENSE_SLOT_LIST_MOBILE': getattr(settings, 'ADSENSE_SLOT_LIST_MOBILE', ''),
+            'ADSENSE_SLOT_REVIEWS': getattr(settings, 'ADSENSE_SLOT_REVIEWS', ''),
+            'ADSENSE_SLOT_DETAIL_BOTTOM': getattr(settings, 'ADSENSE_SLOT_DETAIL_BOTTOM', ''),
             'DEBUG': getattr(settings, 'DEBUG', False),
         }
     }

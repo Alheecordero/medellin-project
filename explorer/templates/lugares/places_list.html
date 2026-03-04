@@ -200,10 +200,14 @@
 
       <!-- Card Inferior: Grid de Lugares -->
       <div class="places-grid-card" id="places-grid-container">
+        {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST_MOBILE|default:settings.ADSENSE_SLOT_LIST placement='list_top' unit_key='top' label='Publicidad' exclude_auto=True extra_class='adsense-mobile-only' %}
         {% if lugares %}
           <div class="places-grid">
             {% for lugar in lugares %}
               {% include 'components/place_card.html' with lugar=lugar card_variant='horizontal' %}
+              {% if forloop.counter == 8 %}
+                {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST_MOBILE|default:settings.ADSENSE_SLOT_LIST placement='list_mid' unit_key='mid' label='Publicidad' exclude_auto=True extra_class='adsense-mobile-only adsense-inline-list' %}
+              {% endif %}
             {% endfor %}
           </div>
 
@@ -248,7 +252,7 @@
         {% endif %}
       </div>
 
-      {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST placement='list' label='Publicidad' exclude_auto=True %}
+      {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST placement='list' unit_key='bottom' label='Publicidad' exclude_auto=True %}
 
     </div>
   </div>

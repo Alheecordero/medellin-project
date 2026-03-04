@@ -4,7 +4,7 @@
     <div class="adsense-fixed-label text-center small text-white-50 mb-2">{{ label }}</div>
   {% endif %}
   <ins class="adsbygoogle"
-       id="ads-fixed-{{ placement|default:'block' }}-{{ slot }}"
+       id="ads-fixed-{{ placement|default:'block' }}-{{ slot }}-{{ unit_key|default:'u0' }}"
        style="display:block"
        data-ad-client="{{ settings.ADSENSE_CLIENT }}"
        data-ad-slot="{{ slot }}"

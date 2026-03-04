@@ -144,6 +144,8 @@ iframe[id^="google_ads"] {
   padding: 0 12px;
   margin-top: 1.25rem;
   margin-bottom: 1.25rem;
+  clear: both;
+  box-sizing: border-box;
 }
 
 .adsense-fixed-unit ins.adsbygoogle {
@@ -158,6 +160,14 @@ iframe[id^="google_ads"] {
   max-width: 1180px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.adsense-inline-list {
+  grid-column: 1 / -1;
+}
+
+.adsense-mobile-only {
+  display: none;
 }
 
 /* Si Google no llena el anuncio, no dejar hueco visual */
@@ -175,6 +185,9 @@ iframe[id^="google_ads"] {
   .adsense-fixed-unit ins.adsbygoogle {
     min-height: 90px;
     border-radius: 10px;
+  }
+  .adsense-mobile-only {
+    display: block;
   }
 }
 
