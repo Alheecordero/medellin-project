@@ -105,8 +105,8 @@ iframe[id^="google_ads"] {
 }
 
 /* Elementos con data-nosnippet: Google no debería inyectar ads aquí */
-[data-nosnippet] > ins.adsbygoogle,
-[data-ad-layout="-exclude"] > ins.adsbygoogle {
+[data-nosnippet] > ins.adsbygoogle:not(.adsense-manual),
+[data-ad-layout="-exclude"] > ins.adsbygoogle:not(.adsense-manual) {
   display: none !important;
   height: 0 !important;
   max-height: 0 !important;

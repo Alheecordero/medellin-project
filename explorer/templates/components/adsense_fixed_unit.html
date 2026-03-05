@@ -3,7 +3,7 @@
   {% if label %}
     <div class="adsense-fixed-label text-center small text-white-50 mb-2">{{ label }}</div>
   {% endif %}
-  <ins class="adsbygoogle"
+  <ins class="adsbygoogle adsense-manual"
        id="ads-fixed-{{ placement|default:'block' }}-{{ slot }}-{{ unit_key|default:'u0' }}"
        style="display:block"
        data-ad-client="{{ settings.ADSENSE_CLIENT }}"
@@ -12,7 +12,7 @@
        data-full-width-responsive="true"></ins>
   <script>
     (function () {
-      var unitId = "ads-fixed-{{ placement|default:'block' }}-{{ slot }}";
+      var unitId = "ads-fixed-{{ placement|default:'block' }}-{{ slot }}-{{ unit_key|default:'u0' }}";
       var unit = document.getElementById(unitId);
       if (!unit) return;
       try {
