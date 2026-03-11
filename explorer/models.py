@@ -10,6 +10,7 @@ from django.contrib.postgres.indexes import GistIndex
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils import timezone
+from django.utils.translation import get_language
 from django.core.validators import EmailValidator
 from pgvector.django import VectorField
 from django.contrib.postgres.fields import ArrayField
@@ -320,6 +321,39 @@ class Places(models.Model):
             return self.cached_fotos[0]
         return self.fotos.first()
 
+    @property
+    def is_sensitive_for_ads(self):
+        """
+        Detecta contenido sensible (adult/sexual) para desactivar AdSense en la página.
+        Evita restricciones de demanda por preferencia de anunciantes.
+        """
+        default_keywords = [
+            "swinger",
+            "strip club",
+            "stripclub",
+            "sex",
+            "sexual",
+            "adult",
+            "erot",
+            "xxx",
+            "brothel",
+            "prostibulo",
+            "prostitucion",
+            "cabaret",
+            "table dance",
+        ]
+        configured_keywords = getattr(settings, "ADSENSE_SENSITIVE_KEYWORDS", default_keywords) or default_keywords
+
+        text_parts = [
+            self.nombre or "",
+            self.slug or "",
+            self.tipo or "",
+            self.descripcion or "",
+            " ".join(self.types or []),
+        ]
+        haystack = " ".join(text_parts).lower()
+        return any(keyword.lower() in haystack for keyword in configured_keywords)
+
 
 # ────────────────────────────────────────────────────────────────
 # Fotos
@@ -542,3 +576,188 @@ class NewsletterSubscription(models.Model):
         ).values('mes').annotate(
             total=Count('id')
         ).order_by('mes')
+
+
+# ────────────────────────────────────────────────────────────────
+# Guías Curadas ("Top 10" por el local)
+# ────────────────────────────────────────────────────────────────
+
+GUIDE_CATEGORY_CHOICES = (
+    ('sector', 'Por Zona'),
+    ('audiencia', 'Por Audiencia'),
+    ('actividad', 'Por Actividad'),
+    ('daytrip', 'Excursión / Day Trip'),
+    ('gastronomia', 'Gastronomía'),
+)
+
+
+class CuratedGuide(models.Model):
+    """Guía curada con ranking personal de lugares."""
+
+    titulo = models.CharField(max_length=200, help_text="Título en español")
+    titulo_en = models.CharField(max_length=200, blank=True, help_text="Title in English (dejar vacío = usa español)")
+    slug = models.SlugField(max_length=220, unique=True, blank=True, help_text="Se genera automáticamente del título")
+    descripcion = models.TextField(help_text="Descripción en español")
+    descripcion_en = models.TextField(blank=True, help_text="Description in English (dejar vacío = usa español)")
+    imagen_cover = models.URLField(
+        max_length=500, blank=True,
+        help_text="URL de imagen de portada (opcional). Si vacío, usa la foto del lugar #1"
+    )
+    categoria = models.CharField(
+        max_length=30, choices=GUIDE_CATEGORY_CHOICES, default='sector', db_index=True
+    )
+    zona = models.ForeignKey(
+        RegionOSM, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='guias', help_text="Zona específica (opcional). Dejar vacío = Medellín en general"
+    )
+    publicado = models.BooleanField(default=False, db_index=True, help_text="Solo las guías publicadas aparecen en el sitio")
+    orden = models.IntegerField(default=0, help_text="Orden en el índice de guías (menor = primero)")
+    
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Guía Curada"
+        verbose_name_plural = "Guías Curadas"
+        ordering = ['orden', '-fecha_creacion']
+
+    def __str__(self):
+        estado = "✅" if self.publicado else "📝"
+        return f"{estado} {self.titulo}"
+
+    def _get_translated(self, field_es, field_en):
+        """Retorna el campo traducido según el idioma activo."""
+        lang = get_language() or 'es'
+        if lang.startswith('en') and field_en:
+            return field_en
+        return field_es
+
+    @property
+    def titulo_i18n(self):
+        return self._get_translated(self.titulo, self.titulo_en)
+
+    @property
+    def descripcion_i18n(self):
+        return self._get_translated(self.descripcion, self.descripcion_en)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.titulo)
+            # Asegurar unicidad
+            base_slug = self.slug
+            counter = 1
+            while CuratedGuide.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{base_slug}-{counter}"
+                counter += 1
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('explorer:guia_detail', args=[self.slug])
+
+    def get_cover_image(self):
+        """Retorna imagen de cover, o la foto del lugar #1 como fallback."""
+        if self.imagen_cover:
+            return self.imagen_cover
+        first_item = self.items.select_related('lugar').first()
+        if first_item and first_item.lugar:
+            foto = first_item.lugar.get_primera_foto()
+            if foto:
+                return getattr(foto, 'imagen_mediana', None) or foto.imagen
+        return None
+
+    @property
+    def zona_display(self):
+        """Retorna nombre de zona o 'Medellín' si es general."""
+        return self.zona.name if self.zona else "Medellín"
+
+    @property
+    def total_items(self):
+        return self.items.count()
+
+
+class CuratedGuideItem(models.Model):
+    """Un lugar dentro de una guía curada, con comentario personal."""
+
+    guia = models.ForeignKey(
+        CuratedGuide, on_delete=models.CASCADE, related_name='items'
+    )
+    lugar = models.ForeignKey(
+        Places, on_delete=models.CASCADE, related_name='en_guias',
+        help_text="Busca el lugar por nombre"
+    )
+    posicion = models.PositiveIntegerField(
+        default=1, help_text="Posición en el ranking (1 = el mejor)"
+    )
+    comentario = models.TextField(
+        blank=True,
+        help_text="Tu recomendación en español"
+    )
+    comentario_en = models.TextField(
+        blank=True,
+        help_text="Your recommendation in English (dejar vacío = usa español)"
+    )
+    destacado = models.CharField(
+        max_length=50, blank=True,
+        help_text="Badge en español: 'Mi favorito', 'Mejor terraza'"
+    )
+    destacado_en = models.CharField(
+        max_length=50, blank=True,
+        help_text="Badge in English: 'My favorite', 'Best terrace'"
+    )
+
+    class Meta:
+        verbose_name = "Lugar en Guía"
+        verbose_name_plural = "Lugares en Guía"
+        ordering = ['posicion']
+        unique_together = [('guia', 'lugar'), ('guia', 'posicion')]
+
+    def __str__(self):
+        return f"#{self.posicion} {self.lugar.nombre}"
+
+    def _get_translated(self, field_es, field_en):
+        lang = get_language() or 'es'
+        if lang.startswith('en') and field_en:
+            return field_en
+        return field_es
+
+    @property
+    def comentario_i18n(self):
+        return self._get_translated(self.comentario, self.comentario_en)
+
+    @property
+    def destacado_i18n(self):
+        return self._get_translated(self.destacado, self.destacado_en)
+
+
+# ────────────────────────────────────────────────────────────────
+# Pending Places (cola de lugares nuevos por procesar)
+# ────────────────────────────────────────────────────────────────
+
+class PendingPlace(models.Model):
+    """Place ID descubierto en un barrido que aún no está en Places."""
+
+    STATUS_CHOICES = (
+        ('pending', 'Pendiente'),
+        ('processed', 'Procesado'),
+        ('failed', 'Falló'),
+        ('skipped', 'Descartado'),
+    )
+
+    place_id = models.CharField(max_length=255, unique=True, db_index=True)
+    nombre = models.CharField(max_length=255, blank=True, help_text="Nombre básico de la API")
+    tipos = ArrayField(models.CharField(max_length=100), blank=True, default=list, help_text="Tipos de Google")
+    lat = models.FloatField(null=True, blank=True)
+    lng = models.FloatField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', db_index=True)
+    error_msg = models.TextField(blank=True)
+    descubierto_en = models.DateTimeField(auto_now_add=True)
+    procesado_en = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Lugar Pendiente"
+        verbose_name_plural = "Lugares Pendientes"
+        ordering = ['-descubierto_en']
+
+    def __str__(self):
+        icon = {'pending': '⏳', 'processed': '✅', 'failed': '❌', 'skipped': '🚫'}.get(self.status, '?')
+        return f"{icon} {self.nombre or self.place_id}"

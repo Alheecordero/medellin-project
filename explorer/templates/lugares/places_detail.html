@@ -161,7 +161,9 @@
             </div>
             {% endif %}
 
-            {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_DETAIL placement='detail' unit_key='top' label='Publicidad' exclude_auto=True %}
+            {% if adsense_allowed %}
+              {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_DETAIL placement='detail' unit_key='top' label='Publicidad' exclude_auto=True %}
+            {% endif %}
 
             <div class="info-block map-block" data-nosnippet data-ad-layout="-exclude">
               <h3 class="block-title"><i class="bi bi-map-fill me-2"></i>{% trans "Ubicación" %}</h3>
@@ -241,7 +243,9 @@
 
       <!-- Lugares Relacionados -->
       <div class="related-main-card mt-4">
-        {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_DETAIL_BOTTOM|default:settings.ADSENSE_SLOT_DETAIL placement='detail_bottom' unit_key='bottom' label='Publicidad' exclude_auto=True extra_class='adsense-mobile-only' %}
+        {% if adsense_allowed %}
+          {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_DETAIL_BOTTOM|default:settings.ADSENSE_SLOT_DETAIL placement='detail_bottom' unit_key='bottom' label='Publicidad' exclude_auto=True extra_class='adsense-mobile-only' %}
+        {% endif %}
         <div class="related-header">
           <h2 class="related-title">{% trans "Descubre más lugares" %}</h2>
           <div class="related-tabs">

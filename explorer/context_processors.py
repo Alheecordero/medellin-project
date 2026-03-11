@@ -42,6 +42,7 @@ def comunas_context_optimized(request):
 def settings_context(request):
     """Context processor para hacer settings específicas disponibles en templates"""
     return {
+        'adsense_allowed': True,
         'settings': {
             'GOOGLE_ANALYTICS_ID': getattr(settings, 'GOOGLE_ANALYTICS_ID', None),
             'ADSENSE_CLIENT': getattr(settings, 'ADSENSE_CLIENT', None),

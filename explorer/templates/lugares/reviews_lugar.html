@@ -133,7 +133,9 @@
     </div>
     {% endif %}
 
-    {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_REVIEWS|default:settings.ADSENSE_SLOT_DETAIL placement='reviews_top' unit_key='top' label='Publicidad' exclude_auto=True %}
+    {% if adsense_allowed %}
+      {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_REVIEWS|default:settings.ADSENSE_SLOT_DETAIL placement='reviews_top' unit_key='top' label='Publicidad' exclude_auto=True %}
+    {% endif %}
 
     <!-- Lista de Reseñas -->
     <div class="reviews-list-wrapper">
@@ -197,7 +199,7 @@
             
           </div>
         </div>
-        {% if forloop.counter == 5 %}
+        {% if adsense_allowed and forloop.counter == 5 %}
           {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_REVIEWS|default:settings.ADSENSE_SLOT_DETAIL placement='reviews_mid' unit_key='mid' label='Publicidad' exclude_auto=True extra_class='adsense-mobile-only' %}
         {% endif %}
       {% endfor %}

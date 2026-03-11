@@ -52,6 +52,13 @@ TIPOS_EXCLUIDOS = [
 ]
 
 
+def adsense_allowed_for_place(lugar):
+    """
+    Habilita anuncios solo cuando el lugar no es sensible para AdSense.
+    """
+    return not bool(getattr(lugar, "is_sensitive_for_ads", False))
+
+
 # ────────────────────────────────────────────────────────────────────────
 # Rate Limiting para Protección contra Bots
 # ────────────────────────────────────────────────────────────────────────
@@ -869,6 +876,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
             'lugares_similares': reverse('explorer:lugares_similares_ajax_slug', kwargs={'slug': lugar.slug}),
             'lugares_comuna': reverse('explorer:lugares_comuna_ajax_slug', kwargs={'slug': lugar.slug}),
         }
+        context['adsense_allowed'] = adsense_allowed_for_place(lugar)
         
         return context
     
@@ -1054,6 +1062,7 @@ class PlaceReviewsView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         lugar = self.object
+        context['adsense_allowed'] = adsense_allowed_for_place(lugar)
         
         # Procesar reviews desde JSON (máximo 5 de Google API)
         reviews = []
@@ -2389,4 +2398,78 @@ def terms(request):
 def contact(request):
     """Página de Contacto con formulario."""
     return render(request, 'legal/contact.html')
+
+
+# ────────────────────────────────────────────────────────────────────────
+# Guías Curadas
+# ────────────────────────────────────────────────────────────────────────
+
+@require_GET
+def guias_index(request):
+    """Índice de todas las guías curadas publicadas."""
+    from .models import CuratedGuide, GUIDE_CATEGORY_CHOICES
+    
+    guias = CuratedGuide.objects.filter(
+        publicado=True
+    ).prefetch_related('items__lugar__fotos').order_by('orden', '-fecha_creacion')
+    
+    # Agrupar por categoría
+    categorias = {}
+    for cat_code, cat_label in GUIDE_CATEGORY_CHOICES:
+        guias_cat = [g for g in guias if g.categoria == cat_code]
+        if guias_cat:
+            categorias[cat_label] = guias_cat
+    
+    context = {
+        'guias': guias,
+        'categorias': categorias,
+        'titulo_pagina': _('Guías de Medellín'),
+        'descripcion_pagina': _('Recomendaciones personales de un local. Los mejores lugares de Medellín organizados por zona, temática y experiencia.'),
+    }
+    return render(request, 'guias/guias_index.html', context)
+
+
+@require_GET
+def guia_detail(request, slug):
+    """Detalle de una guía curada con los lugares rankeados."""
+    from .models import CuratedGuide
+    
+    guia = get_object_or_404(
+        CuratedGuide.objects.prefetch_related(
+            'items__lugar__fotos',
+        ),
+        slug=slug,
+        publicado=True
+    )
+    
+    items = guia.items.select_related('lugar').order_by('posicion')
+    
+    # Datos de mapa para cada lugar con ubicación
+    import json as _json
+    markers = []
+    for item in items:
+        lugar = item.lugar
+        if lugar.ubicacion:
+            foto = lugar.get_primera_foto()
+            img_url = ''
+            if foto:
+                img_url = getattr(foto, 'imagen_miniatura', None) or getattr(foto, 'imagen_mediana', None) or foto.imagen or ''
+            markers.append({
+                'lat': lugar.ubicacion.y,
+                'lng': lugar.ubicacion.x,
+                'nombre': lugar.nombre,
+                'slug': lugar.slug,
+                'posicion': item.posicion,
+                'rating': float(lugar.rating) if lugar.rating else None,
+                'imagen': str(img_url),
+            })
+    
+    context = {
+        'guia': guia,
+        'items': items,
+        'markers_json': _json.dumps(markers),
+        'titulo_pagina': guia.titulo,
+        'descripcion_pagina': guia.descripcion,
+    }
+    return render(request, 'guias/guia_detail.html', context)
 

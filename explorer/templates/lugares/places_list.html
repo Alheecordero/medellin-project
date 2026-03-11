@@ -570,6 +570,48 @@ $(document).ready(function() {
         prev: '{% trans "Anterior" %}',
         next: '{% trans "Siguiente" %}'
     };
+
+    // Slots AdSense para mantener anuncios también en resultados AJAX
+    const ADS = {
+        client: '{{ settings.ADSENSE_CLIENT|default:"" }}',
+        list: '{{ settings.ADSENSE_SLOT_LIST|default:"" }}',
+        listMobile: '{{ settings.ADSENSE_SLOT_LIST_MOBILE|default:settings.ADSENSE_SLOT_LIST|default:"" }}'
+    };
+
+    function renderAdBlock(slot, placement, unitKey, extraClass = '') {
+        if (!ADS.client || !slot) return '';
+        const id = `ads-fixed-${placement}-${slot}-${unitKey}`;
+        return `
+            <div class="adsense-fixed-unit my-4 ${extraClass}" data-nosnippet data-ad-layout="-exclude">
+                <div class="adsense-fixed-label text-center small text-white-50 mb-2">Publicidad</div>
+                <ins class="adsbygoogle adsense-manual"
+                     id="${id}"
+                     style="display:block"
+                     data-ad-client="${ADS.client}"
+                     data-ad-slot="${slot}"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+            </div>
+        `;
+    }
+
+    function hydrateAds($scope) {
+        $scope.find('ins.adsbygoogle.adsense-manual').each(function () {
+            if (this.dataset.adsInit === '1') return;
+            this.dataset.adsInit = '1';
+            try {
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            } catch (e) {
+                // Silencioso: si AdSense aún no está listo, no rompemos la UI
+            }
+            setTimeout(() => {
+                if (this.getAttribute('data-ad-status') === 'unfilled') {
+                    const wrapper = this.closest('.adsense-fixed-unit');
+                    if (wrapper) wrapper.style.display = 'none';
+                }
+            }, 1800);
+        });
+    }
     
     // Parsear características iniciales desde URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -728,7 +770,6 @@ $(document).ready(function() {
     }
     
     function renderizarResultados(data) {
-        const $grid = $('.lugares-grid');
         const $container = $('.places-grid-card');
         
         if (data.lugares.length === 0) {
@@ -745,12 +786,18 @@ $(document).ready(function() {
             return;
         }
         
-        // Generar HTML de cards
-        let html = '<div class="lugares-grid">';
+        // Generar HTML de cards + ads para resultados AJAX
+        let html = '';
+        html += renderAdBlock(ADS.listMobile, 'list_top_ajax', 'top', 'adsense-mobile-only');
+        html += '<div class="lugares-grid">';
         data.lugares.forEach((lugar, i) => {
             html += generarCardHtml(lugar, i);
+            if (i === 7) {
+                html += renderAdBlock(ADS.listMobile, 'list_mid_ajax', 'mid', 'adsense-mobile-only adsense-inline-list');
+            }
         });
         html += '</div>';
+        html += renderAdBlock(ADS.list, 'list_bottom_ajax', 'bottom');
         
         // Agregar paginación si existe
         if (data.paginacion && data.paginacion.total_paginas > 1) {
@@ -758,6 +805,7 @@ $(document).ready(function() {
         }
         
         $container.html(html);
+        hydrateAds($container);
         
         // Animar cards
         $('.lugar-card-wrapper').each(function(i) {

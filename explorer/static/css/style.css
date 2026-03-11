@@ -206,14 +206,17 @@ div.google-auto-placed {
     overflow: hidden !important;
   }
   
-  /* No mostrar ads overlay dentro de fotos y galerías */
+  /* Contener auto ads dentro de bloques visuales sin ocultarlos */
   .detail-hero div.google-auto-placed,
   .hero-carousel div.google-auto-placed,
   .carousel-inner div.google-auto-placed,
   .map-container div.google-auto-placed,
   .place-preview div.google-auto-placed,
   .modal-body div.google-auto-placed {
-    display: none !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    position: relative !important;
+    margin: 0.25rem 0 !important;
   }
 }
 

@@ -258,6 +258,21 @@ ADSENSE_SLOT_GLOBAL = env('ADSENSE_SLOT_GLOBAL', default='6541608871')
 ADSENSE_SLOT_LIST_MOBILE = env('ADSENSE_SLOT_LIST_MOBILE', default='')
 ADSENSE_SLOT_REVIEWS = env('ADSENSE_SLOT_REVIEWS', default='')
 ADSENSE_SLOT_DETAIL_BOTTOM = env('ADSENSE_SLOT_DETAIL_BOTTOM', default='')
+ADSENSE_SENSITIVE_KEYWORDS = [
+    'swinger',
+    'strip club',
+    'stripclub',
+    'sex',
+    'sexual',
+    'adult',
+    'erot',
+    'xxx',
+    'brothel',
+    'prostibulo',
+    'prostitucion',
+    'cabaret',
+    'table dance',
+]
 
 LANGUAGE_CODE = 'es'
 
