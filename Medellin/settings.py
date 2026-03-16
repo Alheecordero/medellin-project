@@ -273,6 +273,9 @@ ADSENSE_SENSITIVE_KEYWORDS = [
     'cabaret',
     'table dance',
 ]
+ADSENSE_SENSITIVE_SLUGS = [
+    'club-swinger-scarlett',
+]
 
 LANGUAGE_CODE = 'es'
 

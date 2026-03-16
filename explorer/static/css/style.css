@@ -170,6 +170,10 @@ iframe[id^="google_ads"] {
   display: none;
 }
 
+.adsense-desktop-only {
+  display: block;
+}
+
 /* Si Google no llena el anuncio, no dejar hueco visual */
 .adsense-fixed-unit ins.adsbygoogle[data-ad-status="unfilled"] {
   display: none !important;
@@ -188,6 +192,9 @@ iframe[id^="google_ads"] {
   }
   .adsense-mobile-only {
     display: block;
+  }
+  .adsense-desktop-only {
+    display: none;
   }
 }
 

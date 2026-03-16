@@ -1,4 +1,5 @@
 from uuid import uuid4
+import re
 
 from django.apps import apps
 from django.conf import settings
@@ -343,16 +344,23 @@ class Places(models.Model):
             "table dance",
         ]
         configured_keywords = getattr(settings, "ADSENSE_SENSITIVE_KEYWORDS", default_keywords) or default_keywords
+        configured_slugs = set(getattr(settings, "ADSENSE_SENSITIVE_SLUGS", []) or [])
 
-        text_parts = [
-            self.nombre or "",
-            self.slug or "",
-            self.tipo or "",
-            self.descripcion or "",
-            " ".join(self.types or []),
-        ]
-        haystack = " ".join(text_parts).lower()
-        return any(keyword.lower() in haystack for keyword in configured_keywords)
+        slug = (self.slug or "").strip().lower()
+        if slug and slug in {s.lower() for s in configured_slugs}:
+            return True
+
+        # Detección más estricta para evitar falsos positivos:
+        # solo evalúa nombre/slug con coincidencia por palabra o frase.
+        haystack = f"{self.nombre or ''} {self.slug or ''}".lower()
+        for keyword in configured_keywords:
+            kw = (keyword or "").strip().lower()
+            if not kw:
+                continue
+            pattern = r"(?<!\w)" + re.escape(kw).replace(r"\ ", r"[\s\-_]+") + r"(?!\w)"
+            if re.search(pattern, haystack):
+                return True
+        return False
 
 
 # ────────────────────────────────────────────────────────────────
