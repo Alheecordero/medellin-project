@@ -213,6 +213,41 @@
                                 <i class="bi bi-compass me-2"></i>{% trans "Ver Todos los Lugares" %}
                             </a>
                         </div>
+
+                        {% if lugares_imperdibles %}
+                        <div class="imperdibles-home mt-4">
+                            <div class="areas-group-label mb-2">{% trans "Imperdibles en este momento" %}</div>
+                            <div class="imperdibles-grid">
+                                {% for lugar in lugares_imperdibles %}
+                                <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="imperdible-card {% if forloop.counter > 3 %}imperdible-card--extra{% endif %}" title="{{ lugar.nombre }}">
+                                    <div class="imperdible-card__media">
+                                        {% if lugar.imagen %}
+                                        <img src="{{ lugar.imagen }}" alt="{{ lugar.nombre }}" loading="lazy" decoding="async"
+                                             onerror="if(this.dataset.fallbackDone!=='1' && this.dataset.fallback){this.dataset.fallbackDone='1';this.src=this.dataset.fallback;return;}this.style.display='none';this.parentElement.classList.add('is-fallback');"
+                                             data-fallback="{{ lugar.imagen_full|default:'' }}">
+                                        <div class="imperdible-card__placeholder"></div>
+                                        {% else %}
+                                        <div class="imperdible-card__placeholder" style="display:block;"></div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="imperdible-card__body">
+                                        <div class="imperdible-card__title">{{ lugar.nombre }}</div>
+                                        <div class="imperdible-card__meta">
+                                            <span><i class="bi bi-star-fill"></i> {{ lugar.rating }}</span>
+                                            <span>{{ lugar.tipo }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            </div>
+                            {% if lugares_imperdibles|length > 3 %}
+                            <button type="button" class="imperdibles-toggle d-md-none" aria-expanded="false">
+                                <span>{% trans "Ver más" %}</span>
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% endif %}
                     </div>
                     
                     <!-- Loading y Resultados AJAX -->
@@ -281,7 +316,9 @@
     </div>
 </section>
 
-{% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_HOME placement='home' label='Publicidad' exclude_auto=True %}
+<section class="home-monetization-zone">
+    {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_HOME placement='home' label='' exclude_auto=True extra_class='adsense-home-unit' %}
+</section>
 
 <!-- Sección separada para resultados dinámicos (semánticos, cerca de mí, etc.) -->
 <section id="search-results-section" style="display: none;">
@@ -319,6 +356,136 @@
     display: none;
 }
 
+.imperdibles-home {
+    max-width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.home-monetization-zone {
+    background: linear-gradient(180deg, rgba(8, 14, 23, 0.92), rgba(8, 14, 23, 0.98));
+    padding: .4rem 0 .85rem;
+}
+
+.home-monetization-zone .adsense-fixed-unit {
+    margin: 0 auto !important;
+    padding: 0 8px;
+}
+
+.home-monetization-zone .adsense-home-unit ins.adsbygoogle {
+    min-height: 0;
+}
+
+.imperdibles-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .8rem;
+}
+
+.imperdible-card {
+    display: block;
+    text-decoration: none;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(15, 23, 42, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.imperdible-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, .35);
+    border-color: rgba(74, 222, 128, 0.45);
+}
+
+.imperdible-card__media {
+    aspect-ratio: 16 / 10;
+    background: linear-gradient(135deg, rgba(15, 23, 42, .6), rgba(30, 41, 59, .8));
+}
+
+.imperdible-card__media.is-fallback .imperdible-card__placeholder {
+    display: block;
+}
+
+.imperdible-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.imperdible-card__placeholder {
+    display: none;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(74, 222, 128, .2), rgba(34, 211, 238, .2));
+}
+
+.imperdible-card__body {
+    padding: .65rem .75rem .8rem;
+}
+
+.imperdible-card__title {
+    color: #f8fafc;
+    font-size: .86rem;
+    font-weight: 700;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-wrap: balance;
+}
+
+.imperdible-card__meta {
+    margin-top: .35rem;
+    display: flex;
+    justify-content: space-between;
+    gap: .5rem;
+    color: rgba(248, 250, 252, 0.82);
+    font-size: .73rem;
+}
+
+.imperdible-card__meta i {
+    color: #f59e0b;
+}
+
+.imperdibles-toggle {
+    margin-top: .75rem;
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(15, 23, 42, 0.42);
+    color: #f8fafc;
+    border-radius: 12px;
+    padding: .55rem .75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    font-weight: 600;
+}
+
+@media (max-width: 991px) {
+    .imperdibles-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .imperdibles-grid {
+        grid-template-columns: 1fr;
+    }
+    .imperdible-card--extra {
+        display: none;
+    }
+    .imperdibles-home.imperdibles-home--expanded .imperdible-card--extra {
+        display: block;
+    }
+    .imperdibles-home.imperdibles-home--expanded .imperdibles-toggle i {
+        transform: rotate(180deg);
+    }
+}
+
 /* Botones de idioma - estilos en components.css */
 
 /* Hero Section con foto limpia de Medellín como fondo */
@@ -330,7 +497,7 @@
     background-repeat: no-repeat;
     min-height: 100vh;
     margin-top: 0;
-    padding-top: 95px;
+    padding-top: 48px;
     padding-bottom: 80px;
     overflow-x: hidden;
 }
@@ -354,7 +521,7 @@
     line-height: 1.1;
     letter-spacing: -0.03em;
     color: #f8fafc;
-    font-size: clamp(2rem, 6vw, 4rem);
+    font-size: clamp(3rem, 7.2vw, 5.2rem);
 }
 
 .title-accent {
@@ -933,7 +1100,7 @@
 /* Mobile Optimizations */
 @media (max-width: 768px) {
     .hero-title {
-        font-size: clamp(1.75rem, 8vw, 2.5rem) !important;
+        font-size: clamp(2.3rem, 9.5vw, 3.4rem) !important;
         line-height: 1.15;
         margin-bottom: 1.5rem !important;
     }
@@ -981,7 +1148,7 @@
 @media (max-width: 430px) {
     /* Hero section ajustes */
     .hero-section-clean {
-        padding-top: 60px;
+        padding-top: 34px;
         padding-bottom: 40px;
     }
     
@@ -1005,7 +1172,7 @@
     
     /* Título más compacto */
     .hero-title {
-        font-size: 1.5rem !important;
+        font-size: 2.05rem !important;
         margin-bottom: 1rem !important;
     }
     
@@ -1149,7 +1316,7 @@
     }
     
     .hero-title {
-        font-size: 1.35rem !important;
+        font-size: 1.9rem !important;
     }
     
     .home-lang-switch .btn-lang-home {
@@ -1445,6 +1612,15 @@ $(document).ready(function() {
     let currentSearchRequest = null;
     let searchTimeoutId = null;
     const SEARCH_DEBOUNCE_MS = 600;
+
+    // Imperdibles mobile: mostrar 3 y expandir con flecha
+    $('.imperdibles-toggle').on('click', function() {
+        const $btn = $(this);
+        const $wrapper = $btn.closest('.imperdibles-home');
+        const expanded = $wrapper.toggleClass('imperdibles-home--expanded').hasClass('imperdibles-home--expanded');
+        $btn.attr('aria-expanded', expanded ? 'true' : 'false');
+        $btn.find('span').text(expanded ? '{% trans "Ver menos" %}' : '{% trans "Ver más" %}');
+    });
     
     // Cerrar dropdowns al hacer scroll (sin romper futuros clics)
     $(window).on('scroll', function() {

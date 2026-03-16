@@ -13,6 +13,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 import json
 import ipaddress
+import random
 from pgvector.django import CosineDistance
 from django.views import View
 from django.utils.translation import gettext as _, ngettext, get_language
@@ -339,7 +340,71 @@ class HomeView(TemplateView):
             cache.set(cache_key, comuna_con_lugares, 3600)
         
         context['comuna_con_lugares'] = comuna_con_lugares
+        context['lugares_imperdibles'] = self._get_lugares_imperdibles()
         return context
+
+    def _get_lugares_imperdibles(self):
+        """
+        Lista corta rotativa: mezcla aleatoria por request dentro de un pool
+        de lugares de alta calidad (rating alto + popularidad).
+        """
+        lang = (get_language() or "es").lower()
+        pool_key = f"home_lugares_imperdibles_pool_v3_{lang}"
+        imperdibles_pool = cache.get(pool_key)
+
+        if imperdibles_pool is None:
+            candidatos = (
+                Places.objects.filter(
+                    tiene_fotos=True,
+                    slug__isnull=False,
+                    rating__gte=4.4,
+                )
+                .exclude(slug__exact="")
+                .exclude(rating__isnull=True)
+                .only("nombre", "slug", "tipo", "rating", "total_reviews", "es_destacado", "show_in_home")
+                .prefetch_related(
+                    Prefetch(
+                        "fotos",
+                        queryset=Foto.objects.only("imagen", "imagen_mediana", "imagen_miniatura")[:1],
+                        to_attr="cached_fotos",
+                    )
+                )
+                .order_by("-weighted_rating", "-total_reviews", "-rating")[:80]
+            )
+
+            imperdibles_pool = []
+            for lugar in candidatos:
+                # Evita contenido sensible en una sección de alto tráfico.
+                if getattr(lugar, "is_sensitive_for_ads", False):
+                    continue
+
+                score_popular = (
+                    bool(getattr(lugar, "show_in_home", False))
+                    or bool(getattr(lugar, "es_destacado", False))
+                    or (getattr(lugar, "total_reviews", 0) or 0) >= 60
+                )
+                if not score_popular:
+                    continue
+
+                foto = lugar.cached_fotos[0] if getattr(lugar, "cached_fotos", None) else lugar.fotos.first()
+                image_data = get_optimized_image_urls(foto, "thumb")
+                imperdibles_pool.append({
+                    "nombre": lugar.nombre,
+                    "slug": lugar.slug,
+                    "tipo": get_localized_place_type(lugar),
+                    "rating": round(float(lugar.rating or 0), 1),
+                    "imagen": image_data.get("imagen"),
+                    "imagen_full": image_data.get("imagen_full"),
+                })
+
+            cache.set(pool_key, imperdibles_pool, 3600)
+
+        if not imperdibles_pool:
+            return []
+
+        # Rotación por request: muestra una muestra aleatoria del pool.
+        sample_size = min(8, len(imperdibles_pool))
+        return random.sample(imperdibles_pool, sample_size)
 
     def _get_filtros_data(self):
         """Obtiene datos para los filtros del home."""
