@@ -165,7 +165,7 @@
         {% block content %}{% endblock %}
     </main>
 
-    {% if adsense_allowed and request.resolver_match.url_name != 'home' %}
+    {% if adsense_allowed %}
       {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_GLOBAL placement='global' label='Publicidad' exclude_auto=True extra_class='adsense-fixed-unit--global' %}
     {% endif %}
 
