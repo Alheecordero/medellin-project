@@ -1,0 +1,3 @@
+{% if adsense_allowed %}
+  {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST_MOBILE|default:settings.ADSENSE_SLOT_LIST placement='list_top' unit_key='top' exclude_auto=True %}
+{% endif %}

@@ -4,8 +4,6 @@
 {% load form_tags %}
 {% load static %}
 
-{% block navbar %}{% endblock %}
-
 {% block title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
 
 {% block meta_description %}{{ descripcion_pagina }} {% trans "Ratings de Google, horarios actualizados y ubicación exacta. Filtra por tipo, zona y características." %}{% endblock %}
@@ -30,27 +28,12 @@
 
       <!-- Card Superior: Navegación + Título + Filtros -->
       <div class="places-header-card mb-4">
-        {% get_current_language as LANGUAGE_CODE %}
-
-        <!-- Navegación superior -->
-        <div class="d-flex justify-content-end align-items-center mb-3 px-1 flex-wrap gap-2">
-          <div class="home-lang-switch d-flex flex-wrap gap-2">
-            <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">{% trans "Inicio" %}</a>
-            {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-              <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">{% trans "Nosotros" %}</a>
-            {% else %}
-              <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">{% trans "Nosotros" %}</a>
-            {% endif %}
-            {% include 'components/lang_switcher.html' %}
-          </div>
-        </div>
-
         <!-- Título -->
         <div class="text-center mb-4">
           <h1 class="places-title fw-bold">
             <span class="title-main">{{ titulo_pagina }}</span>
           </h1>
-          <p class="lead text-white-50">{{ descripcion_pagina }}</p>
+          <p class="lead places-lead">{{ descripcion_pagina }}</p>
         </div>
 
         <!-- Filtros estilo HOME -->
@@ -200,13 +183,13 @@
 
       <!-- Card Inferior: Grid de Lugares -->
       <div class="places-grid-card" id="places-grid-container">
-        {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST_MOBILE|default:settings.ADSENSE_SLOT_LIST placement='list_top' unit_key='top' label='Publicidad' exclude_auto=True %}
+        {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST_MOBILE|default:settings.ADSENSE_SLOT_LIST placement='list_top' unit_key='top' exclude_auto=True %}
         {% if lugares %}
           <div class="places-grid">
             {% for lugar in lugares %}
               {% include 'components/place_card.html' with lugar=lugar card_variant='horizontal' %}
               {% if forloop.counter == 8 %}
-                {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST placement='list_mid' unit_key='mid' label='Publicidad' exclude_auto=True extra_class='adsense-desktop-only adsense-inline-list' %}
+                {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST placement='list_mid' unit_key='mid' exclude_auto=True extra_class='adsense-desktop-only adsense-inline-list' %}
               {% endif %}
             {% endfor %}
           </div>
@@ -242,9 +225,9 @@
 
         {% else %}
           <div class="text-center py-5">
-            <i class="bi bi-search display-1 mb-3 text-white-50"></i>
-            <h3 class="text-white">{% trans "No hay lugares disponibles" %}</h3>
-            <p class="text-white-50">{% trans "No se encontraron lugares que coincidan con tu búsqueda." %}</p>
+            <i class="bi bi-search display-1 mb-3 places-empty-icon"></i>
+            <h3 class="places-empty-title">{% trans "No hay lugares disponibles" %}</h3>
+            <p class="places-empty-text">{% trans "No se encontraron lugares que coincidan con tu búsqueda." %}</p>
             <a href="{% url 'explorer:lugares_list' %}" class="btn btn-gradient-green rounded-pill px-4">
               {% trans "Ver todos los lugares" %}
             </a>
@@ -252,7 +235,7 @@
         {% endif %}
       </div>
 
-      {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST placement='list' unit_key='bottom' label='Publicidad' exclude_auto=True %}
+      {% include 'components/adsense_list_bottom.html' %}
 
     </div>
   </div>
@@ -261,140 +244,296 @@
 
 {% block extra_css %}
 <style>
-/* ═══════════════════════════════════════════════════════════════════
-   PLACES LIST - Page Specific Styles
-   Los estilos de cards están en components.css
-   ═══════════════════════════════════════════════════════════════════ */
+/* ── PLACES LIST - Light Professional Theme ── */
 
 .places-section {
-  background: var(--gradient-glow), var(--gradient-dark-bg);
+  background:
+    radial-gradient(circle at top left, rgba(17,153,142,0.08), transparent 34rem),
+    linear-gradient(180deg, #fbfcfa 0%, #f5f7f4 100%);
   min-height: 100vh;
-  padding: var(--space-10) 0 var(--space-12);
+  padding: 2rem 0 4rem;
   overflow-x: hidden;
 }
 
 .places-section .container { max-width: 1280px; overflow-x: hidden; }
 
-.places-main-wrapper { 
+.places-main-wrapper {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 var(--space-6);
+  padding: 0 1rem;
   overflow-x: hidden;
 }
 
 @media (min-width: 992px) {
-  .places-main-wrapper { padding: 0 var(--space-8); }
+  .places-main-wrapper { padding: 0 1.5rem; }
 }
 
 /* Card Header */
 .places-header-card {
-  background: var(--dark-card-95);
-  border-radius: var(--radius-4xl);
-  padding: var(--space-10) var(--space-8);
-  box-shadow: var(--shadow-3xl);
-  border: 1px solid var(--white-12);
+  background: rgba(255,255,255,0.94);
+  border-radius: 24px;
+  padding: 2.25rem 1.5rem 1.5rem;
+  box-shadow: 0 18px 50px rgba(15,23,42,0.07);
+  border: 1px solid #e2ebe7;
   position: relative;
   z-index: 10;
-  margin-bottom: var(--space-10);
+  margin-bottom: 1.5rem;
+  overflow: visible;
 }
 
 /* Título */
 .places-title {
-  font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-white);
-  text-shadow: 0 0 20px var(--accent-40), 0 2px 4px var(--black-50);
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111827;
   position: relative;
-  margin-bottom: var(--space-4);
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.02em;
 }
 
 .places-title::after {
   content: '';
   position: absolute;
-  bottom: -12px;
+  bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-accent), transparent);
+  width: 60px;
+  height: 3px;
+  background: #11998e;
   border-radius: 2px;
-  box-shadow: 0 0 12px var(--accent-60);
 }
 
 .title-main {
-  background: linear-gradient(135deg, var(--color-white) 0%, var(--color-accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #111827;
+  -webkit-text-fill-color: initial;
+  background: none;
 }
 
-@media (min-width: 768px) { .places-title { font-size: 2.5rem; } }
-@media (min-width: 992px) { .places-title { font-size: var(--font-size-5xl); } }
+@media (min-width: 768px) { .places-title { font-size: 2.25rem; } }
+@media (min-width: 992px) { .places-title { font-size: 2.5rem; } }
+
+/* Lead y estados vacíos */
+.places-lead,
+.places-header-card .lead {
+  color: #66736f;
+  font-size: 0.98rem;
+  margin-bottom: 0;
+}
+.places-empty-icon { color: #9ca3af !important; }
+.places-empty-title { color: #111827; }
+.places-empty-text { color: #6b7280; }
 
 /* Filtros */
 .filtros-home-style {
-  background: rgba(3, 30, 20, 0.95);
-  border-radius: var(--radius-3xl);
-  padding: var(--space-8) var(--space-6);
-  border: 1px solid var(--white-12);
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1rem;
+  border: 1px solid #e4eeea;
   position: relative;
   z-index: 100;
-  margin-top: var(--space-8);
+  margin-top: 1.5rem;
+  box-shadow: 0 10px 30px rgba(15,23,42,0.05);
+}
+
+.btn-filtro-dropdown {
+  min-height: 52px;
+  border-radius: 14px !important;
+  background: #fbfdfc !important;
+  border: 1px solid #dbe8e4 !important;
+  color: #23302d !important;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: none !important;
+}
+
+.btn-filtro-dropdown i {
+  color: #11998e;
+}
+
+.btn-filtro-dropdown:hover,
+.btn-filtro-dropdown:focus {
+  background: #f0fdfa !important;
+  border-color: #99f6e4 !important;
+  color: #0f766e !important;
+}
+
+.dropdown-menu-filtros {
+  border: 1px solid #dbe8e4;
+  border-radius: 16px;
+  padding: 0.45rem;
+  box-shadow: 0 20px 45px rgba(15,23,42,0.14) !important;
+}
+
+.dropdown-item-filtro {
+  border-radius: 12px;
+  color: #263532;
+}
+
+.dropdown-item-filtro:hover,
+.dropdown-item-filtro:focus {
+  background: #f0fdfa;
+  color: #0f766e;
+}
+
+.dropdown-header {
+  color: #11998e;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 /* Grid Container */
 .places-grid-card {
-  background: var(--dark-card-95);
-  border-radius: var(--radius-4xl);
-  padding: var(--space-8) var(--space-6);
-  box-shadow: var(--shadow-3xl);
-  border: 1px solid var(--white-12);
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 1.25rem;
+  box-shadow: 0 18px 45px rgba(15,23,42,0.06);
+  border: 1px solid #e2ebe7;
   position: relative;
   z-index: 1;
 }
 
+.places-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* Cards de lista: formato directorio profesional */
+.places-grid .place-card {
+  border-radius: 18px;
+  border: 1px solid #e4eeea;
+  box-shadow: 0 1px 0 rgba(15,23,42,0.04);
+  min-height: 178px;
+}
+
+.places-grid .place-card:hover {
+  transform: translateY(-2px);
+  border-color: #99f6e4;
+  box-shadow: 0 14px 30px rgba(17,153,142,0.11);
+}
+
+.places-grid .place-card__title {
+  background: none;
+  -webkit-text-fill-color: #13201d;
+  color: #13201d;
+  font-size: 1.08rem;
+  font-weight: 800;
+  margin-bottom: 0.45rem;
+  letter-spacing: -0.01em;
+}
+
+.places-grid .place-card__body {
+  padding: 1rem 1.15rem;
+  justify-content: center;
+}
+
+.places-grid .place-card__badges {
+  gap: 0.35rem;
+  margin-bottom: 0.45rem;
+}
+
+.places-grid .place-card__badge {
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.places-grid .place-card__badge--type {
+  background: #f0fdfa;
+  border-color: #99f6e4;
+  color: #0f766e;
+}
+
+.places-grid .place-card__meta,
+.places-grid .place-card__address {
+  font-size: 0.84rem;
+  color: #66736f;
+  margin-bottom: 0.35rem;
+}
+
+.places-grid .place-card__arrow {
+  justify-content: flex-end;
+  padding-top: 0.35rem;
+}
+
+.places-grid .place-card__arrow::before {
+  content: "{% trans 'Ver lugar' %}";
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: #11998e;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(17,153,142,0.22);
+}
+
+.places-grid .place-card__arrow i {
+  display: none;
+}
+
+.places-grid .place-card:hover .place-card__arrow::before {
+  background: #0d8a7f;
+}
+
 @media (min-width: 992px) {
-  .places-grid-card { padding: var(--space-10) var(--space-8); }
+  .places-grid .place-card--horizontal {
+    grid-template-columns: 236px minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .places-grid .place-card--horizontal .place-card__media img,
+  .places-grid .place-card--horizontal .place-card__placeholder {
+    height: 100%;
+    min-height: 178px;
+    max-height: 178px;
+    border-radius: 18px 0 0 18px;
+  }
 }
 
-/* Cards - títulos con gradiente verde */
-.places-grid .place-card__title,
-.lugares-grid .place-card__title {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
+@media (min-width: 992px) {
+  .places-grid-card { padding: 2rem 1.5rem; }
 }
 
-/* Nav Links - estilos en components.css */
+/* Empty state */
+.places-grid-card .text-white { color: #111827 !important; }
+.places-grid-card .text-white-50 { color: #6b7280 !important; }
 
 /* Paginación */
 .pagination .page-link {
-  border: 1px solid var(--primary-30);
-  color: var(--color-primary);
-  font-weight: var(--font-weight-medium);
-  background: var(--color-white);
+  border: 1px solid #d1d5db;
+  color: #11998e;
+  font-weight: 500;
+  background: #fff;
 }
 
 .pagination .page-link:hover {
-  background: var(--primary-10);
-  border-color: var(--primary-50);
-  color: var(--color-primary-dark);
+  background: #f0fdfa;
+  border-color: #11998e;
+  color: #11998e;
 }
 
 /* Estados de filtros */
 .btn-filtro-dropdown.selected {
-  background: var(--primary-35) !important;
-  border-color: var(--primary-60) !important;
+  background: #e6fffb !important;
+  border-color: #11998e !important;
+  color: #0f766e !important;
 }
 
 .feature-option.active {
-  background: var(--primary-10);
+  background: #f0fdfa;
 }
 
 .feature-option.active .feature-check {
   display: inline-block !important;
-  color: var(--color-primary);
+  color: #11998e;
 }
 
 /* Loading */
@@ -405,22 +544,46 @@
 
 /* Mobile */
 @media (max-width: 991px) {
-  .places-section { padding: var(--space-6) 0 var(--space-10); }
-  .places-main-wrapper { padding: 0 var(--space-4); }
-  .places-header-card { 
-    padding: var(--space-6) var(--space-5);
-    margin-bottom: var(--space-8);
-    border-radius: var(--radius-2xl);
+  .places-section { padding: 1.25rem 0 2.5rem; }
+  .places-main-wrapper { padding: 0 0.5rem; }
+  .places-header-card {
+    padding: 1.35rem 0.9rem 1rem;
+    margin-bottom: 1.25rem;
+    border-radius: 18px;
   }
-  .places-title { font-size: var(--font-size-3xl); }
-  .filtros-home-style { 
-    padding: var(--space-6) var(--space-5);
-    margin-top: var(--space-6);
-    border-radius: var(--radius-2xl);
+  .places-title { font-size: 1.75rem; }
+  .filtros-home-style {
+    padding: 0.75rem;
+    margin-top: 1rem;
+    border-radius: 16px;
   }
   .places-grid-card {
-    padding: var(--space-6) var(--space-5);
-    border-radius: var(--radius-2xl);
+    padding: 0.85rem;
+    border-radius: 18px;
+  }
+
+  .places-grid .place-card {
+    border-radius: 16px;
+    min-height: auto;
+  }
+
+  .places-grid .place-card__img,
+  .places-grid .place-card__placeholder {
+    height: 190px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .places-grid .place-card__body {
+    padding: 0.95rem;
+  }
+
+  .places-grid .place-card__title {
+    font-size: 1rem;
+  }
+
+  .places-grid .place-card__arrow::before {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>
@@ -516,14 +679,13 @@ function generarPlaceCardHtml(lugar, opciones = {}) {
         ? `<div class="place-card__address"><i class="bi bi-map"></i><span>${direccion}</span></div>` 
         : '';
     
-    // CTA
-    const ctaHtml = lugar.slug 
-        ? `<a href="${url}" class="place-card__cta"><i class="bi bi-eye"></i>${T.viewDetails}</a>` 
+    const arrowHtml = lugar.slug 
+        ? `<div class="place-card__arrow" aria-hidden="true"><i class="bi bi-arrow-right-circle-fill"></i></div>` 
         : '';
     
     return `
         <div class="place-card-wrapper">
-            <article class="place-card place-card--horizontal">
+            <a href="${url}" class="place-card place-card--link place-card--horizontal" title="${imgAlt}">
                 <div class="place-card__media">
                     ${imagenHtml}
                     ${ratingHtml}
@@ -534,9 +696,9 @@ function generarPlaceCardHtml(lugar, opciones = {}) {
                     <div class="place-card__badges">${badgesHtml}</div>
                     ${precioHtml}
                     ${direccionHtml}
-                    ${ctaHtml}
+                    ${arrowHtml}
                 </div>
-            </article>
+            </a>
         </div>`;
 }
 
@@ -583,7 +745,7 @@ $(document).ready(function() {
         const id = `ads-fixed-${placement}-${slot}-${unitKey}`;
         return `
             <div class="adsense-fixed-unit my-4 ${extraClass}" data-nosnippet data-ad-layout="-exclude">
-                <div class="adsense-fixed-label text-center small text-white-50 mb-2">Publicidad</div>
+                <div class="adsense-fixed-label text-center mb-2">Publicidad</div>
                 <ins class="adsbygoogle adsense-manual"
                      id="${id}"
                      style="display:block"
@@ -775,9 +937,9 @@ $(document).ready(function() {
         if (data.lugares.length === 0) {
             $container.html(`
                 <div class="text-center py-5">
-                    <i class="bi bi-search display-1 mb-3 text-white-50"></i>
-                    <h3 class="text-white">${T.noResults}</h3>
-                    <p class="text-white-50">${data.mensaje || T.noResultsMsg}</p>
+                    <i class="bi bi-search display-1 mb-3 places-empty-icon"></i>
+                    <h3 class="places-empty-title">${T.noResults}</h3>
+                    <p class="places-empty-text">${data.mensaje || T.noResultsMsg}</p>
                     <a href="{% url 'explorer:lugares_list' %}" class="btn btn-gradient-green rounded-pill px-4">
                         ${T.viewAll}
                     </a>
@@ -789,7 +951,7 @@ $(document).ready(function() {
         // Generar HTML de cards + ads para resultados AJAX
         let html = '';
         html += renderAdBlock(ADS.listMobile, 'list_top_ajax', 'top');
-        html += '<div class="lugares-grid">';
+        html += '<div class="places-grid">';
         data.lugares.forEach((lugar, i) => {
             html += generarCardHtml(lugar, i);
             if (i === 7) {
@@ -808,7 +970,7 @@ $(document).ready(function() {
         hydrateAds($container);
         
         // Animar cards
-        $('.lugar-card-wrapper').each(function(i) {
+        $('.place-card-wrapper').each(function(i) {
             $(this).css('animation-delay', (i * 0.05) + 's').addClass('animate');
         });
     }

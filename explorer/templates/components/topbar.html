@@ -1,0 +1,310 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+<header class="site-topbar" id="site-topbar">
+  <div class="container site-topbar__inner">
+
+    <button class="site-topbar__burger" id="site-burger"
+            aria-label="{% trans 'Abrir menú' %}" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Marca -->
+    <a href="{% url 'explorer:home' %}" class="site-topbar__brand">
+      Vive<strong>Medellín</strong>
+    </a>
+
+    <!-- Nav desktop -->
+    <nav class="site-topbar__nav" aria-label="{% trans 'Navegación principal' %}">
+      <a href="{% url 'explorer:home' %}"
+         class="site-topbar__link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+        {% trans "Inicio" %}
+      </a>
+      <a href="{% url 'explorer:lugares_list' %}"
+         class="site-topbar__link {% if 'lugares' in request.resolver_match.url_name|default:'' or 'places' in request.resolver_match.url_name|default:'' %}active{% endif %}">
+        {% trans "Explorar" %}
+      </a>
+      {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+        <a href="{% url 'explorer:about' %}"
+           class="site-topbar__link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">
+          {% trans "Nosotros" %}
+        </a>
+      {% else %}
+        <a href="{% url 'explorer:about_es' %}"
+           class="site-topbar__link {% if request.resolver_match.url_name == 'about_es' %}active{% endif %}">
+          {% trans "Nosotros" %}
+        </a>
+      {% endif %}
+    </nav>
+
+    <!-- Derecha: idioma -->
+    <div class="site-topbar__right">
+      {% include 'components/lang_switcher.html' %}
+    </div>
+
+  </div>
+
+  <!-- Menú mobile -->
+  <nav class="site-topbar__mobile-menu" id="site-mobile-menu"
+       aria-label="{% trans 'Menú mobile' %}">
+    <a href="{% url 'explorer:home' %}"
+       class="site-topbar__mobile-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+      {% trans "Inicio" %}
+    </a>
+    <a href="{% url 'explorer:lugares_list' %}"
+       class="site-topbar__mobile-link {% if 'lugares' in request.resolver_match.url_name|default:'' or 'places' in request.resolver_match.url_name|default:'' %}active{% endif %}">
+      {% trans "Explorar" %}
+    </a>
+    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+      <a href="{% url 'explorer:about' %}"
+         class="site-topbar__mobile-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">
+        {% trans "Nosotros" %}
+      </a>
+    {% else %}
+      <a href="{% url 'explorer:about_es' %}"
+         class="site-topbar__mobile-link {% if request.resolver_match.url_name == 'about_es' %}active{% endif %}">
+        {% trans "Nosotros" %}
+      </a>
+    {% endif %}
+  </nav>
+</header>
+
+<style>
+/* ── SITE TOPBAR (global, fijo en mobile y desktop) ── */
+:root {
+  --site-topbar-h: 64px;
+}
+html {
+  scroll-padding-top: var(--site-topbar-h);
+}
+body {
+  padding-top: var(--site-topbar-h);
+}
+
+.site-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid #e5e9e2;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+
+.site-topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  gap: 1.25rem;
+}
+
+/* Marca */
+.site-topbar__brand {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #111827;
+  text-decoration: none;
+  letter-spacing: -.02em;
+  flex-shrink: 0;
+}
+.site-topbar__brand strong { color: #11998e; }
+
+/* Nav desktop */
+.site-topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.site-topbar__link {
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  text-decoration: none;
+  transition: color .15s, background .15s;
+  border-bottom: 2px solid transparent;
+}
+
+.site-topbar__link:hover {
+  color: #11998e;
+  background: #f0fdfa;
+}
+
+.site-topbar__link.active {
+  color: #11998e;
+  font-weight: 600;
+  background: #f0fdfa;
+}
+
+/* Derecha */
+.site-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+/* Hamburguesa */
+.site-topbar__burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid #e5e9e2;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+  transition: border-color .15s, background .15s;
+}
+
+.site-topbar__burger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: #374151;
+  border-radius: 2px;
+  transition: transform .25s, opacity .25s;
+}
+
+.site-topbar__burger:hover {
+  border-color: #11998e;
+  background: #f0fdfa;
+}
+
+.site-topbar__burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.site-topbar__burger.open span:nth-child(2) { opacity: 0; }
+.site-topbar__burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Menú mobile */
+.site-topbar__mobile-menu {
+  display: none;
+  flex-direction: column;
+  border-top: 1px solid #f0f2ef;
+  background: #fff;
+  padding: 0.35rem 0 0.65rem;
+  box-shadow: 0 12px 24px rgba(15,23,42,0.08);
+}
+
+.site-topbar__mobile-menu.open {
+  display: flex;
+}
+
+.site-topbar__mobile-link {
+  padding: 0.7rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  transition: color .15s, background .15s;
+}
+
+.site-topbar__mobile-link:hover,
+.site-topbar__mobile-link.active {
+  color: #11998e;
+  background: #f0fdfa;
+}
+
+/* Idioma */
+.site-lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  gap: 2px;
+  border: 1px solid #d8eeea;
+  border-radius: 999px;
+  background: #f8fbfa;
+}
+
+.site-lang-switcher__form {
+  display: inline-flex;
+  margin: 0;
+}
+
+.site-lang-switcher__btn {
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #5b6b67;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  padding: 0.42rem 0.5rem;
+  min-width: 34px;
+  transition: background .15s, color .15s, box-shadow .15s;
+}
+
+.site-lang-switcher__btn:hover {
+  color: #11998e;
+}
+
+.site-lang-switcher__btn.active {
+  color: #fff;
+  background: #11998e;
+  box-shadow: 0 4px 12px rgba(17,153,142,0.24);
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  :root {
+    --site-topbar-h: 56px;
+  }
+  .site-topbar__inner {
+    min-height: 56px;
+    gap: 0.55rem;
+    justify-content: flex-start;
+  }
+  .site-topbar__brand {
+    font-size: 1.05rem;
+    margin-right: auto;
+  }
+  .site-topbar__right {
+    gap: 0.45rem;
+  }
+  .site-lang-switcher {
+    padding: 2px;
+  }
+  .site-lang-switcher__btn {
+    min-width: 31px;
+    padding: 0.38rem 0.42rem;
+    font-size: 0.68rem;
+  }
+  .site-topbar__nav { display: none; }
+  .site-topbar__burger { display: flex; }
+  .site-topbar__right { margin-left: auto; }
+}
+@media (min-width: 768px) {
+  .site-topbar__mobile-menu { display: none !important; }
+}
+</style>
+
+<script>
+(function() {
+  var burger = document.getElementById('site-burger');
+  var menu   = document.getElementById('site-mobile-menu');
+  if (!burger || !menu) return;
+  burger.addEventListener('click', function() {
+    var open = menu.classList.toggle('open');
+    burger.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', open);
+  });
+  menu.querySelectorAll('.site-topbar__mobile-link').forEach(function(link) {
+    link.addEventListener('click', function() {
+      menu.classList.remove('open');
+      burger.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
+</script>

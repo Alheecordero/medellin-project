@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+{% load form_tags %}
+
+
+{% block title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
+{% block meta_description %}{{ descripcion_pagina }}{% endblock %}
+{% block og_title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
+{% block og_description %}{{ descripcion_pagina }}{% endblock %}
+
+{% block content %}
+{% get_current_language as LANGUAGE_CODE %}
+
+<section class="guias-section">
+  <div class="container py-5">
+    <div class="guias-wrapper">
+
+      <!-- Header -->
+      <div class="text-center mb-5">
+        <h1 class="guias-title fw-bold">{{ titulo_pagina }}</h1>
+        <p class="lead text-white-50 mx-auto" style="max-width:600px;">{{ descripcion_pagina }}</p>
+      </div>
+
+      {% if guias %}
+        <div class="guias-grid">
+          {% for guia in guias %}
+          <a href="{{ guia.get_absolute_url }}" class="guia-card">
+            <div class="guia-card-img">
+              {% with cover=guia.get_cover_image %}
+              {% if cover %}
+                <img src="{{ cover }}" alt="{{ guia.titulo }}" loading="lazy">
+              {% else %}
+                <div class="guia-card-placeholder"><i class="bi bi-bookmark-star"></i></div>
+              {% endif %}
+              {% endwith %}
+              <span class="guia-card-count">{{ guia.total_items }} {% trans "lugares" %}</span>
+            </div>
+            <div class="guia-card-body">
+              <h3 class="guia-card-title">{{ guia.titulo_i18n }}</h3>
+              <p class="guia-card-desc">{{ guia.descripcion_i18n|truncatechars:100 }}</p>
+              <span class="guia-card-cta">{% trans "Ver guía" %} <i class="bi bi-arrow-right ms-1"></i></span>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-5">
+          <i class="bi bi-bookmark-star display-3 text-white-50"></i>
+          <p class="text-white-50 mt-3">{% trans "Las guías están en camino. ¡Vuelve pronto!" %}</p>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.guias-section {
+  background: var(--gradient-dark-bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.guias-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.guias-title {
+  font-size: 2.2rem;
+  color: #fff;
+}
+
+/* Grid de guías: usa mismo estilo visual que place-cards */
+.guias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.guia-card {
+  background: var(--color-white, #fff);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid rgba(17, 153, 142, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.guia-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(17, 153, 142, 0.2);
+  border-color: rgba(17, 153, 142, 0.4);
+}
+
+.guia-card-img {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.guia-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.guia-card:hover .guia-card-img img {
+  transform: scale(1.05);
+}
+
+.guia-card-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(17, 153, 142, 0.2), rgba(56, 239, 125, 0.05));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: rgba(17, 153, 142, 0.3);
+}
+
+.guia-card-count {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  background: #fff;
+  color: #11998e;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.guia-card-body {
+  padding: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.guia-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 0.5rem;
+  line-height: 1.3;
+}
+
+.guia-card-desc {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0 0 0.75rem;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.guia-card-cta {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #11998e;
+  transition: color 0.2s;
+}
+
+.guia-card:hover .guia-card-cta { color: #38ef7d; }
+
+@media (max-width: 576px) {
+  .guias-title { font-size: 1.6rem; }
+  .guias-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .guia-card-img { height: 170px; }
+  .guia-card-body { padding: 1rem; }
+  .guia-card-title { font-size: 1rem; }
+}
+</style>
+{% endblock %}

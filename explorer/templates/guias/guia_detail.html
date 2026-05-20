@@ -1,0 +1,560 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+{% load l10n %}
+{% load form_tags %}
+{% load i18n_extras %}
+
+
+{% block title %}{{ guia.titulo_i18n }} | ViveMedellín{% endblock %}
+{% block meta_description %}{{ guia.descripcion_i18n|truncatechars:160 }}{% endblock %}
+{% block og_title %}{{ guia.titulo_i18n }} | ViveMedellín{% endblock %}
+{% block og_description %}{{ guia.descripcion_i18n|truncatechars:160 }}{% endblock %}
+
+{% block og_image %}
+{% with cover=guia.get_cover_image %}
+{% if cover %}{{ cover }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}{% endif %}
+{% endwith %}
+{% endblock %}
+
+{% block preload_lcp %}{% endblock %}
+
+{% block content %}
+{% get_current_language as LANGUAGE_CODE %}
+
+<section class="guia-section">
+  <div class="container py-4">
+
+    <!-- Article -->
+    <article class="guia-article">
+
+      <!-- Mapa interactivo con los lugares de la guía -->
+      <div class="guia-map-container">
+        <div id="guia-map"></div>
+      </div>
+
+      <!-- Header -->
+      <header class="guia-header">
+        <h1 class="guia-title">{{ guia.titulo_i18n }}</h1>
+        <div class="guia-meta">
+          <span><i class="bi bi-geo-alt-fill"></i> {{ guia.zona_display }}</span>
+          <span><i class="bi bi-list-ol"></i> {{ items|length }} {% trans "lugares" %}</span>
+        </div>
+        <p class="guia-intro">{{ guia.descripcion_i18n }}</p>
+      </header>
+
+      <!-- Lugares -->
+      {% for item in items %}
+      <div class="guia-entry">
+
+        <!-- Carousel de fotos -->
+        <div class="guia-entry-img">
+          {% with fotos=item.lugar.get_fotos %}
+          {% if fotos %}
+          <div id="carousel-{{ item.posicion }}" class="carousel slide" data-bs-ride="false">
+            <div class="carousel-inner">
+              {% for foto in fotos %}
+              <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <a href="{% url 'explorer:lugares_detail' item.lugar.slug %}">
+                  <img src="{{ foto.imagen_mediana|default:foto.imagen }}" alt="{{ item.lugar.nombre }}" loading="lazy">
+                </a>
+              </div>
+              {% endfor %}
+            </div>
+            {% if fotos|length > 1 %}
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ item.posicion }}" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ item.posicion }}" data-bs-slide="next">
+              <span class="carousel-control-next-icon"></span>
+            </button>
+            <div class="guia-photo-count"><i class="bi bi-images me-1"></i>{{ fotos|length }}</div>
+            {% endif %}
+          </div>
+          {% else %}
+          <div class="guia-entry-placeholder"><i class="bi bi-image"></i></div>
+          {% endif %}
+          {% endwith %}
+          <span class="guia-entry-number">#{{ item.posicion }}</span>
+          {% if item.lugar.rating %}
+          <span class="guia-entry-rating"><i class="bi bi-star-fill"></i> {{ item.lugar.rating|floatformat:1 }}</span>
+          {% endif %}
+        </div>
+
+        <!-- Contenido -->
+        <div class="guia-entry-body">
+          <div class="guia-entry-top">
+            <a href="{% url 'explorer:lugares_detail' item.lugar.slug %}" class="guia-entry-name">{{ item.lugar.nombre }}</a>
+          {% if item.destacado_i18n %}
+          <span class="guia-entry-badge">{{ item.destacado_i18n }}</span>
+          {% endif %}
+          </div>
+
+          <span class="guia-entry-type">{{ item.lugar|place_type_label }}{% if item.lugar.comuna %} · {{ item.lugar.comuna.name }}{% endif %}</span>
+
+          {% if item.comentario_i18n %}
+          <p class="guia-entry-text">{{ item.comentario_i18n }}</p>
+          {% endif %}
+
+          <a href="{% url 'explorer:lugares_detail' item.lugar.slug %}" class="guia-entry-cta">
+            {% trans "Ver lugar" %} <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+
+      </div>
+      {% endfor %}
+
+      <!-- CTA final -->
+      <footer class="guia-footer">
+        <a href="{% url 'explorer:guias_index' %}" class="btn btn-outline-light rounded-pill px-4">
+          <i class="bi bi-bookmark-star me-1"></i>{% trans "Más Guías" %}
+        </a>
+        <a href="{% url 'explorer:lugares_list' %}" class="btn btn-back px-4">
+          <i class="bi bi-map me-1"></i>{% trans "Explorar Todos" %}
+        </a>
+      </footer>
+
+    </article>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const markers = {{ markers_json|safe }};
+  if (!markers.length) return;
+
+  // Mapa con estilo oscuro
+  const map = L.map('guia-map', {
+    zoomControl: false,
+    attributionControl: false,
+    scrollWheelZoom: false,
+  });
+
+  // Tile layer oscuro que combina con el diseño
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
+  }).addTo(map);
+
+  // Zoom control arriba a la derecha
+  L.control.zoom({ position: 'topright' }).addTo(map);
+
+  const bounds = [];
+
+  markers.forEach(function(m) {
+    // Marcador circular personalizado con número
+    const icon = L.divIcon({
+      className: 'guia-marker',
+      html: '<div class="guia-marker-dot">#' + m.posicion + '</div>',
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+      popupAnchor: [0, -22],
+    });
+
+    const marker = L.marker([m.lat, m.lng], { icon: icon }).addTo(map);
+    bounds.push([m.lat, m.lng]);
+
+    // Popup con imagen y nombre
+    const ratingHtml = m.rating ? '<span class="gp-rating"><i class="bi bi-star-fill"></i> ' + m.rating.toFixed(1) + '</span>' : '';
+    const imgHtml = m.imagen ? '<img src="' + m.imagen + '" alt="' + m.nombre + '" class="gp-img">' : '';
+
+    marker.bindPopup(
+      '<a href="/lugar/' + m.slug + '/" class="guia-popup">' +
+        imgHtml +
+        '<div class="gp-body">' +
+          '<strong class="gp-name">' + m.nombre + '</strong>' +
+          ratingHtml +
+        '</div>' +
+      '</a>',
+      { className: 'guia-popup-wrapper', minWidth: 200, maxWidth: 260 }
+    );
+  });
+
+  // Ajustar vista a todos los marcadores
+  if (bounds.length > 1) {
+    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+  } else {
+    map.setView(bounds[0], 15);
+  }
+
+  // Habilitar scroll zoom solo al hacer click en el mapa
+  map.on('click', function() { map.scrollWheelZoom.enable(); });
+  map.on('mouseout', function() { map.scrollWheelZoom.disable(); });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   GUÍA DETALLE - Blog style
+   ═══════════════════════════════════════════════════════════════════ */
+.guia-section {
+  background: var(--gradient-dark-bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.guia-nav {
+  max-width: 800px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.guia-article {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Mapa */
+.guia-map-container {
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#guia-map {
+  width: 100%;
+  height: 360px;
+  background: #1a1a2e;
+}
+
+/* Marcadores del mapa */
+.guia-marker { background: none !important; border: none !important; }
+
+.guia-marker-dot {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #03120a;
+  box-shadow: 0 3px 12px rgba(17, 153, 142, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  transition: transform 0.2s;
+}
+
+.guia-marker-dot:hover { transform: scale(1.15); }
+
+/* Popup del mapa */
+.guia-popup-wrapper .leaflet-popup-content-wrapper {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  padding: 0;
+  overflow: hidden;
+}
+
+.guia-popup-wrapper .leaflet-popup-content { margin: 0; padding: 0; }
+.guia-popup-wrapper .leaflet-popup-tip { background: #fff; }
+
+.guia-popup {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.gp-img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+
+.gp-body {
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.gp-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.gp-rating {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #11998e;
+}
+
+.gp-rating i { color: #fbbf24; font-size: 0.7rem; }
+
+/* Header */
+.guia-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.guia-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 1rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.guia-meta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 1.5rem;
+}
+
+.guia-meta i { color: #22c55e; }
+
+.guia-intro {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.8;
+  margin: 0 auto;
+  max-width: 650px;
+}
+
+/* ─── Cada lugar como entrada de blog ─── */
+.guia-entry {
+  margin-bottom: 2.5rem;
+}
+
+.guia-entry-img {
+  display: block;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.guia-entry-img .carousel-inner,
+.guia-entry-img .carousel-item { height: 340px; }
+
+.guia-entry-img .carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.guia-entry-img:hover .carousel-item.active img {
+  transform: scale(1.02);
+}
+
+.guia-entry-img .carousel-control-prev,
+.guia-entry-img .carousel-control-next {
+  width: 36px;
+  height: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.guia-entry-img:hover .carousel-control-prev,
+.guia-entry-img:hover .carousel-control-next { opacity: 0.9; }
+
+.guia-entry-img .carousel-control-prev { left: 0.75rem; }
+.guia-entry-img .carousel-control-next { right: 0.75rem; }
+
+.guia-entry-img .carousel-control-prev-icon,
+.guia-entry-img .carousel-control-next-icon { width: 14px; height: 14px; }
+
+.guia-photo-count {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  z-index: 5;
+}
+
+.guia-entry-placeholder {
+  width: 100%;
+  height: 340px;
+  background: linear-gradient(135deg, rgba(17, 153, 142, 0.15), rgba(4, 20, 12, 0.8));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: rgba(56, 239, 125, 0.2);
+}
+
+.guia-entry-number {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #03120a;
+}
+
+.guia-entry-rating {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: #fff;
+  color: #11998e;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.guia-entry-rating i { color: #fbbf24; font-size: 0.7rem; }
+
+/* Contenido de la entrada */
+.guia-entry-body {
+  padding: 0 0.25rem;
+}
+
+.guia-entry-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.35rem;
+}
+
+.guia-entry-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  text-decoration: none;
+  line-height: 1.2;
+  transition: color 0.2s;
+}
+
+.guia-entry-name:hover { color: #38ef7d; }
+
+.guia-entry-badge {
+  padding: 0.2rem 0.65rem;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #000;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.guia-entry-type {
+  display: block;
+  font-size: 0.85rem;
+  color: #22c55e;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.guia-entry-text {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.8;
+  margin: 0 0 1rem;
+}
+
+.guia-entry-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #38ef7d;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.guia-entry-cta:hover {
+  color: #fff;
+  gap: 0.6rem;
+}
+
+/* Footer */
+.guia-footer {
+  text-align: center;
+  padding-top: 2rem;
+  margin-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  #guia-map { height: 280px; }
+  .guia-map-container { border-radius: 16px; }
+  .guia-title { font-size: 1.8rem; }
+  .guia-intro { font-size: 1rem; }
+  .guia-entry-img .carousel-inner,
+  .guia-entry-img .carousel-item { height: 240px; }
+  .guia-entry-placeholder { height: 240px; }
+  .guia-entry-name { font-size: 1.3rem; }
+}
+
+@media (max-width: 576px) {
+  #guia-map { height: 240px; }
+  .guia-map-container { border-radius: 12px; }
+  .guia-marker-dot { width: 30px; height: 30px; font-size: 0.65rem; border-radius: 8px; }
+  .guia-title { font-size: 1.5rem; }
+  .guia-intro { font-size: 0.9rem; }
+  .guia-header { margin-bottom: 2rem; padding-bottom: 1.5rem; }
+  .guia-entry { margin-bottom: 2rem; }
+  .guia-entry-img { border-radius: 12px; margin-bottom: 1rem; }
+  .guia-entry-img .carousel-inner,
+  .guia-entry-img .carousel-item { height: 200px; }
+  .guia-entry-placeholder { height: 200px; }
+  .guia-entry-img .carousel-control-prev,
+  .guia-entry-img .carousel-control-next { opacity: 0.8; width: 30px; height: 30px; }
+  .guia-entry-name { font-size: 1.15rem; }
+  .guia-entry-text { font-size: 0.9rem; }
+  .guia-entry-number { width: 34px; height: 34px; font-size: 0.8rem; border-radius: 10px; top: 0.75rem; left: 0.75rem; }
+}
+
+@media (max-width: 359px) {
+  #guia-map { height: 200px; }
+  .guia-title { font-size: 1.3rem; }
+  .guia-entry-img .carousel-inner,
+  .guia-entry-img .carousel-item { height: 170px; }
+  .guia-entry-placeholder { height: 170px; }
+  .guia-entry-name { font-size: 1.05rem; }
+}
+</style>
+{% endblock %}

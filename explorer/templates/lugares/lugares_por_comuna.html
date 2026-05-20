@@ -3,7 +3,6 @@
 {% load i18n_extras %}
 {% load form_tags %}
 
-{% block navbar %}{% endblock %}
 
 {% block title %}{% trans "Explorar por Comuna | ViveMedellín" %}{% endblock %}
 
@@ -33,30 +32,11 @@
     <div class="places-main-wrapper">
       <!-- Card Superior: Top bar + Mapa -->
       <div class="places-header-card mb-4">
-        {% get_current_language as LANGUAGE_CODE %}
-        <div class="d-flex justify-content-end align-items-center mb-3 px-1 flex-wrap gap-2">
-          <div class="home-lang-switch d-flex flex-wrap gap-2">
-            <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">
-              {% trans "Inicio" %}
-            </a>
-            {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-              <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">
-                {% trans "Nosotros" %}
-              </a>
-            {% else %}
-              <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">
-                {% trans "Nosotros" %}
-              </a>
-            {% endif %}
-            {% include 'components/lang_switcher.html' %}
-          </div>
-        </div>
-
         <div class="text-center mb-4">
           <h1 class="places-title fw-bold">
             <span class="title-main">{% trans "Lugares por Comuna" %}</span>
           </h1>
-          <p class="lead text-white-50">{% trans "Explora el mapa interactivo y encuentra tu próximo destino" %}</p>
+          <p class="lead places-lead">{% trans "Explora el mapa interactivo y encuentra tu próximo destino" %}</p>
         </div>
         <div class="card shadow border-0 places-filters-card">
           <div class="card-body p-0 places-filters-card-inner">
@@ -67,23 +47,26 @@
 
       <!-- Card Inferior: Grid de Lugares -->
       <div class="places-grid-card">
-  <div class="row g-4 lugares-grid">
-    {% for lugar in lugares %}
-      <div class="col-md-4">
-              {% include 'components/place_card.html' with lugar=lugar %}
-      </div>
-    {% empty %}
-      <div class="col-12">
-              <div class="empty-state">
-                <i class="bi bi-search empty-state__icon"></i>
-                <h3 class="empty-state__title">{% trans "No se encontraron lugares" %}</h3>
-                <p class="empty-state__text">{% trans "No se encontraron lugares en esta página." %}</p>
-        </div>
-      </div>
-    {% endfor %}
-  </div>
+        {% include 'components/adsense_list_top.html' %}
+        {% if lugares %}
+          <div class="places-grid">
+            {% for lugar in lugares %}
+              {% include 'components/place_card.html' with lugar=lugar card_variant='horizontal' %}
+              {% if forloop.counter == 8 %}
+                {% include 'components/adsense_list_mid.html' %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-5">
+            <i class="bi bi-search display-1 mb-3 places-empty-icon"></i>
+            <h3 class="places-empty-title">{% trans "No se encontraron lugares" %}</h3>
+            <p class="places-empty-text">{% trans "No se encontraron lugares en esta página." %}</p>
+          </div>
+        {% endif %}
+        {% include 'components/adsense_list_bottom.html' %}
 
-  <!-- ✅ Paginador -->
+  <!-- Paginador -->
   {% if is_paginated %}
     <!-- Desktop: paginación clásica -->
     <nav class="mt-5 d-none d-md-flex justify-content-center">
@@ -96,7 +79,7 @@
           </li>
         {% endif %}
         <li class="page-item disabled">
-          <span class="page-link border-0 bg-transparent text-white-50">
+          <span class="page-link border-0 bg-transparent text-muted">
             {% trans "Página" %} {{ page_obj.number }} {% trans "de" %} {{ page_obj.paginator.num_pages }}
           </span>
         </li>
@@ -124,7 +107,7 @@
           {% trans "Cargar más lugares" %}
         </a>
       {% endif %}
-      <div class="text-center text-white-50 small mt-1">
+      <div class="text-center text-muted small mt-1">
         {% trans "Página" %} {{ page_obj.number }} {% trans "de" %} {{ page_obj.paginator.num_pages }}
       </div>
     </div>
@@ -137,100 +120,103 @@
 
 {% block extra_css %}
 <style>
-/* Estilos específicos de la página - Cards vienen de components.css */
 .places-section {
-  background: var(--gradient-glow), var(--gradient-dark-bg);
-    min-height: 100vh;
-  padding: var(--space-8) 0 var(--space-12);
+  background:
+    radial-gradient(circle at top left, rgba(17,153,142,0.08), transparent 34rem),
+    linear-gradient(180deg, #fbfcfa 0%, #f5f7f4 100%);
+  min-height: 100vh;
+  padding: 2rem 0 4rem;
 }
-
-.places-section .container { max-width: 1200px; }
-.places-main-wrapper { max-width: 1120px; margin: 0 auto; }
-
+.places-section .container { max-width: 1280px; }
+.places-main-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
 .places-header-card {
-  background: var(--dark-card-80);
-  border-radius: var(--radius-4xl);
-  padding: var(--space-10) var(--space-8);
-  box-shadow: var(--shadow-3xl);
-  border: 1px solid var(--white-12);
-  backdrop-filter: var(--backdrop-blur-xl);
-    }
-
-.places-title {
-    font-size: 2.5rem;
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-white);
-  text-shadow: 0 0 20px var(--accent-40), 0 2px 4px var(--black-50);
-  position: relative;
-  margin-bottom: var(--space-4);
+  background: rgba(255,255,255,0.94);
+  border-radius: 24px;
+  padding: 2.25rem 1.5rem 1.5rem;
+  box-shadow: 0 18px 50px rgba(15,23,42,0.07);
+  border: 1px solid #e2ebe7;
 }
-
+.places-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111827;
+  position: relative;
+  margin-bottom: 0.75rem;
+}
 .places-title::after {
   content: '';
   position: absolute;
-  bottom: -12px;
+  bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-accent), transparent);
+  width: 60px;
+  height: 3px;
+  background: #11998e;
   border-radius: 2px;
-  box-shadow: 0 0 12px var(--accent-60);
 }
-
-.title-main {
-  background: linear-gradient(135deg, var(--color-white) 0%, var(--color-accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-@media (min-width: 992px) { .places-title { font-size: var(--font-size-5xl); } }
-
+.title-main { color: #111827; }
+.places-lead { color: #66736f; }
 .places-filters-card {
-    background: rgba(3, 30, 20, 0.85);
-  border-radius: var(--radius-2xl);
-  border: 1px solid var(--white-10);
-  box-shadow: var(--shadow-xl);
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #e4eeea;
+  box-shadow: 0 10px 30px rgba(15,23,42,0.05);
 }
-
 .places-filters-card-inner { background: transparent; padding: 0; }
-
 .places-grid-card {
-  background: var(--dark-card-80);
-  border-radius: var(--radius-4xl);
-  padding: var(--space-8) var(--space-6);
-  box-shadow: var(--shadow-3xl);
-  border: 1px solid var(--white-12);
-  backdrop-filter: var(--backdrop-blur-xl);
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 1.25rem;
+  box-shadow: 0 18px 45px rgba(15,23,42,0.06);
+  border: 1px solid #e2ebe7;
 }
-
-@media (min-width: 992px) {
-  .places-grid-card { padding: var(--space-10) var(--space-8); }
+.places-grid { display: flex; flex-direction: column; gap: 0.85rem; }
+.places-grid .place-card {
+  border-radius: 18px;
+  border: 1px solid #e4eeea;
+  min-height: 178px;
 }
-
-/* Grid de 3 columnas para esta vista */
-.lugares-grid { margin-top: 0; }
-
-/* Nav links */
-/* Nav Links - estilos en components.css */
-
-/* Pagination */
+.places-grid .place-card:hover {
+  border-color: #99f6e4;
+  box-shadow: 0 14px 30px rgba(17,153,142,0.11);
+}
+.places-empty-icon { color: #9ca3af !important; }
+.places-empty-title { color: #111827; }
+.places-empty-text { color: #6b7280; }
+.places-grid .place-card__arrow::before {
+  content: "{% trans 'Ver lugar' %}";
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: #11998e;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.places-grid .place-card__arrow i { display: none; }
 .pagination .page-link {
-  border: 1px solid var(--primary-30);
-  color: var(--color-primary);
-  font-weight: var(--font-weight-medium);
-  background: var(--color-white);
+  border: 1px solid #d1d5db;
+  color: #11998e;
+  font-weight: 500;
+  background: #fff;
 }
-
 .pagination .page-link:hover {
-  background: var(--primary-10);
-  border-color: var(--primary-50);
-  color: var(--color-primary-dark);
+  background: #f0fdfa;
+  border-color: #99f6e4;
 }
-
-@media (max-width: 768px) {
-  .places-section { padding: var(--space-6) 0 var(--space-10); }
+@media (min-width: 992px) {
+  .places-grid .place-card--horizontal {
+    grid-template-columns: 236px minmax(0, 1fr);
+  }
+  .places-grid .place-card--horizontal .place-card__media img,
+  .places-grid .place-card--horizontal .place-card__placeholder {
+    min-height: 178px;
+    max-height: 178px;
+    border-radius: 18px 0 0 18px;
+  }
+  .places-grid-card { padding: 2rem 1.5rem; }
 }
 </style>
 {% endblock %}

@@ -1,0 +1,15 @@
+{% load i18n %}
+<nav class="legal-nav" aria-label="{% trans 'Páginas legales' %}">
+  <a href="{% url 'explorer:contact' %}"
+     class="legal-nav__link {% if active == 'contact' %}legal-nav__link--active{% endif %}">
+    <i class="bi bi-chat-dots"></i>{% trans "Contacto" %}
+  </a>
+  <a href="{% url 'explorer:privacy_policy' %}"
+     class="legal-nav__link {% if active == 'privacy' %}legal-nav__link--active{% endif %}">
+    <i class="bi bi-shield-lock"></i>{% trans "Privacidad" %}
+  </a>
+  <a href="{% url 'explorer:terms' %}"
+     class="legal-nav__link {% if active == 'terms' %}legal-nav__link--active{% endif %}">
+    <i class="bi bi-file-text"></i>{% trans "Términos" %}
+  </a>
+</nav>

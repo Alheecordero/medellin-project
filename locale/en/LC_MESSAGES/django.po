@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-19 23:18+0000\n"
+"POT-Creation-Date: 2026-05-20 00:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -347,67 +347,37 @@ msgstr "Wellness center"
 msgid "Bar de vinos"
 msgstr "Wine bar"
 
-#: explorer/i18n_catalog.py:89
+#: explorer/i18n_catalog.py:89 explorer/views.py:491 explorer/views.py:867
 msgid "Otros"
 msgstr "Others"
 
 # ---------------------------------------------------------------------------
 # About page (explorer/templates/about.html)
 # ---------------------------------------------------------------------------
-#: explorer/templates/about.html:8
+#: explorer/templates/about.html:6
 msgid "Nosotros | ViveMedellín"
 msgstr "About | ViveMedellín"
 
-#: explorer/templates/about.html:12
+#: explorer/templates/about.html:10
 msgid ""
 "Descubre cómo ViveMedellín te ayuda a explorar la ciudad: filtros por zona, "
 "tipos de lugares, búsqueda inteligente y datos verificados de restaurantes, "
 "bares y experiencias."
 msgstr ""
-"Discover how ViveMedellín helps you explore the city: filters by area, place "
-"types, smart search, and verified data for restaurants, bars, and "
+"Discover how ViveMedellín helps you explore the city: filters by area, place"
+" types, smart search, and verified data for restaurants, bars, and "
 "experiences."
 
-#: explorer/templates/about.html:22
-msgid "Navegación principal"
-msgstr "Main navigation"
-
-#: explorer/templates/about.html:24 explorer/templates/footer.html:18
-#: explorer/templates/footer.html:51 explorer/templates/home.html:42
-#: explorer/templates/lugares/lugares_por_comuna.html:40
-#: explorer/templates/lugares/places_detail.html:46
-#: explorer/templates/lugares/places_list.html:41
-#: explorer/templates/lugares/reviews_lugar.html:46
-#: explorer/templates/semantic_results.html:24
-msgid "Inicio"
-msgstr "Home"
-
-#: explorer/templates/about.html:27 explorer/templates/about.html:29
-#: explorer/templates/home.html:46 explorer/templates/home.html:50
-#: explorer/templates/lugares/lugares_por_comuna.html:44
-#: explorer/templates/lugares/lugares_por_comuna.html:48
-#: explorer/templates/lugares/places_detail.html:48
-#: explorer/templates/lugares/places_detail.html:50
-#: explorer/templates/lugares/places_list.html:43
-#: explorer/templates/lugares/places_list.html:45
-#: explorer/templates/lugares/reviews_lugar.html:48
-#: explorer/templates/lugares/reviews_lugar.html:50
-#: explorer/templates/semantic_results.html:28
-#: explorer/templates/semantic_results.html:32
-msgid "Nosotros"
-msgstr "About us"
-
-#: explorer/templates/about.html:57
+#: explorer/templates/about.html:23
 msgid "Tu guía local"
 msgstr "Your local guide"
 
-#: explorer/templates/about.html:60 explorer/templates/home.html:79
-msgid ""
-"Descubre Medellín<br><span class=\"title-accent\">como nunca antes</span>"
+#: explorer/templates/about.html:26
+msgid "Descubre Medellín<br><span class=\"title-accent\">como nunca antes</span>"
 msgstr ""
 "Discover Medellín<br><span class=\"title-accent\">like never before</span>"
 
-#: explorer/templates/about.html:63
+#: explorer/templates/about.html:29
 msgid ""
 "ViveMedellín es un directorio curado de restaurantes, bares, rooftops y "
 "experiencias en Medellín y sus alrededores. Organizamos la ciudad para que "
@@ -417,27 +387,27 @@ msgstr ""
 "experiences in Medellín and surrounding areas. We organize the city so you "
 "can find what you're looking for, faster."
 
-#: explorer/templates/about.html:71
+#: explorer/templates/about.html:37
 msgid "¿Qué es ViveMedellín?"
 msgstr "What is ViveMedellín?"
 
-#: explorer/templates/about.html:81
+#: explorer/templates/about.html:47
 msgid "Organizado por zonas reales"
 msgstr "Organized by real areas"
 
-#: explorer/templates/about.html:84
+#: explorer/templates/about.html:50
 msgid ""
 "Navega por comunas (El Poblado, Laureles, La Candelaria...) y pueblos "
 "cercanos. Sin mapas genéricos—barrios reales."
 msgstr ""
-"Browse by comunas (El Poblado, Laureles, La Candelaria...) and nearby towns. "
-"No generic maps—real neighborhoods."
+"Browse by comunas (El Poblado, Laureles, La Candelaria...) and nearby towns."
+" No generic maps—real neighborhoods."
 
-#: explorer/templates/about.html:95
+#: explorer/templates/about.html:61
 msgid "Filtros inteligentes"
 msgstr "Smart filters"
 
-#: explorer/templates/about.html:98
+#: explorer/templates/about.html:64
 msgid ""
 "Filtra por tipo (restaurantes, bares, cafés, rooftops...) y características "
 "(terraza, música en vivo, pet-friendly, delivery...)."
@@ -445,11 +415,11 @@ msgstr ""
 "Filter by type (restaurants, bars, cafés, rooftops...) and features "
 "(terrace, live music, pet-friendly, delivery...)."
 
-#: explorer/templates/about.html:109
+#: explorer/templates/about.html:75
 msgid "Búsqueda semántica"
 msgstr "Semantic search"
 
-#: explorer/templates/about.html:112
+#: explorer/templates/about.html:78
 msgid ""
 "Pregunta naturalmente: \"rooftop romántico en Poblado\" o \"café tranquilo "
 "para trabajar\". Nuestra IA entiende tu intención."
@@ -457,60 +427,60 @@ msgstr ""
 "Ask naturally: \"romantic rooftop in Poblado\" or \"quiet café to work\". "
 "Our AI understands your intent."
 
-#: explorer/templates/about.html:123
+#: explorer/templates/about.html:89
 msgid "Cerca de mí"
 msgstr "Near me"
 
-#: explorer/templates/about.html:126
+#: explorer/templates/about.html:92
 msgid ""
-"Usa tu ubicación para encontrar lugares a poca distancia. Perfecto cuando ya "
-"estás afuera explorando."
+"Usa tu ubicación para encontrar lugares a poca distancia. Perfecto cuando ya"
+" estás afuera explorando."
 msgstr ""
 "Use your location to find places within walking distance. Perfect when "
 "you're already out exploring."
 
-#: explorer/templates/about.html:137
+#: explorer/templates/about.html:103
 msgid "Cómo usarlo"
 msgstr "How to use it"
 
-#: explorer/templates/about.html:140
+#: explorer/templates/about.html:106
 msgid "Pasos para usar ViveMedellín"
 msgstr "Steps to use ViveMedellín"
 
-#: explorer/templates/about.html:144
+#: explorer/templates/about.html:110
 msgid "Elige zona"
 msgstr "Choose area"
 
-#: explorer/templates/about.html:148
+#: explorer/templates/about.html:114
 msgid "Añade filtros"
 msgstr "Add filters"
 
-#: explorer/templates/about.html:152
+#: explorer/templates/about.html:118
 msgid "Explora"
 msgstr "Explore"
 
-#: explorer/templates/about.html:156
+#: explorer/templates/about.html:122
 msgid "Decide"
 msgstr "Decide"
 
-#: explorer/templates/about.html:164
+#: explorer/templates/about.html:130
 msgid "Parte de una zona"
 msgstr "Start from an area"
 
-#: explorer/templates/about.html:167
+#: explorer/templates/about.html:133
 msgid ""
 "Desde el home, haz clic en una burbuja de área (El Poblado, Laureles, "
-"Envigado...) o usa el dropdown de Área para enfocar tu búsqueda en un barrio "
-"específico."
+"Envigado...) o usa el dropdown de Área para enfocar tu búsqueda en un barrio"
+" específico."
 msgstr ""
-"From the home page, click an area bubble (El Poblado, Laureles, Envigado...) "
-"or use the Area dropdown to focus your search on a specific neighborhood."
+"From the home page, click an area bubble (El Poblado, Laureles, Envigado...)"
+" or use the Area dropdown to focus your search on a specific neighborhood."
 
-#: explorer/templates/about.html:175
+#: explorer/templates/about.html:141
 msgid "Combina tipo + características"
 msgstr "Combine type + features"
 
-#: explorer/templates/about.html:178
+#: explorer/templates/about.html:144
 msgid ""
 "Selecciona un tipo de lugar (restaurantes, bares, cafés...) y afina con "
 "características especiales como terraza, música en vivo, pet-friendly o "
@@ -519,23 +489,23 @@ msgstr ""
 "Select a place type (restaurants, bars, cafés...) and refine with special "
 "features like terrace, live music, pet-friendly, or delivery."
 
-#: explorer/templates/about.html:186
+#: explorer/templates/about.html:152
 msgid "Usa búsqueda semántica o Cerca de mí"
 msgstr "Use semantic search or Near me"
 
-#: explorer/templates/about.html:189
+#: explorer/templates/about.html:155
 msgid ""
 "Escribe una consulta natural como \"café tranquilo para trabajar\" o activa "
 "Cerca de mí para encontrar lugares alrededor de tu ubicación actual."
 msgstr ""
-"Type a natural query like \"quiet café to work\" or activate Near me to find "
-"places around your current location."
+"Type a natural query like \"quiet café to work\" or activate Near me to find"
+" places around your current location."
 
-#: explorer/templates/about.html:197
+#: explorer/templates/about.html:163
 msgid "Ve los detalles y ve"
 msgstr "View details and go"
 
-#: explorer/templates/about.html:200
+#: explorer/templates/about.html:166
 msgid ""
 "Abre \"Ver detalles\" para ver fotos, rango de precios, servicios y lugares "
 "similares. Luego salta directamente a Google Maps o Waze."
@@ -543,37 +513,37 @@ msgstr ""
 "Open \"View details\" to see photos, price range, services, and similar "
 "places. Then jump directly to Google Maps or Waze."
 
-#: explorer/templates/about.html:212
+#: explorer/templates/about.html:178
 msgid "¿Para quién es?"
 msgstr "Who is it for?"
 
-#: explorer/templates/about.html:215
+#: explorer/templates/about.html:181
 msgid "Tipos de usuario"
 msgstr "User types"
 
-#: explorer/templates/about.html:218
+#: explorer/templates/about.html:184
 msgid "Locales"
 msgstr "Locals"
 
-#: explorer/templates/about.html:222
+#: explorer/templates/about.html:188
 msgid "Visitantes"
 msgstr "Visitors"
 
-#: explorer/templates/about.html:226
+#: explorer/templates/about.html:192
 msgid "Negocios"
 msgstr "Businesses"
 
-#: explorer/templates/about.html:233
+#: explorer/templates/about.html:199
 msgid ""
 "Ahorra tiempo decidiendo a dónde ir. Descubre nuevos lugares en tu comuna, "
 "encuentra esa terraza perfecta para esta noche y comparte recomendaciones "
 "con amigos en un toque."
 msgstr ""
-"Save time deciding where to go. Discover new spots in your comuna, find that "
-"perfect terrace for tonight, and share recommendations with friends in one "
+"Save time deciding where to go. Discover new spots in your comuna, find that"
+" perfect terrace for tonight, and share recommendations with friends in one "
 "tap."
 
-#: explorer/templates/about.html:238
+#: explorer/templates/about.html:204
 msgid ""
 "Llega a Medellín con un mapa listo. Conoce qué zonas tienen la mejor vida "
 "nocturna, cafés y comida imperdible—todo organizado por barrios reales."
@@ -582,7 +552,7 @@ msgstr ""
 "nightlife, coffee spots, and must-try food—all organized by real "
 "neighborhoods."
 
-#: explorer/templates/about.html:243
+#: explorer/templates/about.html:209
 msgid ""
 "Entiende cómo se posiciona tu zona y qué experiencias rodean tu negocio. "
 "Contáctanos para actualizar tu ficha o destacar tu lugar."
@@ -590,15 +560,15 @@ msgstr ""
 "Understand how your area is positioned and what experiences surround your "
 "business. Contact us to update your listing or get featured."
 
-#: explorer/templates/about.html:253
+#: explorer/templates/about.html:219
 msgid "Transparencia y Datos"
 msgstr "Transparency & Data"
 
-#: explorer/templates/about.html:260
+#: explorer/templates/about.html:226
 msgid "¿De dónde vienen nuestros datos?"
 msgstr "Where does our data come from?"
 
-#: explorer/templates/about.html:263
+#: explorer/templates/about.html:229
 msgid ""
 "Agregamos información pública de Google Places, OpenStreetMap y "
 "contribuciones directas. Verificamos y curamos cada ficha para asegurar "
@@ -607,11 +577,11 @@ msgstr ""
 "We aggregate public information from Google Places, OpenStreetMap, and "
 "direct contributions. We verify and curate each listing to ensure quality."
 
-#: explorer/templates/about.html:270
+#: explorer/templates/about.html:236
 msgid "Aviso importante"
 msgstr "Disclaimer"
 
-#: explorer/templates/about.html:273
+#: explorer/templates/about.html:239
 msgid ""
 "La información puede cambiar sin previo aviso. Horarios, precios y "
 "disponibilidad deben confirmarse directamente con cada establecimiento. No "
@@ -621,557 +591,1024 @@ msgstr ""
 "should be confirmed directly with each venue. We are not responsible for "
 "inaccuracies."
 
-#: explorer/templates/about.html:283
+#: explorer/templates/about.html:249
 msgid "Volver a explorar"
 msgstr "Back to explore"
 
 #: explorer/templates/admin/explorer/initialgrid/change_list.html:40
 #: explorer/templates/lugares/admin_mapa_regiones.html:49
-#: explorer/templates/lugares/lugares_por_comuna.html:470
+#: explorer/templates/lugares/lugares_por_comuna.html:232
 #: explorer/templates/lugares/zonas_mapa.html:18
 msgid "colaboradores"
 msgstr "contributors"
 
-#: explorer/templates/base.html:10 explorer/templates/base.html:28
-#: explorer/templates/base.html:35
-msgid "ViveMedellín - Tu Guía de la Ciudad"
-msgstr "ViveMedellín - Your City Guide"
+#: explorer/templates/base.html:10
+msgid "ViveMedellín | Descubre Bares, Restaurantes y Vida Nocturna"
+msgstr "ViveMedellín | Discover Bars, Restaurants & Nightlife"
 
-#: explorer/templates/base.html:13 explorer/templates/base.html:29
-#: explorer/templates/base.html:36
+#: explorer/templates/base.html:13
 msgid ""
-"Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de "
-"Medellín."
-msgstr "Discover Medellín's top bars, clubs, restaurants and tourist spots."
+"Guía completa de Medellín: los mejores bares, restaurantes, rooftops y "
+"discotecas. Ratings reales, horarios y ubicación exacta. ¡Explora como un "
+"local!"
+msgstr ""
+"Complete guide to Medellín: the best bars, restaurants, rooftops and clubs. "
+"Real ratings, schedules and exact location. Explore like a local!"
 
 #: explorer/templates/base.html:14
 msgid ""
-"Medellín, turismo, lugares, bares, restaurantes, discotecas, que hacer en "
+"bares Medellín, restaurantes Medellín, rooftops Medellín, discotecas El "
+"Poblado, dónde comer Medellín, vida nocturna Medellín, mejores lugares "
 "Medellín"
-msgstr "Medellín, tourism, places, bars, restaurants, clubs, what to do in Medellín"
+msgstr ""
+"bars Medellín, restaurants Medellín, rooftops Medellín, clubs El Poblado, "
+"where to eat Medellín, nightlife Medellín, best places Medellín"
 
-#: explorer/templates/footer.html:15
+#: explorer/templates/base.html:32 explorer/templates/base.html:46
+msgid "ViveMedellín | Los Mejores Lugares de Medellín"
+msgstr "ViveMedellín | The Best Places in Medellín"
+
+#: explorer/templates/base.html:33 explorer/templates/base.html:47
 msgid ""
-"Descubre los mejores lugares de Medellín, la ciudad de la eterna primavera."
-msgstr "Discover the best places in Medellín, the city of eternal spring."
+"Descubre bares, restaurantes, rooftops y discotecas en Medellín. Ratings "
+"reales y horarios actualizados."
+msgstr ""
+"Discover bars, restaurants, rooftops and clubs in Medellín. Real ratings and"
+" updated schedules."
 
-#: explorer/templates/footer.html:21
-#: explorer/templates/newsletter/confirmation_error.html:40
-#: explorer/templates/newsletter/confirmation_success.html:32
-#: explorer/templates/newsletter/unsubscribe_success.html:35
-msgid "Explorar Lugares"
-msgstr "Explore Places"
+#: explorer/templates/base.html:37
+msgid "ViveMedellín - Guía de lugares en Medellín"
+msgstr "ViveMedellín - Guide to places in Medellín"
+
+#: explorer/templates/components/adsense_fixed_unit.html:4
+#: explorer/templates/home.html:216 explorer/templates/home.html:1029
+msgid "Publicidad"
+msgstr "Advertisement"
+
+#: explorer/templates/components/lang_switcher.html:6
+msgid "Cambiar idioma"
+msgstr "Change language"
+
+#: explorer/templates/components/lang_switcher.html:11
+msgid "Cambiar a español"
+msgstr "Switch to Spanish"
+
+#: explorer/templates/components/lang_switcher.html:11
+#: explorer/templates/components/lang_switcher.html:17
+msgid "idioma actual"
+msgstr "current language"
+
+#: explorer/templates/components/lang_switcher.html:17
+msgid "Cambiar a inglés"
+msgstr "Switch to English"
+
+#: explorer/templates/components/place_card.html:69
+#: explorer/templates/home.html:1098 explorer/templates/home.html:1894
+#: explorer/templates/lugares/places_detail.html:96
+#: explorer/templates/lugares/places_detail.html:421
+#: explorer/templates/lugares/places_list.html:617
+#: explorer/templates/lugares/places_list.html:730
+msgid "Destacado"
+msgstr "Featured"
+
+#: explorer/templates/components/place_card.html:74
+#: explorer/templates/home.html:1099 explorer/templates/home.html:1895
+#: explorer/templates/lugares/places_detail.html:97
+#: explorer/templates/lugares/places_detail.html:422
+#: explorer/templates/lugares/places_list.html:618
+#: explorer/templates/lugares/places_list.html:731
+msgid "Exclusivo"
+msgstr "Exclusive"
+
+#: explorer/templates/components/place_card.html:79
+#: explorer/templates/home.html:1100
+#: explorer/templates/lugares/places_detail.html:423
+#: explorer/templates/lugares/places_list.html:619
+msgid "Top"
+msgstr "Top"
+
+#: explorer/templates/components/place_card_compact.html:58
+#: explorer/templates/home.html:1097 explorer/templates/home.html:1892
+#: explorer/templates/home.html:2270
+#: explorer/templates/lugares/places_detail.html:420
+#: explorer/templates/lugares/places_list.html:616
+#: explorer/templates/lugares/places_list.html:729
+msgid "Ver detalles"
+msgstr "View details"
+
+#: explorer/templates/components/schema_org.html:19
+msgid ""
+"Guía completa de bares, restaurantes, rooftops y vida nocturna en Medellín, "
+"Colombia"
+msgstr ""
+"Complete guide to bars, restaurants, rooftops and nightlife in Medellín, "
+"Colombia"
+
+#: explorer/templates/components/schema_org.html:148
+msgid ""
+"Guía turística digital de Medellín con información real de bares, "
+"restaurantes y lugares de entretenimiento"
+msgstr ""
+"Digital travel guide to Medellín with real information on bars, restaurants "
+"and entertainment venues"
+
+#: explorer/templates/components/share_buttons.html:7
+msgid "Compartir"
+msgstr "Share"
+
+#: explorer/templates/components/share_buttons.html:14
+#: explorer/templates/components/share_buttons.html:15
+msgid "Compartir en WhatsApp"
+msgstr "Share on WhatsApp"
+
+#: explorer/templates/components/share_buttons.html:24
+#: explorer/templates/components/share_buttons.html:25
+msgid "Compartir en Facebook"
+msgstr "Share on Facebook"
+
+#: explorer/templates/components/share_buttons.html:34
+#: explorer/templates/components/share_buttons.html:35
+msgid "Compartir en Twitter"
+msgstr "Share on Twitter"
+
+#: explorer/templates/components/share_buttons.html:44
+#: explorer/templates/components/share_buttons.html:45
+msgid "Compartir en Telegram"
+msgstr "Share on Telegram"
+
+#: explorer/templates/components/share_buttons.html:53
+#: explorer/templates/components/share_buttons.html:54
+msgid "Copiar enlace"
+msgstr "Copy link"
+
+#: explorer/templates/components/topbar.html:8
+msgid "Abrir menú"
+msgstr "Open menu"
+
+#: explorer/templates/components/topbar.html:18
+msgid "Navegación principal"
+msgstr "Main navigation"
+
+#: explorer/templates/components/topbar.html:21
+#: explorer/templates/components/topbar.html:52
+msgid "Inicio"
+msgstr "Home"
+
+#: explorer/templates/components/topbar.html:25
+#: explorer/templates/components/topbar.html:56
+#: explorer/templates/footer.html:29
+msgid "Explorar"
+msgstr "Explore"
+
+#: explorer/templates/components/topbar.html:30
+#: explorer/templates/components/topbar.html:35
+#: explorer/templates/components/topbar.html:61
+#: explorer/templates/components/topbar.html:66
+#: explorer/templates/footer.html:60 explorer/templates/footer.html:62
+msgid "Nosotros"
+msgstr "About"
+
+#: explorer/templates/components/topbar.html:49
+msgid "Menú mobile"
+msgstr "Mobile menu"
+
+#: explorer/templates/footer.html:11
+msgid "ViveMedellín — Inicio"
+msgstr "ViveMedellín — Home"
+
+#: explorer/templates/footer.html:16
+msgid ""
+"Guía local de bares, restaurantes y vida nocturna en Medellín. Datos reales "
+"para explorar como un local."
+msgstr ""
+"Local guide to bars, restaurants and nightlife in Medellín. Real data to "
+"explore like a local."
+
+#: explorer/templates/footer.html:20 explorer/templates/legal/contact.html:116
+#: explorer/templates/legal/privacy_policy.html:44
+#: explorer/templates/legal/terms.html:44
+msgid "Explorar lugares"
+msgstr "Explore places"
 
 #: explorer/templates/footer.html:24
-msgid "Mejores Restaurantes"
-msgstr "Best Restaurants"
+msgid "Medellín, Colombia"
+msgstr "Medellín, Colombia"
 
-#: explorer/templates/footer.html:29
-msgid ""
-"Hecho con cariño para locales y viajeros que quieren vivir la ciudad a "
-"profundidad."
-msgstr "Made with care for locals and travelers who want to experience the city deeply."
+#: explorer/templates/footer.html:31 explorer/templates/home.html:77
+#: explorer/templates/home.html:1647 explorer/templates/home.html:1985
+#: explorer/views.py:1842
+msgid "Restaurantes"
+msgstr "Restaurants"
 
-#: explorer/templates/footer.html:40
-msgid "Con Delivery"
-msgstr "With Delivery"
+#: explorer/templates/footer.html:32 explorer/templates/home.html:81
+#: explorer/templates/home.html:1648 explorer/templates/home.html:1988
+#: explorer/views.py:1843
+msgid "Bares"
+msgstr "Bars"
 
-#: explorer/templates/footer.html:41
-msgid "Con Terraza"
-msgstr "With Terrace"
+#: explorer/templates/footer.html:33 explorer/templates/home.html:85
+#: explorer/templates/home.html:1649 explorer/templates/home.html:1991
+#: explorer/views.py:1844
+msgid "Cafés"
+msgstr "Cafés"
 
-#: explorer/templates/footer.html:42 explorer/templates/home.html:1855
-#: explorer/templates/home.html:2242
-#: explorer/templates/lugares/places_detail.html:166
-#: explorer/templates/lugares/places_list.html:189 explorer/views.py:275
-msgid "Música en Vivo"
-msgstr "Live Music"
-
-#: explorer/templates/footer.html:43 explorer/templates/home.html:1862
-#: explorer/templates/home.html:2273
-#: explorer/templates/lugares/places_detail.html:175
-#: explorer/templates/lugares/places_list.html:197 explorer/views.py:284
-msgid "Cócteles"
-msgstr "Cocktails"
-
-#: explorer/templates/footer.html:46
-msgid "Bares El Poblado"
-msgstr "Bars in Poblado"
-
-#: explorer/templates/footer.html:47
-msgid "Restaurantes Laureles"
-msgstr "Restaurant in Laureles"
-
-#: explorer/templates/footer.html:48
-msgid "Cafés Envigado"
-msgstr "Envigado Cafes"
-
-#: explorer/templates/footer.html:52
-msgid "Explorar Todo"
-msgstr "Explore All"
-
-#: explorer/templates/footer.html:53 explorer/templates/home.html:2177
-msgid "Vida Nocturna"
+#: explorer/templates/footer.html:34
+msgid "Vida nocturna"
 msgstr "Nightlife"
 
-#: explorer/templates/footer.html:54 explorer/templates/home.html:1856
-#: explorer/templates/home.html:2245
-#: explorer/templates/lugares/places_detail.html:176
-#: explorer/templates/lugares/places_list.html:190 explorer/views.py:276
-#: explorer/views.py:375 explorer/views.py:971
-msgid "Para Grupos"
-msgstr "For Groups"
+#: explorer/templates/footer.html:35 explorer/templates/home.html:89
+msgid "Música en vivo"
+msgstr "Live music"
 
-#: explorer/templates/footer.html:61
-msgid "Todos los derechos reservados."
-msgstr "All rights reserved."
+#: explorer/templates/footer.html:36
+msgid "Con terraza"
+msgstr "Outdoor seating"
+
+#: explorer/templates/footer.html:41
+msgid "Zonas"
+msgstr "Areas"
+
+#: explorer/templates/footer.html:43
+msgid "El Poblado"
+msgstr "El Poblado"
+
+#: explorer/templates/footer.html:44
+msgid "Laureles"
+msgstr "Laureles"
+
+#: explorer/templates/footer.html:45
+msgid "Envigado"
+msgstr "Envigado"
+
+#: explorer/templates/footer.html:46
+msgid "Belén"
+msgstr "Belén"
+
+#: explorer/templates/footer.html:47
+msgid "Sabaneta"
+msgstr "Sabaneta"
+
+#: explorer/templates/footer.html:50 explorer/templates/home.html:111
+msgid "Ver todas"
+msgstr "View all"
+
+#: explorer/templates/footer.html:57
+msgid "Empresa"
+msgstr "Company"
+
+#: explorer/templates/footer.html:64 explorer/templates/footer.html:88
+#: explorer/templates/legal/contact.html:6
+#: explorer/templates/legal/contact.html:20
+#: explorer/templates/legal/legal_nav.html:5
+msgid "Contacto"
+msgstr "Contact"
+
+# ═══════════════════════════════════════════════════════════════════
+# LEGAL PAGES (Privacy Policy, Terms, Contact)
+# Required for Google AdSense compliance
+# ═══════════════════════════════════════════════════════════════════
+#: explorer/templates/footer.html:65 explorer/templates/footer.html:84
+#: explorer/templates/legal/legal_nav.html:9
+msgid "Privacidad"
+msgstr "Privacy"
+
+#: explorer/templates/footer.html:66 explorer/templates/footer.html:86
+#: explorer/templates/legal/legal_nav.html:13
+msgid "Términos"
+msgstr "Terms"
+
+#: explorer/templates/footer.html:83
+msgid "Enlaces legales"
+msgstr "Legal links"
+
+#: explorer/templates/footer.html:94
+msgid "Volver arriba"
+msgstr "Back to top"
+
+#: explorer/templates/guias/guia_detail.html:41
+#: explorer/templates/guias/guias_index.html:37
+#: explorer/templates/lugares/places_list.html:11
+msgid "lugares"
+msgstr "places"
+
+#: explorer/templates/guias/guia_detail.html:100
+#: explorer/templates/lugares/lugares_por_comuna.html:187
+#: explorer/templates/lugares/places_list.html:465
+#: explorer/templates/semantic_results.html:150
+msgid "Ver lugar"
+msgstr "View place"
+
+#: explorer/templates/guias/guia_detail.html:110
+msgid "Más Guías"
+msgstr "More Guides"
+
+#: explorer/templates/guias/guia_detail.html:113
+msgid "Explorar Todos"
+msgstr "Explore All"
+
+#: explorer/templates/guias/guias_index.html:42
+msgid "Ver guía"
+msgstr "View guide"
+
+#: explorer/templates/guias/guias_index.html:50
+msgid "Las guías están en camino. ¡Vuelve pronto!"
+msgstr "Guides are on the way. Come back soon!"
 
 #: explorer/templates/home.html:5
-msgid "Inicio | ViveMedellín"
-msgstr "Home | ViveMedellín"
+msgid "ViveMedellín | Bares, Restaurantes y Vida Nocturna en Medellín"
+msgstr "ViveMedellín | Bars, Restaurants & Nightlife in Medellín"
 
-#: explorer/templates/home.html:8
+#: explorer/templates/home.html:7
 msgid ""
-"Bienvenido a ViveMedellín: descubre los mejores bares, discotecas, rooftops "
-"y restaurantes de Medellín, organizados por comunas. ¡Explora como un local!"
+"Tu guía local de Medellín: miles de bares, restaurantes, rooftops y "
+"discotecas con ratings de Google. Explora El Poblado, Laureles, Envigado y "
+"más."
 msgstr ""
-"Welcome to ViveMedellín: discover the top bars, clubs, rooftops and "
-"restaurants in Medellín, organized by districts. Explore like a local!"
+"Your local guide to Medellín: thousands of bars, restaurants, rooftops and "
+"clubs with Google ratings. Explore El Poblado, Laureles, Envigado and more."
 
-#: explorer/templates/home.html:12
+#: explorer/templates/home.html:9
 msgid ""
-"ViveMedellín, bares Medellín, discotecas Medellín, restaurantes Medellín, "
-"comunas Medellín, vida nocturna Medellín"
+"bares Medellín, restaurantes Medellín, rooftops El Poblado, discotecas "
+"Medellín, dónde comer Medellín, vida nocturna Medellín, mejores bares El "
+"Poblado, restaurantes Laureles"
 msgstr ""
-"ViveMedellín, Medellín bars, Medellín clubs, Medellín restaurants, Medellín "
-"districts, Medellín nightlife"
+"bars Medellín, restaurants Medellín, rooftops El Poblado, clubs Medellín, "
+"where to eat Medellín, nightlife Medellín, best bars El Poblado, restaurants"
+" Laureles"
+
+#: explorer/templates/home.html:11
+msgid "ViveMedellín | Los Mejores Bares y Restaurantes de Medellín"
+msgstr "ViveMedellín | The Best Bars & Restaurants in Medellín"
+
+#: explorer/templates/home.html:13
+msgid ""
+"Descubre miles de lugares en Medellín: bares, restaurantes, rooftops y "
+"discotecas. Ratings de Google, horarios y ubicación exacta."
+msgstr ""
+"Discover thousands of places in Medellín: bars, restaurants, rooftops and "
+"clubs. Google ratings, schedules and exact location."
 
 #: explorer/templates/home.html:16
-msgid "ViveMedellín | Descubre los mejores lugares por comuna"
-msgstr "ViveMedellín | Discover the best places by commune"
+msgid "Vista panorámica de Medellín - ViveMedellín"
+msgstr "Panoramic view of Medellín - ViveMedellín"
 
-#: explorer/templates/home.html:20
+#: explorer/templates/home.html:34
+msgid "La guía local para vivir Medellín"
+msgstr "The local guide to experience Medellín"
+
+#: explorer/templates/home.html:36
+msgid "Encuentra los mejores lugares para vivir Medellín"
+msgstr "Find the best places to experience Medellín"
+
+#: explorer/templates/home.html:39
 msgid ""
-"Navega los mejores sitios para salir en Medellín. Desde El Poblado hasta "
-"Laureles, descubre lugares únicos en cada comuna."
+"Busca restaurantes, bares, cafés, cultura y planes por zona o cerca de ti."
 msgstr ""
-"Browse the best nightlife spots in Medellín. From El Poblado to Laureles, "
-"discover unique places in every district."
+"Search restaurants, bars, cafés, culture and plans by area or near you."
 
-#: explorer/templates/home.html:88
-msgid "Busca bares, restaurantes, lugares..."
-msgstr "Search for bars, restaurants, places..."
+#: explorer/templates/home.html:49
+msgid "¿Qué buscas? Ej. bares en El Poblado"
+msgstr "What are you looking for? e.g. bars in El Poblado"
 
-#: explorer/templates/home.html:104
-#: explorer/templates/lugares/places_list.html:88
+#: explorer/templates/home.html:50
+msgid "Buscar lugares en Medellín"
+msgstr "Search places in Medellín"
+
+#: explorer/templates/home.html:51
+msgid "Buscar"
+msgstr "Search"
+
+#: explorer/templates/home.html:61 explorer/templates/home.html:1684
+msgid "Buscar cerca de mí"
+msgstr "Search near me"
+
+#: explorer/templates/home.html:64
+msgid "Explorar por zonas"
+msgstr "Explore by area"
+
+#: explorer/templates/home.html:74
+msgid "Explorar por intención"
+msgstr "Explore by intent"
+
+#: explorer/templates/home.html:93
+msgid "Terrazas"
+msgstr "Outdoor seating"
+
+#: explorer/templates/home.html:97
+msgid "Pet friendly"
+msgstr "Pet friendly"
+
+#: explorer/templates/home.html:110
+msgid "Zonas populares"
+msgstr "Popular areas"
+
+#: explorer/templates/home.html:117
+msgid "+ Ver más"
+msgstr "+ See more"
+
+#: explorer/templates/home.html:124
+msgid "Filtros avanzados"
+msgstr "Advanced filters"
+
+#: explorer/templates/home.html:132
+#: explorer/templates/lugares/places_list.html:49
+#: explorer/templates/lugares/places_list.html:722
 msgid "Seleccionar Área"
 msgstr "Select Area"
 
-#: explorer/templates/home.html:110 explorer/templates/home.html:267
-#: explorer/templates/lugares/places_list.html:102
+#: explorer/templates/home.html:137
+#: explorer/templates/lugares/places_list.html:64
 msgid "Medellín (Áreas)"
 msgstr "Medellín (Areas)"
 
-#: explorer/templates/home.html:122
+#: explorer/templates/home.html:141
 msgid "Explorar esta comuna"
 msgstr "Explore this comuna"
 
-#: explorer/templates/home.html:132 explorer/templates/home.html:283
-#: explorer/templates/lugares/places_list.html:114
+#: explorer/templates/home.html:147
+#: explorer/templates/lugares/places_list.html:77
 msgid "Otras áreas de Antioquia"
 msgstr "Other areas of Antioquia"
 
-#: explorer/templates/home.html:144
+#: explorer/templates/home.html:151
 msgid "Explorar esta área"
 msgstr "Explore this area"
 
-#: explorer/templates/home.html:159
-#: explorer/templates/lugares/places_list.html:134
+#: explorer/templates/home.html:163
+#: explorer/templates/lugares/places_list.html:98
+#: explorer/templates/lugares/places_list.html:723
 msgid "Seleccionar Tipo"
 msgstr "Select Type"
 
-#: explorer/templates/home.html:191 explorer/templates/home.html:2127
-#: explorer/templates/lugares/places_detail.html:163
-#: explorer/templates/lugares/places_list.html:174
+#: explorer/templates/home.html:185 explorer/templates/home.html:1953
+#: explorer/templates/home.html:2245
+#: explorer/templates/lugares/places_detail.html:130
+#: explorer/templates/lugares/places_list.html:132
+#: explorer/templates/lugares/places_list.html:724
 msgid "Características"
 msgstr "Features"
 
-#: explorer/templates/home.html:200 explorer/templates/home.html:203
+#: explorer/templates/home.html:189 explorer/templates/home.html:191
 msgid "Sin característica especial"
 msgstr "No special feature"
 
-#: explorer/templates/home.html:204
+#: explorer/templates/home.html:191
 msgid "Buscar sin filtros adicionales"
 msgstr "Search without additional filters"
 
-#: explorer/templates/home.html:239 explorer/templates/home.html:1872
-msgid "Cerca de Mí"
-msgstr "Near Me"
+#: explorer/templates/home.html:230
+msgid "Imperdibles ahora"
+msgstr "Must-visit now"
 
-#: explorer/templates/home.html:243 explorer/templates/home.html:2409
-msgid "Ver Todos los Lugares"
-msgstr "View All Places"
+#: explorer/templates/home.html:231
+msgid "Ver todos"
+msgstr "View all"
 
-#: explorer/templates/home.html:251
-#: explorer/templates/lugares/places_detail.html:246
-#: explorer/templates/lugares/places_detail.html:255
+#: explorer/templates/home.html:264
+msgid "Explora por zonas"
+msgstr "Explore by area"
+
+#: explorer/templates/home.html:285
+#: explorer/templates/lugares/places_detail.html:191
+#: explorer/templates/lugares/places_detail.html:200
+#: explorer/templates/lugares/places_list.html:725
 msgid "Cargando..."
 msgstr "Loading..."
 
-#: explorer/templates/home.html:254
+#: explorer/templates/home.html:288
 msgid "Buscando lugares..."
 msgstr "Searching places..."
 
-#: explorer/templates/home.html:255
+#: explorer/templates/home.html:289
 msgid "Esto puede tardar unos segundos"
 msgstr "This may take a few seconds"
 
-#: explorer/templates/home.html:300
-msgid "Ver todas las áreas"
-msgstr "View all areas"
-
-#: explorer/templates/home.html:319
+#: explorer/templates/home.html:303
 msgid "Obteniendo ubicación..."
 msgstr "Getting location..."
 
-#: explorer/templates/home.html:320
+#: explorer/templates/home.html:304
 msgid "Ubicación encontrada"
 msgstr "Location found"
 
-#: explorer/templates/home.html:321
+#: explorer/templates/home.html:305
 msgid ""
 "Permiso de ubicación denegado. Por favor, habilita la ubicación en tu "
 "navegador."
 msgstr ""
 "Location permission denied. Please enable location services in your browser."
 
-#: explorer/templates/home.html:322
+#: explorer/templates/home.html:306
 msgid "No se pudo determinar tu ubicación. Intenta de nuevo."
 msgstr "Your location could not be determined. Please try again."
 
-#: explorer/templates/home.html:323
+#: explorer/templates/home.html:307
 msgid "La solicitud de ubicación tardó demasiado. Intenta de nuevo."
 msgstr "The location request took too long. Please try again."
 
-#: explorer/templates/home.html:324
+#: explorer/templates/home.html:308
 msgid "Error desconocido al obtener la ubicación."
 msgstr "Unknown error obtaining location."
 
-#: explorer/templates/home.html:325 explorer/templates/home.html:2056
+#: explorer/templates/home.html:309 explorer/templates/home.html:1868
 msgid "Error en la búsqueda"
 msgstr "Search error"
 
-#: explorer/templates/home.html:326 explorer/templates/home.html:2061
+#: explorer/templates/home.html:310 explorer/templates/home.html:1873
 msgid "Error de conexión"
 msgstr "Connection error"
 
-#: explorer/templates/home.html:327
+#: explorer/templates/home.html:311
 msgid "No hay lugares cercanos disponibles en este momento."
 msgstr "No nearby places available at this time."
 
-#: explorer/templates/home.html:328
+#: explorer/templates/home.html:312
 msgid "Error al cargar lugares cercanos."
 msgstr "Error loading nearby places."
 
-#: explorer/templates/home.html:329
+#: explorer/templates/home.html:313
 msgid "Reintentar"
 msgstr "Retry"
 
-#: explorer/templates/home.html:330
+#: explorer/templates/home.html:314
 msgid "No hay lugares similares disponibles en este momento."
 msgstr "No similar places available at this time."
 
-#: explorer/templates/home.html:331
+#: explorer/templates/home.html:315
 msgid "Error al cargar lugares similares."
 msgstr "Error loading similar places."
 
-#: explorer/templates/home.html:332
+#: explorer/templates/home.html:316
 msgid "No hay más lugares en esta zona disponibles en este momento."
 msgstr "There are no more places available in this area at this time."
 
-#: explorer/templates/home.html:333
+#: explorer/templates/home.html:317
 msgid "Error al cargar lugares de la zona."
 msgstr "Error loading places in this area."
 
-#: explorer/templates/home.html:1704
+#: explorer/templates/home.html:1276
+msgid "Ver menos"
+msgstr "See less"
+
+#: explorer/templates/home.html:1276
+msgid "Ver más"
+msgstr "See more"
+
+#: explorer/templates/home.html:1577
 msgid "Resultados de tu Búsqueda"
 msgstr "Your Search Results"
 
-#: explorer/templates/home.html:1792
+#: explorer/templates/home.html:1603
 msgid "Ver Todos los Resultados"
 msgstr "View All Results"
 
-#: explorer/templates/home.html:1813
+#: explorer/templates/home.html:1625
 msgid "¡Ups! Algo salió mal"
 msgstr "Oops! Something went wrong."
 
-#: explorer/templates/home.html:1816
+#: explorer/templates/home.html:1628
 msgid "Intentar de nuevo"
 msgstr "Try again"
 
-#: explorer/templates/home.html:1835 explorer/templates/home.html:2162
-msgid "Restaurantes"
-msgstr "Restaurants"
-
-#: explorer/templates/home.html:1836 explorer/templates/home.html:2165
-msgid "Bares"
-msgstr "Bars"
-
-#: explorer/templates/home.html:1837 explorer/templates/home.html:2168
-msgid "Cafés"
-msgstr "Cafés"
-
-#: explorer/templates/home.html:1838 explorer/templates/home.html:2171
+#: explorer/templates/home.html:1650 explorer/templates/home.html:1994
+#: explorer/views.py:1845
 msgid "Panaderías"
 msgstr "Bakeries"
 
-#: explorer/templates/home.html:1839 explorer/templates/home.html:2179
+#: explorer/templates/home.html:1651 explorer/templates/home.html:2002
+#: explorer/views.py:1846
 msgid "Discotecas"
 msgstr "Nightclubs"
 
-#: explorer/templates/home.html:1840 explorer/templates/home.html:2182
+#: explorer/templates/home.html:1652 explorer/templates/home.html:2005
+#: explorer/views.py:1847
 msgid "Rooftops"
 msgstr "Rooftops"
 
-#: explorer/templates/home.html:1841 explorer/templates/home.html:2185
+#: explorer/templates/home.html:1653 explorer/templates/home.html:2008
+#: explorer/views.py:1848
 msgid "Karaokes"
 msgstr "Karaoke"
 
-#: explorer/templates/home.html:1842 explorer/templates/home.html:2188
+#: explorer/templates/home.html:1654 explorer/templates/home.html:2011
+#: explorer/views.py:1849
 msgid "Bares Deportivos"
 msgstr "Sports bars"
 
-#: explorer/templates/home.html:1843 explorer/templates/home.html:2196
+#: explorer/templates/home.html:1655 explorer/templates/home.html:2019
+#: explorer/views.py:1850
 msgid "Casinos"
 msgstr "Casinos"
 
-#: explorer/templates/home.html:1844 explorer/templates/home.html:2199
+#: explorer/templates/home.html:1656 explorer/templates/home.html:2022
+#: explorer/views.py:1851
 msgid "Boleras"
 msgstr "Bowling alleys"
 
-#: explorer/templates/home.html:1845 explorer/templates/home.html:2202
+#: explorer/templates/home.html:1657 explorer/templates/home.html:2025
+#: explorer/views.py:1852
 msgid "Spas"
 msgstr "Spas"
 
-#: explorer/templates/home.html:1846 explorer/templates/home.html:2210
+#: explorer/templates/home.html:1658 explorer/templates/home.html:2033
+#: explorer/views.py:1853
 msgid "Galerías de Arte"
 msgstr "Art galleries"
 
-#: explorer/templates/home.html:1847 explorer/templates/home.html:2213
+#: explorer/templates/home.html:1659 explorer/templates/home.html:2036
+#: explorer/views.py:1854
 msgid "Museos"
 msgstr "Museums"
 
-#: explorer/templates/home.html:1848 explorer/templates/home.html:2216
+#: explorer/templates/home.html:1660 explorer/templates/home.html:2039
+#: explorer/views.py:1855
 msgid "Atracciones Turísticas"
 msgstr "Tourist attractions"
 
-#: explorer/templates/home.html:1849
+#: explorer/templates/home.html:1661
 msgid "Todos"
 msgstr "All"
 
-#: explorer/templates/home.html:1854 explorer/templates/home.html:2239
-#: explorer/templates/lugares/places_detail.html:165
-#: explorer/templates/lugares/places_list.html:188 explorer/views.py:274
+#: explorer/templates/home.html:1666 explorer/templates/home.html:2062
+#: explorer/templates/lugares/places_detail.html:132
+#: explorer/templates/lugares/places_list.html:155 explorer/views.py:508
+#: explorer/views.py:1594 explorer/views.py:1860
 msgid "Terraza"
 msgstr "Terrace"
 
-#: explorer/templates/home.html:1857 explorer/templates/home.html:2248
-#: explorer/templates/lugares/places_list.html:191 explorer/views.py:277
-#: explorer/views.py:376 explorer/views.py:971
+#: explorer/templates/home.html:1667 explorer/templates/home.html:2065
+#: explorer/templates/lugares/places_detail.html:133
+#: explorer/templates/lugares/places_list.html:156 explorer/views.py:509
+#: explorer/views.py:1595 explorer/views.py:1861
+msgid "Música en Vivo"
+msgstr "Live Music"
+
+#: explorer/templates/home.html:1668 explorer/templates/home.html:2068
+#: explorer/templates/lugares/places_detail.html:143
+#: explorer/templates/lugares/places_list.html:157 explorer/views.py:510
+#: explorer/views.py:738 explorer/views.py:1365 explorer/views.py:1596
+#: explorer/views.py:1862
+msgid "Para Grupos"
+msgstr "For Groups"
+
+#: explorer/templates/home.html:1669 explorer/templates/home.html:2071
+#: explorer/templates/lugares/places_list.html:158 explorer/views.py:511
+#: explorer/views.py:739 explorer/views.py:1365 explorer/views.py:1597
+#: explorer/views.py:1863
 msgid "Para Niños"
 msgstr "Kid-friendly"
 
-#: explorer/templates/home.html:1858 explorer/templates/home.html:2256
-#: explorer/templates/lugares/places_detail.html:169
-#: explorer/templates/lugares/places_list.html:180 explorer/views.py:265
+#: explorer/templates/home.html:1670 explorer/templates/home.html:2079
+#: explorer/templates/lugares/places_detail.html:136
+#: explorer/templates/lugares/places_list.html:147 explorer/views.py:499
+#: explorer/views.py:1591 explorer/views.py:1864
 msgid "Delivery"
 msgstr "Delivery"
 
-#: explorer/templates/home.html:1859 explorer/templates/home.html:2259
-#: explorer/templates/lugares/places_detail.html:168
-#: explorer/templates/lugares/places_list.html:181 explorer/views.py:266
-#: explorer/views.py:370 explorer/views.py:968
+#: explorer/templates/home.html:1671 explorer/templates/home.html:2082
+#: explorer/templates/lugares/places_detail.html:135
+#: explorer/templates/lugares/places_list.html:148 explorer/views.py:500
+#: explorer/views.py:733 explorer/views.py:1362 explorer/views.py:1592
+#: explorer/views.py:1865
 msgid "Para Llevar"
 msgstr "To Take Away"
 
-#: explorer/templates/home.html:1860 explorer/templates/home.html:2262
-#: explorer/templates/lugares/places_detail.html:167
-#: explorer/templates/lugares/places_list.html:182 explorer/views.py:267
-#: explorer/views.py:371 explorer/views.py:969
+#: explorer/templates/home.html:1672 explorer/templates/home.html:2085
+#: explorer/templates/lugares/places_detail.html:134
+#: explorer/templates/lugares/places_list.html:149 explorer/views.py:501
+#: explorer/views.py:734 explorer/views.py:1363 explorer/views.py:1593
+#: explorer/views.py:1866
 msgid "Comer en Local"
 msgstr "Dine-in"
 
-#: explorer/templates/home.html:1861 explorer/templates/home.html:2265
+#: explorer/templates/home.html:1673 explorer/templates/home.html:2088
+#: explorer/views.py:1605 explorer/views.py:1867
 msgid "Reservaciones"
 msgstr "Reservations"
 
-#: explorer/templates/home.html:1863 explorer/templates/home.html:2276
-#: explorer/templates/lugares/places_detail.html:174
-#: explorer/templates/lugares/places_list.html:198 explorer/views.py:285
+#: explorer/templates/home.html:1674 explorer/templates/home.html:2096
+#: explorer/templates/lugares/places_detail.html:142
+#: explorer/templates/lugares/places_list.html:164 explorer/views.py:518
+#: explorer/views.py:1598 explorer/views.py:1868
+msgid "Cócteles"
+msgstr "Cocktails"
+
+#: explorer/templates/home.html:1675 explorer/templates/home.html:2099
+#: explorer/templates/lugares/places_detail.html:141
+#: explorer/templates/lugares/places_list.html:165 explorer/views.py:519
+#: explorer/views.py:1599 explorer/views.py:1869
 msgid "Vinos"
 msgstr "Wines"
 
-#: explorer/templates/home.html:1864 explorer/templates/home.html:2279
-#: explorer/templates/lugares/places_list.html:199 explorer/views.py:286
-#: explorer/views.py:379 explorer/views.py:973
+#: explorer/templates/home.html:1676 explorer/templates/home.html:2102
+#: explorer/templates/lugares/places_list.html:166 explorer/views.py:520
+#: explorer/views.py:742 explorer/views.py:1367 explorer/views.py:1600
+#: explorer/views.py:1870
 msgid "Café Especialidad"
 msgstr "Specialty Coffee"
 
-#: explorer/templates/home.html:1865 explorer/templates/home.html:2282
-#: explorer/templates/lugares/places_list.html:200 explorer/views.py:287
+#: explorer/templates/home.html:1677 explorer/templates/home.html:2105
+#: explorer/templates/lugares/places_list.html:167 explorer/views.py:521
+#: explorer/views.py:1601 explorer/views.py:1871
 msgid "Postres"
 msgstr "Desserts"
 
-#: explorer/templates/home.html:1866 explorer/templates/home.html:2290
-#: explorer/templates/lugares/places_detail.html:178
-#: explorer/templates/lugares/places_list.html:207 explorer/views.py:295
-#: explorer/views.py:374 explorer/views.py:970
+#: explorer/templates/home.html:1678 explorer/templates/home.html:2113
+#: explorer/templates/lugares/places_detail.html:145
+#: explorer/templates/lugares/places_list.html:174 explorer/views.py:529
+#: explorer/views.py:737 explorer/views.py:1364 explorer/views.py:1603
+#: explorer/views.py:1872
 msgid "Pet Friendly"
 msgstr "Pet Friendly"
 
-#: explorer/templates/home.html:1867 explorer/templates/home.html:2293
-#: explorer/templates/lugares/places_list.html:206 explorer/views.py:294
+#: explorer/templates/home.html:1679 explorer/templates/home.html:2116
+#: explorer/templates/lugares/places_list.html:173 explorer/views.py:528
+#: explorer/views.py:1602 explorer/views.py:1873
 msgid "Acceso Accesible"
 msgstr "Accessible Access"
 
-#: explorer/templates/home.html:1868 explorer/templates/home.html:2296
-#: explorer/templates/lugares/places_list.html:208 explorer/views.py:296
+#: explorer/templates/home.html:1680 explorer/templates/home.html:2119
+#: explorer/templates/lugares/places_list.html:175 explorer/views.py:530
+#: explorer/views.py:1604 explorer/views.py:1874
 msgid "Tarjetas de Crédito"
 msgstr "Credit Cards"
 
-#: explorer/templates/home.html:1873
+#: explorer/templates/home.html:1685
 msgid "Localizando..."
 msgstr "Loading..."
 
-#: explorer/templates/home.html:1874
+#: explorer/templates/home.html:1686
 msgid "GPS Activo"
 msgstr "GPS active"
 
-#: explorer/templates/home.html:1896
+#: explorer/templates/home.html:1708
 msgid "Tu navegador no soporta geolocalización"
 msgstr "Your browser does not support geolocation"
 
-#: explorer/templates/home.html:1926
+#: explorer/templates/home.html:1738
 msgid "Error de ubicación"
 msgstr "Location error"
 
-#: explorer/templates/home.html:1928
+#: explorer/templates/home.html:1740
 msgid "Permiso denegado. Habilita la ubicación."
 msgstr ""
 "Location permission denied. Please enable location services in your browser."
 
-#: explorer/templates/home.html:1929 explorer/templates/home.html:2013
+#: explorer/templates/home.html:1741 explorer/templates/home.html:1825
 msgid "Ubicación no disponible"
 msgstr "Location unavailable"
 
-#: explorer/templates/home.html:1930
+#: explorer/templates/home.html:1742
 msgid "Tiempo de espera agotado"
 msgstr "Timed out"
 
-#: explorer/templates/home.html:1981
+#: explorer/templates/home.html:1793
 msgid "Usando Near Me"
 msgstr "Using Near me"
 
-#: explorer/templates/home.html:2089 explorer/templates/home.html:2546
-#: explorer/templates/lugares/lugares_por_comuna.html:122
-#: explorer/templates/lugares/places_list.html:277
-#: explorer/templates/semantic_results.html:156
-msgid "Ver detalles"
-msgstr "View details"
-
-#: explorer/templates/home.html:2090 explorer/templates/home.html:2547
-#: explorer/templates/lugares/lugares_por_comuna.html:124
-#: explorer/templates/semantic_results.html:159
+#: explorer/templates/home.html:1893 explorer/templates/home.html:2271
 msgid "Sin detalles"
 msgstr "No details"
 
-#: explorer/templates/home.html:2091
-#: explorer/templates/lugares/places_detail.html:74
-#: explorer/templates/lugares/places_list.html:253
-#: explorer/templates/semantic_results.html:109
-msgid "Destacado"
-msgstr "Featured"
-
-#: explorer/templates/home.html:2092
-#: explorer/templates/lugares/places_detail.html:77
-#: explorer/templates/lugares/places_list.html:258
-#: explorer/templates/semantic_results.html:114
-msgid "Exclusivo"
-msgstr "Exclusive"
-
-#: explorer/templates/home.html:2093
+#: explorer/templates/home.html:1896
 msgid "Top Valorado"
 msgstr "Top Rated"
 
-#: explorer/templates/home.html:2094
-msgid "Radio"
-msgstr "Radius"
-
-#: explorer/templates/home.html:2095
+#: explorer/templates/home.html:1897
 msgid "Lugares cerca de mí"
 msgstr "Places near me"
 
-#: explorer/templates/home.html:2096
+#: explorer/templates/home.html:1898
 msgid "cerca de mí"
 msgstr "near me"
 
-#: explorer/templates/home.html:2097
+#: explorer/templates/home.html:1899
 msgid "con"
 msgstr "with"
 
-#: explorer/templates/home.html:2098
+#: explorer/templates/home.html:1900
 msgid "Lugares con"
 msgstr "Places with"
 
-#: explorer/templates/home.html:2126
+#: explorer/templates/home.html:1901
+#: explorer/templates/lugares/places_detail.html:530
+msgid "Sin resultados"
+msgstr "No results"
+
+# Near Me - Frontend messages
+#: explorer/templates/home.html:1902
+msgid "Intenta ampliar el radio de búsqueda"
+msgstr "Try expanding the search radius"
+
+#: explorer/templates/home.html:1952 explorer/templates/home.html:2235
 msgid "Tipo"
 msgstr "Type"
 
-#: explorer/templates/home.html:2132
+#: explorer/templates/home.html:1958
 msgid "Cerrar"
 msgstr "Close"
 
-#: explorer/templates/home.html:2155
-#: explorer/templates/lugares/places_list.html:144
+#: explorer/templates/home.html:1978
+#: explorer/templates/lugares/places_list.html:103
+#: explorer/templates/lugares/places_list.html:105
 msgid "Todos los tipos"
 msgstr "All types"
 
-#: explorer/templates/home.html:2160
+#: explorer/templates/home.html:1983
 msgid "Comida & Bebida"
 msgstr "Fast food"
 
-#: explorer/templates/home.html:2194
+#: explorer/templates/home.html:2000
+msgid "Vida Nocturna"
+msgstr "Nightlife"
+
+#: explorer/templates/home.html:2017
 msgid "Entretenimiento"
 msgstr "Amusement center"
 
-#: explorer/templates/home.html:2208
+#: explorer/templates/home.html:2031
 msgid "Cultura & Arte"
 msgstr "Culture & attractions"
 
-#: explorer/templates/home.html:2232
+#: explorer/templates/home.html:2055
 msgid "Sin filtro especial"
 msgstr "Without special filter"
 
-#: explorer/templates/home.html:2237
+#: explorer/templates/home.html:2060
 msgid "Ambiente"
 msgstr "Atmosphere"
 
-#: explorer/templates/home.html:2254
+#: explorer/templates/home.html:2077
 msgid "Servicios"
 msgstr "Services"
 
-#: explorer/templates/home.html:2271
-#: explorer/templates/lugares/places_list.html:196 explorer/views.py:281
+#: explorer/templates/home.html:2094
+#: explorer/templates/lugares/places_list.html:163 explorer/views.py:515
 msgid "Especialidades"
 msgstr "Specialties"
 
-#: explorer/templates/home.html:2288
+#: explorer/templates/home.html:2111
 msgid "Accesibilidad"
 msgstr "Accessibility"
 
-#: explorer/templates/home.html:2406
+#: explorer/templates/home.html:2170
 msgid "Actualizar Ubicación"
 msgstr "Update Location"
+
+#: explorer/templates/home.html:2173
+msgid "Ver Todos los Lugares"
+msgstr "View All Places"
+
+#: explorer/templates/legal/contact.html:8
+msgid ""
+"Contáctanos en ViveMedellín. Preguntas sobre lugares en Medellín, "
+"sugerencias o reportar información incorrecta."
+msgstr ""
+"Contact us at ViveMedellín. Questions about places in Medellín, suggestions,"
+" or to report incorrect information."
+
+#: explorer/templates/legal/contact.html:18
+msgid "Hablemos"
+msgstr "Let's talk"
+
+#: explorer/templates/legal/contact.html:22
+msgid ""
+"¿Tienes preguntas, sugerencias o encontraste un error? Nos encantaría "
+"escucharte."
+msgstr ""
+"Have questions, suggestions, or found an error? We'd love to hear from you."
+
+# ---------------------------------------------------------------------------
+# About page (explorer/templates/about.html)
+# ---------------------------------------------------------------------------
+#: explorer/templates/legal/contact.html:35
+msgid "Creador de ViveMedellín"
+msgstr "Creator of ViveMedellín"
+
+#: explorer/templates/legal/contact.html:42
+msgid "Escríbenos"
+msgstr "Write to us"
+
+#: explorer/templates/legal/contact.html:50
+msgid "Correo electrónico"
+msgstr "Email"
+
+#: explorer/templates/legal/contact.html:52
+msgid "Respondemos en menos de 48 horas"
+msgstr "We reply within 48 hours"
+
+#: explorer/templates/legal/contact.html:61
+#: explorer/templates/lugares/places_detail.html:158
+msgid "Ubicación"
+msgstr "Location"
+
+#: explorer/templates/legal/contact.html:62
+msgid "Medellín, Antioquia"
+msgstr "Medellín, Antioquia"
+
+#: explorer/templates/legal/contact.html:62
+msgid "Colombia"
+msgstr "Colombia"
+
+#: explorer/templates/legal/contact.html:70
+msgid "¿Cómo podemos ayudarte?"
+msgstr "How can we help?"
+
+#: explorer/templates/legal/contact.html:76
+msgid "Propietarios:"
+msgstr "Business owners:"
+
+#: explorer/templates/legal/contact.html:76
+msgid "Actualiza o reclama tu establecimiento"
+msgstr "Update or claim your business"
+
+#: explorer/templates/legal/contact.html:80
+msgid "Errores:"
+msgstr "Errors:"
+
+#: explorer/templates/legal/contact.html:80
+msgid "Reporta información incorrecta"
+msgstr "Report incorrect information"
+
+#: explorer/templates/legal/contact.html:84
+msgid "Sugerencias:"
+msgstr "Suggestions:"
+
+#: explorer/templates/legal/contact.html:84
+msgid "Propón nuevos lugares o funciones"
+msgstr "Suggest new places or features"
+
+#: explorer/templates/legal/contact.html:88
+msgid "Publicidad:"
+msgstr "Advertising:"
+
+#: explorer/templates/legal/contact.html:88
+msgid "Consultas comerciales"
+msgstr "Commercial inquiries"
+
+#: explorer/templates/legal/contact.html:92
+msgid "Privacidad:"
+msgstr "Privacy:"
+
+#: explorer/templates/legal/contact.html:92
+msgid "Solicitudes sobre tus datos"
+msgstr "Data-related requests"
+
+#: explorer/templates/legal/contact.html:99
+msgid "Enviar correo"
+msgstr "Send email"
+
+#: explorer/templates/legal/contact.html:112
+#: explorer/templates/legal/privacy_policy.html:40
+#: explorer/templates/legal/terms.html:40
+msgid "Volver al inicio"
+msgstr "Back to home"
+
+#: explorer/templates/legal/legal_nav.html:2
+msgid "Páginas legales"
+msgstr "Legal pages"
+
+# ═══════════════════════════════════════════════════════════════════
+# LEGAL PAGES (Privacy Policy, Terms, Contact)
+# Required for Google AdSense compliance
+# ═══════════════════════════════════════════════════════════════════
+#: explorer/templates/legal/privacy_policy.html:6
+#: explorer/templates/legal/privacy_policy.html:21
+msgid "Política de Privacidad"
+msgstr "Privacy Policy"
+
+#: explorer/templates/legal/privacy_policy.html:8
+msgid ""
+"Política de privacidad de ViveMedellín. Información sobre cómo recopilamos, "
+"usamos y protegemos tus datos personales, incluyendo el uso de cookies y "
+"publicidad de Google AdSense."
+msgstr ""
+"ViveMedellín privacy policy. How we collect, use and protect your personal "
+"data, including cookies and Google AdSense advertising."
+
+#: explorer/templates/legal/privacy_policy.html:19
+#: explorer/templates/legal/terms.html:19
+msgid "Documento legal"
+msgstr "Legal document"
+
+#: explorer/templates/legal/privacy_policy.html:23
+#: explorer/templates/legal/terms.html:23
+msgid "Última actualización:"
+msgstr "Last updated:"
+
+#: explorer/templates/legal/terms.html:6
+#: explorer/templates/legal/terms.html:21
+msgid "Términos y Condiciones"
+msgstr "Terms and Conditions"
+
+#: explorer/templates/legal/terms.html:8
+msgid ""
+"Términos y condiciones de uso de ViveMedellín. Conoce las reglas que rigen "
+"el uso de nuestro directorio de lugares en Medellín."
+msgstr ""
+"ViveMedellín terms of use. Learn the rules for using our Medellín places "
+"directory."
 
 #: explorer/templates/lugares/admin_mapa_regiones.html:5
 msgid "Visualizador de zonas cubiertas"
@@ -1198,12 +1635,12 @@ msgstr "Search for a place"
 msgid "Escribe un lugar..."
 msgstr "Write a place..."
 
-#: explorer/templates/lugares/lugares_por_comuna.html:8
-#: explorer/templates/lugares/lugares_por_comuna.html:19
+#: explorer/templates/lugares/lugares_por_comuna.html:7
+#: explorer/templates/lugares/lugares_por_comuna.html:18
 msgid "Explorar por Comuna | ViveMedellín"
 msgstr "Explore by Commune | ViveMedellín"
 
-#: explorer/templates/lugares/lugares_por_comuna.html:11
+#: explorer/templates/lugares/lugares_por_comuna.html:10
 msgid ""
 "Descubre los bares, discotecas y restaurantes más destacados en cada comuna "
 "de Medellín. Explora el mapa interactivo y encuentra tu próximo destino."
@@ -1211,7 +1648,7 @@ msgstr ""
 "Discover the top bars, clubs and restaurants in every Medellín district. "
 "Explore the interactive map and find your next destination."
 
-#: explorer/templates/lugares/lugares_por_comuna.html:15
+#: explorer/templates/lugares/lugares_por_comuna.html:14
 msgid ""
 "bares Medellín, discotecas Medellín, restaurantes Medellín, lugares por "
 "comuna, mapa interactivo Medellín"
@@ -1219,7 +1656,7 @@ msgstr ""
 "Medellín bars, Medellín clubs, Medellín restaurants, places by district, "
 "interactive map Medellín"
 
-#: explorer/templates/lugares/lugares_por_comuna.html:23
+#: explorer/templates/lugares/lugares_por_comuna.html:22
 msgid ""
 "Navega por comunas de Medellín y encuentra los mejores lugares para salir. "
 "Mapa interactivo con bares, discotecas y restaurantes."
@@ -1227,377 +1664,350 @@ msgstr ""
 "Browse Medellín districts and find the best places to go out. Interactive "
 "map with bars, clubs and restaurants."
 
-#: explorer/templates/lugares/lugares_por_comuna.html:76
+#: explorer/templates/lugares/lugares_por_comuna.html:37
 msgid "Lugares por Comuna"
 msgstr "Places by Comuna"
 
-#: explorer/templates/lugares/lugares_por_comuna.html:78
+#: explorer/templates/lugares/lugares_por_comuna.html:39
 msgid "Explora el mapa interactivo y encuentra tu próximo destino"
 msgstr "Explore the interactive map and find your next destination"
 
-#: explorer/templates/lugares/lugares_por_comuna.html:96
-#: explorer/templates/lugares/lugares_por_comuna.html:482
-#: explorer/templates/semantic_results.html:82
-msgid "Imagen de"
-msgstr "Image of"
+#: explorer/templates/lugares/lugares_por_comuna.html:63
+msgid "No se encontraron lugares"
+msgstr "No places found"
 
-#: explorer/templates/lugares/lugares_por_comuna.html:133
+#: explorer/templates/lugares/lugares_por_comuna.html:64
 msgid "No se encontraron lugares en esta página."
 msgstr "No places found on this page."
 
-#: explorer/templates/lugares/lugares_por_comuna.html:147
-#: explorer/templates/lugares/lugares_por_comuna.html:171
-#: explorer/templates/lugares/places_list.html:293
+#: explorer/templates/lugares/lugares_por_comuna.html:77
+#: explorer/templates/lugares/lugares_por_comuna.html:101
+#: explorer/templates/lugares/places_list.html:204
+#: explorer/templates/lugares/places_list.html:732
 msgid "Anterior"
 msgstr "Previous"
 
-#: explorer/templates/lugares/lugares_por_comuna.html:153
-#: explorer/templates/lugares/lugares_por_comuna.html:181
+#: explorer/templates/lugares/lugares_por_comuna.html:83
+#: explorer/templates/lugares/lugares_por_comuna.html:111
 msgid "Página"
 msgstr "Page"
 
-#: explorer/templates/lugares/lugares_por_comuna.html:153
-#: explorer/templates/lugares/lugares_por_comuna.html:181
+#: explorer/templates/lugares/lugares_por_comuna.html:83
+#: explorer/templates/lugares/lugares_por_comuna.html:111
 msgid "de"
 msgstr "of"
 
-#: explorer/templates/lugares/lugares_por_comuna.html:159
-#: explorer/templates/lugares/places_list.html:307
+#: explorer/templates/lugares/lugares_por_comuna.html:89
+#: explorer/templates/lugares/places_list.html:218
+#: explorer/templates/lugares/places_list.html:733
 msgid "Siguiente"
 msgstr "Next"
 
-#: explorer/templates/lugares/lugares_por_comuna.html:177
+#: explorer/templates/lugares/lugares_por_comuna.html:107
 msgid "Cargar más lugares"
 msgstr "More places in"
 
+#: explorer/templates/lugares/lugares_por_comuna.html:244
+msgid "Imagen de"
+msgstr "Image of"
+
+# Preposición
 #: explorer/templates/lugares/places_detail.html:8
-#: explorer/templates/lugares/places_detail.html:18
-#: explorer/templates/lugares/places_list.html:9
-msgid "ViveMedellín"
-msgstr "ViveMedellín"
+#: explorer/templates/lugares/places_detail.html:19
+#: explorer/templates/lugares/places_detail.html:27
+#: explorer/templates/lugares/places_detail.html:29 explorer/views.py:1402
+#: explorer/views.py:1403
+msgid "en"
+msgstr "in"
 
-#: explorer/templates/lugares/places_detail.html:11
-#, python-format
-msgid ""
-"%(lugar.nombre)s en Medellín. Descubre este "
-"%(lugar.get_tipo_display|default:lugar.tipo)s con puntuación de "
-"%(lugar.rating|default:\"-\")s estrellas. Dirección: "
-"%(lugar.direccion|default:\"no disponible\")s."
-msgstr ""
-"%(lugar.nombre)s in Medellín. Discover this "
-"%(lugar.get_tipo_display|default:lugar.tipo)s rated "
-"%(lugar.rating|default:\"-\")s stars. Address: "
-"%(lugar.direccion|default:\"no disponible\")s."
+#: explorer/templates/lugares/places_detail.html:23
+#: explorer/templates/lugares/places_list.html:11
+msgid "mejores"
+msgstr "best"
 
-#: explorer/templates/lugares/places_detail.html:15
-#, python-format
-msgid ""
-"%(lugar.nombre)s, %(lugar.get_tipo_display|default:lugar.tipo)s, lugares "
-"Medellín, %(lugar.get_tipo_display|default:lugar.tipo)s Medellín, mejores "
-"lugares en Medellín"
-msgstr ""
-"%(lugar.nombre)s, %(lugar.get_tipo_display|default:lugar.tipo)s, Medellín "
-"places, %(lugar.get_tipo_display|default:lugar.tipo)s in Medellín, best "
-"places in Medellín"
+#: explorer/templates/lugares/places_detail.html:23
+msgid "terraza"
+msgstr "terrace"
 
-#: explorer/templates/lugares/places_detail.html:20
-#, python-format
-msgid ""
-"Conoce %(lugar.nombre)s, un destacado "
-"%(lugar.get_tipo_display|default:lugar.tipo)s en Medellín con rating de "
-"%(lugar.rating|default:\"-\")s."
-msgstr ""
-"Meet %(lugar.nombre)s, a top-rated "
-"%(lugar.get_tipo_display|default:lugar.tipo)s in Medellín with a score of "
-"%(lugar.rating|default:\"-\")s."
+#: explorer/templates/lugares/places_detail.html:23
+msgid "música en vivo"
+msgstr "live music"
 
-#: explorer/templates/lugares/places_detail.html:43
+#: explorer/templates/lugares/places_detail.html:58
 msgid "Volver"
 msgstr "Back"
 
-#: explorer/templates/lugares/places_detail.html:155
+#: explorer/templates/lugares/places_detail.html:123
 msgid "Descripción"
 msgstr "Description"
 
-#: explorer/templates/lugares/places_detail.html:170
+#: explorer/templates/lugares/places_detail.html:137
 msgid "Desayuno"
 msgstr "Breakfast"
 
-#: explorer/templates/lugares/places_detail.html:171
+#: explorer/templates/lugares/places_detail.html:138
 msgid "Almuerzo"
 msgstr "Lunch"
 
-#: explorer/templates/lugares/places_detail.html:172
+#: explorer/templates/lugares/places_detail.html:139
 msgid "Cena"
 msgstr "Dinner"
 
-#: explorer/templates/lugares/places_detail.html:173
+#: explorer/templates/lugares/places_detail.html:140
 msgid "Cerveza"
 msgstr "Beer"
 
-#: explorer/templates/lugares/places_detail.html:177
+#: explorer/templates/lugares/places_detail.html:144
 msgid "Niños Bienvenidos"
 msgstr "Kids welcome"
 
-#: explorer/templates/lugares/places_detail.html:179
+#: explorer/templates/lugares/places_detail.html:146
 msgid "Accesible"
 msgstr "Accessible"
 
-#: explorer/templates/lugares/places_detail.html:180
+#: explorer/templates/lugares/places_detail.html:147
 msgid "Tarjetas"
 msgstr "Cards accepted"
 
-#: explorer/templates/lugares/places_detail.html:181
+#: explorer/templates/lugares/places_detail.html:148
 msgid "Solo Efectivo"
 msgstr "Cash only"
 
-#: explorer/templates/lugares/places_detail.html:188
-msgid "Ubicación"
-msgstr "Location"
+#: explorer/templates/lugares/places_detail.html:178
+msgid "Visitar Web"
+msgstr "Visit Website"
 
-#: explorer/templates/lugares/places_detail.html:204
-msgid "Información"
-msgstr "Information"
-
-#: explorer/templates/lugares/places_detail.html:210
-msgid "Teléfono"
-msgstr "Phone"
-
-#: explorer/templates/lugares/places_detail.html:220
-msgid "Sitio Web"
-msgstr "Website"
-
-#: explorer/templates/lugares/places_detail.html:221
-msgid "Visitar"
-msgstr "Visit"
-
-#: explorer/templates/lugares/places_detail.html:230
-msgid "Zona"
-msgstr "Area"
-
-#: explorer/templates/lugares/places_detail.html:240
+#: explorer/templates/lugares/places_detail.html:185
 msgid "Horarios"
 msgstr "Hours"
 
-#: explorer/templates/lugares/places_detail.html:269
+#: explorer/templates/lugares/places_detail.html:213
 msgid "Ver Reseñas"
 msgstr "View reviews"
 
-#: explorer/templates/lugares/places_detail.html:274
+#: explorer/templates/lugares/places_detail.html:216
 msgid "Google Maps"
 msgstr "Google Maps"
 
-#: explorer/templates/lugares/places_detail.html:280
+#: explorer/templates/lugares/places_detail.html:221
 msgid "Waze"
 msgstr "Waze"
 
-#: explorer/templates/lugares/places_detail.html:284
-msgid "Explóralo:"
-msgstr "Explore it:"
-
-#: explorer/templates/lugares/places_detail.html:287
-msgid "Copiar enlace"
-msgstr "Copy link"
-
-#: explorer/templates/lugares/places_detail.html:302
+#: explorer/templates/lugares/places_detail.html:239
 msgid "Descubre más lugares"
 msgstr "Discover more places"
 
-#: explorer/templates/lugares/places_detail.html:305
+#: explorer/templates/lugares/places_detail.html:242
 msgid "Cercanos"
 msgstr "Nearby"
 
-#: explorer/templates/lugares/places_detail.html:308
+#: explorer/templates/lugares/places_detail.html:245
 msgid "Similares"
 msgstr "Similar"
 
-#: explorer/templates/lugares/places_detail.html:311
+#: explorer/templates/lugares/places_detail.html:248
 msgid "En"
 msgstr "In"
 
-#: explorer/templates/lugares/places_detail.html:311
+#: explorer/templates/lugares/places_detail.html:248
 msgid "la zona"
 msgstr "the area"
 
-#: explorer/templates/lugares/places_detail.html:401
+#: explorer/templates/lugares/places_detail.html:364
 msgid "Lunes"
 msgstr "Monday"
 
-#: explorer/templates/lugares/places_detail.html:401
+#: explorer/templates/lugares/places_detail.html:364
 msgid "Martes"
 msgstr "Tuesday"
 
-#: explorer/templates/lugares/places_detail.html:401
+#: explorer/templates/lugares/places_detail.html:364
 msgid "Miércoles"
 msgstr "Wednesday"
 
-#: explorer/templates/lugares/places_detail.html:401
+#: explorer/templates/lugares/places_detail.html:364
 msgid "Jueves"
 msgstr "Thursday"
 
-#: explorer/templates/lugares/places_detail.html:401
+#: explorer/templates/lugares/places_detail.html:364
 msgid "Viernes"
 msgstr "Friday"
 
-#: explorer/templates/lugares/places_detail.html:401
+#: explorer/templates/lugares/places_detail.html:364
 msgid "Sábado"
 msgstr "Saturday"
 
-#: explorer/templates/lugares/places_detail.html:401
+#: explorer/templates/lugares/places_detail.html:364
 msgid "Domingo"
 msgstr "Sunday"
 
-#: explorer/templates/lugares/places_detail.html:410
+#: explorer/templates/lugares/places_detail.html:373
 msgid "Cerrado"
 msgstr "Closed"
 
-#: explorer/templates/lugares/places_detail.html:475
-msgid "Ver"
-msgstr "Friday"
-
-#: explorer/templates/lugares/places_detail.html:490
-msgid "Sin resultados"
-msgstr "No results"
-
-#: explorer/templates/lugares/places_list.html:12
-msgid "Encuentra los lugares mejor valorados en ViveMedellín."
-msgstr "Find the best-rated places on ViveMedellín."
-
-#: explorer/templates/lugares/places_list.html:16
+#: explorer/templates/lugares/places_list.html:9
 msgid ""
-"lugares Medellín, bares Medellín, restaurantes Medellín, sitios para salir "
-"en Medellín"
+"Ratings de Google, horarios actualizados y ubicación exacta. Filtra por "
+"tipo, zona y características."
 msgstr ""
-"Medellín bars, Medellín clubs, Medellín restaurants, places by district, "
-"interactive map Medellín"
+"Google ratings, updated hours and exact location. Filter by type, area and "
+"features."
 
-#: explorer/templates/lugares/places_list.html:22
-msgid "Descubre lugares con calificaciones reales en Medellín."
-msgstr "Discover places with real ratings in Medellín."
+#: explorer/templates/lugares/places_list.html:11
+msgid "bares"
+msgstr "bars"
 
-#: explorer/templates/lugares/places_list.html:95
+#: explorer/templates/lugares/places_list.html:11
+msgid "restaurantes"
+msgstr "restaurants"
+
+#: explorer/templates/lugares/places_list.html:11
+msgid "vida nocturna"
+msgstr "nightlife"
+
+#: explorer/templates/lugares/places_list.html:15
+msgid "Encuentra lugares con ratings reales y horarios actualizados."
+msgstr "Find places with real ratings and updated schedules."
+
+#: explorer/templates/lugares/places_list.html:54
+#: explorer/templates/lugares/places_list.html:57
 msgid "Todas las áreas"
 msgstr "All areas"
 
-#: explorer/templates/lugares/places_list.html:96
+#: explorer/templates/lugares/places_list.html:58
 msgid "Ver todo Medellín"
 msgstr "View all of Medellín"
 
-#: explorer/templates/lugares/places_list.html:179 explorer/views.py:262
+#: explorer/templates/lugares/places_list.html:140
+msgid "Limpiar características"
+msgstr "Clear features"
+
+#: explorer/templates/lugares/places_list.html:146 explorer/views.py:496
 msgid "Servicios de Entrega"
 msgstr "Delivery Services"
 
-#: explorer/templates/lugares/places_list.html:187 explorer/views.py:271
+#: explorer/templates/lugares/places_list.html:154 explorer/views.py:505
 msgid "Ambiente & Experiencia"
 msgstr "Atmosphere & Experience"
 
-#: explorer/templates/lugares/places_list.html:205 explorer/views.py:291
+#: explorer/templates/lugares/places_list.html:172 explorer/views.py:525
 msgid "Accesibilidad & Comodidades"
 msgstr "Accessibility & Amenities"
 
-#: explorer/templates/lugares/places_list.html:318
+#: explorer/templates/lugares/places_list.html:229
+#: explorer/templates/lugares/places_list.html:726
 msgid "No hay lugares disponibles"
 msgstr "There are no places available"
 
-#: explorer/templates/lugares/places_list.html:319
+#: explorer/templates/lugares/places_list.html:230
+#: explorer/templates/lugares/places_list.html:727
 msgid "No se encontraron lugares que coincidan con tu búsqueda."
 msgstr "No locations were found that match your search."
 
-#: explorer/templates/lugares/places_list.html:321
+#: explorer/templates/lugares/places_list.html:232
+#: explorer/templates/lugares/places_list.html:728
 msgid "Ver todos los lugares"
 msgstr "View All Places"
 
-#: explorer/templates/lugares/reviews_lugar.html:7
+#: explorer/templates/lugares/reviews_lugar.html:6
 msgid "Reseñas de"
 msgstr "Reviews of"
 
-#: explorer/templates/lugares/reviews_lugar.html:10
+#: explorer/templates/lugares/reviews_lugar.html:9
 #, python-format
 msgid ""
 "Opiniones sobre %(lugar_nombre)s en Medellín. Lee reseñas de visitantes y "
 "descubre su calificación general antes de visitarlo."
-msgstr "Opinions about %(lugar_nombre)s in Medellín. Read visitor reviews and check its overall rating before you go."
+msgstr ""
+"Opinions about %(lugar_nombre)s in Medellín. Read visitor reviews and check "
+"its overall rating before you go."
 
-#: explorer/templates/lugares/reviews_lugar.html:14
+#: explorer/templates/lugares/reviews_lugar.html:13
 #, python-format
 msgid ""
 "reseñas de %(lugar_nombre)s, opiniones %(lugar_nombre)s, calificación "
 "%(lugar_nombre)s, comentarios lugar Medellín"
-msgstr "reviews of %(lugar_nombre)s, %(lugar_nombre)s opinions, %(lugar_nombre)s rating, Medellín place comments"
+msgstr ""
+"reviews of %(lugar_nombre)s, %(lugar_nombre)s opinions, %(lugar_nombre)s "
+"rating, Medellín place comments"
 
-#: explorer/templates/lugares/reviews_lugar.html:18
+#: explorer/templates/lugares/reviews_lugar.html:17
 #, python-format
 msgid "Reseñas de %(lugar_nombre)s | ViveMedellín"
 msgstr "Reviews of %(lugar_nombre)s | ViveMedellín"
 
-#: explorer/templates/lugares/reviews_lugar.html:22
+#: explorer/templates/lugares/reviews_lugar.html:21
 #, python-format
 msgid ""
 "Explora las opiniones y calificaciones de otros usuarios sobre "
 "%(lugar_nombre)s. Descubre qué dicen antes de tu próxima salida."
-msgstr "Explore other users’ opinions and ratings about %(lugar_nombre)s. See what they say before your next outing."
+msgstr ""
+"Explore other users’ opinions and ratings about %(lugar_nombre)s. See what "
+"they say before your next outing."
 
-#: explorer/templates/lugares/reviews_lugar.html:43
-#: explorer/templates/lugares/reviews_lugar.html:221
+#: explorer/templates/lugares/reviews_lugar.html:44
+#: explorer/templates/lugares/reviews_lugar.html:210
 msgid "Volver al lugar"
 msgstr "Return to the place"
 
-#: explorer/templates/lugares/reviews_lugar.html:83
+#: explorer/templates/lugares/reviews_lugar.html:56
 msgid "Reseñas del lugar"
 msgstr "Place reviews"
 
-#: explorer/templates/lugares/reviews_lugar.html:111
+#: explorer/templates/lugares/reviews_lugar.html:84
 msgid "reseña"
 msgstr "review"
 
-#: explorer/templates/lugares/reviews_lugar.html:111
+#: explorer/templates/lugares/reviews_lugar.html:84
 msgid "reseñas"
 msgstr "reviews"
 
-#: explorer/templates/lugares/reviews_lugar.html:136
+#: explorer/templates/lugares/reviews_lugar.html:118
 #, python-format
 msgid "Mostrando %(shown)s de %(total)s reseñas"
 msgstr "Showing %(shown)s of %(total)s reviews"
 
-#: explorer/templates/lugares/reviews_lugar.html:139
+#: explorer/templates/lugares/reviews_lugar.html:121
 msgid ""
-"Mostramos una selección de reseñas destacadas para ofrecer una visión "
-"equilibrada de la experiencia de nuestros visitantes."
-msgstr "We show a selection of featured reviews to provide a balanced view of our visitors’ experience."
+"Selección de reseñas destacadas. El rating refleja el promedio de todas las "
+"opiniones."
+msgstr ""
+"Featured reviews selection. The rating reflects the average of all reviews."
 
-#: explorer/templates/lugares/reviews_lugar.html:164
+#: explorer/templates/lugares/reviews_lugar.html:150
 msgid "Usuario anónimo"
 msgstr "Anonymous user"
 
-#: explorer/templates/lugares/reviews_lugar.html:170
+#: explorer/templates/lugares/reviews_lugar.html:156
 msgid "Fecha no disponible"
 msgstr "Date not available"
 
-#: explorer/templates/lugares/reviews_lugar.html:192
-#: explorer/templates/lugares/reviews_lugar.html:822
+#: explorer/templates/lugares/reviews_lugar.html:178
+#: explorer/templates/lugares/reviews_lugar.html:735
 msgid "Traducir"
 msgstr "Translate"
 
-#: explorer/templates/lugares/reviews_lugar.html:194
+#: explorer/templates/lugares/reviews_lugar.html:180
 msgid "Traducido automáticamente"
 msgstr "Translated automatically"
 
-#: explorer/templates/lugares/reviews_lugar.html:199
+#: explorer/templates/lugares/reviews_lugar.html:185
 msgid "Sin comentario escrito, solo calificación numérica."
 msgstr "No written comment, only numerical rating."
 
-#: explorer/templates/lugares/reviews_lugar.html:216
+#: explorer/templates/lugares/reviews_lugar.html:205
 msgid "¡Sé el primero en opinar!"
 msgstr "Be the first to comment!"
 
-#: explorer/templates/lugares/reviews_lugar.html:218
+#: explorer/templates/lugares/reviews_lugar.html:207
 msgid ""
-"Este lugar aún no tiene reseñas. Comparte tu experiencia para ayudar a otros "
-"viajeros."
+"Este lugar aún no tiene reseñas. Comparte tu experiencia para ayudar a otros"
+" viajeros."
 msgstr ""
-"This place has no reviews yet. Share your experience to help other travelers."
+"This place has no reviews yet. Share your experience to help other "
+"travelers."
 
-#: explorer/templates/lugares/reviews_lugar.html:823
+#: explorer/templates/lugares/reviews_lugar.html:736
 msgid "Ver original"
 msgstr "View original"
 
@@ -1638,6 +2048,12 @@ msgstr "If you wish to subscribe, you can do so again from our website."
 #: explorer/templates/newsletter/unsubscribe_success.html:32
 msgid "Ir al Inicio"
 msgstr "Go to Home"
+
+#: explorer/templates/newsletter/confirmation_error.html:40
+#: explorer/templates/newsletter/confirmation_success.html:32
+#: explorer/templates/newsletter/unsubscribe_success.html:35
+msgid "Explorar Lugares"
+msgstr "Explore Places"
 
 #: explorer/templates/newsletter/confirmation_success.html:5
 msgid "Suscripción Confirmada - ViveMedellín"
@@ -1685,41 +2101,78 @@ msgid ""
 "sitio web."
 msgstr "If you change your mind, you can always re-subscribe on our website."
 
-#: explorer/templates/semantic_results.html:9
+#: explorer/templates/semantic_results.html:8
+#, python-format
 msgid "Resultados para \"%(query)s\" en ViveMedellín"
 msgstr "Results for \"%(query)s\""
 
-#: explorer/templates/semantic_results.html:11
+#: explorer/templates/semantic_results.html:10
 msgid "Resultados semánticos en ViveMedellín"
 msgstr "Semantic Results"
 
-#: explorer/templates/semantic_results.html:60
+#: explorer/templates/semantic_results.html:16
+#, python-format
+msgid ""
+"Encuentra los mejores lugares en Medellín para \"%(query)s\". Bares, "
+"restaurantes y más con ratings reales."
+msgstr ""
+"Find the best places in Medellín for \"%(query)s\". Bars, restaurants and "
+"more with real ratings."
+
+#: explorer/templates/semantic_results.html:18
+msgid ""
+"Resultados de búsqueda inteligente en Medellín. Descubre lugares únicos "
+"basados en tu consulta."
+msgstr ""
+"Smart search results in Medellín. Discover unique places based on your "
+"query."
+
+#: explorer/templates/semantic_results.html:23
+msgid "búsqueda Medellín, lugares Medellín, bares restaurantes Medellín"
+msgstr "search Medellín, places Medellín, bars restaurants Medellín"
+
+#: explorer/templates/semantic_results.html:33
 msgid "Resultados semánticos"
 msgstr "Semantic Results"
 
-#: explorer/templates/semantic_results.html:63
-msgid "Resultados inteligentes para la búsqueda"
-msgstr "Your Search Results"
+#: explorer/templates/semantic_results.html:37
+msgid "Resultados inteligentes para"
+msgstr "Smart results for"
 
-#: explorer/templates/semantic_results.html:148
-msgid "Sitio web"
-msgstr "website"
+#: explorer/templates/semantic_results.html:41
+msgid "Escribe una consulta en el buscador principal para ver resultados."
+msgstr "Enter a query in the main search bar to see results."
 
-#: explorer/templates/semantic_results.html:170
+#: explorer/templates/semantic_results.html:69
 msgid "No se encontraron resultados."
 msgstr "No results found."
 
-#: explorer/templates/semantic_results.html:172
+#: explorer/templates/semantic_results.html:71
 msgid ""
 "Intenta ajustar tus palabras clave o usar otros filtros en el buscador "
 "principal."
 msgstr ""
+"Try adjusting your keywords or using other filters in the main search bar."
 
-#: explorer/templatetags/form_tags.py:13 explorer/templatetags/form_tags.py:24
-#: explorer/templatetags/form_tags.py:25 explorer/templatetags/form_tags.py:26
-#: explorer/templatetags/form_tags.py:33 explorer/templatetags/form_tags.py:34
-msgid "No especificado"
-msgstr "Not specified"
+#: explorer/templatetags/form_tags.py:126
+#: explorer/templatetags/form_tags.py:130
+msgid "Económico"
+msgstr "Budget"
+
+#: explorer/templatetags/form_tags.py:127
+#: explorer/templatetags/form_tags.py:131
+msgid "Moderado"
+msgstr "Moderate"
+
+#: explorer/templatetags/form_tags.py:128
+#: explorer/templatetags/form_tags.py:132
+msgid "Costoso"
+msgstr "Expensive"
+
+#: explorer/templatetags/form_tags.py:129
+#: explorer/templatetags/form_tags.py:133
+msgid "Muy costoso"
+msgstr "High-end"
 
 #: explorer/urls.py:16
 msgctxt "url"
@@ -1736,573 +2189,935 @@ msgctxt "url"
 msgid "lugar/<slug:slug>/"
 msgstr "place/<slug:slug>/"
 
-#: explorer/urls.py:19
+#: explorer/urls.py:20
 msgctxt "url"
 msgid "lugar/<slug:slug>/reseñas/"
 msgstr "place/<slug:slug>/reviews/"
 
+#: explorer/urls.py:39
+msgctxt "url"
+msgid "guias/"
+msgstr "guides/"
+
+#: explorer/urls.py:40
+msgctxt "url"
+msgid "guias/<slug:slug>/"
+msgstr "guides/<slug:slug>/"
+
 # --- Grupos de tipos para la UI ---
-#: explorer/utils/types.py:66
+#: explorer/views.py:482 explorer/views.py:863
 msgid "Restaurantes y comida"
 msgstr "Restaurants & food"
 
-#: explorer/utils/types.py:117
+#: explorer/views.py:484 explorer/views.py:864
 msgid "Bares y vida nocturna"
 msgstr "Bars & nightlife"
 
-#: explorer/utils/types.py:132
-msgid "Cafeterías y café de especialidad"
-msgstr "Cafés & specialty coffee"
+#: explorer/views.py:486 explorer/views.py:865
+msgid "Cafeterías"
+msgstr "Cafés"
 
-#: explorer/utils/types.py:145
+#: explorer/views.py:488 explorer/views.py:866
 msgid "Cultura y atracciones"
 msgstr "Culture & attractions"
 
-#: explorer/utils/types.py:168
-msgid "Bienestar y spa"
-msgstr "Wellness & spa"
-
-#: explorer/utils/types.py:179
-msgid "Otros lugares"
-msgstr "Other places"
-
-#: explorer/views.py:369 explorer/views.py:968
-msgid "con Delivery"
-msgstr "with Delivery"
-
-#: explorer/views.py:372 explorer/views.py:969
-msgid "con Terraza"
-msgstr "with Terrace"
-
-#: explorer/views.py:373 explorer/views.py:970
-msgid "con Música en Vivo"
-msgstr "with Live Music"
-
-#: explorer/views.py:377 explorer/views.py:972
-msgid "con Cócteles"
-msgstr "with Cocktails"
-
-#: explorer/views.py:378 explorer/views.py:972
-msgid "con Vinos"
-msgstr "with Wines"
-
-#: explorer/views.py:380 explorer/views.py:973
-msgid "con Postres"
-msgstr "with Desserts"
-
-#: explorer/views.py:381 explorer/views.py:974
-msgid "Accesibles"
-msgstr "Accessible"
-
-#: explorer/views.py:382 explorer/views.py:975
-msgid "Aceptan Tarjetas"
-msgstr "Cards accepted"
-
-#: explorer/views.py:462 explorer/views.py:1059
-#, python-format
-msgid "Resultados para \"%(query)s\" en %(area)s"
-msgstr "Results for \"%(query)s\" in %(area)s"
-
-#: explorer/views.py:463 explorer/views.py:1060
-#, python-format
-msgid "Lugares que coinciden con tu búsqueda en %(area)s"
-msgstr "Places matching your search in %(area)s"
-
-#: explorer/views.py:473 explorer/views.py:1069
-#, python-format
-msgid "Mejores %(tipo)s en %(area)s"
-msgstr "Best %(tipo)s in %(area)s"
-
-#: explorer/views.py:474 explorer/views.py:1070
-#, python-format
-msgid "Descubre los mejores %(tipo)s recomendados en %(area)s"
-msgstr "Discover the best %(tipo)s in %(area)s"
-
-#: explorer/views.py:480 explorer/views.py:1076
-#, python-format
-msgid "Los mejores lugares en %(area)s"
-msgstr "The Best Places in %(area)s"
-
-#: explorer/views.py:481 explorer/views.py:1077
-#, python-format
-msgid "Descubre los sitios más destacados de %(area)s"
-msgstr "Discover the most outstanding places in %(area)s"
-
-#: explorer/views.py:489 explorer/views.py:1080
-msgid " y "
-msgstr "and"
-
-#: explorer/views.py:1113
-msgid "Se requieren área y categoría. La característica es opcional."
-msgstr "Area and category are required. This feature is optional."
-
-#: explorer/views.py:1183
-#, python-format
-msgid "Error en la búsqueda: %(err)s"
-msgstr "Search error: %(err)s"
-
-#: explorer/views.py:1291
-msgid "Encontramos %(count)s %(tipo)s en un radio de %(dist)s"
-msgid_plural "Encontramos %(count)s %(tipo)s en un radio de %(dist)s"
-msgstr[0] "We found %(count)s place within %(dist)s"
-msgstr[1] "We found %(count)s places within %(dist)s"
-
-#: explorer/views.py:1297
-#, python-format
-msgid "Encontramos %(count)s lugar en un radio de %(dist)s"
-msgid_plural "Encontramos %(count)s lugares en un radio de %(dist)s"
-msgstr[0] "We found %(count)s place within %(dist)s"
-msgstr[1] "We found %(count)s places within %(dist)s"
-
-#: explorer/views.py:1320
-msgid "Las coordenadas proporcionadas no son válidas"
-msgstr "The coordinates provided are invalid."
-
-#: explorer/views.py:1324
-#, python-format
-msgid "Error al buscar lugares cercanos: %(err)s"
-msgstr "Error searching for nearby places: %(err)s"
-
-#: explorer/views.py:1347 explorer/views.py:1389 explorer/views.py:1421
-msgid "Lugar no encontrado"
-msgstr "Location not found"
-
-#: explorer/views.py:1461
-msgid "Parámetro q requerido"
-msgstr "Required parameter q"
-
-#: explorer/views.py:1684
-msgid "Texto vacío"
-msgstr "Empty text"
-
-#: explorer/views.py:1693
-msgid "Límite de traducciones temporal alcanzado. Intenta más tarde."
-msgstr "Temporary translation limit reached. Please try again later."
-
-# ═══════════════════════════════════════════════════════════════════
-# H1 TITLES FOR PLACES LIST (SEO)
-# ═══════════════════════════════════════════════════════════════════
-
-msgid "Todos los Lugares en Medellín"
-msgstr "All Places in Medellín"
-
-msgid "Descubre los mejores sitios que ofrece la ciudad"
-msgstr "Discover the best places the city has to offer"
-
+#: explorer/views.py:607
 msgid "Mejores Restaurantes en Medellín"
 msgstr "Best Restaurants in Medellín"
 
+#: explorer/views.py:608
 msgid "Descubre los sabores más auténticos de la gastronomía paisa y mundial"
 msgstr "Discover the most authentic flavors of Paisa and world cuisine"
 
+#: explorer/views.py:612
 msgid "Mejores Bares en Medellín"
 msgstr "Best Bars in Medellín"
 
+#: explorer/views.py:613
 msgid "Vive la mejor vida nocturna de la ciudad de la eterna primavera"
 msgstr "Experience the best nightlife in the city of eternal spring"
 
+#: explorer/views.py:617
 msgid "Mejores Cafeterías en Medellín"
 msgstr "Best Cafés in Medellín"
 
+#: explorer/views.py:618
 msgid "Experimenta la auténtica cultura cafetera paisa"
 msgstr "Experience authentic Paisa coffee culture"
 
+#: explorer/views.py:622
 msgid "Mejores Discotecas en Medellín"
 msgstr "Best Nightclubs in Medellín"
 
+#: explorer/views.py:623
 msgid "Las mejores discotecas y clubes nocturnos de la ciudad"
 msgstr "The best nightclubs and clubs in the city"
 
+#: explorer/views.py:627
 msgid "Mejores Pubs en Medellín"
 msgstr "Best Pubs in Medellín"
 
+#: explorer/views.py:628
 msgid "Descubre los pubs más auténticos de la ciudad"
 msgstr "Discover the most authentic pubs in the city"
 
+#: explorer/views.py:632
 msgid "Mejores Bares de Vinos en Medellín"
 msgstr "Best Wine Bars in Medellín"
 
+#: explorer/views.py:633
 msgid "Los mejores lugares para disfrutar de una copa de vino"
 msgstr "The best places to enjoy a glass of wine"
 
+#: explorer/views.py:637
 msgid "Mejores Spas en Medellín"
 msgstr "Best Spas in Medellín"
 
+#: explorer/views.py:638
 msgid "Relájate en los mejores spas y centros de bienestar"
 msgstr "Relax in the best spas and wellness centers"
 
+#: explorer/views.py:642
 msgid "Mejores Karaokes en Medellín"
 msgstr "Best Karaokes in Medellín"
 
+#: explorer/views.py:643
 msgid "Canta y diviértete en los mejores karaokes de la ciudad"
 msgstr "Sing and have fun at the best karaokes in the city"
 
+#: explorer/views.py:648
 msgid "Mejores Restaurantes Italianos en Medellín"
 msgstr "Best Italian Restaurants in Medellín"
 
+#: explorer/views.py:649
 msgid "Disfruta de la auténtica cocina italiana en Medellín"
 msgstr "Enjoy authentic Italian cuisine in Medellín"
 
+#: explorer/views.py:653
 msgid "Mejores Restaurantes Mexicanos en Medellín"
 msgstr "Best Mexican Restaurants in Medellín"
 
+#: explorer/views.py:654
 msgid "Sabores auténticos de la cocina mexicana"
 msgstr "Authentic Mexican cuisine flavors"
 
+#: explorer/views.py:658
 msgid "Mejores Restaurantes Japoneses en Medellín"
 msgstr "Best Japanese Restaurants in Medellín"
 
+#: explorer/views.py:659
 msgid "Sushi, ramen y más en los mejores restaurantes japoneses"
 msgstr "Sushi, ramen and more at the best Japanese restaurants"
 
+#: explorer/views.py:663
 msgid "Mejores Restaurantes Chinos en Medellín"
 msgstr "Best Chinese Restaurants in Medellín"
 
+#: explorer/views.py:664
 msgid "Disfruta de la auténtica cocina china"
 msgstr "Enjoy authentic Chinese cuisine"
 
+#: explorer/views.py:668
 msgid "Mejores Restaurantes Franceses en Medellín"
 msgstr "Best French Restaurants in Medellín"
 
+#: explorer/views.py:669
 msgid "Haute cuisine francesa en la ciudad"
 msgstr "French haute cuisine in the city"
 
+#: explorer/views.py:673
 msgid "Mejores Marisquerías en Medellín"
 msgstr "Best Seafood Restaurants in Medellín"
 
+#: explorer/views.py:674
 msgid "Los mejores mariscos y pescados frescos"
 msgstr "The best fresh seafood and fish"
 
+#: explorer/views.py:678
 msgid "Mejores Pizzerías en Medellín"
 msgstr "Best Pizzerias in Medellín"
 
+#: explorer/views.py:679
 msgid "Las pizzas más deliciosas de la ciudad"
 msgstr "The most delicious pizzas in the city"
 
+#: explorer/views.py:683
 msgid "Mejores Hamburgueserías en Medellín"
 msgstr "Best Burger Joints in Medellín"
 
+#: explorer/views.py:684
 msgid "Las hamburguesas más jugosas y deliciosas"
 msgstr "The juiciest and most delicious burgers"
 
+#: explorer/views.py:688
 msgid "Mejores Asaderos en Medellín"
 msgstr "Best Steakhouses in Medellín"
 
+#: explorer/views.py:689 explorer/views.py:1349
 msgid "Las mejores carnes a la parrilla"
 msgstr "The best grilled meats"
 
+#: explorer/views.py:693
 msgid "Mejores Restaurantes de Sushi en Medellín"
 msgstr "Best Sushi Restaurants in Medellín"
 
+#: explorer/views.py:694
 msgid "El sushi más fresco de la ciudad"
 msgstr "The freshest sushi in the city"
 
+#: explorer/views.py:698
 msgid "Mejores Restaurantes de Comida Rápida en Medellín"
 msgstr "Best Fast Food Restaurants in Medellín"
 
+#: explorer/views.py:699
 msgid "Comida rápida deliciosa para cualquier momento"
 msgstr "Delicious fast food for any time"
 
+#: explorer/views.py:703
 msgid "Mejores Restaurantes Veganos en Medellín"
 msgstr "Best Vegan Restaurants in Medellín"
 
+#: explorer/views.py:704
 msgid "Opciones veganas deliciosas para todos"
 msgstr "Delicious vegan options for everyone"
 
+#: explorer/views.py:708
 msgid "Mejores Restaurantes Vegetarianos en Medellín"
 msgstr "Best Vegetarian Restaurants in Medellín"
 
+#: explorer/views.py:709
 msgid "Comida vegetariana saludable y deliciosa"
 msgstr "Healthy and delicious vegetarian food"
 
+#: explorer/views.py:713
 msgid "Mejores Restaurantes Gourmet en Medellín"
 msgstr "Best Gourmet Restaurants in Medellín"
 
+#: explorer/views.py:714 explorer/views.py:1354
 msgid "Experiencias gastronómicas de alto nivel"
 msgstr "High-level gastronomic experiences"
 
+#: explorer/views.py:718
 msgid "Mejores Restaurantes de Desayuno en Medellín"
 msgstr "Best Breakfast Restaurants in Medellín"
 
+#: explorer/views.py:719 explorer/views.py:1355
 msgid "Comienza el día con los mejores desayunos"
 msgstr "Start your day with the best breakfasts"
 
+#: explorer/views.py:723
 msgid "Mejores Lugares de Brunch en Medellín"
 msgstr "Best Brunch Spots in Medellín"
 
+#: explorer/views.py:724
 msgid "Los mejores brunchs de la ciudad"
 msgstr "The best brunches in the city"
 
-# Dynamic H1 patterns
-#, python-format
-msgid "Lugares %(filters)s en Medellín"
-msgstr "Places %(filters)s in Medellín"
+#: explorer/views.py:732 explorer/views.py:1362
+msgid "con Delivery"
+msgstr "with Delivery"
 
-msgid "Lugares especializados que cumplen tus criterios de búsqueda"
-msgstr "Specialized places that meet your search criteria"
+#: explorer/views.py:735 explorer/views.py:1363
+msgid "con Terraza"
+msgstr "with Terrace"
 
-#, python-format
-msgid "Los Mejores Lugares en %(comuna)s"
-msgstr "The Best Places in %(comuna)s"
+#: explorer/views.py:736 explorer/views.py:1364
+msgid "con Música en Vivo"
+msgstr "with Live Music"
 
-#, python-format
-msgid "Descubre los sitios más destacados de %(comuna)s"
-msgstr "Discover the most outstanding places in %(comuna)s"
+#: explorer/views.py:740 explorer/views.py:1366
+msgid "con Cócteles"
+msgstr "with Cocktails"
 
-#, python-format
-msgid "Lugares %(filters)s en %(comuna)s"
-msgstr "Places %(filters)s in %(comuna)s"
+#: explorer/views.py:741 explorer/views.py:1366
+msgid "con Vinos"
+msgstr "with Wines"
 
-#, python-format
-msgid "Lugares especializados en %(comuna)s que cumplen tus criterios"
-msgstr "Specialized places in %(comuna)s that meet your criteria"
+#: explorer/views.py:743 explorer/views.py:1367
+msgid "con Postres"
+msgstr "with Desserts"
 
+#: explorer/views.py:744 explorer/views.py:1368
+msgid "Accesibles"
+msgstr "Accessible"
+
+#: explorer/views.py:745 explorer/views.py:1369
+msgid "Aceptan Tarjetas"
+msgstr "Cards accepted"
+
+#: explorer/views.py:773
+msgid "Medellín"
+msgstr "Medellín"
+
+#: explorer/views.py:774 explorer/views.py:1387
+msgid " y "
+msgstr "and"
+
+#: explorer/views.py:778
 #, python-format
 msgid "Resultados para \"%(query)s\""
 msgstr "Results for \"%(query)s\""
 
-msgid "Lugares que coinciden con tu búsqueda en Medellín"
-msgstr "Places matching your search in Medellín"
+#: explorer/views.py:779
+#, python-format
+msgid "Lugares que coinciden con tu búsqueda en %(ubicacion)s"
+msgstr "Places matching your search in %(ubicacion)s"
 
-# Preposición
-msgid "en"
-msgstr "in"
-
-# Short titles for comuna pages
-msgid "Mejores Bares"
-msgstr "Best Bars"
-
-msgid "Mejores Cafeterías"
-msgstr "Best Cafés"
-
-msgid "Mejores Discotecas"
-msgstr "Best Nightclubs"
-
-msgid "Mejores Pubs"
-msgstr "Best Pubs"
-
-msgid "Mejores Bares de Vinos"
-msgstr "Best Wine Bars"
-
-msgid "Mejores Spas"
-msgstr "Best Spas"
-
-msgid "Mejores Karaokes"
-msgstr "Best Karaokes"
-
-msgid "Mejores Restaurantes Italianos"
-msgstr "Best Italian Restaurants"
-
-msgid "Mejores Restaurantes Mexicanos"
-msgstr "Best Mexican Restaurants"
-
-msgid "Mejores Restaurantes Japoneses"
-msgstr "Best Japanese Restaurants"
-
-msgid "Mejores Restaurantes Chinos"
-msgstr "Best Chinese Restaurants"
-
-msgid "Mejores Marisquerías"
-msgstr "Best Seafood Restaurants"
-
-msgid "Mejores Pizzerías"
-msgstr "Best Pizzerias"
-
-msgid "Mejores Hamburgueserías"
-msgstr "Best Burger Joints"
-
-msgid "Mejores Asaderos"
-msgstr "Best Steakhouses"
-
-msgid "Mejores Restaurantes de Sushi"
-msgstr "Best Sushi Restaurants"
-
-msgid "Mejores Restaurantes de Comida Rápida"
-msgstr "Best Fast Food Restaurants"
-
-msgid "Mejores Restaurantes Veganos"
-msgstr "Best Vegan Restaurants"
-
-msgid "Mejores Restaurantes Vegetarianos"
-msgstr "Best Vegetarian Restaurants"
-
-msgid "Mejores Restaurantes Gourmet"
-msgstr "Best Gourmet Restaurants"
-
-msgid "Mejores Restaurantes de Desayuno"
-msgstr "Best Breakfast Restaurants"
-
-msgid "Mejores Lugares de Brunch"
-msgstr "Best Brunch Spots"
-
-# Short descriptions
-msgid "Descubre los sabores más auténticos"
-msgstr "Discover the most authentic flavors"
-
-msgid "Vive la mejor vida nocturna"
-msgstr "Experience the best nightlife"
-
-msgid "Experimenta la cultura cafetera"
-msgstr "Experience coffee culture"
-
-msgid "Las mejores discotecas y clubes nocturnos"
-msgstr "The best nightclubs and clubs"
-
-msgid "Descubre los pubs más auténticos"
-msgstr "Discover the most authentic pubs"
-
-msgid "Los mejores lugares para una copa de vino"
-msgstr "The best places for a glass of wine"
-
-msgid "Relájate en los mejores spas"
-msgstr "Relax in the best spas"
-
-msgid "Canta y diviértete"
-msgstr "Sing and have fun"
-
-msgid "Auténtica cocina italiana"
-msgstr "Authentic Italian cuisine"
-
-msgid "Sabores auténticos de México"
-msgstr "Authentic Mexican flavors"
-
-msgid "Sushi, ramen y más"
-msgstr "Sushi, ramen and more"
-
-msgid "Auténtica cocina china"
-msgstr "Authentic Chinese cuisine"
-
-msgid "Los mejores mariscos frescos"
-msgstr "The best fresh seafood"
-
-msgid "Las pizzas más deliciosas"
-msgstr "The most delicious pizzas"
-
-msgid "Las hamburguesas más jugosas"
-msgstr "The juiciest burgers"
-
-msgid "El sushi más fresco"
-msgstr "The freshest sushi"
-
-msgid "Comida rápida deliciosa"
-msgstr "Delicious fast food"
-
-msgid "Opciones veganas deliciosas"
-msgstr "Delicious vegan options"
-
-msgid "Comida vegetariana saludable"
-msgstr "Healthy vegetarian food"
-
-msgid "Los mejores brunchs"
-msgstr "The best brunches"
+#: explorer/views.py:788
+msgid "en Medellín"
+msgstr "in Medellín"
 
 # Dynamic H1 patterns (comuna-specific)
+#: explorer/views.py:790
 #, python-format
 msgid "%(titulo)s en %(comuna)s"
 msgstr "%(titulo)s in %(comuna)s"
 
+#: explorer/views.py:798
 #, python-format
-msgid "%(desc)s en %(comuna)s"
-msgstr "%(desc)s in %(comuna)s"
+msgid "%(desc)s en la zona de %(comuna)s"
+msgstr "%(desc)s in the %(comuna)s area"
 
+#: explorer/views.py:804 explorer/views.py:1406
 #, python-format
 msgid "Mejores %(tipo)s en %(comuna)s"
 msgstr "Best %(tipo)s in %(comuna)s"
 
+#: explorer/views.py:805
 #, python-format
-msgid "Descubre los mejores %(tipo)s en %(comuna)s"
-msgstr "Discover the best %(tipo)s in %(comuna)s"
+msgid "Descubre los mejores %(tipo)s en la zona de %(comuna)s"
+msgstr "Discover the best %(tipo)s in the %(comuna)s area"
 
+#: explorer/views.py:807
 #, python-format
 msgid "Mejores %(tipo)s en Medellín"
 msgstr "Best %(tipo)s in Medellín"
 
+#: explorer/views.py:808
 #, python-format
 msgid "Descubre los mejores %(tipo)s en la ciudad"
 msgstr "Discover the best %(tipo)s in the city"
 
+#: explorer/views.py:815 explorer/views.py:1413
+#, python-format
+msgid "Lugares %(filters)s en %(comuna)s"
+msgstr "Places %(filters)s in %(comuna)s"
 
-msgid "Top"
-msgstr "Top"
+#: explorer/views.py:816 explorer/views.py:1417
+#, python-format
+msgid "Lugares especializados en %(comuna)s que cumplen tus criterios"
+msgstr "Specialized places in %(comuna)s that meet your criteria"
+
+#: explorer/views.py:820 explorer/views.py:1421
+#, python-format
+msgid "Los Mejores Lugares en %(comuna)s"
+msgstr "The Best Places in %(comuna)s"
+
+#: explorer/views.py:821 explorer/views.py:1424
+#, python-format
+msgid "Descubre los sitios más destacados de %(comuna)s"
+msgstr "Discover the most outstanding places in %(comuna)s"
+
+# Dynamic H1 patterns
+#: explorer/views.py:825
+#, python-format
+msgid "Lugares %(filters)s en Medellín"
+msgstr "Places %(filters)s in Medellín"
+
+#: explorer/views.py:826
+msgid "Lugares especializados que cumplen tus criterios de búsqueda"
+msgstr "Specialized places that meet your search criteria"
+
+# ═══════════════════════════════════════════════════════════════════
+# H1 TITLES FOR PLACES LIST (SEO)
+# ═══════════════════════════════════════════════════════════════════
+#: explorer/views.py:830
+msgid "Todos los Lugares en Medellín"
+msgstr "All Places in Medellín"
+
+#: explorer/views.py:831
+msgid "Descubre los mejores sitios que ofrece la ciudad"
+msgstr "Discover the best places the city has to offer"
+
+#: explorer/views.py:1334
+msgid "Mejores Restaurantes"
+msgstr "Best Restaurants"
+
+# Short descriptions
+#: explorer/views.py:1334
+msgid "Descubre los sabores más auténticos"
+msgstr "Discover the most authentic flavors"
+
+# Short titles for comuna pages
+#: explorer/views.py:1335
+msgid "Mejores Bares"
+msgstr "Best Bars"
+
+#: explorer/views.py:1335
+msgid "Vive la mejor vida nocturna"
+msgstr "Experience the best nightlife"
+
+#: explorer/views.py:1336
+msgid "Mejores Cafeterías"
+msgstr "Best Cafés"
+
+#: explorer/views.py:1336
+msgid "Experimenta la cultura cafetera"
+msgstr "Experience coffee culture"
+
+#: explorer/views.py:1337
+msgid "Mejores Discotecas"
+msgstr "Best Nightclubs"
+
+#: explorer/views.py:1337
+msgid "Las mejores discotecas y clubes nocturnos"
+msgstr "The best nightclubs and clubs"
+
+#: explorer/views.py:1338
+msgid "Mejores Pubs"
+msgstr "Best Pubs"
+
+#: explorer/views.py:1338
+msgid "Descubre los pubs más auténticos"
+msgstr "Discover the most authentic pubs"
+
+#: explorer/views.py:1339
+msgid "Mejores Bares de Vinos"
+msgstr "Best Wine Bars"
+
+#: explorer/views.py:1339
+msgid "Los mejores lugares para una copa de vino"
+msgstr "The best places for a glass of wine"
+
+#: explorer/views.py:1340
+msgid "Mejores Spas"
+msgstr "Best Spas"
+
+#: explorer/views.py:1340
+msgid "Relájate en los mejores spas"
+msgstr "Relax in the best spas"
+
+#: explorer/views.py:1341
+msgid "Mejores Karaokes"
+msgstr "Best Karaokes"
+
+#: explorer/views.py:1341
+msgid "Canta y diviértete"
+msgstr "Sing and have fun"
+
+#: explorer/views.py:1342
+msgid "Mejores Restaurantes Italianos"
+msgstr "Best Italian Restaurants"
+
+#: explorer/views.py:1342
+msgid "Auténtica cocina italiana"
+msgstr "Authentic Italian cuisine"
+
+#: explorer/views.py:1343
+msgid "Mejores Restaurantes Mexicanos"
+msgstr "Best Mexican Restaurants"
+
+#: explorer/views.py:1343
+msgid "Sabores auténticos de México"
+msgstr "Authentic Mexican flavors"
+
+#: explorer/views.py:1344
+msgid "Mejores Restaurantes Japoneses"
+msgstr "Best Japanese Restaurants"
+
+#: explorer/views.py:1344
+msgid "Sushi, ramen y más"
+msgstr "Sushi, ramen and more"
+
+#: explorer/views.py:1345
+msgid "Mejores Restaurantes Chinos"
+msgstr "Best Chinese Restaurants"
+
+#: explorer/views.py:1345
+msgid "Auténtica cocina china"
+msgstr "Authentic Chinese cuisine"
+
+#: explorer/views.py:1346
+msgid "Mejores Marisquerías"
+msgstr "Best Seafood Restaurants"
+
+#: explorer/views.py:1346
+msgid "Los mejores mariscos frescos"
+msgstr "The best fresh seafood"
+
+#: explorer/views.py:1347
+msgid "Mejores Pizzerías"
+msgstr "Best Pizzerias"
+
+#: explorer/views.py:1347
+msgid "Las pizzas más deliciosas"
+msgstr "The most delicious pizzas"
+
+#: explorer/views.py:1348
+msgid "Mejores Hamburgueserías"
+msgstr "Best Burger Joints"
+
+#: explorer/views.py:1348
+msgid "Las hamburguesas más jugosas"
+msgstr "The juiciest burgers"
+
+#: explorer/views.py:1349
+msgid "Mejores Asaderos"
+msgstr "Best Steakhouses"
+
+#: explorer/views.py:1350
+msgid "Mejores Restaurantes de Sushi"
+msgstr "Best Sushi Restaurants"
+
+#: explorer/views.py:1350
+msgid "El sushi más fresco"
+msgstr "The freshest sushi"
+
+#: explorer/views.py:1351
+msgid "Mejores Restaurantes de Comida Rápida"
+msgstr "Best Fast Food Restaurants"
+
+#: explorer/views.py:1351
+msgid "Comida rápida deliciosa"
+msgstr "Delicious fast food"
+
+#: explorer/views.py:1352
+msgid "Mejores Restaurantes Veganos"
+msgstr "Best Vegan Restaurants"
+
+#: explorer/views.py:1352
+msgid "Opciones veganas deliciosas"
+msgstr "Delicious vegan options"
+
+#: explorer/views.py:1353
+msgid "Mejores Restaurantes Vegetarianos"
+msgstr "Best Vegetarian Restaurants"
+
+#: explorer/views.py:1353
+msgid "Comida vegetariana saludable"
+msgstr "Healthy vegetarian food"
+
+#: explorer/views.py:1354
+msgid "Mejores Restaurantes Gourmet"
+msgstr "Best Gourmet Restaurants"
+
+#: explorer/views.py:1355
+msgid "Mejores Restaurantes de Desayuno"
+msgstr "Best Breakfast Restaurants"
+
+#: explorer/views.py:1356
+msgid "Mejores Lugares de Brunch"
+msgstr "Best Brunch Spots"
+
+#: explorer/views.py:1356
+msgid "Los mejores brunchs"
+msgstr "The best brunches"
+
+#: explorer/views.py:1390
+#, python-format
+msgid "Resultados para \"%(query)s\" en %(comuna)s"
+msgstr "Results for \"%(query)s\" in %(comuna)s"
+
+#: explorer/views.py:1394
+#, python-format
+msgid "Lugares que coinciden con tu búsqueda en %(comuna)s"
+msgstr "Places matching your search in %(comuna)s"
+
+#: explorer/views.py:1407
+#, python-format
+msgid "Descubre los mejores %(tipo)s en %(comuna)s"
+msgstr "Discover the best %(tipo)s in %(comuna)s"
+
+#: explorer/views.py:1457
+msgid "Se requieren área y categoría. La característica es opcional."
+msgstr "Area and category are required. This feature is optional."
+
+#: explorer/views.py:1525 explorer/views.py:1701
+#, python-format
+msgid "Error en la búsqueda: %(err)s"
+msgstr "Search error: %(err)s"
+
+#: explorer/views.py:1645
+#, python-format
+msgid "No encontramos %(tipo)s en %(area)s"
+msgstr "We couldn't find any %(tipo)s in %(area)s"
+
+#: explorer/views.py:1647
+#, python-format
+msgid "No encontramos %(tipo)s"
+msgstr "We couldn't find any %(tipo)s"
+
+#: explorer/views.py:1649
+#, python-format
+msgid "No encontramos lugares en %(area)s"
+msgstr "We couldn't find places in %(area)s"
+
+# (obsolete entries removed - now active translations)
+#: explorer/views.py:1651
+msgid "No encontramos lugares con estos filtros"
+msgstr "We couldn't find places with these filters"
+
+#: explorer/views.py:1655
+#, python-format
+msgid "%(count)s %(tipo)s en %(area)s"
+msgid_plural "%(count)s %(tipo)s en %(area)s"
+msgstr[0] "%(count)s %(tipo)s in %(area)s"
+msgstr[1] "%(count)s %(tipo)s in %(area)s"
+
+#: explorer/views.py:1661
+#, python-format
+msgid "%(count)s %(tipo)s encontrados"
+msgid_plural "%(count)s %(tipo)s encontrados"
+msgstr[0] "%(count)s %(tipo)s found"
+msgstr[1] "%(count)s %(tipo)s found"
+
+#: explorer/views.py:1667
+#, python-format
+msgid "%(count)s lugar en %(area)s"
+msgid_plural "%(count)s lugares en %(area)s"
+msgstr[0] "%(count)s place in %(area)s"
+msgstr[1] "%(count)s places in %(area)s"
+
+#: explorer/views.py:1673
+#, python-format
+msgid "%(count)s lugar encontrado"
+msgid_plural "%(count)s lugares encontrados"
+msgstr[0] "%(count)s place found"
+msgstr[1] "%(count)s places found"
+
+# Near Me - Backend messages
+#: explorer/views.py:1894
+#, python-format
+msgid "No encontramos %(tipo)s con %(caract)s en un radio de %(dist)s"
+msgstr "We found no %(tipo)s with %(caract)s within %(dist)s"
+
+#: explorer/views.py:1898
+#, python-format
+msgid "No encontramos %(tipo)s en un radio de %(dist)s"
+msgstr "We found no %(tipo)s within %(dist)s"
+
+#: explorer/views.py:1902
+#, python-format
+msgid "No encontramos lugares con %(caract)s en un radio de %(dist)s"
+msgstr "We found no places with %(caract)s within %(dist)s"
+
+#: explorer/views.py:1906
+#, python-format
+msgid "No encontramos lugares en un radio de %(dist)s"
+msgstr "We found no places within %(dist)s"
+
+#: explorer/views.py:1911
+#, python-format
+msgid "%(count)s %(tipo)s con %(caract)s a menos de %(dist)s"
+msgid_plural "%(count)s %(tipo)s con %(caract)s a menos de %(dist)s"
+msgstr[0] "%(count)s %(tipo)s with %(caract)s within %(dist)s"
+msgstr[1] "%(count)s %(tipo)s with %(caract)s within %(dist)s"
+
+#: explorer/views.py:1917
+#, python-format
+msgid "%(count)s %(tipo)s a menos de %(dist)s"
+msgid_plural "%(count)s %(tipo)s a menos de %(dist)s"
+msgstr[0] "%(count)s %(tipo)s within %(dist)s"
+msgstr[1] "%(count)s %(tipo)s within %(dist)s"
+
+#: explorer/views.py:1923
+#, python-format
+msgid "%(count)s lugar con %(caract)s a menos de %(dist)s"
+msgid_plural "%(count)s lugares con %(caract)s a menos de %(dist)s"
+msgstr[0] "%(count)s place with %(caract)s within %(dist)s"
+msgstr[1] "%(count)s places with %(caract)s within %(dist)s"
+
+#: explorer/views.py:1929
+#, python-format
+msgid "%(count)s lugar a menos de %(dist)s"
+msgid_plural "%(count)s lugares a menos de %(dist)s"
+msgstr[0] "%(count)s place within %(dist)s"
+msgstr[1] "%(count)s places within %(dist)s"
+
+#: explorer/views.py:1949
+msgid "Las coordenadas proporcionadas no son válidas"
+msgstr "The coordinates provided are invalid."
+
+#: explorer/views.py:1953
+#, python-format
+msgid "Error al buscar lugares cercanos: %(err)s"
+msgstr "Error searching for nearby places: %(err)s"
+
+#: explorer/views.py:1976 explorer/views.py:2016 explorer/views.py:2050
+msgid "Lugar no encontrado"
+msgstr "Location not found"
+
+#: explorer/views.py:2093
+msgid "Parámetro q requerido"
+msgstr "Required parameter q"
+
+#: explorer/views.py:2374
+msgid "Texto vacío"
+msgstr "Empty text"
+
+#: explorer/views.py:2383
+msgid "Límite de traducciones temporal alcanzado. Intenta más tarde."
+msgstr "Temporary translation limit reached. Please try again later."
+
+# ═══════════════════════════════════════════════════════════════════
+# CURATED GUIDES
+# ═══════════════════════════════════════════════════════════════════
+#: explorer/views.py:2504
+msgid "Guías de Medellín"
+msgstr "Medellín Guides"
+
+#: explorer/views.py:2505
+msgid ""
+"Recomendaciones personales de un local. Los mejores lugares de Medellín "
+"organizados por zona, temática y experiencia."
+msgstr ""
+"Personal recommendations from a local. The best places in Medellín organized"
+" by area, theme and experience."
+
+#~ msgid "ViveMedellín - Tu Guía de la Ciudad"
+#~ msgstr "ViveMedellín - Your City Guide"
+
+#~ msgid ""
+#~ "Descubre los mejores bares, discotecas, restaurantes y lugares turísticos de"
+#~ " Medellín."
+#~ msgstr ""
+#~ "Discover the best bars, clubs, restaurants and attractions in Medellín."
+
+#~ msgid ""
+#~ "Medellín, turismo, lugares, bares, restaurantes, discotecas, que hacer en "
+#~ "Medellín"
+#~ msgstr ""
+#~ "Medellín, tourism, places, bars, restaurants, clubs, things to do in "
+#~ "Medellín"
+
+#~ msgid ""
+#~ "Descubre los mejores lugares de Medellín, la ciudad de la eterna primavera."
+#~ msgstr "Discover the best places in Medellín, the city of eternal spring."
+
+#~ msgid ""
+#~ "Hecho con cariño para locales y viajeros que quieren vivir la ciudad a "
+#~ "profundidad."
+#~ msgstr ""
+#~ "Made with care for locals and travelers who want to experience the city in "
+#~ "depth."
+
+#~ msgid "Con Delivery"
+#~ msgstr "With delivery"
+
+#~ msgid "Restaurantes Laureles"
+#~ msgstr "Restaurants in Laureles"
+
+#~ msgid "Explorar Todo"
+#~ msgstr "Explore all"
+
+#~ msgid "Todos los derechos reservados."
+#~ msgstr "All rights reserved."
+
+#~ msgid "Inicio | ViveMedellín"
+#~ msgstr "Home | ViveMedellín"
+
+#~ msgid ""
+#~ "Bienvenido a ViveMedellín: descubre los mejores bares, discotecas, rooftops "
+#~ "y restaurantes de Medellín, organizados por comunas. ¡Explora como un local!"
+#~ msgstr ""
+#~ "Welcome to ViveMedellín: discover the best bars, clubs, rooftops and "
+#~ "restaurants in Medellín, organized by neighborhood. Explore like a local!"
+
+#~ msgid ""
+#~ "ViveMedellín, bares Medellín, discotecas Medellín, restaurantes Medellín, "
+#~ "comunas Medellín, vida nocturna Medellín"
+#~ msgstr ""
+#~ "ViveMedellín, bars Medellín, clubs Medellín, restaurants Medellín, "
+#~ "neighborhoods Medellín, nightlife Medellín"
+
+#~ msgid "ViveMedellín | Descubre los mejores lugares por comuna"
+#~ msgstr "ViveMedellín | Discover the best places by neighborhood"
+
+#~ msgid ""
+#~ "Navega los mejores sitios para salir en Medellín. Desde El Poblado hasta "
+#~ "Laureles, descubre lugares únicos en cada comuna."
+#~ msgstr ""
+#~ "Browse the best places to go out in Medellín. From El Poblado to Laureles, "
+#~ "discover unique spots in every neighborhood."
+
+#~ msgid "Busca bares, restaurantes, lugares..."
+#~ msgstr "Search bars, restaurants, places..."
+
+#~ msgid "Cerca de Mí"
+#~ msgstr "Near me"
+
+#~ msgid "Ver todas las áreas"
+#~ msgstr "View all areas"
+
+#~ msgid "Radio"
+#~ msgstr "Radius"
+
+#, python-format
+#~ msgid ""
+#~ "%(lugar.nombre)s en Medellín. Descubre este "
+#~ "%(lugar.get_tipo_display|default:lugar.tipo)s con puntuación de "
+#~ "%(lugar.rating|default:\"-\")s estrellas. Dirección: "
+#~ "%(lugar.direccion|default:\"no disponible\")s."
+#~ msgstr ""
+#~ "%(lugar.nombre)s en Medellín. Descubre este "
+#~ "%(lugar.get_tipo_display|default:lugar.tipo)s con puntuación de "
+#~ "%(lugar.rating|default:\"-\")s estrellas. Dirección: "
+#~ "%(lugar.direccion|default:\"no disponible\")s."
+
+#, python-format
+#~ msgid ""
+#~ "%(lugar.nombre)s, %(lugar.get_tipo_display|default:lugar.tipo)s, lugares "
+#~ "Medellín, %(lugar.get_tipo_display|default:lugar.tipo)s Medellín, mejores "
+#~ "lugares en Medellín"
+#~ msgstr ""
+#~ "%(lugar.nombre)s, %(lugar.get_tipo_display|default:lugar.tipo)s, lugares "
+#~ "Medellín, %(lugar.get_tipo_display|default:lugar.tipo)s Medellín, mejores "
+#~ "lugares en Medellín"
+
+#, python-format
+#~ msgid ""
+#~ "Conoce %(lugar.nombre)s, un destacado "
+#~ "%(lugar.get_tipo_display|default:lugar.tipo)s en Medellín con rating de "
+#~ "%(lugar.rating|default:\"-\")s."
+#~ msgstr ""
+#~ "Conoce %(lugar.nombre)s, un destacado "
+#~ "%(lugar.get_tipo_display|default:lugar.tipo)s en Medellín con rating de "
+#~ "%(lugar.rating|default:\"-\")s."
+
+#~ msgid "Información"
+#~ msgstr "Information"
+
+#~ msgid "Teléfono"
+#~ msgstr "Phone"
+
+#~ msgid "Sitio Web"
+#~ msgstr "Website"
+
+#~ msgid "Visitar"
+#~ msgstr "Visit"
+
+#~ msgid "Explóralo:"
+#~ msgstr "Explore it:"
+
+#~ msgid "Ver"
+#~ msgstr "View"
+
+#~ msgid ""
+#~ "lugares Medellín, bares Medellín, restaurantes Medellín, sitios para salir "
+#~ "en Medellín"
+#~ msgstr ""
+#~ "places Medellín, bars Medellín, restaurants Medellín, going out Medellín"
+
+#~ msgid "Descubre lugares con calificaciones reales en Medellín."
+#~ msgstr "Discover places with real ratings in Medellín."
+
+#~ msgid ""
+#~ "Mostramos una selección de reseñas destacadas para ofrecer una visión "
+#~ "equilibrada de la experiencia de nuestros visitantes."
+#~ msgstr ""
+#~ "We show a selection of featured reviews to offer a balanced view of visitor "
+#~ "experiences."
+
+#~ msgid "Sitio web"
+#~ msgstr "Website"
+
+#~ msgid "No especificado"
+#~ msgstr "Not specified"
+
+#~ msgid "Cafeterías y café de especialidad"
+#~ msgstr "Cafés and specialty coffee"
+
+#~ msgid "Bienestar y spa"
+#~ msgstr "Wellness and spa"
+
+#~ msgid "Otros lugares"
+#~ msgstr "Other places"
+
+#, python-format
+#~ msgid "Descubre los mejores %(tipo)s recomendados en %(area)s"
+#~ msgstr "Discover the best recommended %(tipo)s in %(area)s"
+
+#, python-format
+#~ msgid "Descubre los sitios más destacados de %(area)s"
+#~ msgstr "Discover the top spots in %(area)s"
+
+#~ msgid "Encontramos %(count)s %(tipo)s en un radio de %(dist)s"
+#~ msgid_plural "Encontramos %(count)s %(tipo)s en un radio de %(dist)s"
+#~ msgstr[0] "We found %(count)s place within %(dist)s"
+#~ msgstr[1] "We found %(count)s places within %(dist)s"
+
+#, python-format
+#~ msgid "Encontramos %(count)s lugar en un radio de %(dist)s"
+#~ msgid_plural "Encontramos %(count)s lugares en un radio de %(dist)s"
+#~ msgstr[0] "We found %(count)s place within %(dist)s"
+#~ msgstr[1] "We found %(count)s places within %(dist)s"
+
+#~ msgid "Lugares que coinciden con tu búsqueda en Medellín"
+#~ msgstr "Places matching your search in Medellín"
 
 #~ msgid "Image"
-#~ msgstr "Image of"
+#~ msgstr "Image"
 
-#~| msgid "Bar"
 #~ msgid "mar"
-#~ msgstr "Bar"
+#~ msgstr "Tue"
 
-#~| msgid "Bar"
 #~ msgid "apr"
-#~ msgstr "Bar"
+#~ msgstr "Thu"
 
-#~| msgid "de"
 #~ msgid "dec"
-#~ msgstr "of"
+#~ msgstr "Sun"
 
-#~| msgid "No especificado"
 #~ msgid "No year specified"
-#~ msgstr "Not specified"
+#~ msgstr "No year specified"
 
-#~| msgid "No especificado"
 #~ msgid "No month specified"
-#~ msgstr "Not specified"
+#~ msgstr "No month specified"
 
-#~| msgid "No especificado"
 #~ msgid "No day specified"
-#~ msgstr "Not specified"
+#~ msgstr "No day specified"
 
-#~| msgid "No especificado"
 #~ msgid "No week specified"
-#~ msgstr "Not specified"
+#~ msgstr "No week specified"
 
 #~ msgid ""
 #~ "Recibe las mejores recomendaciones de lugares directamente en tu correo"
-#~ msgstr "Get the best recommendations for places straight to your inbox."
-
-#~ msgid "Ingresa tu correo electrónico"
-#~ msgstr "Enter your email address"
+#~ msgstr "Get the best place recommendations straight to your inbox"
 
 #~ msgid "Suscribirme"
 #~ msgstr "Subscribe"
 
 #, python-format
 #~ msgid "100%% libre de spam • Cancela cuando quieras"
-#~ msgstr "100%% spam-free • Cancel anytime"
+#~ msgstr "100%% spam-free • Unsubscribe anytime"
 
 #~ msgid "Experiencias Destacadas"
-#~ msgstr "Featured Experiences"
+#~ msgstr "Featured experiences"
 
 #~ msgid "Zonas Premium"
-#~ msgstr "Premium Zones"
+#~ msgstr "Premium areas"
 
 #~ msgid ""
 #~ "Tu guía definitiva para descubrir los mejores lugares de la Ciudad de la "
 #~ "Eterna Primavera"
-#~ msgstr ""
-#~ "Your ultimate guide to discovering the best places in the City of Eternal "
-#~ "Spring"
+#~ msgstr "Your ultimate guide to the best places in the City of Eternal Spring"
 
-#~| msgid "Error de Confirmación"
 #~ msgid "Error de Geolocalización"
-#~ msgstr "Confirmation Error"
+#~ msgstr "Geolocation error"
 
-#~ msgid ""
-#~ "Descubre <span class=\"text-white\">Medellín</span><br>Como Nunca Antes"
-#~ msgstr ""
-#~ "Discover <span class=\"text-white\">Medellín</span><br>Like Never Before"
+#~ msgid "Descubre <span class=\"text-white\">Medellín</span><br>Como Nunca Antes"
+#~ msgstr "Discover <span class=\"text-white\">Medellín</span><br>Like Never Before"
 
 #~ msgid "característica opcional"
 #~ msgstr "optional feature"
 
 #~ msgid "Buscar Lugares"
-#~ msgstr "Search Places"
+#~ msgstr "Search places"
 
 #~ msgid "Explora Medellín por Comunas"
-#~ msgstr "Explore Medellín by Area"
+#~ msgstr "Explore Medellín by neighborhood"
 
 #~ msgid "Precisión GPS activa"
-#~ msgstr "Active GPS Accuracy"
+#~ msgstr "GPS precision active"
 
 #~ msgid "Foto de"
 #~ msgstr "Photo of"
@@ -2314,53 +3129,49 @@ msgstr "Top"
 #~ msgstr "Open now"
 
 #~ msgid "Tipo:"
-#~ msgstr "Type"
+#~ msgstr "Type:"
 
 #~ msgid "Visitar sitio web"
 #~ msgstr "Visit website"
 
 #~ msgid "Rating:"
-#~ msgstr "Rating"
+#~ msgstr "Rating:"
 
 #~ msgid "Rango de Precios:"
-#~ msgstr "Price Range:"
+#~ msgstr "Price range:"
 
 #~ msgid "zona:"
-#~ msgstr "Area"
+#~ msgstr "area:"
 
 #~ msgid "Servicios y Características"
-#~ msgstr "Services and Features"
-
+#~ msgstr "Services and features"
 
 #~ msgid "Área"
 #~ msgstr "Area"
 
 #~ msgid "Restaurante General"
-#~ msgstr "General Restaurant"
+#~ msgstr "General restaurant"
 
 #~ msgid "Restaurante Gourmet"
-#~ msgstr "Gourmet Restaurant"
+#~ msgstr "Gourmet restaurant"
 
 #~ msgid "Restaurante Italiano"
-#~ msgstr "Italian Restaurant"
+#~ msgstr "Italian restaurant"
 
 #~ msgid "Restaurante Mexicano"
-#~ msgstr "Mexican Restaurant"
+#~ msgstr "Mexican restaurant"
 
 #~ msgid "Restaurante Chino"
-#~ msgstr "Chinese Restaurant"
+#~ msgstr "Chinese restaurant"
 
 #~ msgid "Parrilla de Carnes"
-#~ msgstr "Meat Grill"
+#~ msgstr "Steakhouse"
 
 #~ msgid "Bares & Vida Nocturna"
-#~ msgstr "Bars and Nightlife"
+#~ msgstr "Bars & nightlife"
 
 #~ msgid "Bar de Vinos"
-#~ msgstr "Wine Bar"
-
-#~ msgid "Cafeterías"
-#~ msgstr "Cafés"
+#~ msgstr "Wine bar"
 
 #~ msgid "Desayunos"
 #~ msgstr "Breakfast"
@@ -2369,22 +3180,22 @@ msgstr "Top"
 #~ msgstr "Brunch"
 
 #~ msgid "Limpiar todos"
-#~ msgstr "Clean all"
+#~ msgstr "Clear all"
 
 #~ msgid "Descubrir"
 #~ msgstr "Discover"
 
 #~ msgid "Todos los Lugares"
-#~ msgstr "All Places"
+#~ msgstr "All places"
 
 #~ msgid "Explora nuestra colección completa"
 #~ msgstr "Explore our full collection"
 
 #~ msgid "Los mejores sabores de la ciudad"
-#~ msgstr "The best flavors in town"
+#~ msgstr "The city's best flavors"
 
 #~ msgid "Bares & Discotecas"
-#~ msgstr "Bars & Nightclubs"
+#~ msgstr "Bars & clubs"
 
 #~ msgid "Vida nocturna en Medellín"
 #~ msgstr "Nightlife in Medellín"
@@ -2395,43 +3206,21 @@ msgstr "Top"
 #~ msgid "Resultados para:"
 #~ msgstr "Results for:"
 
-msgid "Económico"
-msgstr "Budget"
-
-msgid "Moderado"
-msgstr "Moderate"
-
-msgid "Costoso"
-msgstr "Expensive"
-
-#~ msgid "Muy costoso"
-#~ msgstr "High-end"
-
-# (obsolete entries removed - now active translations)
-
-#~ msgid "Encontramos %s lugar que coincide con tus filtros"
-#~ msgid_plural "Encontramos %s lugares que coinciden con tus filtros"
-#~ msgstr[0] "We found %s place that matches your filters"
-#~ msgstr[1] "We found %s places that match your filters"
-
-#~ msgid "Abrir en Waze"
-#~ msgstr "Open in Waze"
-
 #~ msgid "Horario no disponible"
-#~ msgstr "Schedule not available"
+#~ msgstr "Hours not available"
 
 #~ msgid "Manual de uso"
-#~ msgstr "How it works"
+#~ msgstr "User guide"
 
 #~ msgid "Explora Medellín como un local con ViveMedellín"
 #~ msgstr "Explore Medellín like a local with ViveMedellín"
 
 #~ msgid ""
-#~ "ViveMedellín es tu mapa curado de restaurantes, bares y planes en la "
-#~ "ciudad. Aquí te mostramos, en minutos, cómo sacarle el máximo provecho."
+#~ "ViveMedellín es tu mapa curado de restaurantes, bares y planes en la ciudad."
+#~ " Aquí te mostramos, en minutos, cómo sacarle el máximo provecho."
 #~ msgstr ""
-#~ "ViveMedellín is your curated map of restaurants, bars and plans in the "
-#~ "city. Here we show you, in minutes, how to get the most out of it."
+#~ "ViveMedellín is your curated map of restaurants, bars and plans in the city."
+#~ " Here's how to get the most out of it in minutes."
 
 #~ msgid "Lugares con fotos reales"
 #~ msgstr "Places with real photos"
@@ -2450,21 +3239,20 @@ msgstr "Expensive"
 
 #~ msgid ""
 #~ "Desde la pantalla de inicio, usa las burbujas de comunas (El Poblado, "
-#~ "Laureles, Centro, etc.) o el filtro de “Área” para centrarte en la parte "
-#~ "de la ciudad que te interesa."
+#~ "Laureles, Centro, etc.) o el filtro de “Área” para centrarte en la parte de "
+#~ "la ciudad que te interesa."
 #~ msgstr ""
-#~ "From the home screen, use the commune bubbles (El Poblado, Laureles, "
-#~ "Centro, etc.) or the “Area” filter to focus on the part of the city you "
-#~ "care about."
+#~ "From the home screen, use neighborhood bubbles (El Poblado, Laureles, "
+#~ "Centro, etc.) or the “Area” filter to focus on the part of the city you care"
+#~ " about."
 
 #~ msgid ""
 #~ "En desktop, verás filtros tipo “chips” y una tarjeta principal por comuna."
 #~ msgstr ""
-#~ "On desktop you will see chip-style filters and a main card for each area."
+#~ "On desktop you'll see chip-style filters and a main card per neighborhood."
 
-#~ msgid ""
-#~ "En móvil, desliza horizontalmente las cards para descubrir más zonas."
-#~ msgstr "On mobile, swipe cards horizontally to discover more areas."
+#~ msgid "En móvil, desliza horizontalmente las cards para descubrir más zonas."
+#~ msgstr "On mobile, swipe horizontally through cards to discover more areas."
 
 #~ msgid "Filtra por tipo de lugar y características"
 #~ msgstr "Filter by place type and features"
@@ -2473,8 +3261,7 @@ msgstr "Expensive"
 #~ msgstr "ViveMedellín only shows places with photos and curated data."
 
 #~ msgid "Cuantos más filtros uses, más precisa será la lista de resultados."
-#~ msgstr ""
-#~ "The more filters you use, the more precise the results list will be."
+#~ msgstr "The more filters you use, the more accurate the results list will be."
 
 #~ msgid ""
 #~ "Escribe lo que tengas en mente: “restaurante italiano romántico en "
@@ -2487,114 +3274,64 @@ msgstr "Expensive"
 
 #~ msgid ""
 #~ "Nuestro motor semántico entiende el contexto, no solo palabras sueltas."
-#~ msgstr "Our semantic engine understands context, not just individual words."
+#~ msgstr "Our semantic engine understands context, not just isolated words."
 
 #~ msgid ""
-#~ "Obtendrás una grilla de cards con recomendaciones ordenadas según "
-#~ "afinidad."
-#~ msgstr ""
-#~ "You will get a grid of cards with recommendations ordered by relevance."
+#~ "Obtendrás una grilla de cards con recomendaciones ordenadas según afinidad."
+#~ msgstr "You'll get a grid of cards with recommendations ranked by relevance."
 
 #~ msgid "Abre la ficha de detalle y decide"
 #~ msgstr "Open the detail page and decide"
 
 #~ msgid ""
-#~ "En cada card, haz clic en “Ver detalles” para entrar a una vista con "
-#~ "fotos, reseñas, mapa y servicios. Desde ahí puedes abrir Google Maps o "
-#~ "Waze con un solo toque."
+#~ "En cada card, haz clic en “Ver detalles” para entrar a una vista con fotos, "
+#~ "reseñas, mapa y servicios. Desde ahí puedes abrir Google Maps o Waze con un "
+#~ "solo toque."
 #~ msgstr ""
-#~ "On each card, click “View details” to open a view with photos, reviews, "
-#~ "map and services. From there you can open Google Maps or Waze in one tap."
+#~ "On each card, click “View details” for photos, reviews, map and services. "
+#~ "From there you can open Google Maps or Waze with one tap."
 
 #~ msgid ""
 #~ "Revisa el rating, servicios (terraza, música en vivo, etc.) y rango de "
 #~ "precios."
 #~ msgstr ""
-#~ "Review rating, services (terrace, live music, etc.) and price range."
+#~ "Check the rating, services (outdoor seating, live music, etc.) and price "
+#~ "range."
 
 #~ msgid "Explora lugares cercanos o similares sin salir del detalle."
-#~ msgstr "Explore nearby or similar places without leaving the detail view."
+#~ msgstr "Explore nearby or similar places without leaving the detail page."
 
 #~ msgid "Pensado para desktop y móvil"
-#~ msgstr "Designed for desktop and mobile"
+#~ msgstr "Built for desktop and mobile"
 
 #~ msgid "En desktop"
 #~ msgstr "On desktop"
 
 #~ msgid ""
 #~ "En pantallas grandes, ViveMedellín se comporta como un panel de control "
-#~ "visual: filtros en la parte superior y listados horizontales de lugares "
-#~ "con cards detalladas."
+#~ "visual: filtros en la parte superior y listados horizontales de lugares con "
+#~ "cards detalladas."
 #~ msgstr ""
-#~ "On large screens, ViveMedellín behaves like a visual control panel: "
-#~ "filters at the top and horizontal lists of places with rich cards."
+#~ "On large screens, ViveMedellín works like a visual control panel: filters on"
+#~ " top and horizontal listings with detailed cards."
 
-#~ msgid ""
-#~ "Cards horizontales con imagen a la izquierda y contenido a la derecha."
-#~ msgstr ""
-#~ "Horizontal cards with the image on the left and content on the right."
-
-# Near Me - Backend messages
-#: explorer/views.py
-msgid "No encontramos %(tipo)s con %(caract)s en un radio de %(dist)s"
-msgstr "We found no %(tipo)s with %(caract)s within %(dist)s"
-
-#: explorer/views.py
-msgid "No encontramos %(tipo)s en un radio de %(dist)s"
-msgstr "We found no %(tipo)s within %(dist)s"
-
-#: explorer/views.py
-msgid "No encontramos lugares con %(caract)s en un radio de %(dist)s"
-msgstr "We found no places with %(caract)s within %(dist)s"
-
-#: explorer/views.py
-msgid "No encontramos lugares en un radio de %(dist)s"
-msgstr "We found no places within %(dist)s"
-
-#: explorer/views.py
-msgid "%(count)s %(tipo)s con %(caract)s a menos de %(dist)s"
-msgid_plural "%(count)s %(tipo)s con %(caract)s a menos de %(dist)s"
-msgstr[0] "%(count)s %(tipo)s with %(caract)s within %(dist)s"
-msgstr[1] "%(count)s %(tipo)s with %(caract)s within %(dist)s"
-
-#: explorer/views.py
-msgid "%(count)s %(tipo)s a menos de %(dist)s"
-msgid_plural "%(count)s %(tipo)s a menos de %(dist)s"
-msgstr[0] "%(count)s %(tipo)s within %(dist)s"
-msgstr[1] "%(count)s %(tipo)s within %(dist)s"
-
-#: explorer/views.py
-msgid "%(count)s lugar con %(caract)s a menos de %(dist)s"
-msgid_plural "%(count)s lugares con %(caract)s a menos de %(dist)s"
-msgstr[0] "%(count)s place with %(caract)s within %(dist)s"
-msgstr[1] "%(count)s places with %(caract)s within %(dist)s"
-
-#: explorer/views.py
-msgid "%(count)s lugar a menos de %(dist)s"
-msgid_plural "%(count)s lugares a menos de %(dist)s"
-msgstr[0] "%(count)s place within %(dist)s"
-msgstr[1] "%(count)s places within %(dist)s"
-
-# Near Me - Frontend messages
-#: explorer/templates/home.html
-msgid "Intenta ampliar el radio de búsqueda"
-msgstr "Try expanding the search radius"
+#~ msgid "Cards horizontales con imagen a la izquierda y contenido a la derecha."
+#~ msgstr "Horizontal cards with image on the left and content on the right."
 
 #~ msgid ""
 #~ "Secciones bien separadas: filtros, resultados, detalle y lugares "
 #~ "relacionados."
-#~ msgstr ""
-#~ "Clearly separated sections: filters, results, detail and related places."
+#~ msgstr "Clear sections: filters, results, detail and related places."
 
 #~ msgid "En móvil"
 #~ msgstr "On mobile"
 
 #~ msgid ""
-#~ "En tu teléfono, todo se convierte en carruseles y cards a pantalla "
-#~ "completa para que puedas decidir rápido con el pulgar."
+#~ "En tu teléfono, todo se convierte en carruseles y cards a pantalla completa "
+#~ "para que puedas decidir rápido con el pulgar."
 #~ msgstr ""
-#~ "On your phone, everything becomes carousels and full‑screen cards so you "
-#~ "can decide quickly with your thumb."
+#~ "On your phone, everything becomes carousels and full-screen cards so you can"
+#~ " decide quickly with your thumb."
 
 #~ msgid ""
 #~ "Carruseles horizontales para explorar zonas y lugares sin perder el "
@@ -2605,7 +3342,7 @@ msgstr "Try expanding the search radius"
 #~ msgid ""
 #~ "Botones grandes y legibles para llamar, abrir mapas o compartir por "
 #~ "WhatsApp."
-#~ msgstr "Large, legible buttons to call, open maps or share via WhatsApp."
+#~ msgstr "Large, readable buttons to call, open maps or share on WhatsApp."
 
 #~ msgid "Preguntas rápidas"
 #~ msgstr "Quick questions"
@@ -2614,205 +3351,75 @@ msgstr "Try expanding the search radius"
 #~ "Mostramos principalmente restaurantes, bares, cafés y experiencias que "
 #~ "tienen fotos, ubicación clara y datos suficientes para que puedas decidir."
 #~ msgstr ""
-#~ "We mainly show restaurants, bars, cafés and experiences that have photos, "
-#~ "clear location and enough data to help you decide."
+#~ "We mainly show restaurants, bars, cafés and experiences with photos, clear "
+#~ "location and enough data for you to decide."
 
 #~ msgid "¿De dónde salen las calificaciones?"
-#~ msgstr "Where do the ratings come from?"
+#~ msgstr "Where do ratings come from?"
 
 #~ msgid ""
 #~ "Las puntuaciones y reseñas se basan en fuentes externas verificadas (como "
 #~ "Google Maps) y se actualizan de forma periódica."
 #~ msgstr ""
-#~ "Ratings and reviews are based on verified external sources (such as "
-#~ "Google Maps) and are updated periodically."
+#~ "Scores and reviews come from verified external sources (such as Google Maps)"
+#~ " and are updated periodically."
 
 #~ msgid "¿Puedo guardar mis lugares favoritos?"
-#~ msgstr "Can I save my favourite places?"
+#~ msgstr "Can I save my favorite places?"
 
 #~ msgid ""
-#~ "En esta versión nos centramos en descubrir y decidir. Funciones como "
-#~ "listas personales o favoritos llegarán en futuras actualizaciones."
+#~ "En esta versión nos centramos en descubrir y decidir. Funciones como listas "
+#~ "personales o favoritos llegarán en futuras actualizaciones."
 #~ msgstr ""
-#~ "In this version we focus on discovery and decision. Features such as "
-#~ "personal lists or favourites will come in future updates."
-
-#~ msgid "¿Cómo cambio de idioma?"
-#~ msgstr "How do I change the language?"
+#~ "In this version we focus on discovery and decisions. Features like personal "
+#~ "lists or favorites will come in future updates."
 
 #~ msgid ""
 #~ "Puedes alternar entre español e inglés desde los botones ES / EN en la "
 #~ "esquina superior del home, del listado y de cada ficha de detalle."
 #~ msgstr ""
-#~ "You can switch between Spanish and English using the ES / EN buttons in "
-#~ "the top corner of the home, list and each detail page."
+#~ "You can switch between Spanish and English using the ES / EN buttons at the "
+#~ "top of the home page, listings and each detail page."
 
 # --- Reviews Page Improvements ---
-msgid "%(count)s reseñas en Google"
-msgstr "%(count)s Google reviews"
+#~ msgid "%(count)s reseñas en Google"
+#~ msgstr "%(count)s Google reviews"
 
-msgid "Rating %(rating)s/5 calculado por Google sobre %(count)s opiniones verificadas"
-msgstr "Rating %(rating)s/5 calculated by Google from %(count)s verified reviews"
+#~ msgid ""
+#~ "Rating %(rating)s/5 calculado por Google sobre %(count)s opiniones "
+#~ "verificadas"
+#~ msgstr ""
+#~ "Rating %(rating)s/5 calculated by Google from %(count)s verified reviews"
 
-msgid "Google proporciona hasta 5 reseñas destacadas por lugar. El rating %(rating)s/5 representa el promedio real de las %(total)s opiniones totales."
-msgstr "Google provides up to 5 featured reviews per place. The %(rating)s/5 rating represents the actual average of all %(total)s total reviews."
+#~ msgid ""
+#~ "Google proporciona hasta 5 reseñas destacadas por lugar. El rating "
+#~ "%(rating)s/5 representa el promedio real de las %(total)s opiniones totales."
+#~ msgstr ""
+#~ "Google provides up to 5 featured reviews per place. The %(rating)s/5 rating "
+#~ "is the real average of all %(total)s reviews."
 
-msgid "Mostrando todas las %(count)s reseñas disponibles"
-msgstr "Showing all %(count)s available reviews"
+#~ msgid "Mostrando todas las %(count)s reseñas disponibles"
+#~ msgstr "Showing all %(count)s available reviews"
 
-msgid "Selección de reseñas destacadas. El rating refleja el promedio de todas las opiniones."
-msgstr "Featured reviews selection. The rating reflects the average of all reviews."
+#~ msgid ""
+#~ "Guía #1 de Medellín: más de 7,000 bares, restaurantes, rooftops y discotecas"
+#~ " con ratings reales. Explora El Poblado, Laureles, Envigado y más."
+#~ msgstr ""
+#~ "#1 Medellín guide: 7,000+ bars, restaurants, rooftops and clubs with real "
+#~ "ratings. Explore El Poblado, Laureles, Envigado and more."
 
-#: explorer/templates/components/share_buttons.html:7
-msgid "Compartir"
-msgstr "Share"
+#~ msgid ""
+#~ "Descubre más de 7,000 lugares en Medellín: bares, restaurantes, rooftops y "
+#~ "discotecas. Ratings de Google, horarios y ubicación exacta."
+#~ msgstr ""
+#~ "Discover 7,000+ places in Medellín: bars, restaurants, rooftops and clubs. "
+#~ "Google ratings, hours and exact location."
 
-#: explorer/templates/components/share_buttons.html:14
-msgid "Compartir en WhatsApp"
-msgstr "Share on WhatsApp"
+#~ msgid "Guías"
+#~ msgstr "Guides"
 
-#: explorer/templates/components/share_buttons.html:24
-msgid "Compartir en Facebook"
-msgstr "Share on Facebook"
+#~ msgid "mejores lugares"
+#~ msgstr "best places"
 
-#: explorer/templates/components/share_buttons.html:34
-msgid "Compartir en Twitter"
-msgstr "Share on Twitter"
-
-#: explorer/templates/components/share_buttons.html:44
-
-#: explorer/templates/lugares/places_detail.html (SEO keywords)
-msgid "mejores"
-msgstr "best"
-
-msgid "terraza"
-msgstr "terrace"
-
-msgid "música en vivo"
-msgstr "live music"
-
-#: explorer/templates/lugares/places_list.html (SEO keywords)
-msgid "lugares"
-msgstr "places"
-
-msgid "bares"
-msgstr "bars"
-
-msgid "restaurantes"
-msgstr "restaurants"
-
-msgid "vida nocturna"
-msgstr "nightlife"
-
-#: explorer/templates/semantic_results.html (SEO)
-msgid "Encuentra los mejores lugares en Medellín para \"%(query)s\". Bares, restaurantes y más con ratings reales."
-msgstr "Find the best places in Medellín for \"%(query)s\". Bars, restaurants and more with real ratings."
-
-msgid "Resultados de búsqueda inteligente en Medellín. Descubre lugares únicos basados en tu consulta."
-msgstr "Smart search results in Medellín. Discover unique places based on your query."
-
-msgid "búsqueda Medellín, lugares Medellín, bares restaurantes Medellín"
-msgstr "search Medellín, places Medellín, bars restaurants Medellín"
-
-#: explorer/templates/home.html (title & meta)
-msgid "ViveMedellín | Bares, Restaurantes y Vida Nocturna en Medellín"
-msgstr "ViveMedellín | Bars, Restaurants & Nightlife in Medellín"
-
-msgid "Guía #1 de Medellín: más de 7,000 bares, restaurantes, rooftops y discotecas con ratings reales. Explora El Poblado, Laureles, Envigado y más."
-msgstr "Medellín's #1 Guide: over 7,000 bars, restaurants, rooftops and clubs with real ratings. Explore El Poblado, Laureles, Envigado and more."
-
-msgid "bares Medellín, restaurantes Medellín, rooftops El Poblado, discotecas Medellín, dónde comer Medellín, vida nocturna Medellín, mejores bares El Poblado, restaurantes Laureles"
-msgstr "bars Medellín, restaurants Medellín, rooftops El Poblado, clubs Medellín, where to eat Medellín, nightlife Medellín, best bars El Poblado, restaurants Laureles"
-
-msgid "ViveMedellín | Los Mejores Bares y Restaurantes de Medellín"
-msgstr "ViveMedellín | The Best Bars & Restaurants in Medellín"
-
-msgid "Descubre más de 7,000 lugares en Medellín: bares, restaurantes, rooftops y discotecas. Ratings de Google, horarios y ubicación exacta."
-msgstr "Discover over 7,000 places in Medellín: bars, restaurants, rooftops and clubs. Google ratings, schedules and exact location."
-
-msgid "Vista panorámica de Medellín - ViveMedellín"
-msgstr "Panoramic view of Medellín - ViveMedellín"
-
-#: explorer/templates/lugares/places_list.html (meta)
-msgid "Ratings de Google, horarios actualizados y ubicación exacta. Filtra por tipo, zona y características."
-msgstr "Google ratings, updated hours and exact location. Filter by type, area and features."
-
-msgid "Encuentra lugares con ratings reales y horarios actualizados."
-msgstr "Find places with real ratings and updated schedules."
-
-#: explorer/templates/base.html (defaults)
-msgid "Guía completa de Medellín: los mejores bares, restaurantes, rooftops y discotecas. Ratings reales, horarios y ubicación exacta. ¡Explora como un local!"
-msgstr "Complete guide to Medellín: the best bars, restaurants, rooftops and clubs. Real ratings, schedules and exact location. Explore like a local!"
-
-msgid "bares Medellín, restaurantes Medellín, rooftops Medellín, discotecas El Poblado, dónde comer Medellín, vida nocturna Medellín, mejores lugares Medellín"
-msgstr "bars Medellín, restaurants Medellín, rooftops Medellín, clubs El Poblado, where to eat Medellín, nightlife Medellín, best places Medellín"
-
-msgid "ViveMedellín | Descubre Bares, Restaurantes y Vida Nocturna"
-msgstr "ViveMedellín | Discover Bars, Restaurants & Nightlife"
-
-msgid "ViveMedellín | Los Mejores Lugares de Medellín"
-msgstr "ViveMedellín | The Best Places in Medellín"
-
-msgid "Descubre bares, restaurantes, rooftops y discotecas en Medellín. Ratings reales y horarios actualizados."
-msgstr "Discover bars, restaurants, rooftops and clubs in Medellín. Real ratings and updated schedules."
-
-msgid "ViveMedellín - Guía de lugares en Medellín"
-msgstr "ViveMedellín - Guide to places in Medellín"
-
-#: explorer/templates/home.html (aria-labels)
-msgid "Buscar lugares en Medellín"
-msgstr "Search places in Medellín"
-
-msgid "Buscar"
-msgstr "Search"
-
-#: explorer/templates/footer.html
-msgid "Volver arriba"
-msgstr "Back to top"
-
-#: explorer/templates/components/lang_switcher.html
-msgid "Cambiar a español"
-msgstr "Switch to Spanish"
-
-msgid "Cambiar a inglés"
-msgstr "Switch to English"
-
-msgid "idioma actual"
-msgstr "current language"
-
-#: explorer/templates/home.html (updated meta)
-msgid "Tu guía local de Medellín: miles de bares, restaurantes, rooftops y discotecas con ratings de Google. Explora El Poblado, Laureles, Envigado y más."
-msgstr "Your local guide to Medellín: thousands of bars, restaurants, rooftops and clubs with Google ratings. Explore El Poblado, Laureles, Envigado and more."
-
-msgid "Descubre miles de lugares en Medellín: bares, restaurantes, rooftops y discotecas. Ratings de Google, horarios y ubicación exacta."
-msgstr "Discover thousands of places in Medellín: bars, restaurants, rooftops and clubs. Google ratings, schedules and exact location."
-
-#: explorer/templates/lugares/places_detail.html
-msgid "Visitar Web"
-msgstr "Visit Website"
-
-#: explorer/templates/components/share_buttons.html
-msgid "Compartir en Telegram"
-msgstr "Share on Telegram"
-
-# ═══════════════════════════════════════════════════════════════════
-# LEGAL PAGES (Privacy Policy, Terms, Contact)
-# Required for Google AdSense compliance
-# ═══════════════════════════════════════════════════════════════════
-
-#: explorer/templates/footer.html
-msgid "Política de Privacidad"
-msgstr "Privacy Policy"
-
-#: explorer/templates/footer.html
-msgid "Términos y Condiciones"
-msgstr "Terms and Conditions"
-
-#: explorer/templates/footer.html
-msgid "Contacto"
-msgstr "Contact"
-
-#: explorer/templates/legal/privacy_policy.html
-msgid "Volver al inicio"
-msgstr "Back to home"
-
+#~ msgid "recomendaciones"
+#~ msgstr "recommendations"

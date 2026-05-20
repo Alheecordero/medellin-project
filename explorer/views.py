@@ -60,6 +60,17 @@ def adsense_allowed_for_place(lugar):
     return not bool(getattr(lugar, "is_sensitive_for_ads", False))
 
 
+def adsense_allowed_for_search_query(query):
+    """Desactiva anuncios si la consulta coincide con palabras sensibles."""
+    if not query:
+        return True
+    q = query.strip().lower()
+    if not q:
+        return True
+    keywords = getattr(settings, "ADSENSE_SENSITIVE_KEYWORDS", []) or []
+    return not any(kw and kw.lower() in q for kw in keywords)
+
+
 # ────────────────────────────────────────────────────────────────────────
 # Rate Limiting para Protección contra Bots
 # ────────────────────────────────────────────────────────────────────────
@@ -2133,6 +2144,7 @@ class SemanticSearchView(View):
         query = request.GET.get("q", "").strip()
         as_json = request.headers.get("x-requested-with") == "XMLHttpRequest" or request.GET.get("json") == "1"
 
+        lugares = []
         resultados = []
         error = ""
 
@@ -2157,39 +2169,40 @@ class SemanticSearchView(View):
                     tiene_fotos=True
                 ).order_by("-score")
 
-                lugares = lugares_qs.prefetch_related("fotos")[:10]
+                lugares = list(lugares_qs.prefetch_related("fotos")[:10])
 
-                resultados = []
-                for l in lugares:
-                    primera_foto = l.get_primera_foto()
-                    comuna_nombre = l.comuna.name if hasattr(l, "comuna") and l.comuna else None
-                    resultados.append({
-                        "nombre": l.nombre,
-                        "tipo": get_localized_place_type(l),
-                        "direccion": l.direccion,
-                        "rating": l.rating,
-                        "score": round(getattr(l, "score", 0.0), 3),
-                        "slug": l.slug,
-                        **get_optimized_image_urls(primera_foto, 'thumb'),
-                        "es_destacado": bool(getattr(l, "es_destacado", False)),
-                        "es_exclusivo": bool(getattr(l, "es_exclusivo", False)),
-                        "precio": getattr(l, "precio", None),
-                        "abierto_ahora": getattr(l, "abierto_ahora", None),
-                        "comuna_nombre": comuna_nombre,
-                        "telefono": getattr(l, "telefono", None),
-                        "sitio_web": getattr(l, "sitio_web", None),
-                    })
+                if as_json:
+                    for l in lugares:
+                        primera_foto = l.get_primera_foto()
+                        comuna_nombre = l.comuna.name if hasattr(l, "comuna") and l.comuna else None
+                        resultados.append({
+                            "nombre": l.nombre,
+                            "tipo": get_localized_place_type(l),
+                            "direccion": l.direccion,
+                            "rating": l.rating,
+                            "score": round(getattr(l, "score", 0.0), 3),
+                            "slug": l.slug,
+                            **get_optimized_image_urls(primera_foto, 'thumb'),
+                            "es_destacado": bool(getattr(l, "es_destacado", False)),
+                            "es_exclusivo": bool(getattr(l, "es_exclusivo", False)),
+                            "precio": getattr(l, "precio", None),
+                            "abierto_ahora": getattr(l, "abierto_ahora", None),
+                            "comuna_nombre": comuna_nombre,
+                            "telefono": getattr(l, "telefono", None),
+                            "sitio_web": getattr(l, "sitio_web", None),
+                        })
             except Exception as e:
                 error = str(e)
+                lugares = []
 
         if as_json:
             return JsonResponse({"resultados": resultados, "error": error})
-        else:
-            return render(request, "semantic_results.html", {
-                "query": query,
-                "resultados": resultados,
-                "error": error
-            })
+        return render(request, "semantic_results.html", {
+            "query": query,
+            "lugares": lugares,
+            "error": error,
+            "adsense_allowed": adsense_allowed_for_search_query(query),
+        })
 
 
 # ────────────────────────────────────────────────────────────────────────

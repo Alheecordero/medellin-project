@@ -2,7 +2,6 @@
 {% load i18n %}
 {% load form_tags %}
 
-{% block navbar %}{% endblock %}
 
 {% block title %}
   {% if query %}
@@ -28,145 +27,52 @@
 <section class="places-section">
   <div class="container py-5">
     <div class="places-main-wrapper">
-      <div class="places-main-card">
-        {% get_current_language as LANGUAGE_CODE %}
-        <div class="d-flex justify-content-end align-items-center mb-3 px-1 flex-wrap gap-2">
-          <div class="home-lang-switch d-flex flex-wrap gap-2">
-            <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">
-              {% trans "Inicio" %}
-            </a>
-            {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-              <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">
-                {% trans "Nosotros" %}
-              </a>
-            {% else %}
-              <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">
-                {% trans "Nosotros" %}
-              </a>
-            {% endif %}
-            {% include 'components/lang_switcher.html' %}
-          </div>
-        </div>
-
+      <div class="places-header-card mb-4">
         <div class="text-center mb-4">
           <h1 class="places-title fw-bold">
             <span class="title-main">{% trans "Resultados semánticos" %}</span>
           </h1>
-          <p class="lead text-white-50 mb-0">
-            {% blocktrans %}Resultados inteligentes para la búsqueda{% endblocktrans %}:
-            <span class="semantic-query">“{{ query }}”</span>
-          </p>
+          {% if query %}
+            <p class="lead places-lead mb-0">
+              {% blocktrans %}Resultados inteligentes para{% endblocktrans %}
+              <span class="semantic-query">“{{ query }}”</span>
+            </p>
+          {% else %}
+            <p class="lead places-lead mb-0">{% trans "Escribe una consulta en el buscador principal para ver resultados." %}</p>
+          {% endif %}
         </div>
+      </div>
 
-        {% if error %}
+      {% if error %}
+        <div class="places-grid-card">
           <div class="alert alert-danger shadow-sm mb-0">
             <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
           </div>
-        {% elif resultados %}
-          <div class="places-grid-card mt-3">
-            <div class="lugares-grid">
-              {% for r in resultados %}
-                <div class="lugar-card-wrapper">
-                  <div class="card h-100 shadow-sm border-0 rounded-4 place-card">
-                    <div class="place-card-media position-relative">
-                      {% if r.imagen %}
-                        <img src="{{ r.imagen }}"
-                             class="card-img-top rounded-top-4"
-                             alt="{% trans 'Imagen de' %} {{ r.nombre }}"
-                             loading="lazy">
-                      {% else %}
-                        <div class="place-card-placeholder rounded-top-4 d-flex align-items-center justify-content-center">
-                          <i class="bi bi-image text-muted fs-2"></i>
-                        </div>
-                      {% endif %}
-
-                      {% if r.rating %}
-                        <div class="place-card-rating badge rounded-pill">
-                          <i class="bi bi-star-fill me-1"></i>
-                          <span class="fw-semibold">{{ r.rating|floatformat:1 }}</span>
-                        </div>
-                      {% endif %}
-                    </div>
-
-                    <div class="card-body d-flex flex-column place-card-body">
-                      <h5 class="card-title fw-semibold mb-2 place-card-title">{{ r.nombre }}</h5>
-
-                      <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                        {% if r.tipo %}
-                          <span class="badge place-type-pill">
-                            <i class="bi bi-geo-alt me-1"></i>{{ r.tipo }}
-                          </span>
-                        {% endif %}
-                        {% if r.es_destacado %}
-                          <span class="badge place-flag-pill place-flag-featured">
-                            <i class="bi bi-star-fill me-1"></i>{% trans "Destacado" %}
-                          </span>
-                        {% endif %}
-                        {% if r.es_exclusivo %}
-                          <span class="badge place-flag-pill place-flag-exclusive">
-                            <i class="bi bi-gem me-1"></i>{% trans "Exclusivo" %}
-                          </span>
-                        {% endif %}
-                      </div>
-
-                      {% if r.precio %}
-                        <div class="d-flex flex-wrap align-items-center gap-3 mb-2 small place-card-meta">
-                          <span class="text-muted">
-                            <i class="bi bi-cash-stack me-1"></i>{{ r.precio|format_price_range }}
-                          </span>
-                        </div>
-                      {% endif %}
-
-                      {% if r.direccion %}
-                        <div class="small text-muted mb-2 place-card-address">
-                          <i class="bi bi-map me-1"></i>{{ r.direccion }}
-                        </div>
-                      {% endif %}
-
-                      {% if r.comuna_nombre %}
-                        <div class="small text-muted mb-2">
-                          <i class="bi bi-building me-1"></i>{{ r.comuna_nombre }}
-                        </div>
-                      {% endif %}
-
-                      {% if r.telefono or r.sitio_web %}
-                        <div class="d-flex flex-wrap align-items-center gap-3 small place-card-contact mb-3">
-                          {% if r.telefono %}
-                            <span class="text-muted">
-                              <i class="bi bi-telephone me-1"></i>{{ r.telefono }}
-                            </span>
-                          {% endif %}
-                          {% if r.sitio_web %}
-                            <a href="{{ r.sitio_web }}" target="_blank" rel="noopener" class="place-card-link">
-                              <i class="bi bi-globe2 me-1"></i>{% trans "Sitio web" %}
-                            </a>
-                          {% endif %}
-                        </div>
-                      {% endif %}
-
-                      {% if r.slug %}
-                        <a href="{% url 'explorer:lugares_detail' r.slug %}" class="btn mt-auto w-100 rounded-pill place-card-cta">
-                          <i class="bi bi-eye me-1"></i>{% trans "Ver detalles" %}
-                        </a>
-                      {% else %}
-                        <span class="btn btn-outline-secondary disabled mt-auto w-100 rounded-pill">{% trans "Sin detalles" %}</span>
-                      {% endif %}
-                    </div>
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
+        </div>
+      {% elif lugares %}
+        <div class="places-grid-card">
+          {% include 'components/adsense_list_top.html' %}
+          <div class="places-grid">
+            {% for lugar in lugares %}
+              {% include 'components/place_card.html' with lugar=lugar card_variant='horizontal' %}
+              {% if forloop.counter == 8 %}
+                {% include 'components/adsense_list_mid.html' %}
+              {% endif %}
+            {% endfor %}
           </div>
-        {% else %}
+          {% include 'components/adsense_list_bottom.html' %}
+        </div>
+      {% elif query %}
+        <div class="places-grid-card">
           <div class="text-center py-5">
-            <i class="bi bi-search display-4 mb-3 text-white-50"></i>
-            <h3 class="text-white mb-2">{% trans "No se encontraron resultados." %}</h3>
-            <p class="text-white-50 mb-0">
+            <i class="bi bi-search display-1 mb-3 places-empty-icon"></i>
+            <h3 class="places-empty-title">{% trans "No se encontraron resultados." %}</h3>
+            <p class="places-empty-text mb-0">
               {% trans "Intenta ajustar tus palabras clave o usar otros filtros en el buscador principal." %}
             </p>
           </div>
-        {% endif %}
-      </div>
+        </div>
+      {% endif %}
     </div>
   </div>
 </section>
@@ -174,90 +80,98 @@
 
 {% block extra_css %}
 <style>
-/* Estilos específicos de página - Cards base vienen de components.css */
 .places-section {
-  background: var(--gradient-glow), var(--gradient-dark-bg);
+  background:
+    radial-gradient(circle at top left, rgba(17,153,142,0.08), transparent 34rem),
+    linear-gradient(180deg, #fbfcfa 0%, #f5f7f4 100%);
   min-height: 100vh;
-  padding: var(--space-8) 0 var(--space-12);
+  padding: 2rem 0 4rem;
 }
-
-.places-section .container { max-width: 1200px; }
-.places-main-wrapper { max-width: 1120px; margin: 0 auto; }
-
-.places-main-card {
-  background: var(--dark-card-80);
-  border-radius: var(--radius-4xl);
-  padding: var(--space-10) var(--space-8);
-  box-shadow: var(--shadow-3xl);
-  border: 1px solid var(--white-12);
-  backdrop-filter: var(--backdrop-blur-xl);
+.places-section .container { max-width: 1280px; }
+.places-main-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+.places-header-card {
+  background: rgba(255,255,255,0.94);
+  border-radius: 24px;
+  padding: 2.25rem 1.5rem 1.5rem;
+  box-shadow: 0 18px 50px rgba(15,23,42,0.07);
+  border: 1px solid #e2ebe7;
 }
-
-@media (min-width: 992px) {
-  .places-main-card { padding: var(--space-12) var(--space-10); }
-}
-
-/* Título */
 .places-title {
-  font-size: 2.5rem;
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-white);
-  text-shadow: 0 0 20px var(--accent-40), 0 2px 4px var(--black-50);
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111827;
   position: relative;
-  margin-bottom: var(--space-4);
+  margin-bottom: 0.75rem;
 }
-
 .places-title::after {
   content: '';
   position: absolute;
-  bottom: -12px;
+  bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-accent), transparent);
+  width: 60px;
+  height: 3px;
+  background: #11998e;
   border-radius: 2px;
-  box-shadow: 0 0 12px var(--accent-60);
 }
-
-.title-main {
-  background: linear-gradient(135deg, var(--color-white) 0%, var(--color-accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.semantic-query {
-  font-weight: var(--font-weight-semibold);
-  color: #a5f3fc;
-}
-
-/* Grid Card */
+.title-main { color: #111827; }
+.places-lead { color: #66736f; font-size: 0.98rem; }
+.semantic-query { font-weight: 600; color: #11998e; }
+.places-empty-icon { color: #9ca3af !important; }
+.places-empty-title { color: #111827; }
+.places-empty-text { color: #6b7280; }
+.places-grid-card > .adsense-fixed-unit { padding: 0; margin: 0 0 1rem; }
+.places-grid .adsense-fixed-unit.adsense-inline-list { margin: 0.25rem 0 0.5rem; }
 .places-grid-card {
-  background: var(--dark-card-80);
-  border-radius: var(--radius-4xl);
-  padding: var(--space-8) var(--space-6);
-  box-shadow: var(--shadow-3xl);
-  border: 1px solid var(--white-12);
-  backdrop-filter: var(--backdrop-blur-xl);
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 1.25rem;
+  box-shadow: 0 18px 45px rgba(15,23,42,0.06);
+  border: 1px solid #e2ebe7;
 }
-
+.places-grid { display: flex; flex-direction: column; gap: 0.85rem; }
+.places-grid .place-card {
+  border-radius: 18px;
+  border: 1px solid #e4eeea;
+  box-shadow: 0 1px 0 rgba(15,23,42,0.04);
+  min-height: 178px;
+}
+.places-grid .place-card:hover {
+  transform: translateY(-2px);
+  border-color: #99f6e4;
+  box-shadow: 0 14px 30px rgba(17,153,142,0.11);
+}
+.places-grid .place-card__title {
+  color: #13201d;
+  font-size: 1.08rem;
+  font-weight: 800;
+}
+.places-grid .place-card__arrow::before {
+  content: "{% trans 'Ver lugar' %}";
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: #11998e;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.places-grid .place-card__arrow i { display: none; }
 @media (min-width: 992px) {
-  .places-grid-card { padding: var(--space-10) var(--space-8); }
-}
-
-/* Nav links */
-/* Nav Links - estilos en components.css */
-
-/* Contact link */
-.place-card-link {
-  color: var(--color-primary);
-  text-decoration: none;
-}
-
-.place-card-link:hover {
-  color: var(--color-success);
-  text-decoration: underline;
+  .places-grid .place-card--horizontal {
+    grid-template-columns: 236px minmax(0, 1fr);
+    align-items: stretch;
+  }
+  .places-grid .place-card--horizontal .place-card__media img,
+  .places-grid .place-card--horizontal .place-card__placeholder {
+    height: 100%;
+    min-height: 178px;
+    max-height: 178px;
+    border-radius: 18px 0 0 18px;
+  }
+  .places-grid-card { padding: 2rem 1.5rem; }
 }
 </style>
 {% endblock %}

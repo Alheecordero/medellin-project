@@ -137,6 +137,29 @@ iframe[id^="google_ads"] {
   max-width: 100% !important;
 }
 
+/* Etiqueta "Publicidad" — tema claro */
+.adsense-fixed-label {
+  color: #8b9a94;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Contenedor visual para slots (home, etc.) */
+.adsense-slot-card {
+  background: #fff;
+  border: 1px solid #e4eeea;
+  border-radius: 18px;
+  padding: 0.85rem 1rem 0.65rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+.adsense-slot-card .adsense-fixed-unit {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0;
+}
+
 /* Unidades manuales/fijas de AdSense (in-content) */
 .adsense-fixed-unit {
   max-width: 100%;
@@ -164,6 +187,18 @@ iframe[id^="google_ads"] {
 
 .adsense-inline-list {
   grid-column: 1 / -1;
+  width: 100%;
+}
+
+/* Anuncios dentro de cards de listado (tema claro) */
+.places-grid-card > .adsense-fixed-unit {
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+.places-grid .adsense-fixed-unit.adsense-inline-list {
+  margin: 0.25rem 0 0.5rem;
+  padding: 0;
 }
 
 .adsense-mobile-only {

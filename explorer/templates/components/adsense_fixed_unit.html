@@ -1,8 +1,8 @@
+{% load i18n %}
 {% if settings.ADSENSE_CLIENT and slot %}
 <div class="adsense-fixed-unit my-4 {% if extra_class %}{{ extra_class }}{% endif %}" {% if exclude_auto %}data-nosnippet data-ad-layout="-exclude"{% endif %}>
-  {% if label %}
-    <div class="adsense-fixed-label text-center small text-white-50 mb-2">{{ label }}</div>
-  {% endif %}
+  {% trans "Publicidad" as ads_default_label %}
+  <div class="adsense-fixed-label text-center mb-2">{{ label|default:ads_default_label }}</div>
   <ins class="adsbygoogle adsense-manual"
        id="ads-fixed-{{ placement|default:'block' }}-{{ slot }}-{{ unit_key|default:'u0' }}"
        style="display:block"
@@ -20,7 +20,6 @@
       } catch (e) {
         return;
       }
-      // Oculta contenedor si Google marca el bloque como no llenado.
       setTimeout(function () {
         var status = unit.getAttribute("data-ad-status");
         if (status === "unfilled") {

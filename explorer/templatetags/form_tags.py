@@ -42,6 +42,9 @@ def translate_url_to(context, language_code):
             (r'^/busqueda-semantica/', '/en/semantic-search/'),
             # Reviews con slug (con ñ URL-encoded o no)
             (r'^/lugar/([^/]+)/rese[ñ%C3%B1]as/$', r'/en/place/\1/reviews/'),
+            # Guías curadas
+            (r'^/guias/([^/]+)/$', r'/en/guides/\1/'),
+            (r'^/guias/$', '/en/guides/'),
             # Lugares por comuna
             (r'^/lugares/([^/]+)/$', r'/en/places/\1/'),
             # Detalle de lugar
@@ -79,6 +82,9 @@ def translate_url_to(context, language_code):
             (r'^/semantic-search/', '/busqueda-semantica/'),
             # Reviews con slug
             (r'^/place/([^/]+)/reviews/$', r'/lugar/\1/reseñas/'),
+            # Guías curadas
+            (r'^/guides/([^/]+)/$', r'/guias/\1/'),
+            (r'^/guides/$', '/guias/'),
             # Lugares por comuna
             (r'^/places/([^/]+)/$', r'/lugares/\1/'),
             # Detalle de lugar

@@ -404,14 +404,10 @@ except ImportError:
 # --- End Google Cloud Storage Configuration ---
 
 
-# La configuración de STATICFILES_STORAGE ya está manejada arriba basada en USE_GCS
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Optimización de respuestas
 MIDDLEWARE.insert(1, 'django.middleware.gzip.GZipMiddleware')  # Comprimir respuestas
-
-# Configuración de caché para archivos estáticos
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Headers de caché para archivos estáticos (1 año)
 STATIC_URL = '/static/'

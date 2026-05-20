@@ -15,1383 +15,1036 @@
 {% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}{% endblock %}
 {% block og_image_alt %}{% trans "Vista panorámica de Medellín - ViveMedellín" %}{% endblock %}
 
-{% block navbar %}{% endblock %}
-
 {% block content %}
+<div class="home-page">
+{% get_current_language as LANGUAGE_CODE %}
 
-<!-- Hero Section -->
-<section class="hero-section-clean position-relative overflow-hidden">
-    <div class="container py-5">
-        <div class="row min-vh-100 align-items-center justify-content-center">
-            <div class="col-xl-10 col-lg-11 col-md-12 text-center">
-                <div class="hero-content">
-                    <div class="hero-top">
-                        {% get_current_language as LANGUAGE_CODE %}
-                        <div class="d-flex justify-content-center justify-content-sm-end mb-3 home-lang-switch gap-2 flex-wrap">
-                            <!-- Home / About us con mismo estilo que ES / EN -->
-                            <a href="{% url 'explorer:home' %}" class="btn btn-lang-home inactive">
-                                {% trans "Inicio" %}
-                            </a>
-                            {% if LANGUAGE_CODE|slice:":2" == 'en' %}
-                              <a href="{% url 'explorer:about' %}" class="btn btn-lang-home inactive">
-                                {% trans "Nosotros" %}
-                              </a>
-                            {% else %}
-                              <a href="{% url 'explorer:about_es' %}" class="btn btn-lang-home inactive">
-                                {% trans "Nosotros" %}
-                              </a>
-                            {% endif %}
-                            <!-- Selector de idioma -->
-                            {% include 'components/lang_switcher.html' %}
-                        </div>                    
-                        <h1 class="hero-title display-2 mb-4 fw-bold">
-                            {% blocktrans trimmed %}Descubre Medellín<br><span class="title-accent">como nunca antes</span>{% endblocktrans %}
-                        </h1>
-                        
-                        <!-- Search Bar -->
-                        <div class="search-modern-clean mb-3">
-                            <div class="input-group input-group-lg shadow-lg">
-                                <input type="text" 
-                                       id="search-places" 
-                                       class="form-control form-control-lg rounded-start-pill border-0"
-                                       placeholder="{% trans 'Busca bares, restaurantes, lugares...' %}"
-                                       aria-label="{% trans 'Buscar lugares en Medellín' %}">
-                                <button class="btn btn-light rounded-end-pill px-4" type="button" aria-label="{% trans 'Buscar' %}">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
-                        </div>
+<!-- ── HERO V3: imagen full-width de fondo, texto sobrepuesto ── -->
+<section class="hero-v3">
+  <!-- Imagen de fondo completa -->
+  <div class="hero-v3__bg" aria-hidden="true">
+    <img src="{% static 'img/juan-saravia-03gVOLHq9ec-unsplash.jpg' %}"
+         alt="" class="hero-v3__bg-img" fetchpriority="high">
+    <div class="hero-v3__overlay"></div>
+  </div>
 
-                        <!-- Filtros Dropdown -->
-                        <div class="filtros-home mb-5">
-                        <div class="row g-3 justify-content-center">
-                            
-                            <!-- 1. ÁREAS -->
-                            <div class="col-lg-4 col-md-6">
-                                <div class="dropdown" style="position: relative; z-index: 1000;">
-                                    <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button" id="areasDropdown" data-bs-toggle="dropdown" data-bs-placement="bottom" data-bs-auto-close="true" aria-expanded="false">
-                                        <i class="bi bi-geo-alt me-2"></i>
-                                        <span id="area-selected-text">{% trans "Seleccionar Área" %}</span>
-                                        <span id="area-check" class="ms-2" style="display: none;">✓</span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="areasDropdown">
-                                        {% if comunas_medellin %}
-                                          <li class="dropdown-header">
-                                            <i class="bi bi-building me-2 text-success"></i>{% trans "Medellín (Áreas)" %}
-                                          </li>
-                                          {% for area in comunas_medellin %}
-                                        <li>
-                                            <a class="dropdown-item dropdown-item-filtro area-option" 
-                                               href="javascript:void(0)" 
-                                               data-area-id="{{ area.osm_id }}" 
-                                               data-area-name="{{ area.name }}"
-                                               data-area-slug="{{ area.slug }}">
-                                                <i class="bi bi-geo-alt me-2 text-primary"></i>
-                                                <div>
-                                                    <div class="fw-semibold">{{ area.name }}</div>
-                                                    <small class="text-muted">{% trans "Explorar esta comuna" %}</small>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        {% endfor %}
-                                        {% endif %}
+  <!-- Contenido del hero -->
+  <div class="container hero-v3__body">
+    <div class="hero-v3__content">
+      <div class="home-kicker-v3">{% trans "La guía local para vivir Medellín" %}</div>
+      <h1 class="hero-v3__title">
+        {% blocktrans trimmed %}Encuentra los mejores lugares para vivir Medellín{% endblocktrans %}
+      </h1>
+      <p class="hero-v3__sub">
+        {% blocktrans trimmed %}Busca restaurantes, bares, cafés, cultura y planes por zona o cerca de ti.{% endblocktrans %}
+      </p>
 
-                                        {% if otras_regiones %}
-                                          <li><hr class="dropdown-divider"></li>
-                                          <li class="dropdown-header">
-                                            <i class="bi bi-map me-2 text-info"></i>{% trans "Otras áreas de Antioquia" %}
-                                          </li>
-                                          {% for area in otras_regiones %}
-                                          <li>
-                                            <a class="dropdown-item dropdown-item-filtro area-option" 
-                                               href="javascript:void(0)" 
-                                               data-area-id="{{ area.osm_id }}" 
-                                               data-area-name="{{ area.name }}"
-                                               data-area-slug="{{ area.slug }}">
-                                                <i class="bi bi-geo-alt me-2 text-primary"></i>
-                                                <div>
-                                                    <div class="fw-semibold">{{ area.name }}</div>
-                                                    <small class="text-muted">{% trans "Explorar esta área" %}</small>
-                                                </div>
-                                            </a>
-                                          </li>
-                                          {% endfor %}
-                                        {% endif %}
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <!-- 2. CATEGORÍAS REALES -->
-                            <div class="col-lg-4 col-md-6">
-                                <div class="dropdown" style="position: relative; z-index: 999;">
-                                    <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button" id="categoriasDropdown" data-bs-toggle="dropdown" data-bs-placement="bottom" data-bs-auto-close="true" aria-expanded="false">
-                                        <i class="bi bi-grid-3x3-gap me-2"></i>
-                                        <span id="categoria-selected-text">{% trans "Seleccionar Tipo" %}</span>
-                                        <span id="categoria-check" class="ms-2" style="display: none;">✓</span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="categoriasDropdown">
-                                        {% for categoria in categorias_reales %}
-                                        <li class="dropdown-header">
-                                            <i class="{{ categoria.icon }} me-2 text-{{ categoria.color }}"></i>{{ categoria.name }}
-                                        </li>
-                                        {% for subcategoria in categoria.subcategorias %}
-                                        <li>
-                                            <a class="dropdown-item dropdown-item-filtro categoria-option" 
-                                               href="javascript:void(0)"
-                                               data-categoria-id="{{ subcategoria.value }}" 
-                                               data-categoria-name="{{ subcategoria.name }}">
-                                                <i class="bi bi-arrow-right me-2 text-muted"></i>
-                                                <div>
-                                                    <div class="fw-semibold">{{ subcategoria.name }}</div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        {% endfor %}
-                                        {% if not forloop.last %}<li><hr class="dropdown-divider"></li>{% endif %}
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <!-- 3. ETIQUETAS ESPECIALES -->
-                            <div class="col-lg-4 col-md-6">
-                                <div class="dropdown" style="position: relative; z-index: 998;">
-                                    <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button" id="etiquetasDropdown" data-bs-toggle="dropdown" data-bs-placement="bottom" data-bs-auto-close="true" aria-expanded="false">
-                                        <i class="bi bi-stars me-2"></i>
-                                        <span id="caracteristica-selected-text">{% trans "Características" %}</span>
-                                        <span id="caracteristica-check" class="ms-2" style="display: none;">✓</span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="etiquetasDropdown">
-                                        <!-- Opción para no seleccionar característica -->
-                                        <li>
-                                            <a class="dropdown-item dropdown-item-filtro caracteristica-option" 
-                                               href="javascript:void(0)"
-                                               data-caracteristica-id="none" 
-                                               data-caracteristica-name="{% trans 'Sin característica especial' %}">
-                                                <i class="bi bi-x-circle me-2 text-muted"></i>
-                                                <div>
-                                                    <div class="fw-semibold">{% trans "Sin característica especial" %}</div>
-                                                    <small class="text-muted">{% trans "Buscar sin filtros adicionales" %}</small>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        
-                                        {% for grupo in etiquetas_especiales %}
-                                        <li class="dropdown-header">
-                                            <i class="{{ grupo.icon }} me-2 text-warning"></i>{{ grupo.name }}
-                                        </li>
-                                        {% for opcion in grupo.opciones %}
-                                        <li>
-                                            <a class="dropdown-item dropdown-item-filtro caracteristica-option" 
-                                               href="javascript:void(0)"
-                                               data-caracteristica-id="{{ opcion.field }}" 
-                                               data-caracteristica-name="{{ opcion.name }}">
-                                                <i class="{{ opcion.icon }} me-2 text-success"></i>
-                                                <div>
-                                                    <div class="fw-semibold">{{ opcion.name }}</div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        {% endfor %}
-                                        {% if not forloop.last %}<li><hr class="dropdown-divider"></li>{% endif %}
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-
-                        </div>
-                        
-                        <!-- Botones principales -->
-                        <div class="text-center mt-4 d-flex flex-wrap justify-content-center gap-3">
-                            <button id="cerca-de-mi-btn" class="btn btn-near-me-toggle" type="button">
-                                <i id="ubicacion-icon" class="bi bi-geo-fill me-2"></i>
-                                    <span id="ubicacion-text">{% trans "Cerca de Mí" %}</span>
-                            </button>
-                            
-                            <a href="{% url 'explorer:lugares_list' %}" class="btn btn-gradient-green btn-lg rounded-pill px-4">
-                                <i class="bi bi-compass me-2"></i>{% trans "Ver Todos los Lugares" %}
-                            </a>
-                        </div>
-
-                        {% if lugares_imperdibles %}
-                        <div class="imperdibles-home mt-4">
-                            <div class="areas-group-label mb-2">{% trans "Imperdibles en este momento" %}</div>
-                            <div class="imperdibles-grid">
-                                {% for lugar in lugares_imperdibles %}
-                                <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="imperdible-card {% if forloop.counter > 3 %}imperdible-card--extra{% endif %}" title="{{ lugar.nombre }}">
-                                    <div class="imperdible-card__media">
-                                        {% if lugar.imagen %}
-                                        <img src="{{ lugar.imagen }}" alt="{{ lugar.nombre }}" loading="lazy" decoding="async"
-                                             onerror="if(this.dataset.fallbackDone!=='1' && this.dataset.fallback){this.dataset.fallbackDone='1';this.src=this.dataset.fallback;return;}this.style.display='none';this.parentElement.classList.add('is-fallback');"
-                                             data-fallback="{{ lugar.imagen_full|default:'' }}">
-                                        <div class="imperdible-card__placeholder"></div>
-                                        {% else %}
-                                        <div class="imperdible-card__placeholder" style="display:block;"></div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="imperdible-card__body">
-                                        <div class="imperdible-card__title">{{ lugar.nombre }}</div>
-                                        <div class="imperdible-card__meta">
-                                            <span><i class="bi bi-star-fill"></i> {{ lugar.rating }}</span>
-                                            <span>{{ lugar.tipo }}</span>
-                                        </div>
-                                    </div>
-                                </a>
-                                {% endfor %}
-                            </div>
-                            {% if lugares_imperdibles|length > 3 %}
-                            <button type="button" class="imperdibles-toggle d-md-none" aria-expanded="false">
-                                <span>{% trans "Ver más" %}</span>
-                                <i class="bi bi-chevron-down"></i>
-                            </button>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Loading y Resultados AJAX -->
-                    <div id="ajax-loading" class="text-center py-5" style="display: none; position: relative; z-index: 1;">
-                        <div class="spinner-border text-light" role="status">
-                            <span class="visually-hidden">{% trans "Cargando..." %}</span>
-                        </div>
-                        <div class="text-white mt-3">
-                            <h5>{% trans "Buscando lugares..." %}</h5>
-                            <p>{% trans "Esto puede tardar unos segundos" %}</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Contenedor de resultados principal se define fuera del hero para no afectar el fondo -->
-
-                    <!-- Burbujas de áreas de Medellín (en la parte inferior de la card) -->
-                    {% if comunas_medellin_chips or otras_regiones_chips or comunas_medellin or otras_regiones %}
-                    <div class="areas-burbujas mt-2 flex-column">
-                        {% with comunas_chips=comunas_medellin_chips|default:comunas_medellin otras_chips=otras_regiones_chips|default:otras_regiones %}
-                        {% if comunas_chips %}
-                        <div class="areas-group">
-                            <div class="areas-group-label">
-                                {% trans "Medellín (Áreas)" %}
-                            </div>
-                            <div class="areas-group-bubbles">
-                                {% for area in comunas_chips %}
-                            <a href="{% url 'explorer:lugares_por_comuna' area.slug %}" class="area-bubble">
-                                <span class="dot"></span>
-                                <span class="label">{{ area.name }}</span>
-                            </a>
-                        {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        {% if otras_chips %}
-                        <div class="areas-group mt-2">
-                            <div class="areas-group-label">
-                                {% trans "Otras áreas de Antioquia" %}
-                            </div>
-                            <div class="areas-group-bubbles">
-                                {% for area in otras_chips %}
-                                    <a href="{% url 'explorer:lugares_por_comuna' area.slug %}" class="area-bubble">
-                                        <span class="dot"></span>
-                                        <span class="label">{{ area.name }}</span>
-                                    </a>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        <div class="areas-group mt-2">
-                            <div class="areas-group-bubbles">
-                        <a href="{% url 'explorer:lugares_list' %}" class="area-bubble area-bubble-all">
-                            <span class="dot"></span>
-                            <span class="label">{% trans "Ver todas las áreas" %}</span>
-                        </a>
-                            </div>
-                        </div>
-                    </div>
-                        {% endwith %}
-                    {% endif %}
-                </div>
-            </div>
+      <!-- Search Bar (desktop; en móvil priorizamos los CTAs) -->
+      <div class="hero-v3__search d-none d-md-block">
+        <div class="search-bar-v3">
+          <i class="bi bi-search search-bar-v3__icon"></i>
+          <input type="text"
+                 id="search-places"
+                 class="search-bar-v3__input"
+                 placeholder="{% trans '¿Qué buscas? Ej. bares en El Poblado' %}"
+                 aria-label="{% trans 'Buscar lugares en Medellín' %}">
+          <button class="search-bar-v3__btn" type="button" aria-label="{% trans 'Buscar' %}">
+            <i class="bi bi-search"></i>
+          </button>
         </div>
+      </div>
+
+      <!-- CTAs -->
+      <div class="hero-v3__ctas">
+        <button id="cerca-de-mi-btn" class="btn-hero-primary" type="button">
+          <i id="ubicacion-icon" class="bi bi-geo-fill"></i>
+          <span id="ubicacion-text">{% trans "Buscar cerca de mí" %}</span>
+        </button>
+        <a href="{% url 'explorer:lugares_list' %}" class="btn-hero-secondary">
+          <i class="bi bi-map"></i>{% trans "Explorar por zonas" %}
+        </a>
+      </div>
     </div>
+  </div>
 </section>
 
-<section class="home-monetization-zone">
-    {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_HOME placement='home' label='' exclude_auto=True extra_class='adsense-home-unit' %}
+<!-- ── INTENTIONS (chips de tipo) ── -->
+<section class="intentions-section">
+  <div class="container">
+    <div class="intentions-grid" aria-label="{% trans 'Explorar por intención' %}">
+      <a href="{% url 'explorer:lugares_list' %}?tipo=restaurant" class="intention-chip">
+        <span class="intention-chip__icon"><i class="bi bi-egg-fried"></i></span>
+        <span class="intention-chip__label">{% trans "Restaurantes" %}</span>
+      </a>
+      <a href="{% url 'explorer:lugares_list' %}?tipo=bar" class="intention-chip">
+        <span class="intention-chip__icon"><i class="bi bi-cup-straw"></i></span>
+        <span class="intention-chip__label">{% trans "Bares" %}</span>
+      </a>
+      <a href="{% url 'explorer:lugares_list' %}?tipo=cafe" class="intention-chip">
+        <span class="intention-chip__icon"><i class="bi bi-cup-hot"></i></span>
+        <span class="intention-chip__label">{% trans "Cafés" %}</span>
+      </a>
+      <a href="{% url 'explorer:lugares_list' %}?live_music=true" class="intention-chip">
+        <span class="intention-chip__icon"><i class="bi bi-music-note-beamed"></i></span>
+        <span class="intention-chip__label">{% trans "Música en vivo" %}</span>
+      </a>
+      <a href="{% url 'explorer:lugares_list' %}?outdoor_seating=true" class="intention-chip">
+        <span class="intention-chip__icon"><i class="bi bi-umbrella"></i></span>
+        <span class="intention-chip__label">{% trans "Terrazas" %}</span>
+      </a>
+      <a href="{% url 'explorer:lugares_list' %}?allows_dogs=true" class="intention-chip">
+        <span class="intention-chip__icon"><i class="bi bi-heart"></i></span>
+        <span class="intention-chip__label">{% trans "Pet friendly" %}</span>
+      </a>
+    </div>
+  </div>
 </section>
 
-<!-- Sección separada para resultados dinámicos (semánticos, cerca de mí, etc.) -->
-<section id="search-results-section" style="display: none;">
-    <div id="ajax-results"></div>
+<!-- ── ZONAS POPULARES + FILTROS AVANZADOS ── -->
+{% if comunas_medellin_chips or comunas_medellin %}
+<section class="zonas-pills-section">
+  <div class="container">
+    {% with comunas_chips=comunas_medellin_chips|default:comunas_medellin %}
+    {% if comunas_chips %}
+    <div class="section-row-v2 mb-3">
+      <span class="section-row-v2__label">{% trans "Zonas populares" %}</span>
+      <a href="{% url 'explorer:lugares_list' %}" class="section-row-v2__link">{% trans "Ver todas" %} →</a>
+    </div>
+    <div class="zonas-pills-row">
+      {% for area in comunas_chips|slice:":8" %}
+      <a href="{% url 'explorer:lugares_por_comuna' area.slug %}" class="zona-pill">{{ area.name }}</a>
+      {% endfor %}
+      <a href="{% url 'explorer:lugares_list' %}" class="zona-pill zona-pill--all">{% trans "+ Ver más" %}</a>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Filtros avanzados colapsables -->
+    <details class="advanced-filters-home mt-3">
+      <summary><i class="bi bi-sliders me-2"></i>{% trans "Filtros avanzados" %}</summary>
+      <div class="filtros-home mt-3">
+        <div class="row g-3">
+          <!-- 1. ÁREAS -->
+          <div class="col-lg-4 col-md-6">
+            <div class="dropdown" style="position:relative;z-index:1000;">
+              <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button" id="areasDropdown" data-bs-toggle="dropdown" data-bs-placement="bottom" data-bs-auto-close="true" aria-expanded="false">
+                <i class="bi bi-geo-alt me-2"></i>
+                <span id="area-selected-text">{% trans "Seleccionar Área" %}</span>
+                <span id="area-check" class="ms-2" style="display:none;">✓</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="areasDropdown">
+                {% if comunas_medellin %}
+                  <li class="dropdown-header"><i class="bi bi-building me-2 text-success"></i>{% trans "Medellín (Áreas)" %}</li>
+                  {% for area in comunas_medellin %}
+                  <li><a class="dropdown-item dropdown-item-filtro area-option" href="javascript:void(0)" data-area-id="{{ area.osm_id }}" data-area-name="{{ area.name }}" data-area-slug="{{ area.slug }}">
+                    <i class="bi bi-geo-alt me-2 text-primary"></i>
+                    <div><div class="fw-semibold">{{ area.name }}</div><small class="text-muted">{% trans "Explorar esta comuna" %}</small></div>
+                  </a></li>
+                  {% endfor %}
+                {% endif %}
+                {% if otras_regiones %}
+                  <li><hr class="dropdown-divider"></li>
+                  <li class="dropdown-header"><i class="bi bi-map me-2 text-info"></i>{% trans "Otras áreas de Antioquia" %}</li>
+                  {% for area in otras_regiones %}
+                  <li><a class="dropdown-item dropdown-item-filtro area-option" href="javascript:void(0)" data-area-id="{{ area.osm_id }}" data-area-name="{{ area.name }}" data-area-slug="{{ area.slug }}">
+                    <i class="bi bi-geo-alt me-2 text-primary"></i>
+                    <div><div class="fw-semibold">{{ area.name }}</div><small class="text-muted">{% trans "Explorar esta área" %}</small></div>
+                  </a></li>
+                  {% endfor %}
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+          <!-- 2. CATEGORÍAS -->
+          <div class="col-lg-4 col-md-6">
+            <div class="dropdown" style="position:relative;z-index:999;">
+              <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button" id="categoriasDropdown" data-bs-toggle="dropdown" data-bs-placement="bottom" data-bs-auto-close="true" aria-expanded="false">
+                <i class="bi bi-grid-3x3-gap me-2"></i>
+                <span id="categoria-selected-text">{% trans "Seleccionar Tipo" %}</span>
+                <span id="categoria-check" class="ms-2" style="display:none;">✓</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="categoriasDropdown">
+                {% for categoria in categorias_reales %}
+                <li class="dropdown-header"><i class="{{ categoria.icon }} me-2 text-{{ categoria.color }}"></i>{{ categoria.name }}</li>
+                {% for subcategoria in categoria.subcategorias %}
+                <li><a class="dropdown-item dropdown-item-filtro categoria-option" href="javascript:void(0)" data-categoria-id="{{ subcategoria.value }}" data-categoria-name="{{ subcategoria.name }}">
+                  <i class="bi bi-arrow-right me-2 text-muted"></i>
+                  <div><div class="fw-semibold">{{ subcategoria.name }}</div></div>
+                </a></li>
+                {% endfor %}
+                {% if not forloop.last %}<li><hr class="dropdown-divider"></li>{% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          <!-- 3. CARACTERÍSTICAS -->
+          <div class="col-lg-4 col-md-6">
+            <div class="dropdown" style="position:relative;z-index:998;">
+              <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button" id="etiquetasDropdown" data-bs-toggle="dropdown" data-bs-placement="bottom" data-bs-auto-close="true" aria-expanded="false">
+                <i class="bi bi-stars me-2"></i>
+                <span id="caracteristica-selected-text">{% trans "Características" %}</span>
+                <span id="caracteristica-check" class="ms-2" style="display:none;">✓</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="etiquetasDropdown">
+                <li><a class="dropdown-item dropdown-item-filtro caracteristica-option" href="javascript:void(0)" data-caracteristica-id="none" data-caracteristica-name="{% trans 'Sin característica especial' %}">
+                  <i class="bi bi-x-circle me-2 text-muted"></i>
+                  <div><div class="fw-semibold">{% trans "Sin característica especial" %}</div><small class="text-muted">{% trans "Buscar sin filtros adicionales" %}</small></div>
+                </a></li>
+                <li><hr class="dropdown-divider"></li>
+                {% for grupo in etiquetas_especiales %}
+                <li class="dropdown-header"><i class="{{ grupo.icon }} me-2 text-warning"></i>{{ grupo.name }}</li>
+                {% for opcion in grupo.opciones %}
+                <li><a class="dropdown-item dropdown-item-filtro caracteristica-option" href="javascript:void(0)" data-caracteristica-id="{{ opcion.field }}" data-caracteristica-name="{{ opcion.name }}">
+                  <i class="{{ opcion.icon }} me-2 text-success"></i>
+                  <div><div class="fw-semibold">{{ opcion.name }}</div></div>
+                </a></li>
+                {% endfor %}
+                {% if not forloop.last %}<li><hr class="dropdown-divider"></li>{% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── ADSENSE HOME (slot ADSENSE_SLOT_HOME) ── -->
+{% if adsense_allowed %}
+<section class="home-monetization-zone" aria-label="{% trans 'Publicidad' %}">
+  <div class="container">
+    <div class="adsense-slot-card adsense-slot-card--home">
+      {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_HOME placement='home' exclude_auto=True extra_class='adsense-home-unit' %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── IMPERDIBLES AHORA ── -->
+{% if lugares_imperdibles %}
+<section class="imperdibles-section">
+  <div class="container">
+    <div class="section-row-v2 mb-4">
+      <h2 class="section-row-v2__title">{% trans "Imperdibles ahora" %}</h2>
+      <a href="{% url 'explorer:lugares_list' %}" class="section-row-v2__link">{% trans "Ver todos" %} →</a>
+    </div>
+    <div class="imperdibles-scroll">
+      {% for lugar in lugares_imperdibles %}
+      <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="imp-card" title="{{ lugar.nombre }}">
+        <div class="imp-card__img-wrap">
+          {% if lugar.imagen %}
+          <img src="{{ lugar.imagen }}" alt="{{ lugar.nombre }}" loading="lazy" decoding="async"
+               onerror="if(this.dataset.fallbackDone!=='1'&&this.dataset.fallback){this.dataset.fallbackDone='1';this.src=this.dataset.fallback;return;}this.style.display='none';this.parentElement.classList.add('is-placeholder');"
+               data-fallback="{{ lugar.imagen_full|default:'' }}">
+          {% endif %}
+          <div class="imp-card__placeholder"></div>
+          <span class="imp-card__badge"><i class="bi bi-star-fill"></i> {{ lugar.rating }}</span>
+        </div>
+        <div class="imp-card__body">
+          <div class="imp-card__title">{{ lugar.nombre }}</div>
+          <div class="imp-card__meta">
+            <span class="imp-card__type">{{ lugar.tipo }}</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── EXPLORA POR ZONAS (image cards) ── -->
+{% with comunas_chips=comunas_medellin_chips|default:comunas_medellin %}
+{% if comunas_chips %}
+<section class="zonas-img-section">
+  <div class="container">
+    <div class="section-row-v2 mb-4">
+      <h2 class="section-row-v2__title">{% trans "Explora por zonas" %}</h2>
+    </div>
+    <div class="zonas-img-grid">
+      {% for area in comunas_chips|slice:":6" %}
+      <a href="{% url 'explorer:lugares_por_comuna' area.slug %}" class="zona-img-card zona-img-card--{{ forloop.counter }}">
+        <div class="zona-img-card__overlay"></div>
+        <div class="zona-img-card__text">
+          <span class="zona-img-card__name">{{ area.name }}</span>
+          <span class="zona-img-card__arrow">→</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endwith %}
+
+<!-- ── LOADING / RESULTADOS AJAX ── -->
+<div id="ajax-loading" class="text-center py-5" style="display:none;">
+  <div class="spinner-border text-success" role="status">
+    <span class="visually-hidden">{% trans "Cargando..." %}</span>
+  </div>
+  <div class="mt-3">
+    <h5>{% trans "Buscando lugares..." %}</h5>
+    <p class="text-muted">{% trans "Esto puede tardar unos segundos" %}</p>
+  </div>
+</div>
+
+<section id="search-results-section" style="display:none;">
+  <div id="ajax-results"></div>
 </section>
 
 <!-- Schema.org JSON-LD -->
 {% include 'components/schema_org.html' with schema_type='website' %}
 {% include 'components/schema_org.html' with schema_type='organization' %}
 
-    <!-- Pre-carga i18n para textos usados solo en JS (oculto) -->
-    <div class="visually-hidden" aria-hidden="true">
-        {% trans "Obteniendo ubicación..." %}
-        {% trans "Ubicación encontrada" %}
-        {% trans "Permiso de ubicación denegado. Por favor, habilita la ubicación en tu navegador." %}
-        {% trans "No se pudo determinar tu ubicación. Intenta de nuevo." %}
-        {% trans "La solicitud de ubicación tardó demasiado. Intenta de nuevo." %}
-        {% trans "Error desconocido al obtener la ubicación." %}
-        {% trans "Error en la búsqueda" %}
-        {% trans "Error de conexión" %}
-        {% trans "No hay lugares cercanos disponibles en este momento." %}
-        {% trans "Error al cargar lugares cercanos." %}
-        {% trans "Reintentar" %}
-        {% trans "No hay lugares similares disponibles en este momento." %}
-        {% trans "Error al cargar lugares similares." %}
-        {% trans "No hay más lugares en esta zona disponibles en este momento." %}
-        {% trans "Error al cargar lugares de la zona." %}
-    </div>
+<!-- Pre-carga i18n para JS -->
+<div class="visually-hidden" aria-hidden="true">
+  {% trans "Obteniendo ubicación..." %}
+  {% trans "Ubicación encontrada" %}
+  {% trans "Permiso de ubicación denegado. Por favor, habilita la ubicación en tu navegador." %}
+  {% trans "No se pudo determinar tu ubicación. Intenta de nuevo." %}
+  {% trans "La solicitud de ubicación tardó demasiado. Intenta de nuevo." %}
+  {% trans "Error desconocido al obtener la ubicación." %}
+  {% trans "Error en la búsqueda" %}
+  {% trans "Error de conexión" %}
+  {% trans "No hay lugares cercanos disponibles en este momento." %}
+  {% trans "Error al cargar lugares cercanos." %}
+  {% trans "Reintentar" %}
+  {% trans "No hay lugares similares disponibles en este momento." %}
+  {% trans "Error al cargar lugares similares." %}
+  {% trans "No hay más lugares en esta zona disponibles en este momento." %}
+  {% trans "Error al cargar lugares de la zona." %}
+</div>
+</div>
 {% endblock %}
 
 {% block extra_css %}
 <style>
-/* Ocultar espaciador del navbar solo en home */
-.navbar-spacer {
-    display: none;
+/* ─────────────────────────────────────────────────────────────
+   HOME V2 — Light & Professional
+───────────────────────────────────────────────────────────── */
+.navbar-spacer { display: none; }
+body.home-body { background: #f5f7f4; }
+
+/* ── HERO V3: imagen full-width como fondo ── */
+.hero-v3 {
+  position: relative;
+  min-height: calc(100vh - var(--site-topbar-h, 64px));
+  max-height: 720px;
+  overflow: hidden;
+  background: #0b2d18; /* fallback mientras carga imagen */
+  display: flex;
+  align-items: stretch;
 }
 
-.imperdibles-home {
-    max-width: 980px;
-    margin-left: auto;
-    margin-right: auto;
+/* Fondo completo */
+.hero-v3__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hero-v3__bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+  display: block;
+}
+/* Gradiente desktop: izquierda clara → derecha transparente */
+.hero-v3__overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right,
+      rgba(245,247,244,.98) 0%,
+      rgba(245,247,244,.94) 28%,
+      rgba(245,247,244,.72) 46%,
+      rgba(245,247,244,.18) 65%,
+      transparent 80%),
+    linear-gradient(to bottom, transparent 65%, rgba(0,20,10,.35) 100%);
 }
 
-.home-monetization-zone {
-    background: linear-gradient(180deg, rgba(8, 14, 23, 0.92), rgba(8, 14, 23, 0.98));
-    padding: .4rem 0 .85rem;
+/* Body del hero: centra contenido */
+.hero-v3__body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: calc(100vh - var(--site-topbar-h, 64px));
+  max-height: 720px;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+.hero-v3__content {
+  max-width: 560px;
 }
 
-.home-monetization-zone .adsense-fixed-unit {
-    margin: 0 auto !important;
-    padding: 0 8px;
+/* Kicker */
+.home-kicker-v3 {
+  display: inline-block;
+  font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: #11998e;
+  background: rgba(17,153,142,.09);
+  border: 1px solid rgba(17,153,142,.25);
+  border-radius: 999px;
+  padding: .3rem .8rem;
+  margin-bottom: 1rem;
+}
+/* H1 */
+.hero-v3__title {
+  font-size: clamp(2.6rem, 4.4vw, 4.2rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -.035em;
+  color: #0d1f12;
+  margin-bottom: 1rem;
+}
+/* Subtitle */
+.hero-v3__sub {
+  font-size: clamp(.94rem, 1.4vw, 1.08rem);
+  color: #374151;
+  line-height: 1.6;
+  margin-bottom: 1.75rem;
+  max-width: 430px;
 }
 
-.home-monetization-zone .adsense-home-unit ins.adsbygoogle {
-    min-height: 0;
+/* Search Bar */
+.hero-v3__search { margin-bottom: 1rem; max-width: 500px; }
+.search-bar-v3 {
+  display: flex; align-items: center;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 0 .5rem 0 1.25rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,.1);
+  transition: border-color .15s, box-shadow .15s;
 }
-
-.imperdibles-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: .8rem;
+.search-bar-v3:focus-within {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34,197,94,.12), 0 4px 20px rgba(0,0,0,.1);
 }
-
-.imperdible-card {
-    display: block;
-    text-decoration: none;
-    border-radius: 16px;
-    overflow: hidden;
-    background: rgba(15, 23, 42, 0.62);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+.search-bar-v3__icon { color: #9ca3af; font-size: 1rem; flex-shrink: 0; }
+.search-bar-v3__input {
+  flex: 1; border: none; background: transparent; outline: none;
+  padding: .92rem .75rem; font-size: .97rem; color: #111827;
 }
-
-.imperdible-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 34px rgba(0, 0, 0, .35);
-    border-color: rgba(74, 222, 128, 0.45);
+.search-bar-v3__input::placeholder { color: #9ca3af; }
+.search-bar-v3__btn {
+  flex-shrink: 0; width: 44px; height: 44px; border-radius: 999px;
+  background: #11998e; border: none; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .15s; font-size: 1.05rem;
 }
+.search-bar-v3__btn:hover { background: #0d8a7f; }
 
-.imperdible-card__media {
-    aspect-ratio: 16 / 10;
-    background: linear-gradient(135deg, rgba(15, 23, 42, .6), rgba(30, 41, 59, .8));
+/* CTAs */
+.hero-v3__ctas { display: flex; gap: .75rem; flex-wrap: wrap; }
+.btn-hero-primary {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .82rem 1.6rem; border-radius: 999px;
+  background: #11998e; color: #fff;
+  font-size: .95rem; font-weight: 700; border: none; cursor: pointer;
+  box-shadow: 0 4px 18px rgba(17,153,142,.35);
+  transition: background .15s, transform .15s, box-shadow .15s;
 }
-
-.imperdible-card__media.is-fallback .imperdible-card__placeholder {
-    display: block;
+.btn-hero-primary:hover { background: #0d8a7f; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(17,153,142,.4); }
+.btn-hero-primary.locating { background: rgba(17,153,142,.5); pointer-events: none; }
+.btn-hero-primary.active { background: #0d8a7f; }
+.btn-hero-primary.error { background: #dc2626; animation: shake .5s; }
+.btn-hero-secondary {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .82rem 1.6rem; border-radius: 999px;
+  background: rgba(255,255,255,.88); color: #0f4a27;
+  font-size: .95rem; font-weight: 700;
+  border: 2px solid rgba(17,153,142,.35); text-decoration: none;
+  backdrop-filter: blur(4px);
+  transition: background .15s, color .15s, border-color .15s;
 }
+.btn-hero-secondary:hover { background: #11998e; color: #fff; border-color: #11998e; }
 
-.imperdible-card__media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+/* Alias para compatibilidad con JS existente */
+.btn-cerca-mi { display: inline-flex; align-items: center; gap: .5rem; padding: .82rem 1.6rem; border-radius: 999px; background: #11998e; color: #fff; font-size: .95rem; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 4px 18px rgba(17,153,142,.35); transition: background .15s, transform .15s; }
+.btn-cerca-mi:hover { background: #0d8a7f; transform: translateY(-1px); }
+.btn-cerca-mi.locating { background: rgba(17,153,142,.5); pointer-events: none; }
+.btn-cerca-mi.active { background: #0d8a7f; }
+.btn-cerca-mi.error { background: #dc2626; animation: shake .5s; }
+.btn-explorar-zonas { display: inline-flex; align-items: center; gap: .5rem; padding: .82rem 1.6rem; border-radius: 999px; background: rgba(255,255,255,.88); color: #0f4a27; font-size: .95rem; font-weight: 700; border: 2px solid rgba(17,153,142,.35); text-decoration: none; transition: background .15s, color .15s; }
+.btn-explorar-zonas:hover { background: #11998e; color: #fff; }
+
+/* ── INTENTIONS SECTION ── */
+.intentions-section {
+  background: #fff;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid #f0f0f0;
+  border-top: 1px solid #f0f0f0;
 }
-
-.imperdible-card__placeholder {
-    display: none;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(74, 222, 128, .2), rgba(34, 211, 238, .2));
+.intentions-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: .75rem;
 }
-
-.imperdible-card__body {
-    padding: .65rem .75rem .8rem;
+.intention-chip {
+  display: flex; flex-direction: column; align-items: center; gap: .5rem;
+  padding: 1rem .5rem; border-radius: 16px;
+  background: #fff; border: 1.5px solid #f0f0f0;
+  text-decoration: none; color: #111827;
+  transition: border-color .15s, transform .15s, box-shadow .15s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.04);
 }
-
-.imperdible-card__title {
-    color: #f8fafc;
-    font-size: .86rem;
-    font-weight: 700;
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-wrap: balance;
+.intention-chip:hover {
+  border-color: #11998e; transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.07); color: #11998e;
 }
-
-.imperdible-card__meta {
-    margin-top: .35rem;
-    display: flex;
-    justify-content: space-between;
-    gap: .5rem;
-    color: rgba(248, 250, 252, 0.82);
-    font-size: .73rem;
+.intention-chip__icon {
+  width: 44px; height: 44px; border-radius: 14px;
+  background: #f0fdfa; display: flex; align-items: center; justify-content: center;
+  color: #11998e; font-size: 1.2rem; transition: background .15s, color .15s;
 }
+.intention-chip:hover .intention-chip__icon { background: #11998e; color: #fff; }
+.intention-chip__label { font-size: .77rem; font-weight: 700; text-align: center; line-height: 1.2; }
 
-.imperdible-card__meta i {
-    color: #f59e0b;
+/* ── ZONAS PILLS SECTION ── */
+.zonas-pills-section { background: #fff; padding: 1.25rem 0 1.5rem; border-bottom: 1px solid #f0f0f0; }
+.section-row-v2 { display: flex; align-items: center; justify-content: space-between; }
+.section-row-v2__label { font-size: 1.05rem; font-weight: 700; color: #111827; margin: 0; }
+.section-row-v2__title { font-size: 1.35rem; font-weight: 800; color: #111827; margin: 0; }
+.section-row-v2__link { font-size: .87rem; color: #11998e; font-weight: 600; text-decoration: none; }
+.section-row-v2__link:hover { text-decoration: underline; }
+.zonas-pills-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
+.zona-pill {
+  display: inline-flex; align-items: center;
+  padding: .42rem .9rem; border-radius: 999px;
+  border: 1.5px solid #e5e7eb; background: #fff;
+  font-size: .87rem; font-weight: 500; color: #374151; text-decoration: none;
+  transition: all .15s;
 }
+.zona-pill:hover { border-color: #11998e; color: #11998e; background: #f0fdfa; }
+.zona-pill--all { background: #f0fdfa; border-color: rgba(17,153,142,.3); color: #11998e; }
 
-.imperdibles-toggle {
-    margin-top: .75rem;
-    width: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(15, 23, 42, 0.42);
-    color: #f8fafc;
-    border-radius: 12px;
-    padding: .55rem .75rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: .4rem;
-    font-weight: 600;
+/* Advanced filters */
+.advanced-filters-home { margin-top: .85rem; }
+.advanced-filters-home summary {
+  list-style: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .52rem 1rem; border-radius: 999px;
+  background: #f5f7f4; color: #4b5563;
+  border: 1.5px solid #e5e7eb; font-size: .87rem; font-weight: 600;
+  transition: all .15s;
 }
+.advanced-filters-home summary:hover { border-color: #11998e; color: #11998e; }
+.advanced-filters-home summary::-webkit-details-marker { display: none; }
+.advanced-filters-home[open] summary { background: #11998e; color: #fff; border-color: #11998e; }
+.filtros-home { background: #fff; border: 1.5px solid #e5e7eb; border-radius: 16px; padding: 1.25rem; }
 
-@media (max-width: 991px) {
-    .imperdibles-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+/* Botones de filtro (mismo estilo que places_list) */
+.btn-filtro-dropdown {
+  min-height: 48px;
+  border-radius: 12px !important;
+  background: #fbfdfc !important;
+  border: 1.5px solid #dbe8e4 !important;
+  color: #23302d !important;
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: none !important;
 }
-
-@media (max-width: 560px) {
-    .imperdibles-grid {
-        grid-template-columns: 1fr;
-    }
-    .imperdible-card--extra {
-        display: none;
-    }
-    .imperdibles-home.imperdibles-home--expanded .imperdible-card--extra {
-        display: block;
-    }
-    .imperdibles-home.imperdibles-home--expanded .imperdibles-toggle i {
-        transform: rotate(180deg);
-    }
+.btn-filtro-dropdown i { color: #11998e; flex-shrink: 0; }
+.btn-filtro-dropdown:hover,
+.btn-filtro-dropdown:focus,
+.btn-filtro-dropdown.show,
+.btn-filtro-dropdown[aria-expanded="true"] {
+  background: #f0fdfa !important;
+  border-color: #11998e !important;
+  color: #0f766e !important;
 }
-
-/* Botones de idioma - estilos en components.css */
-
-/* Hero Section con foto limpia de Medellín como fondo */
-.hero-section-clean {
-    position: relative;
-    background-image: url("{% static 'img/juan-saravia-03gVOLHq9ec-unsplash.jpg' %}");
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    margin-top: 0;
-    padding-top: 48px;
-    padding-bottom: 80px;
-    overflow-x: hidden;
+.btn-filtro-dropdown.selected {
+  background: #ecfdf5 !important;
+  border-color: #11998e !important;
+  color: #0f766e !important;
+  box-shadow: 0 0 0 3px rgba(17,153,142,.12) !important;
 }
-
-/* Contenedor central tipo “glassmorphism” */
-.hero-content {
-    background: rgba(4, 20, 12, 0.7);
-    border-radius: 28px;
-    padding: 2.5rem 2rem 1.8rem 2rem;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(18px);
-    min-height: 80vh;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Hero title centrado y más compacto, tipo landing moderna */
-.hero-title {
-    text-align: center;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    color: #f8fafc;
-    font-size: clamp(3rem, 7.2vw, 5.2rem);
-}
-
-.title-accent {
-    background: linear-gradient(135deg, #4ade80 0%, #22d3ee 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    display: inline-block;
-}
-
-/* Search Input Styling */
-.search-modern-clean .form-control {
-    padding: 0.95rem 1.6rem;
-    font-size: 1.05rem;
-    border-radius: 999px 0 0 999px;
-}
-
-.search-modern-clean .form-control:focus {
-    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
-    border-color: #667eea;
-}
-
-/* Botón de búsqueda grande, circular y protagonista */
-.search-modern-clean .btn {
-    border-radius: 0 999px 999px 0;
-    font-weight: 600;
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border: none;
-    color: #fff;
-}
-
-.search-modern-clean .btn:hover {
-    background: linear-gradient(135deg, #0f8a7f 0%, #2fd86f 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(47, 216, 111, 0.45);
-}
-
-/* Burbujas de áreas (chips de zonas de Medellín) al fondo de la card */
-.areas-burbujas {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    padding: 0.5rem 0 0.25rem 0;
-    justify-content: center;
-    align-items: stretch;
-}
-
-.area-bubble {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.35rem 0.9rem;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.55);
-    background: rgba(0, 0, 0, 0.25);
-    color: #f6fdfb;
-    font-size: 0.85rem;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-}
-
-.area-bubble .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #38ef7d;
-}
-
-.area-bubble-all .dot {
-    background: #ffca28;
-}
-
-.areas-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-}
-
-.areas-group-label {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: rgba(226, 232, 240, 0.8);
-    text-align: center;
-}
-
-.areas-group-bubbles {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
-}
-
-.area-bubble:hover {
-    background: rgba(0, 0, 0, 0.45);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-/* Grid de lugares: vertical en mobile, múltiple en desktop */
-.lugares-grid {
-  padding: 0.5rem 0;
-}
-
-/* Mobile: lista vertical (sin scroll horizontal) */
-@media (max-width: 767.98px) {
-  .lugares-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    padding-bottom: 1rem;
-    margin: 0;
-  }
-  
-  .lugar-card-wrapper {
-    width: 100%;
-  }
-}
-
-/* Desktop: grid de 3 columnas */
-@media (min-width: 768px) {
-  .lugares-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-  }
-  
-  .lugar-card-wrapper {
-    width: 100%;
-  }
-}
-
-/* Card Hover Effects */
-.card {
-    position: relative;
-}
-
-/* Badge overlay sobre imagen de card */
-.badge-overlay {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    z-index: 10;
-}
-
-.badge-overlay .badge {
-    background-color: rgba(13, 110, 253, 0.95) !important;
-    backdrop-filter: blur(4px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    font-weight: 600;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
-}
-
-/* Filtros del Home */
-.filtros-home {
-    background: rgba(3, 30, 20, 0.88);
-    backdrop-filter: blur(16px);
-    border-radius: 22px;
-    padding: 2rem 1.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    position: relative;
-    z-index: 2; /* por encima del área de resultados */
-}
-
-/* Botones y Dropdowns de Filtros - estilos base en components.css */
-
-/* Posicionamiento específico del dropdown para Home */
 .dropdown-menu-filtros {
-    position: absolute !important;
-    top: 100% !important;
-    bottom: auto !important;
-    left: 0 !important;
-    right: auto !important;
-    transform: none !important;
-    will-change: auto !important;
-    inset: auto !important;
-    z-index: 100 !important;
+  border: 1px solid #dbe8e4;
+  border-radius: 14px;
+  padding: 0.4rem;
+  box-shadow: 0 16px 40px rgba(15,23,42,.12) !important;
 }
+.dropdown-item-filtro { border-radius: 10px; color: #263532; }
+.dropdown-item-filtro:hover,
+.dropdown-item-filtro:focus { background: #f0fdfa; color: #0f766e; }
 
-/* Dropdown específico para características */
-#etiquetasDropdown + .dropdown-menu-filtros {
-    max-height: 280px;
-    overflow-y: auto;
-    overflow-x: hidden;
+/* ── HOME MONETIZATION ZONE (slot HOME) ── */
+.home-monetization-zone { background: #f5f7f4; padding: 1rem 0 1.25rem; }
+.adsense-slot-card {
+  background: #fff;
+  border: 1px solid #e4eeea;
+  border-radius: 18px;
+  padding: 0.85rem 1rem 0.65rem;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.05);
+  max-width: 920px;
+  margin: 0 auto;
 }
+.adsense-slot-card--home .adsense-fixed-unit { margin: 0 !important; padding: 0; }
+.adsense-slot-card--home .adsense-fixed-label { margin-bottom: 0.5rem !important; }
+.adsense-slot-card--home ins.adsbygoogle { min-height: 90px; border-radius: 12px; }
 
-@media (max-width: 768px) {
-    #etiquetasDropdown + .dropdown-menu-filtros {
-        max-height: 250px;
-    }
+/* ── IMPERDIBLES SECTION ── */
+.imperdibles-section { background: #f5f7f4; padding: 2.5rem 0; }
+.imperdibles-scroll {
+  display: flex; gap: 1rem;
+  overflow-x: auto; padding-bottom: .5rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
-
-.dropdown-header {
-    color: #495057;
-    font-weight: 600;
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem 0.25rem;
-    margin-top: 0.5rem;
+.imperdibles-scroll::-webkit-scrollbar { height: 4px; }
+.imperdibles-scroll::-webkit-scrollbar-track { background: #e5e7eb; border-radius: 4px; }
+.imperdibles-scroll::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
+.imp-card {
+  flex: 0 0 220px; scroll-snap-align: start;
+  border-radius: 16px; overflow: hidden;
+  background: #fff; text-decoration: none; color: inherit;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+  border: 1.5px solid #f0f0f0;
+  transition: transform .18s, box-shadow .18s, border-color .18s;
 }
-
-.dropdown-header:first-child {
-    margin-top: 0;
+.imp-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.1); border-color: #22c55e; }
+.imp-card__img-wrap {
+  position: relative; aspect-ratio: 4/3;
+  background: #f0fdfa; overflow: hidden;
 }
-
-/* ═══════════════════════════════════════════════════════════════
-   NEAR ME TOGGLE - DISEÑO PROFESIONAL
-   ═══════════════════════════════════════════════════════════════ */
-
-/* Botón Near Me Toggle */
-.btn-near-me-toggle {
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    color: white;
-    font-size: 1rem;
-    font-weight: 600;
-    padding: 0.75rem 1.75rem;
-    border-radius: 999px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    position: relative;
-    overflow: hidden;
+.imp-card__img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.imp-card__img-wrap.is-placeholder .imp-card__placeholder { display: flex; }
+.imp-card__placeholder {
+  display: none; position: absolute; inset: 0;
+  background: linear-gradient(135deg, #ccfbf1, #99f6e4);
+  align-items: center; justify-content: center;
 }
-
-.btn-near-me-toggle::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.5s;
+.imp-card__badge {
+  position: absolute; bottom: .5rem; left: .5rem;
+  background: rgba(0,0,0,.62); color: #fff;
+  border-radius: 999px; padding: .2rem .52rem;
+  font-size: .72rem; font-weight: 700;
+  display: inline-flex; align-items: center; gap: .22rem;
+  backdrop-filter: blur(4px);
 }
-
-.btn-near-me-toggle:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
-    color: white;
+.imp-card__badge i { color: #fbbf24; }
+.imp-card__body { padding: .72rem .8rem .8rem; }
+.imp-card__title {
+  font-size: .87rem; font-weight: 700; color: #111827;
+  line-height: 1.3; margin-bottom: .2rem;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
+.imp-card__meta { display: flex; align-items: center; gap: .3rem; }
+.imp-card__type { font-size: .72rem; color: #6b7280; }
 
-.btn-near-me-toggle:hover::before {
-    left: 100%;
+/* ── ZONAS IMAGE SECTION ── */
+.zonas-img-section { background: #fff; padding: 1.6rem 0 1.9rem; }
+.zonas-img-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: .55rem;
 }
-
-.btn-near-me-toggle.locating {
-    background: rgba(17, 153, 142, 0.3);
-    border-color: rgba(17, 153, 142, 0.6);
-    pointer-events: none;
+.zona-img-card {
+  position: relative; border-radius: 14px; overflow: hidden;
+  aspect-ratio: 1.65/1; text-decoration: none;
+  display: flex; align-items: flex-end;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 1px 5px rgba(15,23,42,.06);
 }
-
-.btn-near-me-toggle.locating #ubicacion-icon {
-    animation: spin 1s linear infinite;
+.zona-img-card--1 { background: linear-gradient(145deg, #0f766e 0%, #11998e 100%); }
+.zona-img-card--2 { background: linear-gradient(145deg, #0d6b5f 0%, #14b8a6 100%); }
+.zona-img-card--3 { background: linear-gradient(145deg, #115e59 0%, #0d9488 100%); }
+.zona-img-card--4 { background: linear-gradient(145deg, #134e4a 0%, #0d8a7f 100%); }
+.zona-img-card--5 { background: linear-gradient(145deg, #0f766e 0%, #2dd4bf 100%); }
+.zona-img-card--6 { background: linear-gradient(145deg, #155e54 0%, #11998e 100%); }
+.zona-img-card__overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.42) 0%, transparent 62%);
+  transition: opacity .2s;
 }
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+.zona-img-card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(17,153,142,.16); }
+.zona-img-card:hover .zona-img-card__overlay { opacity: 1.2; }
+.zona-img-card__text {
+  position: relative; z-index: 2;
+  padding: .62rem .72rem;
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%;
 }
+.zona-img-card__name { font-size: .78rem; font-weight: 700; color: #fff; line-height: 1.15; }
+.zona-img-card__arrow { font-size: .78rem; color: rgba(255,255,255,.8); transition: transform .15s; }
+.zona-img-card:hover .zona-img-card__arrow { transform: translateX(3px); color: #fff; }
 
-.btn-near-me-toggle.active {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border-color: transparent;
-    color: #0f172a;
-    box-shadow: 0 6px 25px rgba(17, 153, 142, 0.4);
-}
+/* ── SEARCH RESULTS SECTION ── */
+#search-results-section { background: #f5f7f4; padding: 3rem 0 4rem; }
+#ajax-results { max-width: 1120px; margin: 0 auto; }
+#ajax-loading { background: #f5f7f4; margin-top: 2.5rem; }
 
-.btn-near-me-toggle.error {
-    background: rgba(239, 68, 68, 0.25);
-    border-color: rgba(239, 68, 68, 0.5);
-    animation: shake 0.5s ease-in-out;
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-5px); }
-    40%, 80% { transform: translateX(5px); }
-}
-
-/* Filtros en resultados Near Me - estilo dropdown */
-.filtros-nearme-results {
-    background: rgba(3, 30, 20, 0.6);
-    border-radius: 18px;
-    padding: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.filtros-nearme-results .btn-filtro-dropdown {
-    font-size: 0.85rem;
-    padding: 0.55rem 0.9rem;
-}
-
-.filtros-nearme-results .btn-filtro-dropdown.selected {
-    background: rgba(17, 153, 142, 0.35);
-    border-color: rgba(17, 153, 142, 0.6);
-}
-
-.filtros-nearme-results .dropdown-menu-filtros {
-    min-width: 220px;
-    max-height: 350px;
-    overflow-y: auto;
-}
-
-/* Near Me Section responsive */
-.near-me-section {
-    position: relative;
-    z-index: 1;
-}
-
-/* Mobile optimizations for Near Me */
-@media (max-width: 768px) {
-    .btn-near-me-toggle {
-        font-size: 0.9rem;
-        padding: 0.65rem 1.5rem;
-    }
-    
-    .filtros-nearme-results {
-        padding: 1rem;
-        border-radius: 14px;
-    }
-    
-    .filtros-nearme-results .row {
-        gap: 0.5rem !important;
-    }
-    
-    .filtros-nearme-results .col-6 {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-    
-    .filtros-nearme-results .btn-filtro-dropdown {
-        font-size: 0.85rem;
-        padding: 0.6rem 0.85rem;
-    }
-    
-    .nearby-actions {
-        padding: 0 1rem;
-    }
-    
-    .nearby-actions .btn {
-        font-size: 0.9rem;
-        padding: 0.65rem 1.25rem;
-    }
-}
-
-/* Smooth transitions for results */
-#ajax-results,
-#search-results-section {
-    transition: opacity 0.3s ease;
-}
-
-#ajax-loading {
-    transition: opacity 0.2s ease;
-}
-
-/* Grid de lugares con transiciones */
-.semantic-home-grid {
-    transition: opacity 0.25s ease;
-    min-height: 200px;
-}
-
-.semantic-home-grid.loading {
-    opacity: 0.4;
-    pointer-events: none;
-}
-
-/* Loading overlay para el grid */
-.grid-loading-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-}
-
+/* ── SEMANTIC WRAPPER (resultados ajax + slots LIST) ── */
 .semantic-home-wrapper {
-    position: relative;
+  background: #fff; border-radius: 24px; padding: 2rem 1.5rem 2.25rem;
+  border: 1px solid #e2ebe7; box-shadow: 0 18px 45px rgba(15,23,42,0.06);
 }
-
-/* Botón cerrar Near Me */
-.btn-close-nearme {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(0, 0, 0, 0.3);
-    color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    z-index: 10;
-    font-size: 1rem;
+.semantic-home-wrapper > .adsense-fixed-unit { padding: 0; margin: 0 0 1rem; }
+.semantic-home-grid.places-grid { display: flex; flex-direction: column; gap: 0.85rem; }
+.semantic-home-grid .adsense-fixed-unit.adsense-inline-list { margin: 0.25rem 0 0.5rem; }
+.semantic-home-header { color: #111827 !important; }
+.semantic-home-header .lead { color: #66736f !important; }
+.semantic-home-header .badge {
+  background: #f0fdfa !important;
+  color: #0f766e !important;
+  border: 1px solid #99f6e4;
+  font-weight: 600;
 }
+@media (min-width: 992px) { .semantic-home-wrapper { padding: 2.25rem 2rem 2.5rem; } }
+.semantic-home-title { font-size: 2rem; color: #111827; transition: opacity .2s; }
+.semantic-home-title.updating { opacity: .6; }
+.semantic-home-query { font-weight: 600; color: #11998e; }
+.semantic-home-grid { padding: .5rem 0; display: flex; flex-direction: column; gap: 1.25rem; min-height: 200px; transition: opacity .25s; }
+.semantic-home-grid.loading { opacity: .4; pointer-events: none; }
 
-.btn-close-nearme:hover {
-    background: rgba(239, 68, 68, 0.8);
-    border-color: rgba(239, 68, 68, 0.9);
-    color: white;
-    transform: scale(1.1);
-}
-
-@media (max-width: 768px) {
-    .btn-close-nearme {
-        top: 0.75rem;
-        right: 0.75rem;
-        width: 32px;
-        height: 32px;
-        font-size: 0.9rem;
-    }
-}
-
-/* Animación de entrada para cards */
-.lugar-card-wrapper {
-    animation: cardFadeIn 0.3s ease forwards;
-    opacity: 0;
-}
-
-@keyframes cardFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Stagger animation para cards */
-.lugar-card-wrapper:nth-child(1) { animation-delay: 0.05s; }
-.lugar-card-wrapper:nth-child(2) { animation-delay: 0.1s; }
-.lugar-card-wrapper:nth-child(3) { animation-delay: 0.15s; }
-.lugar-card-wrapper:nth-child(4) { animation-delay: 0.2s; }
-.lugar-card-wrapper:nth-child(5) { animation-delay: 0.25s; }
-.lugar-card-wrapper:nth-child(6) { animation-delay: 0.3s; }
-.lugar-card-wrapper:nth-child(7) { animation-delay: 0.35s; }
-.lugar-card-wrapper:nth-child(8) { animation-delay: 0.4s; }
-.lugar-card-wrapper:nth-child(9) { animation-delay: 0.45s; }
-.lugar-card-wrapper:nth-child(10) { animation-delay: 0.5s; }
-
-/* Título con transición */
-.semantic-home-title {
-    transition: opacity 0.2s ease;
-}
-
-.semantic-home-title.updating {
-    opacity: 0.6;
-}
-
-/* Mensaje de estado */
-.filtro-mensaje {
-    animation: fadeInUp 0.3s ease;
-}
-
-.mensaje-pill {
-    display: inline-flex;
-    align-items: center;
-    background: rgba(17, 153, 142, 0.25);
-    border: 1px solid rgba(17, 153, 142, 0.5);
-    color: #a7f3d0;
-    padding: 0.6rem 1.2rem;
-    border-radius: 999px;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.btn-limpiar {
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.7);
-    cursor: pointer;
-    padding: 0 0.25rem;
-    font-size: 1rem;
-    transition: all 0.2s;
-}
-
-.btn-limpiar:hover {
-    color: #ef4444;
-    transform: scale(1.2);
-}
-
-/* Área de resultados AJAX envuelta en sección separada */
-#search-results-section {
-    background:
-        radial-gradient(circle at top, rgba(17, 153, 142, 0.25) 0%, transparent 50%),
-        linear-gradient(135deg, #0a1628 0%, #0a3d32 35%, #0d5f4a 100%);
-    padding: 3rem 0 4rem;
-}
-
-#ajax-results {
-    max-width: 1120px;
-    margin: 0 auto;
-}
-
-#ajax-results .card:hover {
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
-}
-
-/* Loading spinner personalizado */
-#ajax-loading {
-    margin-top: 2.5rem;
-    position: static;   /* evitar solaparse con filtros */
-    z-index: auto;
-}
-
-#ajax-loading .spinner-border {
-    width: 3rem;
-    height: 3rem;
-    border-width: 0.3em;
-}
-
-/* Asegurar z-index controlado para dropdowns */
-.dropdown-menu.show {
-    z-index: 100 !important;
-}
-
-.dropdown {
-    position: relative !important;
-}
-
-/* Prevenir overflow de contenido detrás de dropdowns */
-.dropdown.show {
-    z-index: 100 !important;
-}
-
-/* === Resultados del home - estilos de cards === */
-.semantic-home-wrapper {
-    background: rgba(4, 20, 12, 0.8);
-    border-radius: 24px;
-    padding: 2rem 1.5rem 2.25rem;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 24px 55px rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-}
-
-@media (min-width: 992px) {
-    .semantic-home-wrapper { padding: 2.25rem 2rem 2.5rem; }
-}
-
-.semantic-home-title { font-size: 2rem; }
-.semantic-home-query { font-weight: 600; color: #a5f3fc; }
-.semantic-home-grid { padding: 0.5rem 0; display: flex; flex-direction: column; gap: 1.25rem; }
-.semantic-home-item { width: 100%; }
-
-/* Cards en resultados del home - títulos con gradiente */
+/* Cards en resultados del home */
 .semantic-home-wrapper .place-card__title,
 .lugares-grid .place-card__title {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
+  color: #11998e !important;
+  -webkit-text-fill-color: #11998e !important;
+  background: none !important;
 }
 
-/* Acciones de resultados cercanos */
+/* Grid de lugares */
+.lugares-grid { padding: .5rem 0; }
+@media (max-width: 767.98px) {
+  .lugares-grid { display: flex; flex-direction: column; gap: 1.25rem; padding-bottom: 1rem; margin: 0; }
+  .lugar-card-wrapper { width: 100%; }
+}
+@media (min-width: 768px) {
+  .lugares-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+}
+
+/* Card animations */
+.lugar-card-wrapper { animation: cardFadeIn .3s ease forwards; opacity: 0; }
+@keyframes cardFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.lugar-card-wrapper:nth-child(1) { animation-delay: .05s; }
+.lugar-card-wrapper:nth-child(2) { animation-delay: .1s; }
+.lugar-card-wrapper:nth-child(3) { animation-delay: .15s; }
+.lugar-card-wrapper:nth-child(4) { animation-delay: .2s; }
+.lugar-card-wrapper:nth-child(5) { animation-delay: .25s; }
+.lugar-card-wrapper:nth-child(6) { animation-delay: .3s; }
+
+/* Badge overlay */
+.badge-overlay { position: absolute; top: .5rem; right: .5rem; z-index: 10; }
+.badge-overlay .badge { background-color: rgba(13,110,253,.95) !important; backdrop-filter: blur(4px); box-shadow: 0 2px 8px rgba(0,0,0,.2); font-weight: 600; }
+
+/* ── NEAR ME / BÚSQUEDA BTN STATES ── */
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+.btn-cerca-mi.locating #ubicacion-icon { animation: spin 1s linear infinite; }
+
+.btn-near-me-toggle {
+  background: #11998e; color: #fff; font-size: 1rem; font-weight: 600;
+  padding: .75rem 1.75rem; border-radius: 999px; border: none;
+  transition: background .2s; box-shadow: 0 4px 15px rgba(17,153,142,.25);
+}
+.btn-near-me-toggle:hover { background: #0d8a7f; color: #fff; }
+.btn-near-me-toggle.locating { background: rgba(17,153,142,.55); pointer-events: none; }
+.btn-near-me-toggle.locating #ubicacion-icon { animation: spin 1s linear infinite; }
+.btn-near-me-toggle.active { background: #0d8a7f; }
+.btn-near-me-toggle.error { background: #dc2626; animation: shake .5s; }
+
+/* ── FILTROS NEAR ME ── */
+.filtros-nearme-results { background: #f8fbfa; border-radius: 14px; padding: 1rem; border: 1px solid #e4eeea; margin-top: 0.75rem; }
+.filtros-nearme-results .btn-filtro-dropdown { min-height: 50px; }
+.filtros-nearme-results .dropdown-menu-filtros { min-width: 220px; max-height: 320px; overflow-y: auto; }
+@media (max-width: 767px) {
+  .filtros-nearme-results .nearme-dropdowns-row > [class*="col-"] { flex: 0 0 100%; max-width: 100%; }
+}
+.semantic-home-wrapper { overflow: visible; position: relative; }
+.semantic-home-wrapper .nearme-filters-wrap { text-align: left; }
 .nearby-actions { max-width: 480px; margin-left: auto; margin-right: auto; }
 @media (max-width: 767.98px) { .nearby-actions .btn { width: 100%; } }
 
-/* Search Autocomplete Styling */
-
-/* Mobile Optimizations */
-@media (max-width: 768px) {
-    .hero-title {
-        font-size: clamp(2.3rem, 9.5vw, 3.4rem) !important;
-        line-height: 1.15;
-        margin-bottom: 1.5rem !important;
-    }
-    
-    .hero-title br {
-        display: inline;
-        content: ' ';
-    }
-    
-    .title-accent {
-        display: block;
-        margin-top: 0.25rem;
-    }
-    
-    .search-modern-clean .form-control {
-        font-size: 1rem;
-        padding: 0.875rem 1.25rem;
-    }
-    
-    .filtros-home {
-        padding: 1.5rem;
-        margin: 0 1rem;
-    }
-    
-    .btn-filtro-dropdown {
-        font-size: 0.9rem;
-        padding: 0.6rem 1.2rem;
-    }
-    
-    .dropdown-menu-filtros {
-        min-width: 280px;
-        max-width: 320px;
-        max-height: 300px;
-    }
-    
-    .dropdown-item-filtro {
-        padding: 0.6rem;
-        font-size: 0.9rem;
-    }
+/* ── DROPDOWN FILTROS ── */
+.dropdown-menu-filtros:not(.show) {
+  display: none !important;
 }
-
-/* ═══════════════════════════════════════════════════════════════
-   SMALL MOBILE OPTIMIZATIONS (iPhone 15/16/16e ~ 393px)
-   ═══════════════════════════════════════════════════════════════ */
-@media (max-width: 430px) {
-    /* Hero section ajustes */
-    .hero-section-clean {
-        padding-top: 34px;
-        padding-bottom: 40px;
-    }
-    
-    .hero-content {
-        padding: 1.25rem 1rem 1rem 1rem;
-        border-radius: 20px;
-        min-height: auto;
-    }
-    
-    /* Navegación superior compacta */
-    .home-lang-switch {
-        gap: 0.35rem !important;
-        margin-bottom: 0.75rem !important;
-    }
-    
-    .home-lang-switch .btn-lang-home {
-        padding: 0.35rem 0.65rem !important;
-        font-size: 0.75rem !important;
-        min-width: auto !important;
-    }
-    
-    /* Título más compacto */
-    .hero-title {
-        font-size: 2.05rem !important;
-        margin-bottom: 1rem !important;
-    }
-    
-    .title-accent {
-        font-size: 1.4rem;
-    }
-    
-    /* Barra de búsqueda */
-    .search-modern-clean {
-        margin-bottom: 0.75rem !important;
-    }
-    
-    .search-modern-clean .form-control {
-        font-size: 0.9rem;
-        padding: 0.7rem 1rem;
-    }
-    
-    .search-modern-clean .btn {
-        padding: 0.7rem 1rem;
-    }
-    
-    /* Filtros más compactos */
-    .filtros-home {
-        padding: 1rem 0.75rem;
-        margin: 0 0.5rem;
-        border-radius: 16px;
-    }
-    
-    .filtros-home .row.g-3 {
-        gap: 0.5rem !important;
-    }
-    
-    .filtros-home .col-lg-4,
-    .filtros-home .col-md-6 {
-        padding-left: 0.25rem;
-        padding-right: 0.25rem;
-    }
-    
-    .btn-filtro-dropdown {
-        font-size: 0.8rem !important;
-        padding: 0.5rem 0.75rem !important;
-        border-radius: 10px !important;
-    }
-    
-    .btn-filtro-dropdown i {
-        font-size: 0.9rem;
-        margin-right: 0.35rem !important;
-    }
-    
-    /* Dropdowns */
-    .dropdown-menu-filtros {
-        min-width: 260px;
-        max-width: 300px;
-        max-height: 280px;
-        font-size: 0.85rem;
-    }
-    
-    .dropdown-item-filtro {
-        padding: 0.5rem;
-        font-size: 0.85rem;
-    }
-    
-    .dropdown-header {
-        font-size: 0.8rem;
-        padding: 0.4rem 0.6rem 0.2rem;
-    }
-    
-    /* Botones principales */
-    .btn-near-me-toggle {
-        font-size: 0.85rem;
-        padding: 0.6rem 1.25rem;
-    }
-    
-    .btn-gradient-green.btn-lg {
-        font-size: 0.85rem !important;
-        padding: 0.6rem 1.25rem !important;
-    }
-    
-    /* Burbujas de áreas */
-    .areas-burbujas {
-        padding: 0.25rem 0;
-        gap: 0.3rem;
-    }
-    
-    .areas-group-label {
-        font-size: 0.7rem;
-        letter-spacing: 0.1em;
-    }
-    
-    .areas-group-bubbles {
-        gap: 0.35rem;
-    }
-    
-    .area-bubble {
-        padding: 0.25rem 0.65rem;
-        font-size: 0.75rem;
-        border-radius: 20px;
-    }
-    
-    .area-bubble .dot {
-        width: 6px;
-        height: 6px;
-    }
-    
-    /* Resultados AJAX */
-    .semantic-home-wrapper {
-        padding: 1.25rem 1rem;
-        border-radius: 18px;
-    }
-    
-    .semantic-home-title {
-        font-size: 1.4rem !important;
-    }
-    
-    .semantic-home-header .lead {
-        font-size: 0.9rem;
-    }
-    
-    /* Filtros en resultados Near Me */
-    .filtros-nearme-results {
-        padding: 0.75rem;
-        border-radius: 12px;
-    }
-    
-    .filtros-nearme-results .btn-filtro-dropdown {
-        font-size: 0.75rem !important;
-        padding: 0.45rem 0.6rem !important;
-    }
-    
-    /* Cards de lugares */
-    .lugar-card-wrapper,
-    .place-card-wrapper {
-        margin-bottom: 0.75rem;
-    }
+.dropdown-menu-filtros.show {
+  z-index: 1050 !important;
 }
+.filtros-nearme-results .dropdown { position: relative; }
+#etiquetasDropdown + .dropdown-menu-filtros { max-height: 280px; overflow-y: auto; overflow-x: hidden; }
+.dropdown-header { color: #495057; font-weight: 600; font-size: .9rem; padding: .5rem .75rem .25rem; margin-top: .5rem; }
+.dropdown-header:first-child { margin-top: 0; }
+.dropdown-menu.show { z-index: 100 !important; }
+.dropdown { position: relative !important; }
+.dropdown.show { z-index: 100 !important; }
 
-/* Extra small devices (iPhone SE, older phones ~ 375px) */
-@media (max-width: 375px) {
-    .hero-content {
-        padding: 1rem 0.75rem 0.75rem 0.75rem;
-    }
-    
-    .hero-title {
-        font-size: 1.9rem !important;
-    }
-    
-    .home-lang-switch .btn-lang-home {
-        padding: 0.3rem 0.5rem !important;
-        font-size: 0.7rem !important;
-    }
-    
-    .filtros-home {
-        padding: 0.75rem 0.5rem;
-        margin: 0;
-    }
-    
-    .btn-filtro-dropdown {
-        font-size: 0.75rem !important;
-        padding: 0.45rem 0.6rem !important;
-    }
-    
-    .btn-near-me-toggle,
-    .btn-gradient-green.btn-lg {
-        font-size: 0.8rem !important;
-        padding: 0.55rem 1rem !important;
-    }
-    
-    .area-bubble {
-        padding: 0.2rem 0.5rem;
-        font-size: 0.7rem;
-    }
-}
-
-/* Degradados para botones - Máxima especificidad */
-.btn.btn-gradient-purple, 
-a.btn.btn-gradient-purple,
-button.btn.btn-gradient-purple {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
-    border: none !important;
-    color: white !important;
-    font-weight: 600 !important;
-    transition: all 0.3s ease !important;
-    box-shadow: none !important;
-}
-
-.btn.btn-gradient-purple:hover, 
-a.btn.btn-gradient-purple:hover,
-button.btn.btn-gradient-purple:hover,
-.btn.btn-gradient-purple:focus,
-a.btn.btn-gradient-purple:focus {
-    background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4) !important;
-    color: white !important;
-    border: none !important;
-}
-
+/* ── BOTONES GLOBALES ── */
 .btn.btn-gradient-green,
 a.btn.btn-gradient-green,
 button.btn.btn-gradient-green {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
-    border: none !important;
-    color: white !important;
-    font-weight: 600 !important;
-    transition: all 0.3s ease !important;
-    box-shadow: none !important;
+  background: #11998e !important; border: none !important; color: #fff !important; font-weight: 600 !important;
+}
+.btn.btn-gradient-green:hover, a.btn.btn-gradient-green:hover { background: #0d8a7f !important; color: #fff !important; }
+.btn.btn-gradient-purple, a.btn.btn-gradient-purple { background: #11998e !important; border: none !important; color: #fff !important; font-weight: 600 !important; }
+.btn.btn-gradient-purple:hover { background: #0d8a7f !important; }
+
+/* Estado de botones de filtro */
+.btn-close-nearme {
+  position: absolute; top: 1rem; right: 1rem;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1.5px solid #e5e7eb; background: #fff; color: #6b7280;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .2s; z-index: 10; font-size: .9rem;
+}
+.btn-close-nearme:hover { background: #ef4444; border-color: #ef4444; color: #fff; transform: scale(1.1); }
+
+/* Mensaje filtro */
+.mensaje-pill {
+  display: inline-flex; align-items: center;
+  background: rgba(17,153,142,.1); border: 1px solid rgba(17,153,142,.3);
+  color: #11998e; padding: .6rem 1.2rem; border-radius: 999px; font-size: .9rem; font-weight: 500;
+}
+.btn-limpiar { background: transparent; border: none; color: #6b7280; cursor: pointer; padding: 0 .25rem; transition: all .2s; }
+.btn-limpiar:hover { color: #ef4444; transform: scale(1.2); }
+
+/* Transiciones AJAX */
+#ajax-results, #search-results-section { transition: opacity .3s ease; }
+#ajax-loading { transition: opacity .2s ease; }
+.filtro-mensaje { animation: fadeInUp .3s ease; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── RESPONSIVE DESKTOP GRANDE (> 1400px) ── */
+@media (min-width: 1400px) {
+  .hero-v3__content { max-width: 620px; }
+  .hero-v3__title { font-size: 4.4rem; }
 }
 
-.btn.btn-gradient-green:hover,
-a.btn.btn-gradient-green:hover,
-button.btn.btn-gradient-green:hover,
-.btn.btn-gradient-green:focus,
-a.btn.btn-gradient-green:focus {
-    background: linear-gradient(135deg, #0e8678 0%, #32d86a 100%) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4) !important;
-    color: white !important;
-    border: none !important;
+/* ── RESPONSIVE TABLET (768–1100px) ── */
+@media (max-width: 1100px) {
+  .hero-v3__body { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+  .hero-v3__content { max-width: 500px; }
+  .hero-v3__title { font-size: clamp(2.3rem, 4vw, 3.4rem); }
+  .guias-grid { grid-template-columns: repeat(3, 1fr); }
+  .zonas-img-grid { grid-template-columns: repeat(3, 1fr); }
 }
+@media (max-width: 991px) {
+  .intentions-grid { grid-template-columns: repeat(3, 1fr); }
+  .guias-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-v3__content { max-width: 420px; }
+  .hero-v3__title { font-size: clamp(2rem, 3.5vw, 2.8rem); }
+  .hero-v3__overlay {
+    background:
+      linear-gradient(to right,
+        rgba(245,247,244,.99) 0%,
+        rgba(245,247,244,.96) 32%,
+        rgba(245,247,244,.8) 50%,
+        rgba(245,247,244,.3) 68%,
+        transparent 85%);
+  }
+}
+
+/* ── RESPONSIVE MOBILE (< 768px) ── */
+@media (max-width: 767px) {
+  /* Hero: más bajo y imagen recortada (enfoque superior/centro) */
+  .hero-v3 {
+    min-height: 0;
+    height: clamp(300px, 46svh, 420px);
+    max-height: 420px;
+    align-items: center;
+  }
+  .hero-v3__bg {
+    overflow: hidden;
+  }
+  .hero-v3__bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 18%;
+    transform: scale(1.14);
+    transform-origin: center 22%;
+  }
+
+  /* Overlay uniforme para texto centrado */
+  .hero-v3__overlay {
+    background: linear-gradient(
+      180deg,
+      rgba(5, 20, 12, 0.38) 0%,
+      rgba(5, 20, 12, 0.58) 50%,
+      rgba(5, 20, 12, 0.72) 100%
+    ) !important;
+  }
+
+  /* Contenido centrado en el hero */
+  .hero-v3__body {
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    height: 100%;
+    max-height: none;
+    padding: 0.75rem 0;
+  }
+  .hero-v3__content {
+    max-width: 100%;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Texto blanco sobre imagen oscura */
+  .home-kicker-v3 {
+    font-size: .62rem;
+    color: rgba(255,255,255,.88) !important;
+    background: rgba(255,255,255,.12) !important;
+    border-color: rgba(255,255,255,.25) !important;
+    backdrop-filter: blur(6px);
+    margin-bottom: .5rem;
+  }
+  .hero-v3__title {
+    color: #fff !important;
+    font-size: clamp(1.75rem, 7vw, 2.35rem) !important;
+    text-shadow: 0 2px 16px rgba(0,0,0,.4);
+    margin-bottom: .5rem;
+    text-align: center;
+    max-width: 20rem;
+  }
+  .hero-v3__sub {
+    color: rgba(255,255,255,.84) !important;
+    font-size: .84rem;
+    line-height: 1.45;
+    margin-bottom: .8rem;
+    max-width: 19rem;
+    text-align: center;
+  }
+  /* Search bar mobile */
+  .hero-v3__search { margin-bottom: .65rem; }
+  .search-bar-v3 {
+    background: rgba(255,255,255,.96);
+    border-color: rgba(255,255,255,.5);
+    box-shadow: 0 4px 24px rgba(0,0,0,.3);
+  }
+  .search-bar-v3__input { padding: .7rem .6rem; font-size: .86rem; }
+  .search-bar-v3__btn { width: 40px; height: 40px; }
+
+  /* CTAs mobile: grandes y fáciles de tocar */
+  .hero-v3__ctas {
+    flex-direction: column;
+    gap: .65rem;
+    width: 100%;
+    max-width: min(100%, 22.5rem);
+    align-items: stretch;
+  }
+  .btn-hero-primary, .btn-cerca-mi {
+    width: 100% !important;
+    min-height: 3.25rem;
+    justify-content: center;
+    gap: .6rem !important;
+    background: #11998e !important;
+    box-shadow: 0 6px 22px rgba(17,153,142,.45) !important;
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    padding: 1rem 1.5rem !important;
+    border-radius: 14px !important;
+  }
+  .btn-hero-primary i, .btn-cerca-mi i {
+    font-size: 1.2rem;
+  }
+  .btn-hero-primary:hover, .btn-cerca-mi:hover { background: #0d8a7f !important; }
+  .btn-hero-secondary, .btn-explorar-zonas {
+    width: 100% !important;
+    min-height: 3.25rem;
+    justify-content: center;
+    gap: .6rem !important;
+    background: #fff !important;
+    color: #11998e !important;
+    border: 2px solid #fff !important;
+    box-shadow: 0 4px 18px rgba(0,0,0,.18) !important;
+    border-radius: 14px !important;
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    padding: 1rem 1.5rem !important;
+  }
+  .btn-hero-secondary i, .btn-explorar-zonas i {
+    font-size: 1.2rem;
+  }
+  .btn-hero-secondary:hover, .btn-explorar-zonas:hover {
+    background: #f0fdfa !important;
+    color: #0d8a7f !important;
+    border-color: #fff !important;
+  }
+
+  /* Chips intención: scroll horizontal como mockup */
+  .intentions-section .container { padding-left: 0; padding-right: 0; }
+  .intentions-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.55rem;
+    padding: 0 1rem 0.4rem;
+    grid-template-columns: unset;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+  .intention-chip {
+    flex: 0 0 auto;
+    min-width: 76px;
+    scroll-snap-align: start;
+    padding: 0.72rem 0.45rem;
+    border-color: #e4eeea;
+  }
+  .intention-chip__icon { width: 38px; height: 38px; font-size: 1.05rem; border-radius: 11px; }
+  .intention-chip__label { font-size: 0.68rem; }
+
+  /* Zonas pills: scroll horizontal */
+  .zonas-pills-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.35rem;
+    -webkit-overflow-scrolling: touch;
+    margin-right: -0.25rem;
+  }
+  .zona-pill { flex-shrink: 0; }
+  .zonas-img-section { display: none; }
+  .advanced-filters-home { display: none; }
+
+  /* Zonas imagen: compactas para no competir con imperdibles */
+  .zonas-img-section { padding: 1.15rem 0 1.35rem; }
+  .zonas-img-section .section-row-v2 { margin-bottom: .75rem !important; }
+  .zonas-img-grid { grid-template-columns: repeat(2, 1fr); gap: .5rem; }
+  .zona-img-card { border-radius: 11px; aspect-ratio: 1.35/1; }
+  .zona-img-card__text { padding: .48rem .5rem; }
+  .zona-img-card__name { font-size: .66rem; }
+  .zona-img-card__arrow { display: none; }
+  /* Imperdibles mobile */
+  .imperdibles-scroll { gap: .7rem; padding-bottom: 1rem; }
+  .imp-card { flex: 0 0 170px; }
+
+  /* Secciones */
+  .section-row-v2__title { font-size: 1.08rem; }
+  .imperdibles-section { padding: 1.75rem 0; }
+  .zonas-pills-section { padding: 1rem 0 1.25rem; }
+
+  /* Filtros */
+  #etiquetasDropdown + .dropdown-menu-filtros { max-height: 250px; }
+  .dropdown-menu-filtros { min-width: 280px; max-width: 320px; max-height: 300px; }
+  .filtros-nearme-results .col-6 { flex: 0 0 100%; max-width: 100%; }
+}
+
+/* ── EXTRA SMALL (< 430px, iPhone SE/15/16) ── */
+@media (max-width: 430px) {
+  .hero-v3__title { font-size: clamp(1.65rem, 7.6vw, 2.15rem) !important; }
+  .imp-card { flex: 0 0 155px; }
+  .intentions-grid { gap: .4rem; }
+  .zonas-img-grid { gap: .4rem; }
+  .zona-img-card__name { font-size: .62rem; }
+  .dropdown-menu-filtros { min-width: 260px; max-width: 300px; }
+}
+
 </style>
 {% endblock %}
 
@@ -1404,6 +1057,46 @@ const CURRENT_LANG = CURRENT_LANG_RAW.slice(0, 2); // 'es' | 'en'
 const gettext = (window.gettext) ? window.gettext : (s => s);
 // Fallbacks para pluralización/interpolación si por algún motivo jsi18n no cargó (evita que el JS se rompa en EN)
 const ngettext = (window.ngettext) ? window.ngettext : ((singular, plural, count) => (Number(count) === 1 ? singular : plural));
+// Slots AdSense (mismos puntos que places_list: top móvil, mid desktop, bottom)
+const ADS = {
+    client: '{{ settings.ADSENSE_CLIENT|default:"" }}',
+    home: '{{ settings.ADSENSE_SLOT_HOME|default:"" }}',
+    list: '{{ settings.ADSENSE_SLOT_LIST|default:"" }}',
+    listMobile: '{{ settings.ADSENSE_SLOT_LIST_MOBILE|default:settings.ADSENSE_SLOT_LIST|default:"" }}'
+};
+const ADS_LABEL = '{% trans "Publicidad" %}';
+
+function renderAdBlock(slot, placement, unitKey, extraClass = '') {
+    if (!ADS.client || !slot) return '';
+    const id = `ads-fixed-${placement}-${slot}-${unitKey}`;
+    return `
+        <div class="adsense-fixed-unit my-4 ${extraClass}" data-nosnippet data-ad-layout="-exclude">
+            <div class="adsense-fixed-label text-center mb-2">${ADS_LABEL}</div>
+            <ins class="adsbygoogle adsense-manual"
+                 id="${id}"
+                 style="display:block"
+                 data-ad-client="${ADS.client}"
+                 data-ad-slot="${slot}"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+        </div>
+    `;
+}
+
+function hydrateAds($scope) {
+    ($scope || $(document)).find('ins.adsbygoogle.adsense-manual').each(function () {
+        if (this.dataset.adsInit === '1') return;
+        this.dataset.adsInit = '1';
+        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+        setTimeout(() => {
+            if (this.getAttribute('data-ad-status') === 'unfilled') {
+                const wrapper = this.closest('.adsense-fixed-unit');
+                if (wrapper) wrapper.style.display = 'none';
+            }
+        }, 1800);
+    });
+}
+
 const interpolate = (window.interpolate) ? window.interpolate : ((fmt, obj) => {
     try {
         // Regex para %(key)s - construido sin backslashes problemáticos en templates
@@ -1505,14 +1198,13 @@ function generarPlaceCardHtml(lugar, opciones = {}) {
         ? `<div class="place-card__address"><i class="bi bi-map"></i><span>${direccion}</span></div>` 
         : '';
     
-    // CTA
-    const ctaHtml = lugar.slug 
-        ? `<a href="${url}" class="place-card__cta"><i class="bi bi-eye"></i>${T.viewDetails}</a>` 
+    const arrowHtml = lugar.slug
+        ? `<div class="place-card__arrow" aria-hidden="true"><i class="bi bi-arrow-right-circle-fill"></i></div>`
         : '';
-    
+
     return `
         <div class="place-card-wrapper">
-            <article class="place-card place-card--horizontal">
+            <a href="${url}" class="place-card place-card--link place-card--horizontal" title="${imgAlt}">
                 <div class="place-card__media">
                     ${imagenHtml}
                     ${ratingHtml}
@@ -1523,9 +1215,9 @@ function generarPlaceCardHtml(lugar, opciones = {}) {
                     <div class="place-card__badges">${badgesHtml}</div>
                     ${precioHtml}
                     ${direccionHtml}
-                    ${ctaHtml}
+                    ${arrowHtml}
                 </div>
-            </article>
+            </a>
         </div>`;
 }
 
@@ -1622,34 +1314,36 @@ $(document).ready(function() {
         $btn.find('span').text(expanded ? '{% trans "Ver menos" %}' : '{% trans "Ver más" %}');
     });
     
-    // Cerrar dropdowns al hacer scroll (sin romper futuros clics)
+    function closeAllHomeDropdowns() {
+        document.querySelectorAll('.dropdown-menu-filtros, .dropdown-menu').forEach(menu => {
+            menu.classList.remove('show');
+            menu.removeAttribute('data-bs-popper');
+            menu.removeAttribute('data-popper-placement');
+            menu.style.cssText = '';
+        });
+        document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
+            btn.classList.remove('show');
+            btn.setAttribute('aria-expanded', 'false');
+            if (window.bootstrap && window.bootstrap.Dropdown) {
+                const inst = window.bootstrap.Dropdown.getInstance(btn);
+                if (inst) inst.hide();
+            }
+        });
+        document.querySelectorAll('.dropdown.show').forEach(el => el.classList.remove('show'));
+    }
+
+    function initHomeDropdowns(scope) {
+        const root = scope || document;
+        if (!window.bootstrap || !window.bootstrap.Dropdown) return;
+        root.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
+            const existing = window.bootstrap.Dropdown.getInstance(btn);
+            if (existing) existing.dispose();
+            new window.bootstrap.Dropdown(btn, { autoClose: 'outside' });
+        });
+    }
+
     $(window).on('scroll', function() {
-        $('.dropdown-menu.show').removeClass('show').css('display', '');
-        $('.dropdown.show').removeClass('show');
-        $('[data-bs-toggle="dropdown"][aria-expanded="true"]').attr('aria-expanded', 'false');
-    });
-    
-    // Configurar dropdowns para que siempre se abran hacia abajo
-    document.addEventListener('show.bs.dropdown', function(event) {
-        // Forzar posición hacia abajo
-        const dropdown = event.target;
-        const menu = dropdown.nextElementSibling;
-        
-        if (menu && menu.classList.contains('dropdown-menu-filtros')) {
-            // Configurar Popper.js para forzar posición bottom
-            menu.setAttribute('data-bs-popper', 'static');
-            
-            // Aplicar estilos directamente para forzar posición
-            setTimeout(() => {
-                menu.style.position = 'absolute';
-                menu.style.top = '100%';
-                menu.style.bottom = 'auto';
-                menu.style.left = '0';
-                menu.style.right = 'auto';
-                menu.style.transform = 'none';
-                menu.style.inset = 'auto';
-            }, 10);
-        }
+        if ($('.dropdown-menu-filtros.show').length) closeAllHomeDropdowns();
     });
     
     // Función para actualizar estado de filtros
@@ -1896,18 +1590,7 @@ $(document).ready(function() {
     // Función para renderizar resultados
     function renderizarResultados(data) {
         // Cerrar TODOS los dropdowns de forma agresiva (pero sin dejar inline display:none)
-        $('.dropdown-menu-filtros').removeClass('show').css('display', '');
-        $('.dropdown-menu').removeClass('show').css('display', '');
-        $('.dropdown').removeClass('show');
-        $('[data-bs-toggle="dropdown"]').attr('aria-expanded', 'false').removeClass('show');
-        
-        // Forzar cierre con Bootstrap API (si existe; bootstrap bundle carga con defer)
-        if (window.bootstrap && window.bootstrap.Dropdown) {
-            document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
-                const dropdown = window.bootstrap.Dropdown.getInstance(btn);
-                if (dropdown) dropdown.hide();
-            });
-        }
+        closeAllHomeDropdowns();
         
         // Mensaje de resultados: usar ngettext si está disponible, si no, fallback simple (ES)
         let msgResultados;
@@ -1928,39 +1611,33 @@ $(document).ready(function() {
 
         let html = `
             <div class="semantic-home-wrapper">
-                <div class="semantic-home-header text-center mb-4 text-white">
+                <div class="semantic-home-header text-center mb-4">
                     <h2 class="fw-bold semantic-home-title">{% trans "Resultados de tu Búsqueda" %}</h2>
                     <p class="lead mb-0">${msgResultados}</p>
                     <div class="mt-3">
-                        <span class="badge bg-primary bg-opacity-20 text-white fs-6 px-3 py-2 me-2">
-                            📍 ${filtrosSeleccionados.area.name}
-                        </span>
-                        <span class="badge bg-primary bg-opacity-20 text-white fs-6 px-3 py-2 me-2">
-                            🏢 ${filtrosSeleccionados.categoria.name}
-                        </span>
-                        ${filtrosSeleccionados.caracteristica ? 
-                            `<span class="badge bg-primary bg-opacity-20 text-white fs-6 px-3 py-2">
-                                ⭐ ${filtrosSeleccionados.caracteristica.name}
-                            </span>` : 
-                            `<span class="badge bg-secondary bg-opacity-20 text-white fs-6 px-3 py-2">${gettext('Sin filtro especial')}</span>`
+                        <span class="badge fs-6 px-3 py-2 me-2 mb-1">📍 ${filtrosSeleccionados.area.name}</span>
+                        <span class="badge fs-6 px-3 py-2 me-2 mb-1">🏢 ${filtrosSeleccionados.categoria.name}</span>
+                        ${filtrosSeleccionados.caracteristica ?
+                            `<span class="badge fs-6 px-3 py-2 mb-1">⭐ ${filtrosSeleccionados.caracteristica.name}</span>` :
+                            `<span class="badge fs-6 px-3 py-2 mb-1">${gettext('Sin filtro especial')}</span>`
                         }
                     </div>
                 </div>
-                
-                <div class="semantic-home-grid lugares-grid">
         `;
-        
-        // Usar función estandarizada para generar cards
-        data.lugares.forEach(lugar => {
+        html += renderAdBlock(ADS.listMobile, 'home_filter_top', 'top', '');
+        html += `<div class="semantic-home-grid places-grid">`;
+        data.lugares.forEach((lugar, i) => {
             html += generarPlaceCardHtml(lugar);
+            if (i === 7) {
+                html += renderAdBlock(ADS.list, 'home_filter_mid', 'mid', 'adsense-desktop-only adsense-inline-list');
+            }
         });
-        
+        html += `</div>`;
+        html += renderAdBlock(ADS.list, 'home_filter_bottom', 'bottom', '');
         html += `
-                </div>
-                
-                <div class="text-center mt-5">
-                    <a href="${generarUrlCompleta(data)}" 
-                       class="btn btn-outline-light btn-lg rounded-pill px-4">
+                <div class="text-center mt-4">
+                    <a href="${generarUrlCompleta(data)}"
+                       class="btn btn-gradient-green btn-lg rounded-pill px-4">
                         <i class="bi bi-arrow-right me-2"></i>{% trans "Ver Todos los Resultados" %}
                     </a>
                 </div>
@@ -1968,6 +1645,7 @@ $(document).ready(function() {
         `;
         
         $('#ajax-results').html(html).show();
+        hydrateAds($('#ajax-results'));
         $('#search-results-section').show();
         
         // Scroll suave a los resultados
@@ -2041,7 +1719,7 @@ $(document).ready(function() {
     };
     
     // Textos
-    const T_NEAR_ME = '{% trans "Cerca de Mí" %}';
+    const T_NEAR_ME = '{% trans "Buscar cerca de mí" %}';
     const T_LOCATING = '{% trans "Localizando..." %}';
     const T_ACTIVE = '{% trans "GPS Activo" %}';
     
@@ -2130,8 +1808,9 @@ $(document).ready(function() {
         $('#search-results-section').fadeOut(200);
         
         // Scroll suave de vuelta al hero
+        const topbarH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--site-topbar-h'), 10) || 64;
         $('html, body').animate({
-            scrollTop: $('.hero-section-clean').offset().top
+            scrollTop: Math.max(0, ($('.hero-v3').offset()?.top || 0) - topbarH)
         }, 400);
     }
     
@@ -2246,18 +1925,7 @@ $(document).ready(function() {
     
     function renderizarResultadosCercanos(data) {
         // Cerrar TODOS los dropdowns de forma agresiva (pero sin forzar display:none permanente)
-        $('.dropdown-menu-filtros').removeClass('show').css('display', '');
-        $('.dropdown-menu').removeClass('show').css('display', '');
-        $('.dropdown').removeClass('show');
-        $('[data-bs-toggle="dropdown"]').attr('aria-expanded', 'false').removeClass('show');
-        
-        // Forzar cierre con Bootstrap API (si existe; bootstrap bundle carga con defer)
-        if (window.bootstrap && window.bootstrap.Dropdown) {
-            document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
-                const dropdown = window.bootstrap.Dropdown.getInstance(btn);
-                if (dropdown) dropdown.hide();
-            });
-        }
+        closeAllHomeDropdowns();
         
         // Textos traducidos inyectados desde servidor
         const T_VIEW_DETAILS = '{% trans "Ver detalles" %}';
@@ -2310,12 +1978,12 @@ $(document).ready(function() {
         // Construir badges con datos reales
         const filtrosActivos = [];
         if (tipoLabelReal) {
-            filtrosActivos.push(`<span class="badge bg-success bg-opacity-25 text-white me-1"><i class="bi bi-check2 me-1"></i>${tipoLabelReal}</span>`);
+            filtrosActivos.push(`<span class="badge me-1"><i class="bi bi-check2 me-1"></i>${tipoLabelReal}</span>`);
         }
         if (featureLabelReal) {
-            filtrosActivos.push(`<span class="badge bg-info bg-opacity-25 text-white me-1"><i class="bi bi-check2 me-1"></i>${featureLabelReal}</span>`);
+            filtrosActivos.push(`<span class="badge me-1"><i class="bi bi-check2 me-1"></i>${featureLabelReal}</span>`);
         }
-        filtrosActivos.push(`<span class="badge bg-warning bg-opacity-25 text-white"><i class="bi bi-geo-alt me-1"></i>${radioDisplay}</span>`);
+        filtrosActivos.push(`<span class="badge"><i class="bi bi-geo-alt me-1"></i>${radioDisplay}</span>`);
         
         const filtrosHtml = `<div class="mt-2">${filtrosActivos.join('')}</div>`;
         
@@ -2330,20 +1998,17 @@ $(document).ready(function() {
                     <i class="bi bi-x-lg"></i>
                 </button>
                 
-                <div class="semantic-home-header text-center mb-4 text-white">
+                <div class="semantic-home-header text-center mb-3">
                     <h2 class="fw-bold semantic-home-title">${titulo}</h2>
                     <p class="lead mb-0">${subtitulo}</p>
                     ${filtrosHtml}
-                    
-                    <!-- Filtros completos -->
-                    <div class="filtros-nearme-results mt-4">
-                        <div class="row g-2 justify-content-center">
-                            
-                            <!-- Dropdown: Tipo (COMPLETO) -->
-                            <div class="col-lg-3 col-md-4 col-6">
+                    <div class="nearme-filters-wrap mt-3">
+                    <div class="filtros-nearme-results">
+                        <div class="row g-2 justify-content-center nearme-dropdowns-row">
+                            <div class="col-lg-3 col-md-4 col-12">
                                 <div class="dropdown">
                                     <button class="btn btn-filtro-dropdown w-100 dropdown-toggle ${tipoNearMe ? 'selected' : ''}" type="button"
-                                            id="tipoNearMeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            id="tipoNearMeDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
                                         <i class="bi bi-grid-3x3-gap me-2"></i>
                                         <span>${tipoSelectedLabel}</span>
                                     </button>
@@ -2417,10 +2082,10 @@ $(document).ready(function() {
                             </div>
                             
                             <!-- Dropdown: Características (COMPLETO) -->
-                            <div class="col-lg-3 col-md-4 col-6">
+                            <div class="col-lg-3 col-md-4 col-12">
                                 <div class="dropdown">
                                     <button class="btn btn-filtro-dropdown w-100 dropdown-toggle ${featureNearMe ? 'selected' : ''}" type="button"
-                                            id="featureNearMeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            id="featureNearMeDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
                                         <i class="bi bi-stars me-2"></i>
                                         <span>${featureSelectedLabel}</span>
                                     </button>
@@ -2497,10 +2162,10 @@ $(document).ready(function() {
                             </div>
                             
                             <!-- Dropdown: Distancia -->
-                            <div class="col-lg-3 col-md-4 col-6">
+                            <div class="col-lg-3 col-md-4 col-12">
                                 <div class="dropdown">
                                     <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button"
-                                            id="distanceNearMeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            id="distanceNearMeDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
                                         <i class="bi bi-rulers me-2"></i>
                                         <span id="distance-label-result">${radioDisplay}</span>
                                     </button>
@@ -2523,24 +2188,24 @@ $(document).ready(function() {
                                     </ul>
                                 </div>
                             </div>
-                            
                         </div>
                     </div>
                 </div>
                 
-                <div class="semantic-home-grid lugares-grid">
         `;
-        
-        // Usar función estandarizada para generar cards
-        data.lugares.forEach(lugar => {
+        html += renderAdBlock(ADS.listMobile, 'home_nearme_top', 'top', '');
+        html += `<div class="semantic-home-grid places-grid">`;
+        data.lugares.forEach((lugar, i) => {
             html += generarPlaceCardHtml(lugar);
+            if (i === 7) {
+                html += renderAdBlock(ADS.list, 'home_nearme_mid', 'mid', 'adsense-desktop-only adsense-inline-list');
+            }
         });
-        
+        html += `</div>`;
+        html += renderAdBlock(ADS.list, 'home_nearme_bottom', 'bottom', '');
         html += `
-                </div>
-                
                 <div class="nearby-actions mt-4 d-flex flex-wrap justify-content-center gap-2">
-                    <button class="btn btn-outline-light rounded-pill px-3" onclick="window.activarNearMe()">
+                    <button class="btn btn-outline-secondary rounded-pill px-3" onclick="window.activarNearMe()">
                         <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Actualizar Ubicación" %}
                     </button>
                     <a href="{% url 'explorer:lugares_list' %}" class="btn btn-gradient-green rounded-pill px-3">
@@ -2571,21 +2236,28 @@ $(document).ready(function() {
             $('#tipoNearMeDropdown').toggleClass('selected', !!tipoLabelReal);
             $('#featureNearMeDropdown').toggleClass('selected', !!featureLabelReal);
         
-            // Generar solo el grid
             let gridHtml = '';
             data.lugares.forEach((lugar, index) => {
-                gridHtml += generarCardHtml(lugar, T_VIEW_DETAILS, T_NO_DETAILS, T_FEATURED, T_EXCLUSIVE, T_TOP_RATED);
+                gridHtml += generarCardHtml(lugar);
+                if (index === 7) {
+                    gridHtml += renderAdBlock(ADS.list, 'home_nearme_mid', 'mid', 'adsense-desktop-only adsense-inline-list');
+                }
             });
-            
-            // Actualizar grid con transición
             const $grid = $('.semantic-home-grid');
             $grid.removeClass('loading');
             $grid.fadeOut(150, function() {
-                $(this).html(gridHtml).fadeIn(200);
+                $(this).html(gridHtml).fadeIn(200, function() { hydrateAds($grid); });
             });
         } else {
             // Primera vez: renderizar todo
-            $container.html(html).hide().fadeIn(300);
+            closeAllHomeDropdowns();
+            $container.html(html);
+            closeAllHomeDropdowns();
+            initHomeDropdowns($container[0]);
+            $container.hide().fadeIn(300, function() {
+                closeAllHomeDropdowns();
+                hydrateAds($container);
+            });
             $('#search-results-section').fadeIn(300);
             nearMeResultsVisible = true;
             
@@ -2599,18 +2271,27 @@ $(document).ready(function() {
         $(document).off('click', '.tipo-nearme-option').on('click', '.tipo-nearme-option', function(e) {
             e.preventDefault();
             tipoNearMe = $(this).data('tipo') || null;
+            const label = $(this).text().trim() || '{% trans "Tipo" %}';
+            $('#tipoNearMeDropdown span').first().text(label);
+            $('#tipoNearMeDropdown').toggleClass('selected', !!tipoNearMe);
+            closeAllHomeDropdowns();
             buscarLugaresCercanos(true);
         });
         
         $(document).off('click', '.feature-nearme-option').on('click', '.feature-nearme-option', function(e) {
             e.preventDefault();
             featureNearMe = $(this).data('feature') || null;
+            const label = $(this).text().trim() || '{% trans "Características" %}';
+            $('#featureNearMeDropdown span').first().text(label);
+            $('#featureNearMeDropdown').toggleClass('selected', !!featureNearMe);
+            closeAllHomeDropdowns();
             buscarLugaresCercanos(true);
         });
         
         $(document).off('click', '.distance-nearme-option').on('click', '.distance-nearme-option', function(e) {
             e.preventDefault();
-            radioDistancia = parseInt($(this).data('distance'));
+            radioDistancia = parseInt($(this).data('distance'), 10);
+            closeAllHomeDropdowns();
             buscarLugaresCercanos(true);
         });
     }
@@ -2623,42 +2304,31 @@ $(document).ready(function() {
 
     function renderizarResultadosSemanticos(data) {
         // Cerrar TODOS los dropdowns de forma agresiva (sin bloquear futuros clics)
-        $('.dropdown-menu-filtros').removeClass('show').css('display', '');
-        $('.dropdown-menu').removeClass('show').css('display', '');
-        $('.dropdown').removeClass('show');
-        $('[data-bs-toggle="dropdown"]').attr('aria-expanded', 'false').removeClass('show');
-        
-        // Forzar cierre con Bootstrap API (si existe; bootstrap bundle carga con defer)
-        if (window.bootstrap && window.bootstrap.Dropdown) {
-            document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
-                const dropdown = window.bootstrap.Dropdown.getInstance(btn);
-                if (dropdown) dropdown.hide();
-            });
-        }
+        closeAllHomeDropdowns();
         
         const T_VIEW_DETAILS = '{% trans "Ver detalles" %}';
         const T_NO_DETAILS = '{% trans "Sin detalles" %}';
         
         let html = `
             <div class="semantic-home-wrapper">
-                <div class="semantic-home-header text-center mb-4 text-white">
+                <div class="semantic-home-header text-center mb-4">
                     <h2 class="fw-bold semantic-home-title">${gettext('Resultados Semánticos')}</h2>
                     <p class="lead mb-0">${gettext('Consulta')}: <span class="semantic-home-query">“${data.query || ''}”</span></p>
                 </div>
-                <div class="semantic-home-grid lugares-grid">
         `;
-        
-        // Usar función estandarizada para generar cards
-        (data.lugares || []).forEach(lugar => {
+        html += renderAdBlock(ADS.listMobile, 'home_semantic_top', 'top', '');
+        html += `<div class="semantic-home-grid places-grid">`;
+        (data.lugares || []).forEach((lugar, i) => {
             html += generarPlaceCardHtml(lugar);
+            if (i === 7) {
+                html += renderAdBlock(ADS.list, 'home_semantic_mid', 'mid', 'adsense-desktop-only adsense-inline-list');
+            }
         });
-        
-        html += `
-                </div>
-            </div>
-        `;
+        html += `</div>`;
+        html += renderAdBlock(ADS.list, 'home_semantic_bottom', 'bottom', '');
         
         $('#ajax-results').html(html).show();
+        hydrateAds($('#ajax-results'));
         $('#search-results-section').show();
         $('html, body').animate({ scrollTop: $('#ajax-results').offset().top - 100 }, 800);
     }
