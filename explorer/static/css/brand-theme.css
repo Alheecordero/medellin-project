@@ -1,0 +1,209 @@
+/**
+ * ViveMedellín — Tema de marca unificado (Next.js)
+ * Teal #11998e + verde fluorescente #38ef7d en todo el frontend
+ */
+
+/* ── Botones y CTAs primarios ── */
+.search-bar-v3__btn,
+.btn-cerca-mi,
+.btn-near-me-toggle,
+.site-footer__cta,
+.site-topbar__search-submit,
+.scroll-to-top,
+.btn.btn-gradient-green,
+.btn.btn-gradient-green:hover,
+a.btn.btn-gradient-green,
+button.btn.btn-gradient-green,
+.btn.btn-gradient-purple,
+a.btn.btn-gradient-purple,
+.advanced-filters-home[open] summary,
+.site-lang-switcher__btn.active {
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-accent-sm);
+}
+
+.search-bar-v3__btn:hover,
+.btn-cerca-mi:hover,
+.btn-near-me-toggle:hover,
+.site-footer__cta:hover,
+.site-topbar__search-submit:hover,
+.scroll-to-top:hover,
+.btn.btn-gradient-green:hover,
+a.btn.btn-gradient-green:hover,
+button.btn.btn-gradient-green:hover,
+.btn.btn-gradient-purple:hover {
+  background: var(--gradient-primary-hover);
+  box-shadow: var(--shadow-accent-md);
+}
+
+.btn-hero-primary,
+.btn-hero-primary:hover {
+  background: var(--gradient-primary);
+}
+
+.btn-hero-primary:hover {
+  background: var(--gradient-primary-hover);
+}
+
+.btn-hero-secondary:hover,
+.btn-explorar-zonas:hover {
+  background: var(--gradient-primary);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+/* ── Hovers interactivos → fluorescente ── */
+.intention-chip:hover,
+.zona-pill:hover,
+.advanced-filters-home summary:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.intention-chip:hover .intention-chip__icon {
+  background: var(--gradient-primary);
+  color: #fff;
+}
+
+.zona-pill--all {
+  border-color: var(--accent-30);
+  color: var(--color-primary);
+}
+
+.btn-filtro-dropdown i {
+  color: var(--color-accent);
+}
+
+.btn-filtro-dropdown:hover,
+.btn-filtro-dropdown:focus,
+.btn-filtro-dropdown.show,
+.btn-filtro-dropdown[aria-expanded="true"],
+.btn-filtro-dropdown.selected {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-20) !important;
+}
+
+/* ── Enlaces y texto de marca ── */
+.section-row-v2__link {
+  color: var(--color-primary);
+}
+
+.semantic-home-query,
+.site-footer__col-title,
+.site-footer__link-more,
+.site-footer__brand-text strong,
+.site-topbar__brand strong {
+  color: var(--color-accent);
+}
+
+.section-row-v2__link:hover,
+.site-footer__links a:hover,
+.site-footer__email:hover,
+.site-footer__legal a:hover,
+.site-topbar__link:hover,
+.site-topbar__link.active,
+.site-topbar__mobile-link:hover,
+.site-topbar__mobile-link.active,
+.site-topbar__search-toggle:hover,
+.site-topbar__search-toggle.open,
+.site-lang-switcher__btn:hover {
+  color: var(--color-accent);
+}
+
+.site-topbar__link:hover,
+.site-topbar__link.active,
+.site-topbar__mobile-link:hover,
+.site-topbar__mobile-link.active,
+.site-topbar__burger:hover {
+  background: var(--accent-10);
+}
+
+.site-topbar__burger:hover {
+  border-color: var(--color-accent);
+}
+
+/* ── Focus visible ── */
+.search-bar-v3:focus-within,
+.site-topbar__search:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px var(--accent-20), 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.site-footer__links a:focus-visible,
+.site-footer__cta:focus-visible,
+.site-footer__email:focus-visible,
+.site-footer__legal a:focus-visible,
+.scroll-to-top:focus-visible,
+.place-card--link:focus-visible {
+  outline-color: var(--color-accent);
+}
+
+.place-card:hover,
+.place-card--link:hover {
+  border-color: var(--accent-40);
+  box-shadow: var(--shadow-card-hover), var(--shadow-accent-sm);
+}
+
+.imp-card:hover {
+  border-color: var(--color-accent);
+}
+
+/* ── Iconos y acentos ── */
+.intention-chip__icon,
+.site-footer__mark,
+.site-footer__location i {
+  color: var(--color-accent);
+}
+
+.site-footer__mark {
+  background: linear-gradient(135deg, var(--accent-10) 0%, var(--primary-10) 100%);
+  border-color: var(--accent-30);
+}
+
+/* ── Bootstrap / utilidades globales ── */
+.btn-gradient,
+.btn-primary-gradient,
+.navbar-nav .btn-primary,
+.text-gradient {
+  background: var(--gradient-primary);
+}
+
+.btn-gradient:hover,
+.btn-primary-gradient:hover {
+  background: var(--gradient-primary-hover);
+}
+
+.btn-outline-primary {
+  border-color: var(--color-accent);
+  color: var(--color-primary);
+}
+
+.btn-outline-primary:hover {
+  background: var(--gradient-primary);
+  border-color: var(--color-accent);
+}
+
+/* ── Mobile: mantener gradiente en CTAs ── */
+@media (max-width: 767px) {
+  .btn-hero-primary,
+  .btn-cerca-mi {
+    background: var(--gradient-primary) !important;
+    box-shadow: var(--shadow-accent-md) !important;
+  }
+
+  .btn-hero-primary:hover,
+  .btn-cerca-mi:hover {
+    background: var(--gradient-primary-hover) !important;
+  }
+
+  .btn-hero-secondary,
+  .btn-explorar-zonas {
+    color: var(--color-primary) !important;
+  }
+
+  .btn-hero-secondary:hover,
+  .btn-explorar-zonas:hover {
+    color: var(--color-accent) !important;
+    background: var(--accent-10) !important;
+  }
+}

@@ -34,6 +34,15 @@
         </div>
       {% endif %}
 
+      <div class="place-card__media-overlay" aria-hidden="true"></div>
+
+      {% if lugar.comuna %}
+        <div class="place-card__zone-glass">
+          <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+          <span>{{ lugar.comuna.name }}</span>
+        </div>
+      {% endif %}
+
       {# Rating Badge #}
       {% if lugar.rating %}
         <div class="place-card__rating">
@@ -102,9 +111,11 @@
         </div>
       {% endif %}
 
-      {# Arrow indicator en vez de botón #}
-      <div class="place-card__arrow">
-        <i class="bi bi-arrow-right-circle-fill"></i>
+      {# CTA al pie (estilo MenuRadar, colores ViveMedellín) #}
+      <div class="place-card__footer">
+        <span class="place-card__cta-pill">
+          {% trans "Ver detalle" %} <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </span>
       </div>
 
     </div>

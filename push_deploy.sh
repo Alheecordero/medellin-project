@@ -12,7 +12,7 @@ echo -e "${GREEN}╚════════════════════
 
 # Configuración
 BRANCH=${BRANCH:-main}
-SERVER=${SERVER:-root@5.161.85.163}
+SERVER=${SERVER:-root@65.109.54.17}
 APP_DIR=${APP_DIR:-/var/www/medellin-project}
 VENV_DIR=${VENV_DIR:-med}
 SERVICE=${SERVICE:-gunicorn}
@@ -28,9 +28,11 @@ DO_STATIC=false
 DO_RESTART=true
 DO_COMPILE=false
 DO_CLEAR_CACHE=true
+FRONTEND_ONLY=false
 
 for arg in "$@"; do
   case "$arg" in
+    --frontend) FRONTEND_ONLY=true; DO_STATIC=true; DO_COMPILE=true; DO_MIGRATE=false; DO_PIP=false ;;
     --full) DO_PIP=true; DO_MIGRATE=true; DO_STATIC=true ;;
     --pip) DO_PIP=true ;;
     --no-pip) DO_PIP=false ;;
@@ -47,6 +49,7 @@ for arg in "$@"; do
       echo "Uso: $0 [opciones]"
       echo ""
       echo "Opciones:"
+      echo "  --frontend      Solo UI: templates, static, i18n (+ views mínimo); static + compilemessages"
       echo "  --full          Ejecutar pip install, migrate y collectstatic"
       echo "  --pip           Solo pip install"
       echo "  --migrate       Solo migrate"
@@ -84,15 +87,42 @@ echo -e "${GREEN}✓ No hay archivos de configuración local en el repo${NC}"
 # ═══════════════════════════════════════════════════════════════════
 echo -e "\n${GREEN}[2/5] Preparando cambios para GitHub...${NC}"
 
-# Excluir archivos locales explícitamente
-git add -A
+if $FRONTEND_ONLY; then
+    echo -e "${YELLOW}Modo --frontend: solo plantillas, estáticos, traducciones y views de UI${NC}"
+    REQUIRED=(
+        explorer/templates/components/topbar.html
+    )
+    for f in "${REQUIRED[@]}"; do
+        if [ ! -f "$f" ]; then
+            echo -e "${RED}ERROR: Falta archivo requerido: $f${NC}"
+            exit 1
+        fi
+    done
+    git add \
+        explorer/templates/ \
+        explorer/static/ \
+        frontend/public/css/ \
+        frontend/src/app/layout.tsx \
+        locale/en/LC_MESSAGES/django.mo \
+        locale/en/LC_MESSAGES/django.po \
+        explorer/templatetags/form_tags.py \
+        explorer/views.py \
+        Medellin/settings.py \
+        push_deploy.sh
+else
+    git add -A
+fi
 
 # Verificar si hay cambios
 if git diff --cached --quiet; then
     echo -e "${YELLOW}No hay cambios para enviar${NC}"
 else
     echo -e "${GREEN}Creando commit...${NC}"
-    git commit -m "deploy: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+    if $FRONTEND_ONLY; then
+        git commit -m "deploy(frontend): $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+    else
+        git commit -m "deploy: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+    fi
 fi
 
 echo -e "${GREEN}Enviando a GitHub...${NC}"

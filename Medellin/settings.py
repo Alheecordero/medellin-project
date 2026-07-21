@@ -356,33 +356,81 @@ AUTHENTICATION_BACKENDS = [
 # URLs de redirección después del login/logout
 
 # ======================================================
-# CONFIGURACIÓN DE GOOGLE CLOUD STORAGE (GCS)
+# ALMACENAMIENTO DE ARCHIVOS (R2 preferido, GCS legacy)
 # ======================================================
 
-# --- Google Cloud Storage Configuration ---
-try:
-    from google.oauth2 import service_account
-    GS_CREDENTIALS_PATH = os.path.join(BASE_DIR, 'vivemedellin-fdc8cbb3b441.json')
-    if os.path.exists(GS_CREDENTIALS_PATH):
-        GS_PROJECT_ID = 'vivemedellin'
-        GS_BUCKET_NAME = 'vivemedellin-bucket'
-        GS_CREDENTIALS = service_account.Credentials.from_service_account_file(GS_CREDENTIALS_PATH)
-        GS_LOCATION = 'us-central1'
-        GS_CUSTOM_ENDPOINT = f'https://storage.googleapis.com/{GS_BUCKET_NAME}'
-        # No usar ACLs por objeto - el bucket usa uniform bucket-level access
-        GS_DEFAULT_ACL = None
-        GS_QUERYSTRING_AUTH = False  # URLs públicas sin firma
-        # Django 5.x usa STORAGES en lugar de DEFAULT_FILE_STORAGE
-        STORAGES = {
-            "default": {
-                "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
-            },
-            "staticfiles": {
-                "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-            },
-        }
-    else:
-        # Usar almacenamiento local si no están las credenciales de GCS
+R2_BUCKET = env("R2_BUCKET", None)
+R2_ACCESS_KEY_ID = env("R2_ACCESS_KEY_ID", None)
+R2_SECRET_ACCESS_KEY = env("R2_SECRET_ACCESS_KEY", None)
+R2_ENDPOINT_URL = env("R2_ENDPOINT_URL", None)
+R2_PUBLIC_BASE_URL = env("R2_PUBLIC_BASE_URL", "https://img.vivemedellin.co").rstrip("/")
+
+# URL base para construir/enlazar media en templates y management commands
+MEDIA_PUBLIC_BASE_URL = R2_PUBLIC_BASE_URL + "/"
+
+USE_R2 = bool(R2_BUCKET and R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY and R2_ENDPOINT_URL)
+
+if USE_R2:
+    from Medellin.r2_config import normalize_r2_endpoint, public_media_domain
+
+    _r2_endpoint = normalize_r2_endpoint(R2_ENDPOINT_URL, R2_BUCKET)
+
+    AWS_ACCESS_KEY_ID = R2_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY = R2_SECRET_ACCESS_KEY
+    AWS_STORAGE_BUCKET_NAME = R2_BUCKET
+    AWS_S3_ENDPOINT_URL = _r2_endpoint
+    AWS_S3_REGION_NAME = "auto"
+    AWS_DEFAULT_ACL = None
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_ADDRESSING_STYLE = "path"
+    AWS_S3_CUSTOM_DOMAIN = public_media_domain(R2_PUBLIC_BASE_URL)
+    AWS_S3_URL_PROTOCOL = "https"
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+    MEDIA_URL = MEDIA_PUBLIC_BASE_URL
+
+else:
+    # --- Google Cloud Storage (legacy) ---
+    try:
+        from google.oauth2 import service_account
+
+        GS_CREDENTIALS_PATH = os.path.join(BASE_DIR, "vivemedellin-fdc8cbb3b441.json")
+        if os.path.exists(GS_CREDENTIALS_PATH):
+            GS_PROJECT_ID = "vivemedellin"
+            GS_BUCKET_NAME = env("GS_BUCKET_NAME", "vivemedellin-bucket")
+            GS_CREDENTIALS = service_account.Credentials.from_service_account_file(GS_CREDENTIALS_PATH)
+            GS_LOCATION = "us-central1"
+            GS_CUSTOM_ENDPOINT = f"https://storage.googleapis.com/{GS_BUCKET_NAME}"
+            GS_DEFAULT_ACL = None
+            GS_QUERYSTRING_AUTH = False
+            MEDIA_PUBLIC_BASE_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/"
+            STORAGES = {
+                "default": {
+                    "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+                },
+                "staticfiles": {
+                    "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+                },
+            }
+        else:
+            MEDIA_PUBLIC_BASE_URL = "/media/"
+            STORAGES = {
+                "default": {
+                    "BACKEND": "django.core.files.storage.FileSystemStorage",
+                },
+                "staticfiles": {
+                    "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+                },
+            }
+    except ImportError:
+        MEDIA_PUBLIC_BASE_URL = "/media/"
         STORAGES = {
             "default": {
                 "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -391,17 +439,6 @@ try:
                 "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
             },
         }
-except ImportError:
-    # Usar almacenamiento local si no están instaladas las librerías de Google
-    STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
-        },
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
-    }
-# --- End Google Cloud Storage Configuration ---
 
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'

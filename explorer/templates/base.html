@@ -14,7 +14,7 @@
     <meta name="keywords" content="{% block meta_keywords %}{% trans "bares Medellín, restaurantes Medellín, rooftops Medellín, discotecas El Poblado, dónde comer Medellín, vida nocturna Medellín, mejores lugares Medellín" %}{% endblock %}">
     <meta name="author" content="ViveMedellín">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
-    <meta name="theme-color" content="#11998e">
+    <meta name="theme-color" content="#38ef7d">
     <meta name="geo.region" content="CO-ANT">
     <meta name="geo.placename" content="Medellín">
     <meta name="geo.position" content="6.2442;-75.5812">
@@ -58,7 +58,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <link rel="preconnect" href="https://storage.googleapis.com">
+    <link rel="preconnect" href="https://img.vivemedellin.co">
     {% block preload_lcp %}{% endblock %}
     
     <!-- CSS crítico inline para evitar FOUC + contener AdSense Auto Ads -->
@@ -164,6 +164,8 @@
     <link rel="stylesheet" href="{% static 'css/variables.css' %}?v={{ STATIC_BUST }}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v={{ STATIC_BUST }}">
     <link rel="stylesheet" href="{% static 'css/components.css' %}?v={{ STATIC_BUST }}">
+    <link rel="stylesheet" href="{% static 'css/topbar.css' %}?v={{ STATIC_BUST }}">
+    <link rel="stylesheet" href="{% static 'css/brand-theme.css' %}?v={{ STATIC_BUST }}">
     
     {% block extra_css %}{% endblock %}
 </head>
