@@ -542,11 +542,12 @@ button.btn.btn-gradient-green {
 
 /* ── RESPONSIVE MOBILE (< 768px) ── */
 @media (max-width: 767px) {
-  /* Hero: más bajo y imagen recortada (enfoque superior/centro) */
+  /* El hero debe crecer con título + dos CTAs: limitarlo a 46svh
+     recortaba el contenido en iPhone y pantallas bajas. */
   .hero-v3 {
-    min-height: 0;
-    height: clamp(300px, 46svh, 420px);
-    max-height: 420px;
+    min-height: 430px;
+    height: auto;
+    max-height: none;
     align-items: center;
   }
   .hero-v3__bg {
@@ -575,10 +576,10 @@ button.btn.btn-gradient-green {
   .hero-v3__body {
     align-items: center;
     justify-content: center;
-    min-height: 0;
-    height: 100%;
+    min-height: 430px;
+    height: auto;
     max-height: none;
-    padding: 0.75rem 0;
+    padding: 1.25rem 0;
   }
   .hero-v3__content {
     max-width: 100%;
