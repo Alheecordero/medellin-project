@@ -40,6 +40,7 @@ from explorer.utils.text_scan_progress import (
     PROGRESS_FILE,
     count_progress,
     has_db_text_scan_field,
+    initialgrid_db_columns,
     initialgrid_qs,
     load_progress_ids,
     mark_done,
@@ -160,11 +161,13 @@ class Command(BaseCommand):
 
         if options["reset_text_scan"]:
             if has_db_text_scan_field():
-                n = initialgrid_qs().filter(is_text_scan_processed=True).update(
-                    is_text_scan_processed=False,
-                    google_ids_places=[],
-                    text_scan_passes=[],
-                )
+                columns = initialgrid_db_columns()
+                updates = {"is_text_scan_processed": False}
+                if "google_ids_places" in columns:
+                    updates["google_ids_places"] = []
+                if "text_scan_passes" in columns:
+                    updates["text_scan_passes"] = []
+                n = initialgrid_qs().filter(is_text_scan_processed=True).update(**updates)
                 self.stdout.write(self.style.WARNING(f"🔄 {n} puntos reseteados en BD"))
             n_file = reset_progress()
             if n_file:
@@ -379,7 +382,7 @@ class Command(BaseCommand):
         pasada = options.get("pasada", "bias")
         qs = initialgrid_qs().order_by("id")
         if options["rescan_vacios"]:
-            if has_db_text_scan_field():
+            if has_db_text_scan_field() and "google_ids_places" in initialgrid_db_columns():
                 return qs.filter(is_text_scan_processed=True, google_ids_places=[])
             self.stdout.write(
                 self.style.WARNING("   --rescan-vacios requiere migración 0031 (google_ids_places)")
@@ -391,6 +394,10 @@ class Command(BaseCommand):
             if done:
                 return qs.exclude(id__in=done)
             return qs
+        if "text_scan_passes" not in initialgrid_db_columns():
+            raise CommandError(
+                f"La pasada {pasada} requiere la columna text_scan_passes (migración 0033)."
+            )
         # restriction / generico: requiere bias hecho, pasada pendiente
         return qs.filter(is_text_scan_processed=True).exclude(
             text_scan_passes__contains=[pasada]
@@ -420,22 +427,26 @@ class Command(BaseCommand):
         self, punto, google_ids_places: list[str] | None, pasada: str = "bias"
     ) -> None:
         if has_db_text_scan_field():
-            passes = list(punto.text_scan_passes or [])
-            if pasada not in passes:
-                passes.append(pasada)
-            punto.text_scan_passes = passes
-            update_fields = ["text_scan_passes"]
+            columns = initialgrid_db_columns()
+            update_fields = []
+            if "text_scan_passes" in columns:
+                passes = list(punto.text_scan_passes or [])
+                if pasada not in passes:
+                    passes.append(pasada)
+                punto.text_scan_passes = passes
+                update_fields.append("text_scan_passes")
             if pasada == "bias":
                 punto.is_text_scan_processed = True
                 update_fields.append("is_text_scan_processed")
-            if google_ids_places is not None:
+            if google_ids_places is not None and "google_ids_places" in columns:
                 if pasada == "bias":
                     punto.google_ids_places = google_ids_places
                 else:
                     merged = sorted(set(punto.google_ids_places or []) | set(google_ids_places))
                     punto.google_ids_places = merged
                 update_fields.append("google_ids_places")
-            punto.save(update_fields=update_fields)
+            if update_fields:
+                punto.save(update_fields=update_fields)
         else:
             mark_done(punto.id)
 
@@ -459,7 +470,7 @@ class Command(BaseCommand):
         catalogo = GooglePlaceId.objects.count()
         pendientes_grilla = self._count_pending_points(options)
         vacios = 0
-        if has_db_text_scan_field():
+        if has_db_text_scan_field() and "google_ids_places" in initialgrid_db_columns():
             vacios = initialgrid_qs().filter(
                 is_text_scan_processed=True,
                 google_ids_places=[],
@@ -491,7 +502,12 @@ class Command(BaseCommand):
         total_grilla = initialgrid_qs().count()
         if has_db_text_scan_field():
             text_done = initialgrid_qs().filter(is_text_scan_processed=True).count()
-            vacios = initialgrid_qs().filter(is_text_scan_processed=True, google_ids_places=[]).count()
+            if "google_ids_places" in initialgrid_db_columns():
+                vacios = initialgrid_qs().filter(
+                    is_text_scan_processed=True, google_ids_places=[]
+                ).count()
+            else:
+                vacios = 0
         else:
             text_done = count_progress()
             vacios = 0
