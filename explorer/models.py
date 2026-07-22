@@ -508,6 +508,12 @@ class Initialgrid(models.Model):
         default=list,
         help_text="Google Place IDs descubiertos en este punto de grilla (scan gratis)",
     )
+    text_scan_passes = ArrayField(
+        models.CharField(max_length=30),
+        blank=True,
+        default=list,
+        help_text="Pasadas gratis completadas: bias, restriction, generico",
+    )
 
     def __str__(self):
         flags = []
@@ -533,6 +539,10 @@ class GooglePlaceId(models.Model):
 
     SOURCE_CHOICES = (
         ("text_search_ids", "Text Search IDs Only"),
+        ("text_search_restriction", "Text Search restriction (IDs Only)"),
+        ("text_search_generico", "Text Search genérico (IDs Only)"),
+        ("places_import", "Importado desde Places"),
+        ("pending_import", "Importado desde PendingPlace"),
         ("nearby_search", "Nearby Search"),
         ("manual", "Manual"),
     )

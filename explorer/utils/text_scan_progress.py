@@ -8,6 +8,33 @@ from django.conf import settings
 
 PROGRESS_FILE = Path(settings.BASE_DIR) / "data" / "text_scan_progress.txt"
 _HAS_TEXT_SCAN_FIELD: bool | None = None
+_INITIALGRID_DB_COLUMNS: set[str] | None = None
+
+SCAN_DB_FIELDS = (
+    "is_text_scan_processed",
+    "google_ids_places",
+    "text_scan_passes",
+)
+
+
+def initialgrid_db_columns() -> set[str]:
+    """Columnas reales de Initialgrid, incluso con migraciones sin aplicar."""
+    global _INITIALGRID_DB_COLUMNS
+    if _INITIALGRID_DB_COLUMNS is not None:
+        return _INITIALGRID_DB_COLUMNS
+
+    from django.db import connection
+    from explorer.models import Initialgrid
+
+    try:
+        with connection.cursor() as cursor:
+            description = connection.introspection.get_table_description(
+                cursor, Initialgrid._meta.db_table
+            )
+        _INITIALGRID_DB_COLUMNS = {column.name for column in description}
+    except Exception:
+        _INITIALGRID_DB_COLUMNS = set()
+    return _INITIALGRID_DB_COLUMNS
 
 
 def has_db_text_scan_field() -> bool:
@@ -16,17 +43,7 @@ def has_db_text_scan_field() -> bool:
     if _HAS_TEXT_SCAN_FIELD is not None:
         return _HAS_TEXT_SCAN_FIELD
 
-    from django.db import connection
-    from explorer.models import Initialgrid
-
-    try:
-        with connection.cursor() as cursor:
-            cols = connection.introspection.get_table_description(
-                cursor, Initialgrid._meta.db_table
-            )
-        _HAS_TEXT_SCAN_FIELD = any(c.name == "is_text_scan_processed" for c in cols)
-    except Exception:
-        _HAS_TEXT_SCAN_FIELD = False
+    _HAS_TEXT_SCAN_FIELD = "is_text_scan_processed" in initialgrid_db_columns()
     return _HAS_TEXT_SCAN_FIELD
 
 
@@ -60,8 +77,9 @@ def initialgrid_qs():
     from explorer.models import Initialgrid
 
     qs = Initialgrid.objects.all()
-    if not has_db_text_scan_field():
-        qs = qs.defer("is_text_scan_processed")
+    missing = [field for field in SCAN_DB_FIELDS if field not in initialgrid_db_columns()]
+    if missing:
+        qs = qs.defer(*missing)
     return qs
 
 

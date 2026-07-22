@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import time
 import unicodedata
 
 import requests
@@ -10,6 +11,13 @@ import requests
 TEXT_SEARCH_URL = "https://places.googleapis.com/v1/places:searchText"
 TEXT_SEARCH_IDS_MASK = "places.id,nextPageToken"
 PLACE_DETAILS_URL = "https://places.googleapis.com/v1/places/{place_id}"
+
+
+def _is_retryable_error(exc: requests.RequestException) -> bool:
+    """Solo reintenta errores transitorios de red, rate limit o servidor."""
+    if not isinstance(exc, requests.HTTPError) or exc.response is None:
+        return True
+    return exc.response.status_code == 429 or exc.response.status_code >= 500
 
 
 def extract_place_id(raw_id: str) -> str:
@@ -51,6 +59,8 @@ def text_search_ids_only(
     radius: float = 150.0,
     use_restriction: bool = False,
     timeout: int = 15,
+    retries: int = 3,
+    retry_delay: float = 1.0,
 ) -> list[str]:
     """
     Text Search pidiendo solo IDs (tarifa IDs Only, gratuita ilimitada).
@@ -92,8 +102,20 @@ def text_search_ids_only(
         elif "pageToken" in body:
             del body["pageToken"]
 
-        resp = requests.post(TEXT_SEARCH_URL, json=body, headers=headers, timeout=timeout)
-        resp.raise_for_status()
+        last_error: requests.RequestException | None = None
+        for attempt in range(retries + 1):
+            try:
+                resp = requests.post(TEXT_SEARCH_URL, json=body, headers=headers, timeout=timeout)
+                resp.raise_for_status()
+                break
+            except requests.RequestException as exc:
+                last_error = exc
+                if attempt >= retries or not _is_retryable_error(exc):
+                    raise
+                time.sleep(retry_delay * (2**attempt))
+        else:  # pragma: no cover - el bucle siempre rompe o eleva
+            raise last_error or requests.RequestException("Text Search falló sin detalle")
+
         data = resp.json()
 
         for place in data.get("places", []):

@@ -247,6 +247,21 @@ VIVE_SEARCH_TYPES: list[tuple[str, str]] = [
     ("mirador", "observation_deck"),
 ]
 
+# Pasada genérica (sin includedType) — Fase 2B del plan gratuito
+GENERIC_SEARCH_QUERIES: list[str] = [
+    "local comercial",
+    "establecimiento",
+    "negocio",
+    "sitio turístico",
+    "punto de interés",
+    "restaurante bar café",
+]
+
+# Umbral para subdividir grilla (Fase 3)
+SATURATION_IDS_THRESHOLD = 50
+
+SCAN_PASADAS = ("bias", "restriction", "generico")
+
 
 def point_in_bbox(lat: float, lng: float, bbox: dict) -> bool:
     return (

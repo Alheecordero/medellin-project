@@ -10,6 +10,14 @@ Flujo recomendado:
   3. scan_place_ids_gratis --rescan-vacios   # 2ª pasada en puntos sin IDs
   4. scan_place_ids_gratis --export-ids data/google_place_ids.txt
 
+Plan completo gratuito: PLAN_BARRIDO_GOOGLE_IDS_GRATIS.md
+  python manage.py pipeline_barrido_gratis --status
+
+Pasadas (--pasada):
+  bias        → locationBias + tipos (default, fase 1)
+  restriction → locationRestriction + tipos (fase 2A)
+  generico    → queries genéricas sin tipo (fase 2B)
+
 Uso:
   python manage.py scan_place_ids_gratis --status
   python manage.py scan_place_ids_gratis --preset valle --dry-run
@@ -23,6 +31,7 @@ import time
 import requests
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+from django.db import connections
 
 from explorer.models import GooglePlaceId, PendingPlace, Places
 from explorer.utils.google_ids_registry import register_google_place_ids
@@ -37,11 +46,18 @@ from explorer.utils.text_scan_progress import (
     reset_progress,
 )
 from explorer.utils.vive_areas import (
+    GENERIC_SEARCH_QUERIES,
     VIVE_SEARCH_TYPES,
     areas_for_point,
     point_in_scan_areas,
     resolve_area_names,
 )
+
+PASADA_SOURCES = {
+    "bias": "text_search_ids",
+    "restriction": "text_search_restriction",
+    "generico": "text_search_generico",
+}
 
 
 class Command(BaseCommand):
@@ -81,6 +97,12 @@ class Command(BaseCommand):
             help="Pausa entre llamadas API en segundos",
         )
         parser.add_argument(
+            "--retries",
+            type=int,
+            default=3,
+            help="Reintentos por error transitorio de Google (default: 3)",
+        )
+        parser.add_argument(
             "--reset-text-scan",
             action="store_true",
             help="Marcar todos los puntos como no escaneados (text)",
@@ -107,6 +129,25 @@ class Command(BaseCommand):
             help="Solo mostrar estadísticas y salir",
         )
         parser.add_argument(
+            "--pasada",
+            type=str,
+            default="bias",
+            choices=("bias", "restriction", "generico"),
+            help="Modo de barrido: bias (fase 1), restriction (2A), generico (2B)",
+        )
+        parser.add_argument(
+            "--shard",
+            type=int,
+            default=0,
+            help="Índice de shard para paralelizar (0..shards-1)",
+        )
+        parser.add_argument(
+            "--shards",
+            type=int,
+            default=1,
+            help="Total de shards disjuntos (ej: 3 workers en paralelo)",
+        )
+        parser.add_argument(
             "--incluir-fuera-vive",
             action="store_true",
             help="(Obsoleto) Usar --preset all",
@@ -122,6 +163,7 @@ class Command(BaseCommand):
                 n = initialgrid_qs().filter(is_text_scan_processed=True).update(
                     is_text_scan_processed=False,
                     google_ids_places=[],
+                    text_scan_passes=[],
                 )
                 self.stdout.write(self.style.WARNING(f"🔄 {n} puntos reseteados en BD"))
             n_file = reset_progress()
@@ -148,12 +190,17 @@ class Command(BaseCommand):
         if not api_key and not options["dry_run"]:
             raise CommandError("GOOGLE_API_KEY no configurada.")
 
-        search_types = VIVE_SEARCH_TYPES
+        search_types = self._search_types_for_pasada(options["pasada"])
         if options["limit_tipos"] > 0:
             search_types = search_types[: options["limit_tipos"]]
 
+        pasada = options["pasada"]
+        use_restriction = pasada in ("restriction", "generico")
+        source = PASADA_SOURCES[pasada]
+
         puntos = self._get_pending_points(options)
         puntos = self._filter_scan_points(puntos)
+        puntos = self._filter_shard(puntos, options)
 
         if options["limit"] > 0:
             puntos = puntos[: options["limit"]]
@@ -172,6 +219,11 @@ class Command(BaseCommand):
 
         self.stdout.write(f"\n{'═' * 60}")
         self.stdout.write(self.style.SUCCESS("🆓 SCAN GRATIS → GooglePlaceId (catálogo independiente)"))
+        self.stdout.write(f"   Pasada:              {pasada}")
+        if options["shards"] > 1:
+            self.stdout.write(
+                f"   Shard:               {options['shard']}/{options['shards'] - 1}"
+            )
         self.stdout.write(f"   Zonas:             {', '.join(self.area_names)}")
         self.stdout.write(f"   Puntos grilla:     {total_puntos:,}")
         self.stdout.write(f"   Tipos por punto:   {len(search_types)}")
@@ -184,8 +236,11 @@ class Command(BaseCommand):
         self.stdout.write("")
 
         if dry_run:
-            for i, (query, tipo) in enumerate(search_types[:5], 1):
-                self.stdout.write(f"   Tipo {i}: «{query}» → {tipo}")
+            for i, item in enumerate(search_types[:5], 1):
+                if pasada == "generico":
+                    self.stdout.write(f"   Query {i}: «{item[0]}»")
+                else:
+                    self.stdout.write(f"   Tipo {i}: «{item[0]}» → {item[1]}")
             if len(search_types) > 5:
                 self.stdout.write(f"   … y {len(search_types) - 5} tipos más")
             self.stdout.write(
@@ -195,6 +250,15 @@ class Command(BaseCommand):
                 )
             )
             return
+
+        # Falla antes de gastar llamadas a Google si la BD no está disponible.
+        try:
+            connections["default"].ensure_connection()
+        except Exception as exc:
+            raise CommandError(
+                "La base de datos no está disponible; el scan no inició para evitar "
+                f"perder progreso. Detalle: {exc}"
+            ) from exc
 
         known_pending = set()
         if options["sync_pending"]:
@@ -209,6 +273,7 @@ class Command(BaseCommand):
             "actualizados_catalogo": 0,
             "nuevos_pending": 0,
             "errores": 0,
+            "puntos_con_error": 0,
         }
 
         for i, punto in enumerate(puntos, 1):
@@ -219,6 +284,7 @@ class Command(BaseCommand):
                 + (f" — {', '.join(zonas_punto)}" if zonas_punto else "")
             )
             ids_en_punto: set[str] = set()
+            punto_completo = True
 
             for query, included_type in search_types:
                 try:
@@ -227,14 +293,18 @@ class Command(BaseCommand):
                         query,
                         lat,
                         lng,
-                        included_type=included_type,
+                        included_type=included_type or None,
                         radius=radio,
+                        use_restriction=use_restriction,
+                        retries=options["retries"],
                     )
                     stats["api_calls"] += 1
                     stats["ids_devueltos"] += len(found)
                 except requests.RequestException as exc:
                     stats["errores"] += 1
-                    self.stdout.write(self.style.ERROR(f"   ✗ {included_type}: {exc}"))
+                    punto_completo = False
+                    label = included_type or query
+                    self.stdout.write(self.style.ERROR(f"   ✗ {label}: {exc}"))
                     if pause > 0:
                         time.sleep(pause)
                     continue
@@ -247,8 +317,9 @@ class Command(BaseCommand):
                     grid_point_id=punto.id,
                     scan_lat=lat,
                     scan_lng=lng,
-                    included_type=included_type,
+                    included_type=included_type or pasada,
                     area_names=zonas_punto,
+                    source=source,
                 )
                 stats["nuevos_catalogo"] += nuevos_tipo
                 stats["actualizados_catalogo"] += actualizados_tipo
@@ -273,8 +344,16 @@ class Command(BaseCommand):
                 if pause > 0:
                     time.sleep(pause + random.uniform(0, 0.1))
 
-            self._mark_point_done(punto, sorted(ids_en_punto))
-            stats["puntos"] += 1
+            if punto_completo:
+                self._mark_point_done(punto, sorted(ids_en_punto), pasada)
+                stats["puntos"] += 1
+            else:
+                stats["puntos_con_error"] += 1
+                self.stdout.write(
+                    self.style.WARNING(
+                        "   ↻ Punto no marcado como terminado: se reintentará completo al reanudar."
+                    )
+                )
 
             if ids_en_punto:
                 self.stdout.write(
@@ -291,7 +370,13 @@ class Command(BaseCommand):
         if options["export_ids"]:
             self._export_ids(options["export_ids"])
 
+    def _search_types_for_pasada(self, pasada: str) -> list[tuple[str, str]]:
+        if pasada == "generico":
+            return [(q, "") for q in GENERIC_SEARCH_QUERIES]
+        return list(VIVE_SEARCH_TYPES)
+
     def _get_pending_points(self, options):
+        pasada = options.get("pasada", "bias")
         qs = initialgrid_qs().order_by("id")
         if options["rescan_vacios"]:
             if has_db_text_scan_field():
@@ -299,15 +384,30 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.WARNING("   --rescan-vacios requiere migración 0031 (google_ids_places)")
             )
-        if has_db_text_scan_field():
-            return qs.filter(is_text_scan_processed=False)
-        done = load_progress_ids()
-        if done:
-            return qs.exclude(id__in=done)
-        return qs
+        if pasada == "bias":
+            if has_db_text_scan_field():
+                return qs.filter(is_text_scan_processed=False)
+            done = load_progress_ids()
+            if done:
+                return qs.exclude(id__in=done)
+            return qs
+        # restriction / generico: requiere bias hecho, pasada pendiente
+        return qs.filter(is_text_scan_processed=True).exclude(
+            text_scan_passes__contains=[pasada]
+        )
 
     def _count_pending_points(self, options) -> int:
         return self._get_pending_points(options).count()
+
+    def _filter_shard(self, qs, options):
+        shards = options.get("shards", 1)
+        shard = options.get("shard", 0)
+        if shards <= 1:
+            return qs
+        if shard < 0 or shard >= shards:
+            raise CommandError(f"--shard debe estar entre 0 y {shards - 1}")
+        ids = [p.id for p in qs.only("id").iterator() if p.id % shards == shard]
+        return initialgrid_qs().filter(id__in=ids).order_by("id")
 
     def _filter_scan_points(self, qs):
         ids_ok = []
@@ -316,12 +416,24 @@ class Command(BaseCommand):
                 ids_ok.append(p.id)
         return initialgrid_qs().filter(id__in=ids_ok).order_by("id")
 
-    def _mark_point_done(self, punto, google_ids_places: list[str] | None = None) -> None:
+    def _mark_point_done(
+        self, punto, google_ids_places: list[str] | None, pasada: str = "bias"
+    ) -> None:
         if has_db_text_scan_field():
-            punto.is_text_scan_processed = True
-            update_fields = ["is_text_scan_processed"]
+            passes = list(punto.text_scan_passes or [])
+            if pasada not in passes:
+                passes.append(pasada)
+            punto.text_scan_passes = passes
+            update_fields = ["text_scan_passes"]
+            if pasada == "bias":
+                punto.is_text_scan_processed = True
+                update_fields.append("is_text_scan_processed")
             if google_ids_places is not None:
-                punto.google_ids_places = google_ids_places
+                if pasada == "bias":
+                    punto.google_ids_places = google_ids_places
+                else:
+                    merged = sorted(set(punto.google_ids_places or []) | set(google_ids_places))
+                    punto.google_ids_places = merged
                 update_fields.append("google_ids_places")
             punto.save(update_fields=update_fields)
         else:
@@ -339,6 +451,10 @@ class Command(BaseCommand):
             self.stdout.write(f"   PendingPlace nuevos:      {stats['nuevos_pending']:,}")
         if stats["errores"]:
             self.stdout.write(self.style.ERROR(f"   Errores API:              {stats['errores']:,}"))
+        if stats["puntos_con_error"]:
+            self.stdout.write(
+                self.style.WARNING(f"   Puntos para reintentar:      {stats['puntos_con_error']:,}")
+            )
 
         catalogo = GooglePlaceId.objects.count()
         pendientes_grilla = self._count_pending_points(options)
