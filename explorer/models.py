@@ -502,6 +502,12 @@ class Initialgrid(models.Model):
         db_index=True,
         help_text="Escaneado con Text Search IDs Only (scan_place_ids_gratis, gratis)",
     )
+    google_ids_places = ArrayField(
+        models.CharField(max_length=255),
+        blank=True,
+        default=list,
+        help_text="Google Place IDs descubiertos en este punto de grilla (scan gratis)",
+    )
 
     def __str__(self):
         flags = []
@@ -511,6 +517,68 @@ class Initialgrid(models.Model):
             flags.append("nearby")
         status = ",".join(flags) if flags else "pendiente"
         return f"Initialgrid {self.pk} — {status}"
+
+
+# ────────────────────────────────────────────────────────────────
+# Catálogo independiente de Google Place IDs (barrido de grilla)
+# ────────────────────────────────────────────────────────────────
+
+class GooglePlaceId(models.Model):
+    """
+    Registro maestro de Google Place IDs descubiertos por barrido.
+
+    Independiente de Places y PendingPlace: sirve para mapear Medellín,
+    Envigado, Rionegro, Guatapé, etc. antes de scrape o importación.
+    """
+
+    SOURCE_CHOICES = (
+        ("text_search_ids", "Text Search IDs Only"),
+        ("nearby_search", "Nearby Search"),
+        ("manual", "Manual"),
+    )
+
+    place_id = models.CharField(max_length=255, unique=True, db_index=True)
+    source = models.CharField(
+        max_length=30,
+        choices=SOURCE_CHOICES,
+        default="text_search_ids",
+        db_index=True,
+    )
+    first_seen_at = models.DateTimeField(auto_now_add=True)
+    last_seen_at = models.DateTimeField(auto_now=True)
+    discovery_count = models.PositiveIntegerField(default=1)
+    scan_types = ArrayField(
+        models.CharField(max_length=100),
+        blank=True,
+        default=list,
+        help_text="Tipos Google con los que se descubrió (includedType)",
+    )
+    area_names = ArrayField(
+        models.CharField(max_length=100),
+        blank=True,
+        default=list,
+        help_text="Zonas SCAN_AREAS donde cayó el punto de grilla",
+    )
+    first_grid_point = models.ForeignKey(
+        Initialgrid,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="google_place_ids",
+    )
+    scan_lat = models.FloatField(null=True, blank=True)
+    scan_lng = models.FloatField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Google Place ID (catálogo)"
+        verbose_name_plural = "Google Place IDs (catálogo)"
+        ordering = ["-first_seen_at"]
+        indexes = [
+            models.Index(fields=["source", "first_seen_at"]),
+        ]
+
+    def __str__(self):
+        return self.place_id
 
 
 # ────────────────────────────────────────────────────────────────

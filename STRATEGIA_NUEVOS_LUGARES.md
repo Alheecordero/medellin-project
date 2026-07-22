@@ -4,7 +4,30 @@ Este documento describe el flujo recomendado para descubrir, filtrar y cargar nu
 
 ---
 
-## Resumen del pipeline
+## Resumen del pipeline (catálogo independiente)
+
+```
+[1] GRILLA COBERTURA   →  [2] SCAN GRATIS (Text Search IDs)  →  GooglePlaceId
+         ↓                              ↓
+  generar_grilla_cobertura      scan_place_ids_gratis (~$0)
+  (--preset all)                         ↓
+                              [3] --rescan-vacios (huecos)
+                                         ↓
+                              export-ids → scraper externo
+                                         ↓
+                              procesar_pendientes (solo si importas a Places)
+```
+
+**GooglePlaceId** es la tabla maestra de IDs: **no depende** de `Places` ni `PendingPlace`.  
+`PendingPlace` queda como cola legacy opcional (`--sync-pending`).
+
+**Zonas cubiertas** (`SCAN_AREAS`): Medellín, Envigado, Sabaneta, Itagüí, Rionegro, Guatapé, El Peñol, oriente turístico, etc.
+
+Presets: `core` | `valle` | `turismo` | `all`
+
+---
+
+## Resumen del pipeline (legacy)
 
 ```
 [1] GRILLA VIVE       →  [2] SCAN GRATIS (Text Search IDs)  →  PendingPlace
@@ -35,10 +58,12 @@ Grilla → scan_nuevos_lugares (Nearby Search Pro) → PendingPlace → procesar
 
 | Objetivo | Comando | Costo aprox. |
 |----------|---------|--------------|
-| Grilla Medellín + Envigado + Poblado/Laureles | `python manage.py generar_grilla_vive_medellin` | $0 |
-| **Descubrir place_id gratis (recomendado)** | `python manage.py scan_place_ids_gratis` | **$0** |
+| **Grilla cobertura total (recomendado)** | `python manage.py generar_grilla_cobertura --preset all --dry-run` | $0 |
+| Grilla Medellín + Envigado (legacy) | `python manage.py generar_grilla_vive_medellin` | $0 |
+| **Descubrir place_id gratis → catálogo** | `python manage.py scan_place_ids_gratis --preset all` | **$0** |
+| Re-escanear puntos sin IDs | `python manage.py scan_place_ids_gratis --rescan-vacios --radio 450` | $0 |
 | Ver progreso del scan gratis | `python manage.py scan_place_ids_gratis --status` | $0 |
-| Exportar todos los IDs para scraper | `python manage.py scan_place_ids_gratis --export-ids ids.txt` | $0 |
+| Exportar catálogo para scraper | `python manage.py scan_place_ids_gratis --export-ids data/google_place_ids.txt` | $0 |
 | Descubrir IDs (complemento, Nearby) | `python manage.py scan_nuevos_lugares` | ~$32/1000 tras cuota gratis |
 | Limpiar cola | `python manage.py descartar_pendientes_inutiles` | $0 |
 | Enriquecer pendientes (Details + fotos) | `python manage.py procesar_pendientes --limit N` | ~$17/1000 details |
@@ -49,7 +74,37 @@ Grilla → scan_nuevos_lugares (Nearby Search Pro) → PendingPlace → procesar
 
 ## Estrategia recomendada (orden de ejecución)
 
-### A) Descubrir todos los place_id gratis (Medellín + Envigado)
+### A) Descubrir todos los place_id gratis (cobertura total)
+
+1. **Grilla de cobertura** (Medellín, Envigado, Rionegro, Guatapé, oriente, etc.):
+   ```bash
+   python manage.py generar_grilla_cobertura --preset all --dry-run
+   python manage.py generar_grilla_cobertura --preset all
+   # Solo turismo: --preset turismo
+   # Solo un municipio: --solo Guatapé
+   ```
+2. **Scan gratis → GooglePlaceId** (Text Search IDs Only):
+   ```bash
+   python manage.py scan_place_ids_gratis --status
+   python manage.py scan_place_ids_gratis --preset all --limit 10   # prueba
+   python manage.py scan_place_ids_gratis --preset all              # barrido completo
+   ```
+3. **Segunda pasada en huecos** (puntos que devolvieron 0 IDs):
+   ```bash
+   python manage.py scan_place_ids_gratis --rescan-vacios --radio 450
+   ```
+4. **Exportar catálogo** para tu scraper:
+   ```bash
+   python manage.py scan_place_ids_gratis --export-ids data/google_place_ids.txt
+   ```
+5. **Opcional — importar a Places** (de pago, selectivo):
+   ```bash
+   python manage.py scan_place_ids_gratis --sync-pending   # llena PendingPlace
+   python manage.py descartar_pendientes_inutiles
+   python manage.py procesar_pendientes --limit 50
+   ```
+
+### A-legacy) Descubrir place_id gratis (solo Medellín + Envigado)
 
 1. **Grilla densa** (Medellín, Envigado, Poblado, Laureles/La 70):
    ```bash

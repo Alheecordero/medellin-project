@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription, CuratedGuide, CuratedGuideItem, PendingPlace
+from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription, CuratedGuide, CuratedGuideItem, PendingPlace, GooglePlaceId
 import json
 
 
@@ -130,8 +130,20 @@ class RegionOSMAdmin(gis_admin.GISModelAdmin):
 @admin.register(Initialgrid)
 class InitialgridAdmin(gis_admin.GISModelAdmin):
     """Configuración del admin para el modelo Initialgrid."""
-    list_display = ('id', 'points', 'is_text_scan_processed', 'is_processed', 'fecha_creacion')
+    list_display = (
+        'id',
+        'points',
+        'google_ids_count',
+        'is_text_scan_processed',
+        'is_processed',
+        'fecha_creacion',
+    )
     list_filter = ('is_text_scan_processed', 'is_processed')
+    readonly_fields = ('google_ids_places',)
+
+    @admin.display(description='Google IDs')
+    def google_ids_count(self, obj):
+        return len(obj.google_ids_places or [])
     
     # Especificamos una plantilla personalizada para la vista de lista
     change_list_template = 'admin/explorer/initialgrid/change_list.html'
@@ -362,6 +374,31 @@ class PendingPlaceAdmin(admin.ModelAdmin):
     def marcar_descartado(self, request, queryset):
         queryset.update(status='skipped')
     marcar_descartado.short_description = "Descartar seleccionados"
+
+
+@admin.register(GooglePlaceId)
+class GooglePlaceIdAdmin(admin.ModelAdmin):
+    list_display = (
+        "place_id",
+        "source",
+        "discovery_count",
+        "areas_display",
+        "types_display",
+        "first_seen_at",
+        "last_seen_at",
+    )
+    list_filter = ("source",)
+    search_fields = ("place_id",)
+    readonly_fields = ("first_seen_at", "last_seen_at", "discovery_count")
+    list_per_page = 100
+
+    @admin.display(description="Zonas")
+    def areas_display(self, obj):
+        return ", ".join(obj.area_names[:3]) + ("…" if len(obj.area_names) > 3 else "")
+
+    @admin.display(description="Tipos")
+    def types_display(self, obj):
+        return ", ".join(obj.scan_types[:3]) + ("…" if len(obj.scan_types) > 3 else "")
 
 
 # Personalización del título del admin
