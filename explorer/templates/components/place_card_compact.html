@@ -10,13 +10,13 @@
     {% if lugar.get_primera_foto %}
       {% with foto=lugar.get_primera_foto %}
         <img 
-          src="{{ foto.imagen_miniatura|default:foto.imagen }}"
+          src="{{ foto.imagen_miniatura|default:foto.imagen|media_url }}"
           alt="{{ lugar.nombre }}"
           loading="lazy"
         >
       {% endwith %}
     {% elif lugar.imagen %}
-      <img src="{{ lugar.imagen }}" alt="{{ lugar.nombre }}" loading="lazy">
+      <img src="{{ lugar.imagen|media_url }}" alt="{{ lugar.nombre }}" loading="lazy">
     {% else %}
       <div class="place-card-compact__placeholder">
         <i class="bi bi-image"></i>

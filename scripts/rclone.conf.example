@@ -1,0 +1,15 @@
+# Copia a ~/.config/rclone/rclone.conf o export RCLONE_CONFIG=/ruta/a/este/archivo
+# NO subas este archivo con credenciales reales al repo.
+
+[gcs]
+type = google cloud storage
+service_account_file = /var/www/medellin-project/vivemedellin-fdc8cbb3b441.json
+bucket_policy_only = true
+
+[r2]
+type = s3
+provider = Cloudflare
+access_key_id = YOUR_R2_ACCESS_KEY
+secret_access_key = YOUR_R2_SECRET_KEY
+endpoint = https://YOUR_ACCOUNT_ID.r2.cloudflarestorage.com
+acl = private

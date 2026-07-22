@@ -1,0 +1,7 @@
+# Lugares a añadir por nombre (uno por línea).
+# Líneas que empiezan con # se ignoran.
+# Ejecutar: python manage.py pipeline_nuevos_lugares --nombres "Moresko,Purple Club" --solo-procesar
+# O: python manage.py pipeline_nuevos_lugares --from-file explorer/management/commands/lugares_a_buscar.txt --skip-scan
+#
+Moresko
+Purple Club Medellin

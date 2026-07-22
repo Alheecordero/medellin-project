@@ -77,7 +77,7 @@
 /* Grid de guías: usa mismo estilo visual que place-cards */
 .guias-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: 1.5rem;
 }
 
@@ -181,6 +181,11 @@
   .guia-card-img { height: 170px; }
   .guia-card-body { padding: 1rem; }
   .guia-card-title { font-size: 1rem; }
+}
+
+@media (min-width: 577px) and (max-width: 900px) {
+  .guias-grid { gap: 1.25rem; }
+  .guia-card-body { padding: 1.1rem; }
 }
 </style>
 {% endblock %}

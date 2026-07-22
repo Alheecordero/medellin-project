@@ -72,7 +72,7 @@
         /* Evitar que AdSense Auto Ads generen scroll horizontal */
         main {
             overflow-x: hidden;
-            max-width: 100vw;
+            max-width: 100%;
         }
         @media (max-width: 767px) {
             .container {
@@ -166,6 +166,7 @@
     <link rel="stylesheet" href="{% static 'css/components.css' %}?v={{ STATIC_BUST }}">
     <link rel="stylesheet" href="{% static 'css/topbar.css' %}?v={{ STATIC_BUST }}">
     <link rel="stylesheet" href="{% static 'css/brand-theme.css' %}?v={{ STATIC_BUST }}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}?v={{ STATIC_BUST }}">
     
     {% block extra_css %}{% endblock %}
 </head>
@@ -177,9 +178,11 @@
         {% block content %}{% endblock %}
     </main>
 
-    {% if adsense_allowed %}
-      {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_GLOBAL placement='global' exclude_auto=True extra_class='adsense-fixed-unit--global' %}
-    {% endif %}
+    {% block global_ad %}
+      {% if adsense_allowed %}
+        {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_GLOBAL placement='global' exclude_auto=True extra_class='adsense-fixed-unit--global' %}
+      {% endif %}
+    {% endblock %}
 
     <!-- Footer -->
     {% include 'footer.html' %}

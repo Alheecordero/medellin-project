@@ -5,12 +5,15 @@
 {% load form_tags %}
 {% load i18n_extras %}
 
+{# El detalle usa dos anuncios propios; no duplica el anuncio global. #}
+{% block global_ad %}{% endblock %}
+
 {% block title %}{{ lugar.nombre }} - {{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}{% else %}Medellín{% endif %} | ViveMedellín{% endblock %}
 
 {% block preload_lcp %}
 {% with foto=lugar.get_primera_foto %}
 {% if foto %}
-<link rel="preload" as="image" href="{{ foto.imagen_mediana|default:foto.imagen }}" {% if foto.imagen_miniatura and foto.imagen_mediana %}imagesrcset="{{ foto.imagen_miniatura }} 400w, {{ foto.imagen_mediana }} 800w, {{ foto.imagen }} 1600w" imagesizes="(max-width: 576px) 100vw, (max-width: 992px) 100vw, 1100px"{% endif %} fetchpriority="high">
+<link rel="preload" as="image" href="{{ foto.imagen_mediana|default:foto.imagen|media_url }}" {% if foto.imagen_miniatura and foto.imagen_mediana %}imagesrcset="{{ foto.imagen_miniatura|media_url }} 400w, {{ foto.imagen_mediana|media_url }} 800w, {{ foto.imagen|media_url }} 1600w" imagesizes="(max-width: 576px) 100vw, (max-width: 992px) 100vw, 1100px"{% endif %} fetchpriority="high">
 {% endif %}
 {% endwith %}
 {% endblock %}
@@ -66,19 +69,19 @@
               <div class="carousel-inner">
                 {% for foto in lugar.get_fotos %}
                   <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                <img src="{% if forloop.first %}{{ foto.imagen_mediana|default:foto.imagen }}{% else %}{{ foto.imagen_miniatura|default:foto.imagen_mediana|default:foto.imagen }}{% endif %}" 
+                <img src="{% if forloop.first %}{{ foto.imagen_mediana|default:foto.imagen|media_url }}{% else %}{{ foto.imagen_miniatura|default:foto.imagen_mediana|default:foto.imagen|media_url }}{% endif %}"
                      {% if foto.imagen_miniatura and foto.imagen_mediana %}
-                     srcset="{{ foto.imagen_miniatura }} 400w, {{ foto.imagen_mediana }} 800w, {{ foto.imagen }} 1600w"
+                     srcset="{{ foto.imagen_miniatura|media_url }} 400w, {{ foto.imagen_mediana|media_url }} 800w, {{ foto.imagen|media_url }} 1600w"
                      {% elif foto.imagen_mediana %}
-                     srcset="{{ foto.imagen_mediana }} 800w, {{ foto.imagen }} 1600w"
+                     srcset="{{ foto.imagen_mediana|media_url }} 800w, {{ foto.imagen|media_url }} 1600w"
                      {% endif %}
                      sizes="(max-width: 576px) 100vw, (max-width: 992px) 100vw, 1100px"
                      class="hero-img" 
                      alt="{{ lugar.nombre }}" 
                      data-bs-toggle="modal" 
                      data-bs-target="#imagenModal" 
-                     data-img-src="{{ foto.imagen }}"
-                     onerror="this.onerror=null; this.srcset=''; this.src='{{ foto.imagen }}';"
+                     data-img-src="{{ foto.imagen|media_url }}"
+                     onerror="this.onerror=null; this.srcset=''; this.src='{{ foto.imagen|media_url }}';"
                      {% if forloop.first %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
                   </div>
                 {% endfor %}
@@ -233,7 +236,7 @@
       <!-- Lugares Relacionados -->
       <div class="related-main-card mt-4">
         {% if adsense_allowed %}
-          {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_DETAIL_BOTTOM|default:settings.ADSENSE_SLOT_DETAIL placement='detail_bottom' unit_key='bottom' exclude_auto=True extra_class='adsense-mobile-only' %}
+          {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_DETAIL_BOTTOM|default:settings.ADSENSE_SLOT_DETAIL placement='detail_bottom' unit_key='bottom' exclude_auto=True %}
         {% endif %}
         <div class="related-header">
           <h2 class="related-title">{% trans "Descubre más lugares" %}</h2>
@@ -789,6 +792,10 @@ function copyToClipboard() {
   grid-template-columns: 1fr;
   gap: 1.5rem;
   padding: 1.5rem;
+}
+
+.detail-grid > * {
+  min-width: 0;
 }
 
 @media (min-width: 992px) {
@@ -1376,7 +1383,7 @@ function copyToClipboard() {
   .hero-carousel .carousel-inner,
   .hero-carousel .carousel-item { height: 240px; }
   .hero-img { height: 240px; }
-  .hero-badges { top: 0.5rem; left: 0.5rem; gap: 0.35rem; }
+  .hero-badges { top: 0.5rem; left: 0.5rem; right: 4.25rem; gap: 0.35rem; }
   .detail-badge { padding: 0.3rem 0.5rem; font-size: 0.6rem; }
   .hero-photo-count { top: 0.5rem; right: 0.5rem; padding: 0.3rem 0.5rem; font-size: 0.65rem; }
   .hero-rating { bottom: 0.5rem; right: 0.5rem; padding: 0.35rem 0.7rem; font-size: 0.8rem; }
@@ -1425,6 +1432,14 @@ function copyToClipboard() {
   .related-main-card { padding: 1rem; border-radius: 16px; }
   .related-title { font-size: 1.25rem; }
   .tab-btn { padding: 0.4rem 0.75rem; font-size: 0.75rem; }
+  .related-tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 0.35rem;
+    scroll-snap-type: x proximity;
+  }
+  .tab-btn { flex: 0 0 auto; scroll-snap-align: start; }
 
   /* Modal */
   .modal-nav-btn { width: 40px; height: 40px; font-size: 1.1rem; }
@@ -1434,7 +1449,7 @@ function copyToClipboard() {
 
 /* Extra small: < 360px (iPhone SE, Galaxy Fold) */
 @media (max-width: 359px) {
-  .detail-main-wrapper { padding: 0; }
+  .detail-main-wrapper { padding: 0 0.25rem; }
   .detail-main-card { border-radius: 16px; }
   .detail-nav { padding: 0.5rem; }
   .detail-header { padding: 0.75rem 0.5rem 0; }

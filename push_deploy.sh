@@ -15,7 +15,8 @@ BRANCH=${BRANCH:-main}
 SERVER=${SERVER:-root@65.109.54.17}
 APP_DIR=${APP_DIR:-/var/www/medellin-project}
 VENV_DIR=${VENV_DIR:-med}
-SERVICE=${SERVICE:-gunicorn}
+SERVICE=${SERVICE:-gunicorn-vivemedellin}
+SOCKET_PATH=${SOCKET_PATH:-/run/gunicorn-vivemedellin.sock}
 GIT_REPO=${GIT_REPO:-https://github.com/Alheecordero/medellin-project.git}
 
 # Archivos que NUNCA deben subirse al repo (configuración local)
@@ -235,6 +236,14 @@ ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc '
     rm -rf staticfiles/*
     python manage.py collectstatic --noinput --clear
   fi
+
+  if [ -f scripts/deploy/nginx/geo_block_countries.conf ]; then
+    echo \"Sincronizando bloqueo geo Nginx...\"
+    cp -f scripts/deploy/nginx/geo_block_countries.conf /etc/nginx/vivemedellin-geo-block.conf
+    if [ -f scripts/deploy/nginx/vivemedellin.conf ]; then
+      cp -f scripts/deploy/nginx/vivemedellin.conf /etc/nginx/sites-available/vivemedellin
+    fi
+  fi
 '"
 
 # ═══════════════════════════════════════════════════════════════════
@@ -249,11 +258,11 @@ ssh -o StrictHostKeyChecking=no "$SERVER" "bash -lc '
   sudo systemctl daemon-reload || true
   
   if $DO_RESTART; then
-    sudo systemctl restart gunicorn
+    sudo systemctl restart \"$SERVICE\"
     sleep 2
     
     # Healthcheck
-    HC_CODE=\$(curl -s -o /dev/null -w \"%{http_code}\" --unix-socket /run/gunicorn.sock http://localhost/ || echo 000)
+    HC_CODE=\$(curl -s -o /dev/null -w \"%{http_code}\" --unix-socket \"$SOCKET_PATH\" http://localhost/ || echo 000)
     echo \"Healthcheck: \$HC_CODE\"
     
     if [ \"\$HC_CODE\" != \"200\" ] && [ \"\$HC_CODE\" != \"301\" ]; then

@@ -150,13 +150,16 @@ class Command(BaseCommand):
     def _procesar_foto(self, foto, bucket, bucket_name, dry_run):
         """Procesa una foto: descarga, redimensiona, sube a GCS."""
         try:
+            from django.conf import settings as dj_settings
+
+            media_base = getattr(dj_settings, "MEDIA_PUBLIC_BASE_URL", f"https://storage.googleapis.com/{bucket_name}/")
             img_url = str(foto.imagen).strip()
             if not img_url:
                 return False, f'Foto {foto.id}: URL vacía'
 
             # Construir URL absoluta si es necesario
             if not img_url.startswith('http'):
-                img_url = f'https://storage.googleapis.com/{bucket_name}/{img_url.lstrip("/")}'
+                img_url = f'{media_base.rstrip("/")}/{img_url.lstrip("/")}'
 
             # Descargar imagen original
             resp = requests.get(img_url, timeout=30)
@@ -196,8 +199,8 @@ class Command(BaseCommand):
             )
 
             # Actualizar BD
-            thumb_url = f'https://storage.googleapis.com/{bucket_name}/{thumb_path}'
-            medium_url = f'https://storage.googleapis.com/{bucket_name}/{medium_path}'
+            thumb_url = f'{media_base.rstrip("/")}/{thumb_path}'
+            medium_url = f'{media_base.rstrip("/")}/{medium_path}'
 
             Foto.objects.filter(pk=foto.pk).update(
                 imagen_miniatura=thumb_url,

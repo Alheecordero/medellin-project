@@ -3,6 +3,9 @@
 {% load static %}
 {% load form_tags %}
 
+{# Las reseñas usan dos anuncios propios; no duplica el anuncio global. #}
+{% block global_ad %}{% endblock %}
+
 {% block title %}{% trans "Reseñas de" %} {{ lugar.nombre }} | ViveMedellín{% endblock %}
 
 {% block meta_description %}
@@ -93,11 +96,11 @@
           {% with foto=lugar.get_primera_foto %}
           {% if foto %}
             <div class="place-preview" data-nosnippet data-ad-layout="-exclude">
-              <img src="{{ foto.imagen_mediana|default:foto.imagen }}" 
+              <img src="{{ foto.imagen_mediana|default:foto.imagen|media_url }}"
                    {% if foto.imagen_miniatura and foto.imagen_mediana %}
-                   srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen_mediana }} 800w"
+                   srcset="{{ foto.imagen_miniatura|media_url }} 220w, {{ foto.imagen_mediana|media_url }} 800w"
                    {% elif foto.imagen_miniatura %}
-                   srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen }} 800w"
+                   srcset="{{ foto.imagen_miniatura|media_url }} 220w, {{ foto.imagen|media_url }} 800w"
                    {% endif %}
                    sizes="(max-width: 576px) 100vw, 400px"
                    alt="{{ lugar.nombre }}" 
@@ -190,7 +193,7 @@
           </div>
         </div>
         {% if adsense_allowed and forloop.counter == 5 %}
-          {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_REVIEWS|default:settings.ADSENSE_SLOT_DETAIL placement='reviews_mid' unit_key='mid' exclude_auto=True extra_class='adsense-mobile-only' %}
+          {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_REVIEWS|default:settings.ADSENSE_SLOT_DETAIL placement='reviews_mid' unit_key='after-5' exclude_auto=True %}
         {% endif %}
       {% endfor %}
     </div>

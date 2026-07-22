@@ -12,19 +12,21 @@
     {# === IMAGEN === #}
     <div class="place-card__media">
       {% if foto %}
+        {% with img_full=foto.imagen|media_url img_med=foto.imagen_mediana|media_url img_thumb=foto.imagen_miniatura|media_url %}
         <img
-          src="{{ foto.imagen_miniatura|default:foto.imagen }}"
-          {% if foto.imagen_miniatura and foto.imagen_mediana %}
-          srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen_mediana }} 800w, {{ foto.imagen }} 1600w"
-          {% elif foto.imagen_miniatura %}
-          srcset="{{ foto.imagen_miniatura }} 220w, {{ foto.imagen }} 1600w"
+          src="{{ img_thumb|default:img_full }}"
+          {% if img_thumb and img_med %}
+          srcset="{{ img_thumb }} 220w, {{ img_med }} 800w, {{ img_full }} 1600w"
+          {% elif img_thumb %}
+          srcset="{{ img_thumb }} 220w, {{ img_full }} 1600w"
           {% endif %}
           sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 320px"
           class="place-card__img"
           alt="{{ lugar.nombre }}"
           loading="lazy"
-          onerror="this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='flex';};this.srcset='';this.src='{{ foto.imagen }}';"
+          onerror="this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='flex';};this.srcset='';this.src='{{ img_full }}';"
         >
+        {% endwith %}
         <div class="place-card__placeholder" style="display:none;">
           <i class="bi bi-image"></i>
         </div>

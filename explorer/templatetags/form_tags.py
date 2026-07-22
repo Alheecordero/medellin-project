@@ -2,6 +2,8 @@ from django import template
 from django.utils.translation import gettext as _
 import re
 
+from explorer.utils.media_urls import resolve_media_url
+
 register = template.Library()
 
 
@@ -159,9 +161,9 @@ def img_url(foto, size='thumb'):
         return ''
     
     # Obtener URLs de las variantes
-    thumb = getattr(foto, 'imagen_miniatura', None) or ''
-    medium = getattr(foto, 'imagen_mediana', None) or ''
-    full = getattr(foto, 'imagen', None) or ''
+    thumb = resolve_media_url(getattr(foto, 'imagen_miniatura', None) or '') or ''
+    medium = resolve_media_url(getattr(foto, 'imagen_mediana', None) or '') or ''
+    full = resolve_media_url(getattr(foto, 'imagen', None) or '') or ''
     
     if size == 'thumb':
         return thumb or medium or full
@@ -183,9 +185,9 @@ def optimized_img(foto, alt='', css_class='', sizes='100vw', loading='lazy', her
     if not foto:
         return {'has_image': False, 'alt': alt, 'css_class': css_class}
     
-    thumb = getattr(foto, 'imagen_miniatura', None) or ''
-    medium = getattr(foto, 'imagen_mediana', None) or ''
-    full = getattr(foto, 'imagen', None) or ''
+    thumb = resolve_media_url(getattr(foto, 'imagen_miniatura', None) or '') or ''
+    medium = resolve_media_url(getattr(foto, 'imagen_mediana', None) or '') or ''
+    full = resolve_media_url(getattr(foto, 'imagen', None) or '') or ''
     
     # Determinar src principal según contexto
     if hero:
@@ -214,6 +216,12 @@ def optimized_img(foto, alt='', css_class='', sizes='100vw', loading='lazy', her
     }
 
 
+@register.filter(name="media_url")
+def media_url_filter(url: str | None) -> str:
+    """URL de media siempre en R2 (convierte GCS legacy)."""
+    return resolve_media_url(url) or url or ""
+
+
 @register.filter(name="ensure_absolute_url")
 def ensure_absolute_url(url: str | None, request) -> str:
     """
@@ -225,7 +233,7 @@ def ensure_absolute_url(url: str | None, request) -> str:
     """
     if not url:
         return ""
-    s = str(url).strip()
+    s = resolve_media_url(str(url).strip()) or str(url).strip()
     if s.startswith("http://") or s.startswith("https://"):
         return s
     if s.startswith("/") and request:

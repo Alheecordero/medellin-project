@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.contrib.gis import admin as gis_admin
+from django.db.models import Q
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription
+from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription, CuratedGuide, CuratedGuideItem, PendingPlace
 import json
 
 
@@ -12,7 +13,7 @@ class FotoInline(admin.TabularInline):
     extra = 1
     fields = ('imagen_preview', 'imagen', 'descripcion', 'fecha_subida')
     readonly_fields = ('imagen_preview', 'fecha_subida')
-    
+
     def imagen_preview(self, obj):
         if obj.imagen:
             return format_html(
@@ -33,9 +34,9 @@ class PlacesAdmin(gis_admin.GISModelAdmin):
             'default_lon': -75.5812,
         },
     }
-    list_display = ('nombre', 'tipo', 'direccion', 'rating', 'total_reviews', 'comuna', 'es_destacado', 'es_exclusivo', 'tiene_fotos_icon', 'get_tags')
-    search_fields = ('nombre', 'direccion', 'tags__name')
-    list_filter = ('tipo', 'comuna_osm_id', 'es_destacado', 'es_exclusivo', 'tiene_fotos')
+    list_display = ('nombre', 'tipo', 'google_match_status', 'direccion', 'rating', 'total_reviews', 'comuna', 'es_destacado', 'es_exclusivo', 'tiene_fotos_icon', 'get_tags')
+    search_fields = ('nombre', 'direccion', 'tags__name', 'place_id')
+    list_filter = ('tipo', 'google_match_status', 'comuna_osm_id', 'es_destacado', 'es_exclusivo', 'tiene_fotos')
     prepopulated_fields = {'slug': ('nombre',)}
     readonly_fields = ('fecha_creacion', 'fecha_actualizacion', 'tiene_fotos')
     fieldsets = (
@@ -49,7 +50,8 @@ class PlacesAdmin(gis_admin.GISModelAdmin):
         ('Detalles de Google', {
             'classes': ('collapse',),
             'fields': (
-                'place_id', 'rating', 'total_reviews', 'abierto_ahora', 'horario_texto', 
+                'place_id', 'google_match_status', 'google_match_confidence', 'google_match_checked_at',
+                'rating', 'total_reviews', 'abierto_ahora', 'horario_texto',
                 'sitio_web', 'telefono', 'google_maps_uri', 'directions_uri'
             ),
         }),
@@ -128,7 +130,8 @@ class RegionOSMAdmin(gis_admin.GISModelAdmin):
 @admin.register(Initialgrid)
 class InitialgridAdmin(gis_admin.GISModelAdmin):
     """Configuración del admin para el modelo Initialgrid."""
-    list_display = ('id', 'points', 'fecha_creacion')
+    list_display = ('id', 'points', 'is_text_scan_processed', 'is_processed', 'fecha_creacion')
+    list_filter = ('is_text_scan_processed', 'is_processed')
     
     # Especificamos una plantilla personalizada para la vista de lista
     change_list_template = 'admin/explorer/initialgrid/change_list.html'
@@ -246,6 +249,119 @@ class NewsletterSubscriptionAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         return super().get_queryset(request).order_by('-fecha_suscripcion')
+
+
+# ────────────────────────────────────────────────────────────────
+# Guías Curadas
+# ────────────────────────────────────────────────────────────────
+
+class CuratedGuideItemInline(admin.TabularInline):
+    model = CuratedGuideItem
+    extra = 1
+    autocomplete_fields = ['lugar']
+    fields = ('posicion', 'lugar', 'lugar_preview', 'destacado', 'destacado_en', 'comentario', 'comentario_en')
+    readonly_fields = ('lugar_preview',)
+    ordering = ('posicion',)
+
+    def lugar_preview(self, obj):
+        if not obj.lugar_id:
+            return "—"
+        lugar = obj.lugar
+        foto = lugar.get_primera_foto()
+        img_html = ""
+        if foto:
+            img_url = foto.imagen_miniatura or foto.imagen_mediana or foto.imagen
+            img_html = format_html(
+                '<img src="{}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;margin-right:8px;vertical-align:middle;" />',
+                img_url
+            )
+        rating = f"⭐ {lugar.rating}" if lugar.rating else ""
+        return format_html(
+            '{}<strong>{}</strong> {} <span style="color:#888;">{}</span>',
+            img_html, lugar.nombre, rating, lugar.get_tipo_display() if lugar.tipo else ""
+        )
+    lugar_preview.short_description = "Vista previa"
+
+
+@admin.register(CuratedGuide)
+class CuratedGuideAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'categoria', 'items_count', 'publicado', 'orden', 'fecha_actualizacion')
+    list_filter = ('publicado', 'categoria')
+    search_fields = ('titulo', 'descripcion')
+    prepopulated_fields = {'slug': ('titulo',)}
+    list_editable = ('orden', 'publicado')
+    inlines = [CuratedGuideItemInline]
+
+    fieldsets = (
+        ('Español', {
+            'fields': ('titulo', 'slug', 'descripcion', 'imagen_cover')
+        }),
+        ('English Translation', {
+            'classes': ('collapse',),
+            'fields': ('titulo_en', 'descripcion_en'),
+            'description': 'Traducciones al inglés. Si se dejan vacíos, se muestra el español.',
+        }),
+        ('Clasificación', {
+            'fields': ('categoria', 'zona', 'orden', 'publicado')
+        }),
+    )
+
+    def items_count(self, obj):
+        count = obj.items.count()
+        if count == 0:
+            return format_html('<span style="color:red;">0 lugares</span>')
+        return format_html('<span style="color:green;">{} lugares</span>', count)
+    items_count.short_description = "Lugares"
+
+    def publicado_display(self, obj):
+        if obj.publicado:
+            return format_html('<span style="color:green;">✅ Publicado</span>')
+        return format_html('<span style="color:orange;">📝 Borrador</span>')
+    publicado_display.short_description = "Estado"
+
+
+# ────────────────────────────────────────────────────────────────
+# Pending Places (cola de barrido)
+# ────────────────────────────────────────────────────────────────
+
+@admin.register(PendingPlace)
+class PendingPlaceAdmin(admin.ModelAdmin):
+    list_display = ('place_id', 'nombre', 'tipo_principal', 'status', 'lat', 'lng', 'descubierto_en')
+    list_filter = ('status',)
+    search_fields = ('nombre', 'place_id')
+    search_help_text = "Buscar por nombre del lugar o por place_id (Google). Coincidencia parcial, sin importar tildes. Solo en esta cola (pendientes), no en «Lugares»."
+    list_editable = ('status',)
+    readonly_fields = ('descubierto_en', 'procesado_en')
+    actions = ['marcar_pendiente', 'marcar_descartado']
+    list_per_page = 50
+
+    def get_search_results(self, request, queryset, search_term):
+        """Búsqueda con unaccent para que 'moresko' encuentre 'Möresko' o 'Moresko'."""
+        if not search_term or not search_term.strip():
+            return super().get_search_results(request, queryset, search_term)
+        use_distinct = False
+        try:
+            # PostgreSQL: búsqueda sin depender de tildes/acentos
+            term = search_term.strip()
+            q = Q(nombre__unaccent__icontains=term) | Q(place_id__unaccent__icontains=term)
+            queryset = queryset.filter(q)
+            use_distinct = True
+        except Exception:
+            # Si falla (ej. extensión unaccent no disponible), búsqueda normal
+            queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        return queryset, use_distinct
+
+    def tipo_principal(self, obj):
+        return obj.tipos[0] if obj.tipos else "—"
+    tipo_principal.short_description = "Tipo"
+
+    def marcar_pendiente(self, request, queryset):
+        queryset.update(status='pending')
+    marcar_pendiente.short_description = "Marcar como pendiente"
+
+    def marcar_descartado(self, request, queryset):
+        queryset.update(status='skipped')
+    marcar_descartado.short_description = "Descartar seleccionados"
 
 
 # Personalización del título del admin

@@ -56,7 +56,7 @@
               {% for foto in fotos %}
               <div class="carousel-item {% if forloop.first %}active{% endif %}">
                 <a href="{% url 'explorer:lugares_detail' item.lugar.slug %}">
-                  <img src="{{ foto.imagen_mediana|default:foto.imagen }}" alt="{{ item.lugar.nombre }}" loading="lazy">
+                  <img src="{{ foto.imagen_mediana|default:foto.imagen|media_url }}" alt="{{ item.lugar.nombre }}" loading="lazy">
                 </a>
               </div>
               {% endfor %}
@@ -546,6 +546,13 @@ document.addEventListener('DOMContentLoaded', function() {
   .guia-entry-name { font-size: 1.15rem; }
   .guia-entry-text { font-size: 0.9rem; }
   .guia-entry-number { width: 34px; height: 34px; font-size: 0.8rem; border-radius: 10px; top: 0.75rem; left: 0.75rem; }
+}
+
+@media (hover: none) {
+  .guia-entry-img .carousel-control-prev,
+  .guia-entry-img .carousel-control-next {
+    opacity: 0.85;
+  }
 }
 
 @media (max-width: 359px) {

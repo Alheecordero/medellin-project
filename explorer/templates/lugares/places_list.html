@@ -4,6 +4,9 @@
 {% load form_tags %}
 {% load static %}
 
+{# El listado controla sus propios tres anuncios para evitar duplicar el global. #}
+{% block global_ad %}{% endblock %}
+
 {% block title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
 
 {% block meta_description %}{{ descripcion_pagina }} {% trans "Ratings de Google, horarios actualizados y ubicación exacta. Filtra por tipo, zona y características." %}{% endblock %}
@@ -183,13 +186,14 @@
 
       <!-- Card Inferior: Grid de Lugares -->
       <div class="places-grid-card" id="places-grid-container">
-        {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST_MOBILE|default:settings.ADSENSE_SLOT_LIST placement='list_top' unit_key='top' exclude_auto=True %}
         {% if lugares %}
           <div class="places-grid">
             {% for lugar in lugares %}
               {% include 'components/place_card.html' with lugar=lugar card_variant='horizontal' %}
-              {% if forloop.counter == 8 %}
-                {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST placement='list_mid' unit_key='mid' exclude_auto=True extra_class='adsense-desktop-only adsense-inline-list' %}
+              {% if forloop.counter == 4 %}
+                {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST_MOBILE|default:settings.ADSENSE_SLOT_LIST placement='list_first' unit_key='after-4' exclude_auto=True extra_class='adsense-inline-list' %}
+              {% elif forloop.counter == 12 %}
+                {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST placement='list_second' unit_key='after-12' exclude_auto=True extra_class='adsense-inline-list' %}
               {% endif %}
             {% endfor %}
           </div>
@@ -252,16 +256,16 @@
     linear-gradient(180deg, #fbfcfa 0%, #f5f7f4 100%);
   min-height: 100vh;
   padding: 2rem 0 4rem;
-  overflow-x: hidden;
+  overflow: visible;
 }
 
-.places-section .container { max-width: 1280px; overflow-x: hidden; }
+.places-section .container { max-width: 1280px; }
 
 .places-main-wrapper {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
-  overflow-x: hidden;
+  overflow: visible;
 }
 
 @media (min-width: 992px) {
@@ -584,6 +588,21 @@
   .places-grid .place-card__arrow::before {
     width: 100%;
     justify-content: center;
+  }
+
+  .places-header-card,
+  .places-grid-card {
+    overflow: visible;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .pagination .page-link {
+    margin: 0 !important;
   }
 }
 </style>
@@ -950,12 +969,13 @@ $(document).ready(function() {
         
         // Generar HTML de cards + ads para resultados AJAX
         let html = '';
-        html += renderAdBlock(ADS.listMobile, 'list_top_ajax', 'top');
         html += '<div class="places-grid">';
         data.lugares.forEach((lugar, i) => {
             html += generarCardHtml(lugar, i);
-            if (i === 7) {
-                html += renderAdBlock(ADS.list, 'list_mid_ajax', 'mid', 'adsense-desktop-only adsense-inline-list');
+            if (i === 3) {
+                html += renderAdBlock(ADS.listMobile, 'list_first_ajax', 'after-4', 'adsense-inline-list');
+            } else if (i === 11) {
+                html += renderAdBlock(ADS.list, 'list_second_ajax', 'after-12', 'adsense-inline-list');
             }
         });
         html += '</div>';

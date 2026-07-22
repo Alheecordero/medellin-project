@@ -48,7 +48,7 @@
   "name": "{{ lugar.nombre }}",
   "url": "{{ request.build_absolute_uri }}",
   {% if lugar.descripcion %}"description": "{{ lugar.descripcion|truncatechars:160 }}",{% endif %}
-  {% if lugar.get_primera_foto %}"image": "{{ lugar.get_primera_foto.imagen_mediana|default:lugar.get_primera_foto.imagen }}",{% endif %}
+  {% if lugar.get_primera_foto %}"image": "{{ lugar.get_primera_foto.imagen_mediana|default:lugar.get_primera_foto.imagen|media_url }}",{% endif %}
   {% if lugar.direccion %}"address": {
     "@type": "PostalAddress",
     "streetAddress": "{{ lugar.direccion }}",

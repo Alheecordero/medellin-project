@@ -1,0 +1,57 @@
+/* Shared mobile safeguards for the Next.js frontend. */
+html,
+body,
+main {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+main :where(.container, .row, [class*="col-"], .cards-grid) {
+  min-width: 0;
+}
+
+img,
+svg,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+}
+
+.place-card__media {
+  min-width: 0;
+}
+
+.place-card__zone-glass {
+  top: 0.75rem;
+  bottom: auto;
+}
+
+.dropdown-menu,
+.dropdown-menu-filters,
+.dropdown-menu-filtros {
+  max-width: min(380px, calc(100vw - 2rem));
+}
+
+@media (max-width: 767px) {
+  .site-topbar__inner {
+    min-width: 0;
+  }
+
+  .site-topbar__brand {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dropdown-menu,
+  .dropdown-menu-filters,
+  .dropdown-menu-filtros {
+    min-width: 0;
+    max-width: calc(100vw - 2rem);
+    max-height: min(60svh, 420px);
+    overflow: auto;
+    z-index: 1060 !important;
+  }
+}

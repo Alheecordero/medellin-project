@@ -36,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link href="/css/topbar.css" rel="stylesheet" />
         <link href="/css/home.css" rel="stylesheet" />
         <link href="/css/brand-theme.css" rel="stylesheet" />
+        <link href="/css/responsive.css" rel="stylesheet" />
       </head>
       <body className={`home-body ${inter.className}`}>{children}</body>
     </html>

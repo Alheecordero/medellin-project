@@ -17,6 +17,7 @@ import random
 from pgvector.django import CosineDistance
 from django.views import View
 from django.utils.translation import gettext as _, ngettext, get_language
+from explorer.utils.media_urls import resolve_media_url
 from explorer.utils.types import get_localized_place_type, get_localized_place_type_from_code
 from django.conf import settings
 from django.urls import reverse
@@ -159,9 +160,9 @@ def get_optimized_image_urls(foto, size='thumb'):
     if not foto:
         return {'imagen': None, 'imagen_full': None}
     
-    thumb = getattr(foto, 'imagen_miniatura', None) or ''
-    medium = getattr(foto, 'imagen_mediana', None) or ''
-    full = getattr(foto, 'imagen', None) or ''
+    thumb = resolve_media_url(getattr(foto, 'imagen_miniatura', None) or '') or ''
+    medium = resolve_media_url(getattr(foto, 'imagen_mediana', None) or '') or ''
+    full = resolve_media_url(getattr(foto, 'imagen', None) or '') or ''
     
     if size == 'thumb':
         return {'imagen': thumb or medium or full, 'imagen_full': full}
@@ -2531,7 +2532,12 @@ def guia_detail(request, slug):
             foto = lugar.get_primera_foto()
             img_url = ''
             if foto:
-                img_url = getattr(foto, 'imagen_miniatura', None) or getattr(foto, 'imagen_mediana', None) or foto.imagen or ''
+                img_url = resolve_media_url(
+                    getattr(foto, 'imagen_miniatura', None)
+                    or getattr(foto, 'imagen_mediana', None)
+                    or foto.imagen
+                    or ''
+                ) or ''
             markers.append({
                 'lat': lugar.ubicacion.y,
                 'lng': lugar.ubicacion.x,

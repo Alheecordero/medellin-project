@@ -1,6 +1,7 @@
 from django.urls import path
 from django.utils.translation import pgettext_lazy
 from . import views as views
+from . import api_v1
 
 app_name = 'explorer'
 
@@ -18,7 +19,11 @@ urlpatterns = [
     path(pgettext_lazy('url', 'lugar/<slug:slug>/'), views.lugares_detail, name='lugares_detail'),
     # Nota: en español usamos "reseñas" y en inglés se traduce a "reviews" vía msgctxt "url"
     path(pgettext_lazy('url', 'lugar/<slug:slug>/reseñas/'), views.reviews_lugar, name='reviews_lugar'),
-    
+
+    # API v1 (Next.js frontend)
+    path('api/v1/home/', api_v1.home_api, name='api_v1_home'),
+    path('api/v1/places/<slug:slug>/', api_v1.place_detail_api, name='api_v1_place_detail'),
+
     # API endpoints
     path('api/filtros-ajax/', views.filtros_ajax_view, name='filtros_ajax'),
     path('api/places-filter/', views.places_filter_ajax, name='places_filter_ajax'),
@@ -33,6 +38,12 @@ urlpatterns = [
     path('api/lugares/<slug:slug>/similares/', views.lugares_similares_ajax, name='lugares_similares_ajax_slug'),
     path('api/lugares/<slug:slug>/comuna/', views.lugares_comuna_ajax, name='lugares_comuna_ajax_slug'),
     
+    # ────────────────────────────────────────────────────────────────────────
+    # Guías Curadas
+    # ────────────────────────────────────────────────────────────────────────
+    path(pgettext_lazy('url', 'guias/'), views.guias_index, name='guias_index'),
+    path(pgettext_lazy('url', 'guias/<slug:slug>/'), views.guia_detail, name='guia_detail'),
+
     # ────────────────────────────────────────────────────────────────────────
     # Páginas Legales (requeridas para AdSense)
     # ────────────────────────────────────────────────────────────────────────

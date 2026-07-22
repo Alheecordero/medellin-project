@@ -151,8 +151,35 @@ class TaggedPlace(TaggedItemBase):
 class Places(models.Model):
     """Lugar extraído de Google Places API con metadata enriquecida."""
 
+    GOOGLE_MATCH_STATUS_CHOICES = (
+        ("pending", "Pendiente"),
+        ("matched", "Encontrado"),
+        ("ambiguous", "Ambiguo"),
+        ("not_found", "No encontrado"),
+        ("review", "Revisar"),
+    )
+
     id = models.AutoField(primary_key=True)
     place_id = models.CharField(max_length=255, unique=True, db_index=True)
+    google_match_status = models.CharField(
+        max_length=20,
+        choices=GOOGLE_MATCH_STATUS_CHOICES,
+        default="pending",
+        db_index=True,
+        help_text="Estado de verificación del place_id contra Google Text Search (IDs Only)",
+    )
+    google_match_confidence = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Confianza de la coincidencia (0–1)",
+    )
+    google_match_checked_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Última verificación gratuita vía Text Search IDs Only",
+    )
     nombre = models.CharField(max_length=255, db_index=True)
     tipo = models.CharField(
         max_length=255, choices=PLACE_TYPE_CHOICES, default="otros", db_index=True
@@ -465,10 +492,25 @@ class RegionOSM(models.Model):
 class Initialgrid(models.Model):
     points = gis_models.PointField(srid=4326, geography=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    is_processed = models.BooleanField(default=False, db_index=True)
+    is_processed = models.BooleanField(
+        default=False,
+        db_index=True,
+        help_text="Escaneado con Nearby Search (scan_nuevos_lugares, de pago)",
+    )
+    is_text_scan_processed = models.BooleanField(
+        default=False,
+        db_index=True,
+        help_text="Escaneado con Text Search IDs Only (scan_place_ids_gratis, gratis)",
+    )
 
     def __str__(self):
-        return f"Initialgrid {self.pk} - Processed: {self.is_processed}"
+        flags = []
+        if self.is_text_scan_processed:
+            flags.append("text")
+        if self.is_processed:
+            flags.append("nearby")
+        status = ",".join(flags) if flags else "pendiente"
+        return f"Initialgrid {self.pk} — {status}"
 
 
 # ────────────────────────────────────────────────────────────────

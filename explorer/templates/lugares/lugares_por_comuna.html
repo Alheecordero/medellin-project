@@ -3,6 +3,8 @@
 {% load i18n_extras %}
 {% load form_tags %}
 
+{# El listado por comuna controla sus anuncios para evitar duplicar el global. #}
+{% block global_ad %}{% endblock %}
 
 {% block title %}{% trans "Explorar por Comuna | ViveMedellín" %}{% endblock %}
 
@@ -47,13 +49,14 @@
 
       <!-- Card Inferior: Grid de Lugares -->
       <div class="places-grid-card">
-        {% include 'components/adsense_list_top.html' %}
         {% if lugares %}
           <div class="places-grid">
             {% for lugar in lugares %}
               {% include 'components/place_card.html' with lugar=lugar card_variant='horizontal' %}
-              {% if forloop.counter == 8 %}
-                {% include 'components/adsense_list_mid.html' %}
+              {% if forloop.counter == 4 %}
+                {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST_MOBILE|default:settings.ADSENSE_SLOT_LIST placement='comuna_first' unit_key='after-4' exclude_auto=True extra_class='adsense-inline-list' %}
+              {% elif forloop.counter == 12 %}
+                {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST placement='comuna_second' unit_key='after-12' exclude_auto=True extra_class='adsense-inline-list' %}
               {% endif %}
             {% endfor %}
           </div>
