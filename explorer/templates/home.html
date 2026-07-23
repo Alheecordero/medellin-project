@@ -15,6 +15,17 @@
 {% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}{% endblock %}
 {% block og_image_alt %}{% trans "Vista panorámica de Medellín - ViveMedellín" %}{% endblock %}
 
+{% block preload_lcp %}
+<link
+  rel="preload"
+  as="image"
+  type="image/webp"
+  href="{% static 'img/hero-medellin-960.webp' %}"
+  imagesrcset="{% static 'img/hero-medellin-640.webp' %} 640w, {% static 'img/hero-medellin-960.webp' %} 960w, {% static 'img/hero-medellin-1440.webp' %} 1440w"
+  imagesizes="100vw"
+  fetchpriority="high">
+{% endblock %}
+
 {% block content %}
 <div class="home-page">
 {% get_current_language as LANGUAGE_CODE %}
@@ -23,8 +34,20 @@
 <section class="hero-v3">
   <!-- Imagen de fondo completa -->
   <div class="hero-v3__bg" aria-hidden="true">
-    <img src="{% static 'img/juan-saravia-03gVOLHq9ec-unsplash.jpg' %}"
-         alt="" class="hero-v3__bg-img" fetchpriority="high">
+    <picture>
+      <source
+        type="image/webp"
+        srcset="{% static 'img/hero-medellin-640.webp' %} 640w, {% static 'img/hero-medellin-960.webp' %} 960w, {% static 'img/hero-medellin-1440.webp' %} 1440w"
+        sizes="100vw">
+      <img
+        src="{% static 'img/hero-medellin-960.webp' %}"
+        alt=""
+        class="hero-v3__bg-img"
+        width="2400"
+        height="1590"
+        fetchpriority="high"
+        decoding="async">
+    </picture>
     <div class="hero-v3__overlay"></div>
   </div>
 
