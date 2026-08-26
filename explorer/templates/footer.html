@@ -28,6 +28,7 @@
         <div class="site-footer__col">
           <h2 class="site-footer__col-title">{% trans "Explorar" %}</h2>
           <ul class="site-footer__links">
+            <li><a href="{% url 'explorer:guias_index' %}">{% trans "Guías locales" %}</a></li>
             <li><a href="{% url 'explorer:lugares_list' %}?tipo=restaurant">{% trans "Restaurantes" %}</a></li>
             <li><a href="{% url 'explorer:lugares_list' %}?tipo=bar">{% trans "Bares" %}</a></li>
             <li><a href="{% url 'explorer:lugares_list' %}?tipo=cafe">{% trans "Cafés" %}</a></li>

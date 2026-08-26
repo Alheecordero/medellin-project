@@ -1,0 +1,142 @@
+{
+  "metadata": {
+    "siteTitle": "ViveMedellín | Descubre bares, restaurantes y vida nocturna",
+    "siteDescription": "Tu guía local de Medellín: miles de bares, restaurantes, rooftops y discotecas con fotos, horarios y ratings de Google."
+  },
+  "language": {
+    "es": "ES",
+    "en": "EN",
+    "switchTo": "Cambiar a {label}"
+  },
+  "nav": {
+    "home": "Inicio",
+    "places": "Explorar",
+    "openSearch": "Abrir búsqueda",
+    "closeSearch": "Cerrar búsqueda"
+  },
+  "search": {
+    "placeholder": "Busca un bar, restaurante o rooftop",
+    "submit": "Buscar",
+    "submitMobile": "Buscar lugares",
+    "ariaLabel": "Buscar lugares en Medellín",
+    "zoneAria": "Filtrar por zona",
+    "allZones": "Todas las zonas",
+    "resultsFor": "Resultados para “{query}”",
+    "unavailable": "La búsqueda por texto no está disponible ahora mismo. Usa los filtros por zona y tipo."
+  },
+  "home": {
+    "badge": "Guía local de Medellín",
+    "title": "Descubre los mejores bares, restaurantes y rooftops de Medellín",
+    "quickStats": "{places} lugares en {zones} zonas del Valle de Aburrá",
+    "placeTypesTitle": "Tipos de lugar",
+    "placeTypesSubtitle": "Explora por categoría con fotos reales y ratings de Google.",
+    "placeTypesViewAll": "Ver todos",
+    "zonesTitle": "Zonas y comunas",
+    "zonesSubtitle": "Las zonas con más lugares y fotos completas en ViveMedellín.",
+    "viewAll": "Ver todos",
+    "placesInZone": "{count} lugares",
+    "exploreZone": "Explorar zona",
+    "mustSeeTitle": "Imperdibles",
+    "mustSeeSubtitle": "Los lugares mejor valorados ahora mismo.",
+    "nearby": {
+      "title": "Cerca de ti",
+      "subtitle": "Lugares ordenados por distancia.",
+      "cta": "Usar mi ubicación",
+      "viewAll": "Ver todos",
+      "loading": "Buscando lugares cerca…",
+      "empty": "No encontramos lugares en este radio. Prueba a ampliarlo.",
+      "error": "No pudimos cargar los lugares cercanos.",
+      "denied": "Necesitamos tu permiso de ubicación para mostrarte lugares cercanos.",
+      "unsupported": "Tu navegador no soporta geolocalización.",
+      "outside": "Parece que estás fuera del Valle de Aburrá.",
+      "distance": "a {km} km"
+    }
+  },
+  "places": {
+    "title": "Lugares en Medellín",
+    "subtitle": "Bares, restaurantes, cafés y rooftops con fotos y ratings reales.",
+    "resultsCount": "{count, plural, =0 {Sin resultados} one {# lugar} other {# lugares}}",
+    "filters": {
+      "legend": "Filtrar lugares",
+      "area": "Zona",
+      "allAreas": "Todas las zonas",
+      "type": "Tipo",
+      "allTypes": "Todos los tipos",
+      "features": "Características",
+      "apply": "Aplicar filtros",
+      "clear": "Limpiar"
+    },
+    "empty": {
+      "title": "No encontramos lugares",
+      "description": "Prueba a quitar algún filtro o a cambiar de zona."
+    }
+  },
+  "placeCard": {
+    "view": "Ver lugar",
+    "viewAria": "Ver la ficha de {title}",
+    "featured": "Destacado",
+    "exclusive": "Exclusivo",
+    "reviews": "{count} reseñas"
+  },
+  "placeDetail": {
+    "aboutTitle": "Sobre el lugar",
+    "hoursTitle": "Horarios",
+    "featuresTitle": "Características",
+    "reviewsTitle": "Reseñas de Google",
+    "tagsTitle": "Etiquetas",
+    "contactTitle": "Contacto y ubicación",
+    "website": "Sitio web",
+    "phone": "Llamar",
+    "directions": "Cómo llegar",
+    "closed": "Cerrado",
+    "noHours": "Sin horarios publicados.",
+    "gallery": {
+      "counter": "{current} de {total}",
+      "prev": "Foto anterior",
+      "next": "Foto siguiente",
+      "open": "Ampliar foto",
+      "close": "Cerrar"
+    },
+    "related": {
+      "nearby": "Cerca de aquí",
+      "similar": "Similares",
+      "zone": "En la misma zona",
+      "empty": "No hay lugares para mostrar."
+    }
+  },
+  "pagination": {
+    "aria": "Paginación",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "goTo": "Ir a la página {page}"
+  },
+  "breadcrumb": {
+    "aria": "Miga de pan",
+    "home": "Inicio"
+  },
+  "footer": {
+    "tagline": "Tu guía local de bares, restaurantes y vida nocturna en Medellín.",
+    "explore": "Explorar",
+    "zones": "Zonas",
+    "company": "ViveMedellín",
+    "about": "Nosotros",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "contact": "Contacto",
+    "rights": "© {year} ViveMedellín. Todos los derechos reservados.",
+    "dataSource": "Datos y reseñas de Google Places. Las fotos pertenecen a sus autores."
+  },
+  "apiError": {
+    "title": "Datos incompletos",
+    "description": "No pudimos contactar con el servidor. Algunas secciones pueden aparecer vacías."
+  },
+  "common": {
+    "notFoundTitle": "Página no encontrada",
+    "notFoundDescription": "El enlace que seguiste no existe o el lugar ya no está publicado.",
+    "backHome": "Volver al inicio",
+    "errorTitle": "Algo se rompió",
+    "errorDescription": "Ha ocurrido un error inesperado. Vuelve a intentarlo en unos segundos.",
+    "retry": "Reintentar",
+    "loading": "Cargando…"
+  }
+}

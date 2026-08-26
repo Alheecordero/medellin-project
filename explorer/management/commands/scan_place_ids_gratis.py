@@ -49,6 +49,7 @@ from explorer.utils.text_scan_progress import (
 from explorer.utils.vive_areas import (
     GENERIC_SEARCH_QUERIES,
     VIVE_SEARCH_TYPES,
+    VIVE_SEARCH_TYPES_HIGH_YIELD,
     areas_for_point,
     point_in_scan_areas,
     resolve_area_names,
@@ -102,6 +103,65 @@ class Command(BaseCommand):
             type=int,
             default=3,
             help="Reintentos por error transitorio de Google (default: 3)",
+        )
+        parser.add_argument(
+            "--rate-limit-sleep",
+            type=float,
+            default=120.0,
+            help="Pausa en segundos tras 429 antes de pasar al siguiente punto (default: 120)",
+        )
+        parser.add_argument(
+            "--high-yield-only",
+            action="store_true",
+            help="Solo 14 tipos clave (menos llamadas, ~85%% cobertura)",
+        )
+        parser.add_argument(
+            "--skip-after-ids",
+            type=int,
+            default=0,
+            help="Tras acumular N IDs en un punto, saltar tipos restantes (ej: 50)",
+        )
+        parser.add_argument(
+            "--fast",
+            action="store_true",
+            help="Atajo: --high-yield-only --pause 5 --skip-after-ids 50",
+        )
+        parser.add_argument(
+            "--turbo",
+            action="store_true",
+            help="Atajo: --high-yield-only --pause 3 --skip-after-ids 60",
+        )
+        parser.add_argument(
+            "--smart",
+            action="store_true",
+            help="Turbo + omitir pasadas 2A/2B en puntos ya saturados (>=50 IDs guardados)",
+        )
+        parser.add_argument(
+            "--solo-huecos",
+            action="store_true",
+            help="Solo puntos con google_ids_places vacío (sub-grilla / huecos)",
+        )
+        parser.add_argument(
+            "--auto-skip-saturated",
+            action="store_true",
+            help="En restriction/generico, marcar hecho sin API si el punto ya tiene muchos IDs",
+        )
+        parser.add_argument(
+            "--saturated-threshold",
+            type=int,
+            default=50,
+            help="Umbral de IDs guardados para --auto-skip-saturated (default: 50)",
+        )
+        parser.add_argument(
+            "--max-stored-ids",
+            type=int,
+            default=0,
+            help="Solo puntos con menos de N IDs en google_ids_places (0 = sin filtro)",
+        )
+        parser.add_argument(
+            "--skip-if-page-full",
+            action="store_true",
+            help="Si una llamada devuelve 60 IDs (tope Google), omitir tipos restantes",
         )
         parser.add_argument(
             "--reset-text-scan",
@@ -193,7 +253,30 @@ class Command(BaseCommand):
         if not api_key and not options["dry_run"]:
             raise CommandError("GOOGLE_API_KEY no configurada.")
 
-        search_types = self._search_types_for_pasada(options["pasada"])
+        if options["smart"]:
+            options["auto_skip_saturated"] = True
+            options["high_yield_only"] = True
+            options["skip_after_ids"] = options["skip_after_ids"] or 50
+            options["skip_if_page_full"] = True
+            if options["pause"] == 0.25:
+                options["pause"] = 2.0
+            if options["radio"] == 600.0 and options.get("solo_huecos"):
+                options["radio"] = 350.0
+        elif options["turbo"]:
+            options["high_yield_only"] = True
+            options["skip_after_ids"] = options["skip_after_ids"] or 60
+            options["skip_if_page_full"] = True
+            if options["pause"] == 0.25:
+                options["pause"] = 3.0
+        elif options["fast"]:
+            options["high_yield_only"] = True
+            options["skip_after_ids"] = options["skip_after_ids"] or 50
+            if options["pause"] == 0.25:
+                options["pause"] = 5.0
+
+        search_types = self._search_types_for_pasada(
+            options["pasada"], high_yield_only=options["high_yield_only"]
+        )
         if options["limit_tipos"] > 0:
             search_types = search_types[: options["limit_tipos"]]
 
@@ -202,6 +285,8 @@ class Command(BaseCommand):
         source = PASADA_SOURCES[pasada]
 
         puntos = self._get_pending_points(options)
+        puntos = self._filter_by_stored_ids(puntos, options)
+        puntos = self._filter_solo_huecos(puntos, options)
         puntos = self._filter_scan_points(puntos)
         puntos = self._filter_shard(puntos, options)
 
@@ -218,6 +303,7 @@ class Command(BaseCommand):
         dry_run = options["dry_run"]
         radio = options["radio"]
         pause = options["pause"]
+        rate_limit_sleep = options["rate_limit_sleep"]
         llamadas_estimadas = total_puntos * len(search_types)
 
         self.stdout.write(f"\n{'═' * 60}")
@@ -234,6 +320,18 @@ class Command(BaseCommand):
         self.stdout.write(f"   Radio búsqueda:    {radio:.0f} m")
         if options["sync_pending"]:
             self.stdout.write(self.style.WARNING("   ↪ También escribe PendingPlace (--sync-pending)"))
+        if options["high_yield_only"]:
+            self.stdout.write("   Modo:               high-yield (14 tipos clave)")
+        if options["skip_after_ids"]:
+            self.stdout.write(f"   Skip tras IDs:      {options['skip_after_ids']}")
+        if options.get("auto_skip_saturated"):
+            self.stdout.write(
+                f"   Skip saturados:     ≥{options['saturated_threshold']} IDs guardados"
+            )
+        if options.get("max_stored_ids"):
+            self.stdout.write(f"   Máx IDs guardados:  <{options['max_stored_ids']}")
+        if options.get("solo_huecos"):
+            self.stdout.write("   Modo:               solo huecos (0 IDs guardados)")
         if dry_run:
             self.stdout.write(self.style.WARNING("   ⚠️  DRY RUN"))
         self.stdout.write("")
@@ -277,11 +375,28 @@ class Command(BaseCommand):
             "nuevos_pending": 0,
             "errores": 0,
             "puntos_con_error": 0,
+            "puntos_omitidos_saturados": 0,
         }
 
         for i, punto in enumerate(puntos, 1):
             lat, lng = punto.points.y, punto.points.x
             zonas_punto = areas_for_point(lat, lng, self.area_names)
+            stored_count = self._stored_ids_count(punto)
+            if (
+                options.get("auto_skip_saturated")
+                and pasada in ("restriction", "generico")
+                and stored_count >= options.get("saturated_threshold", 50)
+            ):
+                self._mark_point_done(punto, None, pasada)
+                stats["puntos"] += 1
+                stats["puntos_omitidos_saturados"] += 1
+                if i <= 3 or i % 250 == 0 or i == total_puntos:
+                    self.stdout.write(
+                        f"\n📍 [{i}/{total_puntos}] Punto {punto.id} — "
+                        f"⏭ saturado ({stored_count} IDs), {pasada} sin API"
+                    )
+                continue
+
             self.stdout.write(
                 f"\n📍 [{i}/{total_puntos}] Punto {punto.id} ({lat:.5f}, {lng:.5f})"
                 + (f" — {', '.join(zonas_punto)}" if zonas_punto else "")
@@ -308,6 +423,25 @@ class Command(BaseCommand):
                     punto_completo = False
                     label = included_type or query
                     self.stdout.write(self.style.ERROR(f"   ✗ {label}: {exc}"))
+                    if (
+                        isinstance(exc, requests.HTTPError)
+                        and exc.response is not None
+                        and exc.response.status_code == 429
+                    ):
+                        retry_after = exc.response.headers.get("Retry-After")
+                        wait_s = rate_limit_sleep
+                        if retry_after:
+                            try:
+                                wait_s = max(wait_s, float(retry_after))
+                            except ValueError:
+                                pass
+                        self.stdout.write(
+                            self.style.WARNING(
+                                f"   ⏸ Rate limit 429: pausa {wait_s:.0f}s y se salta el resto del punto"
+                            )
+                        )
+                        time.sleep(wait_s)
+                        break
                     if pause > 0:
                         time.sleep(pause)
                     continue
@@ -344,6 +478,22 @@ class Command(BaseCommand):
                         known_pending.add(pid)
                         stats["nuevos_pending"] += 1
 
+                skip_after_ids = options.get("skip_after_ids") or 0
+                if skip_after_ids and len(ids_en_punto) >= skip_after_ids:
+                    self.stdout.write(
+                        self.style.SUCCESS(
+                            f"   ⏭ Punto saturado ({len(ids_en_punto)} IDs), tipos restantes omitidos"
+                        )
+                    )
+                    break
+                if options.get("skip_if_page_full") and len(found) >= 60:
+                    self.stdout.write(
+                        self.style.SUCCESS(
+                            "   ⏭ Página llena (60 IDs), tipos restantes omitidos"
+                        )
+                    )
+                    break
+
                 if pause > 0:
                     time.sleep(pause + random.uniform(0, 0.1))
 
@@ -373,9 +523,13 @@ class Command(BaseCommand):
         if options["export_ids"]:
             self._export_ids(options["export_ids"])
 
-    def _search_types_for_pasada(self, pasada: str) -> list[tuple[str, str]]:
+    def _search_types_for_pasada(
+        self, pasada: str, *, high_yield_only: bool = False
+    ) -> list[tuple[str, str]]:
         if pasada == "generico":
             return [(q, "") for q in GENERIC_SEARCH_QUERIES]
+        if high_yield_only:
+            return list(VIVE_SEARCH_TYPES_HIGH_YIELD)
         return list(VIVE_SEARCH_TYPES)
 
     def _get_pending_points(self, options):
@@ -415,6 +569,32 @@ class Command(BaseCommand):
             raise CommandError(f"--shard debe estar entre 0 y {shards - 1}")
         ids = [p.id for p in qs.only("id").iterator() if p.id % shards == shard]
         return initialgrid_qs().filter(id__in=ids).order_by("id")
+
+    def _stored_ids_count(self, punto) -> int:
+        if "google_ids_places" not in initialgrid_db_columns():
+            return 0
+        return len(punto.google_ids_places or [])
+
+    def _filter_by_stored_ids(self, qs, options):
+        max_stored = options.get("max_stored_ids") or 0
+        if max_stored <= 0 or "google_ids_places" not in initialgrid_db_columns():
+            return qs
+        ids_ok = [
+            p.id
+            for p in qs.iterator()
+            if len(p.google_ids_places or []) < max_stored
+        ]
+        return initialgrid_qs().filter(id__in=ids_ok).order_by("id")
+
+    def _filter_solo_huecos(self, qs, options):
+        if not options.get("solo_huecos"):
+            return qs
+        if "google_ids_places" not in initialgrid_db_columns():
+            self.stdout.write(
+                self.style.WARNING("   --solo-huecos requiere columna google_ids_places")
+            )
+            return qs
+        return qs.filter(google_ids_places=[])
 
     def _filter_scan_points(self, qs):
         ids_ok = []
@@ -465,6 +645,10 @@ class Command(BaseCommand):
         if stats["puntos_con_error"]:
             self.stdout.write(
                 self.style.WARNING(f"   Puntos para reintentar:      {stats['puntos_con_error']:,}")
+            )
+        if stats.get("puntos_omitidos_saturados"):
+            self.stdout.write(
+                f"   Puntos saturados (sin API): {stats['puntos_omitidos_saturados']:,}"
             )
 
         catalogo = GooglePlaceId.objects.count()

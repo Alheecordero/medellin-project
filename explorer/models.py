@@ -541,6 +541,10 @@ class GooglePlaceId(models.Model):
         ("text_search_ids", "Text Search IDs Only"),
         ("text_search_restriction", "Text Search restriction (IDs Only)"),
         ("text_search_generico", "Text Search genérico (IDs Only)"),
+        ("text_search_relevance", "Text Search RELEVANCE (IDs Only)"),
+        ("text_search_distance", "Text Search DISTANCE (IDs Only)"),
+        ("nearby_search_popularity", "Nearby Search POPULARITY (Pro)"),
+        ("nearby_search_distance", "Nearby Search DISTANCE (Pro)"),
         ("places_import", "Importado desde Places"),
         ("pending_import", "Importado desde PendingPlace"),
         ("nearby_search", "Nearby Search"),
@@ -578,6 +582,18 @@ class GooglePlaceId(models.Model):
     )
     scan_lat = models.FloatField(null=True, blank=True)
     scan_lng = models.FloatField(null=True, blank=True)
+    first_query = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+        help_text="Consulta (textQuery) con la que se detectó por primera vez",
+    )
+    search_queries = ArrayField(
+        models.CharField(max_length=200),
+        blank=True,
+        default=list,
+        help_text="Consultas distintas que devolvieron este place_id",
+    )
 
     class Meta:
         verbose_name = "Google Place ID (catálogo)"
@@ -589,6 +605,128 @@ class GooglePlaceId(models.Model):
 
     def __str__(self):
         return self.place_id
+
+
+# ────────────────────────────────────────────────────────────────
+# Barrido de descubrimiento (comuna × categoría × malla)
+# ────────────────────────────────────────────────────────────────
+
+class PlaceDiscoveryRun(models.Model):
+    """Una ejecución de discover_medellin_places. Permite auditar y reanudar."""
+
+    STATUS_CHOICES = (
+        ("running", "En curso"),
+        ("done", "Terminada"),
+        ("interrupted", "Interrumpida"),
+        ("error", "Con error fatal"),
+    )
+
+    started_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default="running", db_index=True
+    )
+    params = models.JSONField(default=dict, blank=True)
+
+    tasks_done = models.PositiveIntegerField(default=0)
+    tasks_error = models.PositiveIntegerField(default=0)
+    api_calls = models.PositiveIntegerField(default=0)
+    pages = models.PositiveIntegerField(default=0)
+    ids_seen = models.PositiveIntegerField(default=0, help_text="place_id únicos devueltos")
+    ids_new = models.PositiveIntegerField(default=0, help_text="Nuevos en GooglePlaceId")
+    errors = models.PositiveIntegerField(default=0)
+    rate_limited = models.PositiveIntegerField(default=0, help_text="Respuestas HTTP 429")
+
+    class Meta:
+        verbose_name = "Barrido de descubrimiento"
+        verbose_name_plural = "Barridos de descubrimiento"
+        ordering = ["-started_at"]
+
+    def __str__(self):
+        return f"Run {self.pk} ({self.status})"
+
+    @property
+    def duration_s(self) -> float:
+        end = self.finished_at or timezone.now()
+        return (end - self.started_at).total_seconds()
+
+
+class PlaceDiscoveryTask(models.Model):
+    """
+    Unidad de trabajo idempotente del barrido: una consulta sobre un rectángulo.
+
+    `signature` la hace única, de modo que replanificar no duplica trabajo y un
+    proceso interrumpido se reanuda tomando las tareas que siguen pendientes.
+    """
+
+    KIND_CHOICES = (
+        ("text", "Text Search (IDs Only, gratis)"),
+        ("nearby", "Nearby Search (Pro, de pago)"),
+    )
+    STATUS_CHOICES = (
+        ("pending", "Pendiente"),
+        ("running", "En curso"),
+        ("done", "Terminada"),
+        ("error", "Error"),
+    )
+
+    signature = models.CharField(max_length=64, unique=True, db_index=True)
+    kind = models.CharField(max_length=10, choices=KIND_CHOICES, db_index=True)
+
+    area_name = models.CharField(max_length=120)
+    area_slug = models.SlugField(max_length=140, db_index=True)
+    area_kind = models.CharField(max_length=20, blank=True, default="")
+
+    category = models.CharField(max_length=80, blank=True, default="")
+    included_type = models.CharField(max_length=80, blank=True, default="")
+    query = models.CharField(max_length=200, blank=True, default="")
+    rank_preference = models.CharField(max_length=20, blank=True, default="")
+
+    lat_min = models.FloatField()
+    lat_max = models.FloatField()
+    lng_min = models.FloatField()
+    lng_max = models.FloatField()
+    radius_m = models.FloatField(default=0.0)
+
+    depth = models.PositiveSmallIntegerField(default=0, db_index=True)
+    parent = models.ForeignKey(
+        "self", null=True, blank=True, on_delete=models.SET_NULL, related_name="children"
+    )
+
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default="pending", db_index=True
+    )
+    attempts = models.PositiveSmallIntegerField(default=0)
+    ids_found = models.PositiveIntegerField(default=0)
+    ids_new = models.PositiveIntegerField(default=0)
+    api_calls = models.PositiveIntegerField(default=0)
+    pages = models.PositiveIntegerField(default=0)
+    saturated = models.BooleanField(
+        default=False,
+        db_index=True,
+        help_text="Google devolvió el máximo: la zona se subdividió",
+    )
+    error_message = models.TextField(blank=True, default="")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Tarea de descubrimiento"
+        verbose_name_plural = "Tareas de descubrimiento"
+        ordering = ["depth", "area_slug", "category", "id"]
+        indexes = [
+            models.Index(fields=["status", "kind", "depth"]),
+            models.Index(fields=["area_slug", "category"]),
+        ]
+
+    def __str__(self):
+        return f"{self.kind}:{self.area_slug}/{self.category or 'generico'} d{self.depth}"
+
+    @property
+    def center(self) -> tuple[float, float]:
+        return ((self.lat_min + self.lat_max) / 2, (self.lng_min + self.lng_max) / 2)
 
 
 # ────────────────────────────────────────────────────────────────

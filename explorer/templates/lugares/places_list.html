@@ -3,9 +3,11 @@
 {% load i18n_extras %}
 {% load form_tags %}
 {% load static %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {# El listado controla sus propios tres anuncios para evitar duplicar el global. #}
 {% block global_ad %}{% endblock %}
+{% block meta_robots %}{% if busqueda_actual or request.GET.page %}noindex, follow, max-image-preview:large{% else %}index, follow, max-image-preview:large, max-snippet:-1{% endif %}{% endblock %}
 
 {% block title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
 
@@ -646,7 +648,7 @@ function generarPlaceCardHtml(lugar, opciones = {}) {
     const precio = formatPriceRangeJs(lugar.precio);
     
     // URL
-    const url = lugar.url || `/lugar/${lugar.slug}/`;
+    const url = lugar.url || `{% if LANGUAGE_CODE|slice:":2" == "en" %}/en/place/{% else %}/lugar/{% endif %}${lugar.slug}/`;
     
     // Imagen con fallback a original si falla, luego placeholder
     const imagenFull = lugar.imagen_full || '';

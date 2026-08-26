@@ -247,6 +247,75 @@ VIVE_SEARCH_TYPES: list[tuple[str, str]] = [
     ("mirador", "observation_deck"),
 ]
 
+# Subconjunto de alto rendimiento (~85% cobertura, ~46% menos llamadas)
+VIVE_SEARCH_TYPES_HIGH_YIELD: list[tuple[str, str]] = [
+    ("restaurante", "restaurant"),
+    ("bar", "bar"),
+    ("pub", "pub"),
+    ("discoteca", "night_club"),
+    ("cocktail bar", "cocktail_bar"),
+    ("café", "cafe"),
+    ("panadería", "bakery"),
+    ("pizzería", "pizza_restaurant"),
+    ("comida rápida", "fast_food_restaurant"),
+    ("atracción turística", "tourist_attraction"),
+    ("museo", "museum"),
+    ("hotel", "hotel"),
+    ("música en vivo", "live_music_venue"),
+    ("karaoke", "karaoke"),
+]
+
+# Tipos de cocina y planes concretos: rompen el techo de 60 resultados que
+# Google impone por consulta, porque «restaurante» siempre devuelve los mismos.
+# Todos verificados contra Text Search (New) como includedType válido.
+CUISINE_SEARCH_TYPES: list[tuple[str, str]] = [
+    ("restaurante mexicano", "mexican_restaurant"),
+    ("restaurante italiano", "italian_restaurant"),
+    ("restaurante japonés", "japanese_restaurant"),
+    ("restaurante chino", "chinese_restaurant"),
+    ("restaurante coreano", "korean_restaurant"),
+    ("restaurante tailandés", "thai_restaurant"),
+    ("restaurante indio", "indian_restaurant"),
+    ("restaurante peruano", "seafood_restaurant"),
+    ("restaurante español", "spanish_restaurant"),
+    ("restaurante francés", "french_restaurant"),
+    ("restaurante griego", "greek_restaurant"),
+    ("restaurante mediterráneo", "mediterranean_restaurant"),
+    ("restaurante árabe", "middle_eastern_restaurant"),
+    ("restaurante brasilero", "brazilian_restaurant"),
+    ("restaurante vietnamita", "vietnamese_restaurant"),
+    ("restaurante asiático", "asian_restaurant"),
+    ("restaurante americano", "american_restaurant"),
+    ("ramen", "ramen_restaurant"),
+    ("parrilla", "barbecue_restaurant"),
+    ("asados", "bar_and_grill"),
+    ("carnes", "steak_house"),
+    ("hamburguesas", "hamburger_restaurant"),
+    ("sándwiches", "sandwich_shop"),
+    ("desayunos", "breakfast_restaurant"),
+    ("brunch", "brunch_restaurant"),
+    ("buffet", "buffet_restaurant"),
+    ("comida vegana", "vegan_restaurant"),
+    ("comida vegetariana", "vegetarian_restaurant"),
+    ("alta cocina", "fine_dining_restaurant"),
+    ("postres", "dessert_shop"),
+    ("repostería", "dessert_restaurant"),
+    ("chocolatería", "chocolate_shop"),
+    ("donas", "donut_shop"),
+    ("jugos naturales", "juice_shop"),
+    ("casa de té", "tea_house"),
+    ("cafetería corriente", "cafeteria"),
+    ("bar deportivo", "sports_bar"),
+    ("salón de eventos", "banquet_hall"),
+    ("teatro", "performing_arts_theater"),
+    ("sala de conciertos", "concert_hall"),
+    ("plaza", "plaza"),
+    ("sitio histórico", "historical_place"),
+    ("hito cultural", "cultural_landmark"),
+    ("monumento", "monument"),
+    ("sendero ecológico", "hiking_area"),
+]
+
 # Pasada genérica (sin includedType) — Fase 2B del plan gratuito
 GENERIC_SEARCH_QUERIES: list[str] = [
     "local comercial",

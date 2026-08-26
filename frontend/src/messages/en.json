@@ -1,0 +1,142 @@
+{
+  "metadata": {
+    "siteTitle": "ViveMedellín | Discover bars, restaurants and nightlife",
+    "siteDescription": "Your local guide to Medellín: thousands of bars, restaurants, rooftops and clubs with photos, opening hours and Google ratings."
+  },
+  "language": {
+    "es": "ES",
+    "en": "EN",
+    "switchTo": "Switch to {label}"
+  },
+  "nav": {
+    "home": "Home",
+    "places": "Explore",
+    "openSearch": "Open search",
+    "closeSearch": "Close search"
+  },
+  "search": {
+    "placeholder": "Search a bar, restaurant or rooftop",
+    "submit": "Search",
+    "submitMobile": "Search places",
+    "ariaLabel": "Search places in Medellín",
+    "zoneAria": "Filter by area",
+    "allZones": "All areas",
+    "resultsFor": "Results for “{query}”",
+    "unavailable": "Text search isn't available right now. Use the area and type filters instead."
+  },
+  "home": {
+    "badge": "Local guide to Medellín",
+    "title": "Discover the best bars, restaurants and rooftops in Medellín",
+    "quickStats": "{places} places across {zones} areas of the Aburrá Valley",
+    "placeTypesTitle": "Place types",
+    "placeTypesSubtitle": "Browse by category with real photos and Google ratings.",
+    "placeTypesViewAll": "View all",
+    "zonesTitle": "Areas and neighbourhoods",
+    "zonesSubtitle": "The areas with the most places and complete photos on ViveMedellín.",
+    "viewAll": "View all",
+    "placesInZone": "{count} places",
+    "exploreZone": "Explore area",
+    "mustSeeTitle": "Must-see",
+    "mustSeeSubtitle": "The highest rated places right now.",
+    "nearby": {
+      "title": "Near you",
+      "subtitle": "Places sorted by distance.",
+      "cta": "Use my location",
+      "viewAll": "View all",
+      "loading": "Looking for places nearby…",
+      "empty": "No places found in this radius. Try widening it.",
+      "error": "We couldn't load nearby places.",
+      "denied": "We need your location permission to show nearby places.",
+      "unsupported": "Your browser doesn't support geolocation.",
+      "outside": "Looks like you're outside the Aburrá Valley.",
+      "distance": "{km} km away"
+    }
+  },
+  "places": {
+    "title": "Places in Medellín",
+    "subtitle": "Bars, restaurants, cafés and rooftops with real photos and ratings.",
+    "resultsCount": "{count, plural, =0 {No results} one {# place} other {# places}}",
+    "filters": {
+      "legend": "Filter places",
+      "area": "Area",
+      "allAreas": "All areas",
+      "type": "Type",
+      "allTypes": "All types",
+      "features": "Features",
+      "apply": "Apply filters",
+      "clear": "Clear"
+    },
+    "empty": {
+      "title": "No places found",
+      "description": "Try removing a filter or picking another area."
+    }
+  },
+  "placeCard": {
+    "view": "View place",
+    "viewAria": "View the listing for {title}",
+    "featured": "Featured",
+    "exclusive": "Exclusive",
+    "reviews": "{count} reviews"
+  },
+  "placeDetail": {
+    "aboutTitle": "About this place",
+    "hoursTitle": "Opening hours",
+    "featuresTitle": "Features",
+    "reviewsTitle": "Google reviews",
+    "tagsTitle": "Tags",
+    "contactTitle": "Contact and location",
+    "website": "Website",
+    "phone": "Call",
+    "directions": "Directions",
+    "closed": "Closed",
+    "noHours": "No opening hours published.",
+    "gallery": {
+      "counter": "{current} of {total}",
+      "prev": "Previous photo",
+      "next": "Next photo",
+      "open": "Enlarge photo",
+      "close": "Close"
+    },
+    "related": {
+      "nearby": "Nearby",
+      "similar": "Similar",
+      "zone": "Same area",
+      "empty": "No places to show."
+    }
+  },
+  "pagination": {
+    "aria": "Pagination",
+    "prev": "Previous",
+    "next": "Next",
+    "goTo": "Go to page {page}"
+  },
+  "breadcrumb": {
+    "aria": "Breadcrumb",
+    "home": "Home"
+  },
+  "footer": {
+    "tagline": "Your local guide to bars, restaurants and nightlife in Medellín.",
+    "explore": "Explore",
+    "zones": "Areas",
+    "company": "ViveMedellín",
+    "about": "About us",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact",
+    "rights": "© {year} ViveMedellín. All rights reserved.",
+    "dataSource": "Data and reviews from Google Places. Photos belong to their authors."
+  },
+  "apiError": {
+    "title": "Incomplete data",
+    "description": "We couldn't reach the server. Some sections may appear empty."
+  },
+  "common": {
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The link you followed doesn't exist or the place is no longer published.",
+    "backHome": "Back to home",
+    "errorTitle": "Something broke",
+    "errorDescription": "An unexpected error occurred. Please try again in a few seconds.",
+    "retry": "Retry",
+    "loading": "Loading…"
+  }
+}

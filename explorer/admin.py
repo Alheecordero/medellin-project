@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription, CuratedGuide, CuratedGuideItem, PendingPlace, GooglePlaceId
+from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription, CuratedGuide, CuratedGuideItem, PendingPlace, GooglePlaceId, PlaceDiscoveryRun, PlaceDiscoveryTask
 import json
 
 
@@ -384,12 +384,19 @@ class GooglePlaceIdAdmin(admin.ModelAdmin):
         "discovery_count",
         "areas_display",
         "types_display",
+        "first_query",
         "first_seen_at",
         "last_seen_at",
     )
     list_filter = ("source",)
-    search_fields = ("place_id",)
-    readonly_fields = ("first_seen_at", "last_seen_at", "discovery_count")
+    search_fields = ("place_id", "first_query")
+    readonly_fields = (
+        "first_seen_at",
+        "last_seen_at",
+        "discovery_count",
+        "first_query",
+        "search_queries",
+    )
     list_per_page = 100
 
     @admin.display(description="Zonas")
@@ -399,6 +406,50 @@ class GooglePlaceIdAdmin(admin.ModelAdmin):
     @admin.display(description="Tipos")
     def types_display(self, obj):
         return ", ".join(obj.scan_types[:3]) + ("…" if len(obj.scan_types) > 3 else "")
+
+
+@admin.register(PlaceDiscoveryRun)
+class PlaceDiscoveryRunAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "status",
+        "started_at",
+        "ids_seen",
+        "ids_new",
+        "api_calls",
+        "tasks_done",
+        "errors",
+    )
+    list_filter = ("status",)
+    readonly_fields = [field.name for field in PlaceDiscoveryRun._meta.fields]
+    ordering = ("-started_at",)
+
+
+@admin.register(PlaceDiscoveryTask)
+class PlaceDiscoveryTaskAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "kind",
+        "area_name",
+        "category",
+        "rank_preference",
+        "depth",
+        "status",
+        "ids_found",
+        "ids_new",
+        "saturated",
+    )
+    list_filter = ("status", "kind", "saturated", "depth", "area_name")
+    search_fields = ("area_name", "category", "query", "signature")
+    readonly_fields = [field.name for field in PlaceDiscoveryTask._meta.fields]
+    list_per_page = 100
+
+    actions = ("reencolar",)
+
+    @admin.action(description="Reencolar tareas seleccionadas")
+    def reencolar(self, request, queryset):
+        updated = queryset.update(status="pending", error_message="")
+        self.message_user(request, f"{updated} tareas reencoladas.")
 
 
 # Personalización del título del admin

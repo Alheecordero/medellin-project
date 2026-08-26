@@ -1,5 +1,5 @@
 # robots.txt para ViveMedellín
-# https://vivemedellin.co/
+# https://vivemedellin.net/
 
 User-agent: *
 Allow: /
@@ -9,19 +9,19 @@ Allow: /lugares/
 Allow: /lugar/
 Allow: /en/places/
 Allow: /en/place/
+Allow: /guias/
+Allow: /en/guides/
 Allow: /nosotros/
 Allow: /en/about-us/
 
 # Bloquear rutas internas/admin
 Disallow: /admin/
 Disallow: /api/
+Disallow: /en/api/
+Disallow: /es/api/
 Disallow: /i18n/
 Disallow: /__debug__/
 Disallow: /static/admin/
-Disallow: /*?*page=
-Disallow: /*?*tipo=
-Disallow: /*?*delivery=
-Disallow: /*?*outdoor_seating=
 
 # Permitir recursos estáticos para crawlers
 Allow: /static/img/
@@ -32,5 +32,5 @@ Allow: /static/js/
 Crawl-delay: 1
 
 # Sitemaps
-Sitemap: https://vivemedellin.co/sitemap.xml
+Sitemap: https://vivemedellin.net/sitemap.xml
 

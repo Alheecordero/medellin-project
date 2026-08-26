@@ -58,7 +58,9 @@ Grilla → scan_nuevos_lugares (Nearby Search Pro) → PendingPlace → procesar
 
 | Objetivo | Comando | Costo aprox. |
 |----------|---------|--------------|
-| **Grilla cobertura total (recomendado)** | `python manage.py generar_grilla_cobertura --preset all --dry-run` | $0 |
+| **Barrido por comuna × categoría (recomendado)** | `python manage.py discover_medellin_places` | **$0** |
+| Ver progreso del barrido por comuna | `python manage.py discover_medellin_places --status` | $0 |
+| **Grilla cobertura total** | `python manage.py generar_grilla_cobertura --preset all --dry-run` | $0 |
 | Grilla Medellín + Envigado (legacy) | `python manage.py generar_grilla_vive_medellin` | $0 |
 | **Descubrir place_id gratis → catálogo** | `python manage.py scan_place_ids_gratis --preset all` | **$0** |
 | Re-escanear puntos sin IDs | `python manage.py scan_place_ids_gratis --rescan-vacios --radio 450` | $0 |
@@ -73,6 +75,49 @@ Grilla → scan_nuevos_lugares (Nearby Search Pro) → PendingPlace → procesar
 ---
 
 ## Estrategia recomendada (orden de ejecución)
+
+### A0) Barrido por comuna × categoría (`discover_medellin_places`)
+
+Es la vía más productiva y no cuesta nada: divide el territorio con los polígonos
+de `RegionOSM` (16 comunas de Medellín y 6 municipios vecinos) y cruza cada área
+con 77 categorías, pidiendo a Text Search únicamente `places.id`.
+
+```bash
+python manage.py discover_medellin_places --status        # qué hay planificado
+python manage.py discover_medellin_places --dry-run       # plan y estimación
+python manage.py discover_medellin_places                 # barrido completo
+python manage.py discover_medellin_places --comuna "El Poblado" --categorias cocina
+python manage.py discover_medellin_places --municipios     # + Envigado, Itagüí, Rionegro…
+```
+
+Cómo funciona:
+
+- **Nombrar la zona en la consulta** («restaurante en El Poblado, Medellín») es lo
+  que permite superar el techo de 60 resultados que Google impone por búsqueda.
+- **`--rank both` (por defecto)** pide cada categoría con `RELEVANCE` y con
+  `DISTANCE`. Los dos órdenes apenas se solapan (~1 de 39 en pruebas), así que
+  casi duplica los IDs únicos sin costo.
+- **Subdivisión automática**: si una consulta agota las 3 páginas que da la API,
+  la zona se parte en 4 cuadrantes y se vuelve a consultar (`--max-depth`, 2 por
+  defecto). En pruebas, un cuadrante devolvió 19 IDs nuevos de 20.
+- **Reanudable**: cada consulta es una fila en `PlaceDiscoveryTask` con firma
+  única. Si el proceso se corta (Ctrl+C incluido), volver a ejecutar el comando
+  retoma exactamente donde quedó.
+- **Concurrencia controlada**: `--workers` hilos contra un techo de `--qps`
+  peticiones por segundo, con reintentos, backoff exponencial y respeto de
+  `Retry-After` en los HTTP 429 (el ritmo baja solo y se recupera después).
+- **Nunca pide Place Details**: el descubrimiento no toca las tarifas caras.
+
+Complemento de pago (opcional):
+
+```bash
+python manage.py discover_medellin_places --nearby --nearby-radius 400 --nearby-budget 300
+```
+
+Nearby Search **no tiene tarifa IDs Only**: cada llamada se cobra como
+Nearby Search Pro (5.000 gratis al mes, luego ~$32 por 1.000). Por eso va detrás
+de un tope explícito de llamadas y solo se ejecuta cuando ya no quedan tareas
+gratuitas pendientes.
 
 ### A) Descubrir todos los place_id gratis (cobertura total)
 

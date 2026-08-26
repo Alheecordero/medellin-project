@@ -102,8 +102,6 @@ if $FRONTEND_ONLY; then
     git add \
         explorer/templates/ \
         explorer/static/ \
-        frontend/public/css/ \
-        frontend/src/app/layout.tsx \
         locale/en/LC_MESSAGES/django.mo \
         locale/en/LC_MESSAGES/django.po \
         explorer/templatetags/form_tags.py \

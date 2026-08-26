@@ -45,13 +45,15 @@
 {
   "@context": "https://schema.org",
   "@type": "{% if lugar.tipo == 'restaurant' %}Restaurant{% elif lugar.tipo == 'bar' or lugar.tipo == 'sports_bar' %}BarOrPub{% elif lugar.tipo == 'night_club' %}NightClub{% elif lugar.tipo == 'cafe' or lugar.tipo == 'coffee_shop' %}CafeOrCoffeeShop{% elif lugar.tipo == 'bakery' %}Bakery{% elif lugar.tipo == 'museum' %}Museum{% elif lugar.tipo == 'art_gallery' %}ArtGallery{% elif lugar.tipo == 'tourist_attraction' %}TouristAttraction{% else %}LocalBusiness{% endif %}",
-  "name": "{{ lugar.nombre }}",
-  "url": "{{ request.build_absolute_uri }}",
-  {% if lugar.descripcion %}"description": "{{ lugar.descripcion|truncatechars:160 }}",{% endif %}
-  {% if lugar.get_primera_foto %}"image": "{{ lugar.get_primera_foto.imagen_mediana|default:lugar.get_primera_foto.imagen|media_url }}",{% endif %}
+  "@id": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}#business",
+  "name": "{{ lugar.nombre|escapejs }}",
+  "url": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}",
+  "mainEntityOfPage": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}",
+  {% if lugar.descripcion %}"description": "{{ lugar.descripcion|truncatechars:160|escapejs }}",{% endif %}
+  {% if lugar.get_primera_foto %}"image": "{{ lugar.get_primera_foto.imagen_mediana|default:lugar.get_primera_foto.imagen|media_url|ensure_absolute_url:request }}",{% endif %}
   {% if lugar.direccion %}"address": {
     "@type": "PostalAddress",
-    "streetAddress": "{{ lugar.direccion }}",
+    "streetAddress": "{{ lugar.direccion|escapejs }}",
     "addressLocality": "Medellín",
     "addressRegion": "Antioquia",
     "addressCountry": "CO"
@@ -61,23 +63,22 @@
     "latitude": {{ lugar.ubicacion.y|unlocalize }},
     "longitude": {{ lugar.ubicacion.x|unlocalize }}
   },{% endif %}
-  {% if lugar.telefono %}"telephone": "{{ lugar.telefono }}",{% endif %}
-  {% if lugar.sitio_web %}"url": "{{ lugar.sitio_web }}",{% endif %}
-  {% if lugar.rating %}"aggregateRating": {
+  {% if lugar.telefono %}"telephone": "{{ lugar.telefono|escapejs }}",{% endif %}
+  {% if lugar.rating and lugar.total_reviews %}"aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": {{ lugar.rating|unlocalize }},
     "bestRating": "5",
-    "worstRating": "1"{% if lugar.total_reviews %},
-    "reviewCount": {{ lugar.total_reviews }}{% endif %}
+    "worstRating": "1",
+    "reviewCount": {{ lugar.total_reviews }}
   },{% endif %}
-  {% if lugar.precio %}"priceRange": "{{ lugar.precio|format_price_range }}",{% endif %}
+  {% if lugar.precio %}"priceRange": "{{ lugar.precio|format_price_range|escapejs }}",{% endif %}
   "currenciesAccepted": "COP",
   "paymentAccepted": "{% if lugar.accepts_credit_cards %}Credit Card, {% endif %}Cash",
   {% if lugar.serves_cocktails or lugar.serves_wine or lugar.serves_beer %}"servesCuisine": "{% if lugar.serves_cocktails %}Cocktails{% endif %}{% if lugar.serves_wine %}, Wine{% endif %}{% if lugar.serves_beer %}, Beer{% endif %}",{% endif %}
   "isAccessibleForFree": true,
   {% if lugar.wheelchair_accessible_entrance %}"accessibilityFeature": "wheelchairAccessible",{% endif %}
   {% if lugar.allows_dogs %}"amenityFeature": {"@type": "LocationFeatureSpecification", "name": "Pet Friendly", "value": true},{% endif %}
-  "sameAs": [{% if lugar.google_maps_uri %}"{{ lugar.google_maps_uri }}"{% endif %}]
+  "sameAs": [{% if lugar.sitio_web %}"{{ lugar.sitio_web|escapejs }}"{% if lugar.google_maps_uri %},{% endif %}{% endif %}{% if lugar.google_maps_uri %}"{{ lugar.google_maps_uri|escapejs }}"{% endif %}]
 }
 </script>
 {% endif %}
@@ -127,8 +128,8 @@
     {
       "@type": "ListItem",
       "position": {{ forloop.counter }},
-      "name": "{{ crumb.name }}",
-      "item": "{{ request.scheme }}://{{ request.get_host }}{{ crumb.url }}"
+      "name": "{{ crumb.name|escapejs }}",
+      "item": "{{ request.scheme }}://{{ request.get_host }}{{ crumb.url|escapejs }}"
     }{% if not forloop.last %},{% endif %}
     {% endfor %}
   ]

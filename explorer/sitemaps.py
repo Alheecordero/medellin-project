@@ -1,7 +1,7 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 from django.db.models import Q
-from explorer.models import Places, RegionOSM
+from explorer.models import CuratedGuide, Places, RegionOSM
 
 
 class StaticViewSitemap(Sitemap):
@@ -13,6 +13,7 @@ class StaticViewSitemap(Sitemap):
         return [
             "explorer:home",
             "explorer:lugares_list",
+            "explorer:guias_index",
             "explorer:about_es",
             "explorer:privacy_policy",
             "explorer:terms",
@@ -25,22 +26,31 @@ class StaticViewSitemap(Sitemap):
 
 class PlacesSitemap(Sitemap):
     """Sitemap para lugares individuales con alta prioridad para lugares destacados.
-    
+
     Django automáticamente pagina si hay más URLs que el límite.
     El orden prioriza lugares destacados y con mejor rating primero.
+
+    Criterios alineados con PlaceDetailView + señales mínimas de calidad para
+    no saturar el crawl budget de Google (evita thin pages sin rating ni reviews).
     """
     changefreq = "weekly"
     priority = 0.8
     limit = 5000  # Límite por página de sitemap para mejor rendimiento
 
     def items(self):
-        # Optimizado: solo cargar campos necesarios para evitar timeout
         return Places.objects.filter(
-            slug__isnull=False
+            tiene_fotos=True,
+            slug__isnull=False,
+            embedding__isnull=False,
         ).exclude(
             slug=""
+        ).exclude(
+            slug__regex=r'^-?\d+$'  # slugs basura: -1, 1, 338, etc.
         ).filter(
-            Q(rating__gte=2.0) | Q(rating__isnull=True)
+            Q(rating__gte=3.0)
+            | Q(total_reviews__gte=5)
+            | Q(es_destacado=True)
+            | Q(show_in_home=True)
         ).only(
             'slug', 'es_destacado', 'rating', 'id', 'fecha_actualizacion'
         ).order_by("-es_destacado", "-rating", "-id")
@@ -78,6 +88,37 @@ class ComunasSitemap(Sitemap):
         return reverse("explorer:lugares_por_comuna", args=[obj.slug])
 
 
+class ComunasSitemapEN(ComunasSitemap):
+    """Sitemap para páginas de comunas/regiones en inglés."""
+
+    def location(self, obj):
+        return f"/en/places/{obj.slug}/"
+
+
+class GuidesSitemap(Sitemap):
+    """Sitemap de guías editoriales publicadas."""
+    changefreq = "weekly"
+    priority = 0.8
+
+    def items(self):
+        return CuratedGuide.objects.filter(publicado=True).only(
+            "slug", "fecha_actualizacion"
+        ).order_by("-fecha_actualizacion")
+
+    def location(self, obj):
+        return reverse("explorer:guia_detail", args=[obj.slug])
+
+    def lastmod(self, obj):
+        return obj.fecha_actualizacion
+
+
+class GuidesSitemapEN(GuidesSitemap):
+    """Sitemap de guías editoriales en inglés."""
+
+    def location(self, obj):
+        return f"/en/guides/{obj.slug}/"
+
+
 # ImagesSitemap eliminado - las imágenes ya están en las páginas de lugares
 # y causaba timeout al cargar demasiadas fotos
 
@@ -96,7 +137,7 @@ class StaticViewSitemapEN(Sitemap):
     priority = 1.0
 
     def items(self):
-        return ["/en/", "/en/places/", "/en/about-us/"]
+        return ["/en/", "/en/places/", "/en/guides/", "/en/about-us/"]
 
     def location(self, item):
         return item

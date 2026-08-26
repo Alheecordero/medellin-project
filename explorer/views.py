@@ -9,7 +9,7 @@ from django.db.models.functions import Rank
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.utils import timezone
 import json
 import ipaddress
@@ -897,6 +897,9 @@ class PlacesListView(ListView):
                 if tipo_actual_label:
                     break
         
+        filtros_query = self.request.GET.copy()
+        filtros_query.pop("page", None)
+
         context.update({
             "busqueda_actual": busqueda_actual,
             "tipo_actual": tipo_actual,
@@ -908,6 +911,8 @@ class PlacesListView(ListView):
             "comunas_medellin": comunas_medellin,
             "otras_regiones": otras_regiones,
             "tipo_grupos_ui": tipo_grupos_ui,
+            "region_actual": comuna_info,
+            "filtros_url": filtros_query.urlencode(),
         })
         return context
 
@@ -940,11 +945,28 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         # Horarios formateados (muy rápido - solo procesamiento)
         context['horarios'] = self._format_horarios(lugar)
         
-        # 🎯 LAZY LOADING: Lugares relacionados se cargan con AJAX
-        # Esto reduce el tiempo inicial de ~2.2s a ~0.5s
+        # Renderizar una muestra de enlaces relacionados en el HTML inicial.
+        # Google puede descubrirlos sin depender de JavaScript; AJAX completa
+        # después las tres secciones sin penalizar demasiado el tiempo inicial.
         context['lugares_cercanos'] = []
-        context['lugares_similares'] = []
+        context['lugares_similares'] = self._get_lugares_similares(lugar, limit=3)
         context['lugares_misma_comuna'] = []
+        context['breadcrumbs'] = [
+            {'name': _('Inicio'), 'url': reverse('explorer:home')},
+            {'name': _('Lugares'), 'url': reverse('explorer:lugares_list')},
+        ]
+        if lugar.comuna:
+            context['breadcrumbs'].append({
+                'name': lugar.comuna.name,
+                'url': reverse(
+                    'explorer:lugares_por_comuna',
+                    kwargs={'comuna_slug': lugar.comuna.slug},
+                ),
+            })
+        context['breadcrumbs'].append({
+            'name': lugar.nombre,
+            'url': self.request.path,
+        })
         
         # Meta data para AJAX loading
         context['ajax_endpoints'] = {
@@ -1013,8 +1035,8 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
             if tags:
                 qs = qs.filter(tags__id__in=tags).distinct()
 
-            result = list(
-                qs.only(
+            def fetch_related(queryset):
+                return list(queryset.only(
                     "id",
                     "nombre",
                     "slug",
@@ -1031,7 +1053,13 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
                     )
                 )
                 .order_by("-es_destacado", "-weighted_rating", "-rating")[:limit]
-            )
+                )
+
+            result = fetch_related(qs)
+            if not result and tags:
+                # No dejar una ficha aislada si sus tags son demasiado específicos.
+                fallback_qs = Places.objects.filter(**base_filter).exclude(id=lugar.id)
+                result = fetch_related(fallback_qs)
             
             cache.set(cache_key, result, 3600)  # 1 hora de caché
         
@@ -1259,36 +1287,14 @@ def reviews_lugar(request, slug):
 
 def lugares_por_comuna(request, comuna_slug):
     """Vista de lugares filtrada por comuna usando slug SEO-friendly."""
-    
-    # Obtener la región por slug
-    try:
-        # Buscar región por slug directo (método principal)
-        region = RegionOSM.objects.filter(slug=comuna_slug).first()
-        
-        if not region:
-            # Fallback: buscar por nombre convertido a slug
-            region = RegionOSM.objects.filter(
-                name__icontains=comuna_slug.replace('-', ' ')
-            ).first()
-        
-        if not region:
-            # Si no se encuentra la región, usar la vista normal con mensaje
-            from django.shortcuts import render
-            return render(request, 'lugares/places_list.html', {
-                'lugares': [],
-                'titulo_pagina': 'Comuna no encontrada',
-                'descripcion_pagina': f'No se encontró información para "{comuna_slug}"',
-                'regiones_filtro': RegionOSM.objects.all()[:20]
-            })
-            
-    except Exception:
-        from django.shortcuts import render
-        return render(request, 'lugares/places_list.html', {
-            'lugares': [],
-            'titulo_pagina': 'Error',
-            'descripcion_pagina': 'Error al buscar la comuna',
-            'regiones_filtro': RegionOSM.objects.all()[:20]
-        })
+
+    region = RegionOSM.objects.filter(slug=comuna_slug).first()
+    if not region:
+        region = RegionOSM.objects.filter(
+            name__iexact=comuna_slug.replace('-', ' ')
+        ).first()
+    if not region:
+        raise Http404(_("Comuna no encontrada"))
     
     # Crear una versión personalizada de PlacesListView con filtro de comuna
     class LugaresPorComunaView(PlacesListView):

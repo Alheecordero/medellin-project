@@ -9,6 +9,8 @@ __pycache__/
 .env
 .env.local
 .env.production
+.env.tmp
+.server_env.tmp
 settings_dev.py
 *.sqlite3
 
@@ -29,5 +31,6 @@ Thumbs.db
 # Credenciales GCP (nunca versionar)
 *-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].json
 *-credentials.json
+/vertex.json
 frontend/node_modules/
 frontend/.next/

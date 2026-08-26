@@ -49,12 +49,15 @@ def resolve_media_url(url: str | None) -> str | None:
 
         public_base = (
             getattr(settings, "R2_PUBLIC_BASE_URL", None)
-            or getattr(settings, "MEDIA_PUBLIC_BASE_URL", "https://img.vivemedellin.co/")
+            or getattr(settings, "MEDIA_PUBLIC_BASE_URL", "https://img.vivemedellin.net/")
         ).rstrip("/")
     except Exception:
-        public_base = "https://img.vivemedellin.co"
+        public_base = "https://img.vivemedellin.net"
     converted = gcs_url_to_public(url, public_base)
-    return converted if converted else url
+    result = converted if converted else url
+    if result and "img.vivemedellin.co" in result:
+        result = result.replace("img.vivemedellin.co", "img.vivemedellin.net")
+    return result
 
 
 def public_media_url(object_path: str, public_base: str) -> str:

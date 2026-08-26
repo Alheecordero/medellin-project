@@ -55,20 +55,59 @@ FASES: dict[str, dict] = {
         "kwargs": {"pasada": "generico", "preset": "all"},
     },
     "3": {
-        "titulo": "Sub-grilla saturación + barrido bias core",
+        "titulo": "Sub-grilla saturación + barrido bias (smart)",
         "steps": [
             ("generar_subgrilla_saturacion", {}),
-            ("scan_place_ids_gratis", {"pasada": "bias", "preset": "core"}),
+            (
+                "scan_place_ids_gratis",
+                {
+                    "pasada": "bias",
+                    "preset": "all",
+                    "smart": True,
+                    "solo_huecos": True,
+                },
+            ),
         ],
     },
     "4": {
-        "titulo": "Rescan puntos vacíos (radio 450 m)",
+        "titulo": "Rescan puntos vacíos (radio 450 m, smart)",
         "cmd": "scan_place_ids_gratis",
-        "kwargs": {"rescan_vacios": True, "radio": 450.0, "preset": "all", "pasada": "bias"},
+        "kwargs": {
+            "rescan_vacios": True,
+            "radio": 450.0,
+            "preset": "all",
+            "pasada": "bias",
+            "smart": True,
+        },
+    },
+    "smart": {
+        "titulo": "Pipeline smart v2 (sub-grilla + huecos, sin repetir 2A/2B)",
+        "steps": [
+            ("generar_subgrilla_saturacion", {}),
+            (
+                "scan_place_ids_gratis",
+                {
+                    "pasada": "bias",
+                    "preset": "all",
+                    "smart": True,
+                    "solo_huecos": True,
+                },
+            ),
+            (
+                "scan_place_ids_gratis",
+                {
+                    "pasada": "bias",
+                    "preset": "all",
+                    "smart": True,
+                    "rescan_vacios": True,
+                    "radio": 450.0,
+                },
+            ),
+        ],
     },
 }
 
-ORDEN = ("0", "1A", "1B", "1C", "2A", "2B", "3", "4")
+ORDEN = ("0", "1A", "1B", "1C", "2A", "2B", "3", "4", "smart")
 
 
 class Command(BaseCommand):

@@ -19,7 +19,7 @@
 {% endblock %}
 
 {% block meta_description %}
-{{ lugar.nombre }}{% if lugar.rating %} ⭐ {{ lugar.rating|floatformat:1 }}{% endif %} - {{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if lugar.direccion %} 📍 {{ lugar.direccion|truncatechars:60 }}{% endif %}{% if lugar.precio %} 💰 {{ lugar.precio|format_price_range }}{% endif %}
+{% firstof lugar.descripcion lugar.summary as descripcion_seo %}{{ lugar.nombre }}{% if lugar.rating %}, {{ lugar.rating|floatformat:1 }}/5{% endif %} - {{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if descripcion_seo %} {{ descripcion_seo|truncatechars:110 }}{% elif lugar.direccion %} {{ lugar.direccion|truncatechars:80 }}{% endif %}
 {% endblock %}
 
 {% block meta_keywords %}
@@ -29,8 +29,11 @@
 {% block og_type %}place{% endblock %}
 {% block og_title %}{{ lugar.nombre }} - {{ lugar|place_type_label }} {% trans "en" %} Medellín | ViveMedellín{% endblock %}
 {% block og_description %}
-{% if lugar.rating %}⭐ {{ lugar.rating|floatformat:1 }} - {% endif %}{{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if lugar.descripcion %} {{ lugar.descripcion|truncatechars:100 }}{% endif %}
+{% firstof lugar.descripcion lugar.summary as descripcion_social %}{% if lugar.rating %}⭐ {{ lugar.rating|floatformat:1 }} - {% endif %}{{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if descripcion_social %} {{ descripcion_social|truncatechars:100 }}{% endif %}
 {% endblock %}
+{% block twitter_title %}{{ lugar.nombre }} - {{ lugar|place_type_label }} {% trans "en" %} Medellín{% endblock %}
+{% block twitter_description %}{% firstof lugar.descripcion lugar.summary as descripcion_twitter %}{{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if descripcion_twitter %} {{ descripcion_twitter|truncatechars:100 }}{% endif %}{% endblock %}
+{% block og_image_alt %}{{ lugar.nombre }} - {{ lugar|place_type_label }} {% trans "en" %} Medellín{% endblock %}
 
 {% block og_image %}
   {% with foto=lugar.get_primera_foto %}
@@ -47,6 +50,7 @@
 
 <!-- Schema.org JSON-LD para SEO -->
 {% include 'components/schema_org.html' with schema_type='place' lugar=lugar %}
+{% include 'components/schema_org.html' with schema_type='breadcrumbs' breadcrumbs=breadcrumbs %}
 
 <section class="detail-section">
   <div class="container py-4">
@@ -57,10 +61,16 @@
         
         <!-- Navegación Interior -->
         <div class="detail-nav">
-        <a href="{% url 'explorer:lugares_list' %}" class="btn btn-back">
-          <i class="bi bi-arrow-left me-2"></i>{% trans "Volver" %}
-        </a>
-      </div>
+          <nav aria-label="{% trans 'Migas de pan' %}">
+            <ol class="breadcrumb mb-0">
+              {% for crumb in breadcrumbs %}
+                <li class="breadcrumb-item{% if forloop.last %} active{% endif %}"{% if forloop.last %} aria-current="page"{% endif %}>
+                  {% if forloop.last %}{{ crumb.name }}{% else %}<a href="{{ crumb.url }}">{{ crumb.name }}</a>{% endif %}
+                </li>
+              {% endfor %}
+            </ol>
+          </nav>
+        </div>
 
         <!-- HERO: Galería Grande + Info Superpuesta (excluir de Auto Ads) -->
         <div class="detail-hero" data-nosnippet data-ad-layout="-exclude">
@@ -98,7 +108,7 @@
             <div class="hero-badges">
               {% if lugar.es_destacado %}<span class="detail-badge featured"><i class="bi bi-star-fill me-1"></i>{% trans "Destacado" %}</span>{% endif %}
               {% if lugar.es_exclusivo %}<span class="detail-badge exclusive"><i class="bi bi-gem me-1"></i>{% trans "Exclusivo" %}</span>{% endif %}
-              <span class="detail-badge type">{{ lugar|place_type_label }}</span>
+              <a href="{% url 'explorer:lugares_list' %}?tipo={{ lugar.tipo|urlencode }}" class="detail-badge type">{{ lugar|place_type_label }}</a>
               </div>
             <div class="hero-photo-count"><i class="bi bi-images me-1"></i>{{ lugar.get_fotos|length }}</div>
             {% if lugar.rating %}<div class="hero-rating"><i class="bi bi-star-fill me-1"></i>{{ lugar.rating|floatformat:1 }}{% if lugar.total_reviews %}<small class="hero-reviews">({{ lugar.total_reviews }})</small>{% endif %}</div>{% endif %}
@@ -107,7 +117,7 @@
         </div>
 
         <!-- TÍTULO Y META (excluir de Auto Ads) -->
-        <div class="detail-header" data-nosnippet>
+        <div class="detail-header">
           <h1 class="detail-title">{{ lugar.nombre }}</h1>
           <div class="detail-meta">
             {% if lugar.comuna %}<a href="{% url 'explorer:lugares_por_comuna' lugar.comuna.slug %}" class="meta-chip"><i class="bi bi-geo-alt me-1"></i>{{ lugar.comuna.name }}</a>{% endif %}
@@ -262,7 +272,11 @@
 
         <div class="related-panel" id="panel-similares">
           <div class="related-grid" id="lugares-similares-container">
-            {% for i in "123" %}<div class="skeleton-card"></div>{% endfor %}
+            {% for lugar_relacionado in lugares_similares %}
+              {% include 'components/place_card_compact.html' with lugar=lugar_relacionado %}
+            {% empty %}
+              {% for i in "123" %}<div class="skeleton-card"></div>{% endfor %}
+            {% endfor %}
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 {% load static %}
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
-{% now "YmdHi" as STATIC_BUST %}
+{% now "Ymd" as STATIC_BUST %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
@@ -13,7 +13,7 @@
     <meta name="description" content="{% block meta_description %}{% trans "Guía completa de Medellín: los mejores bares, restaurantes, rooftops y discotecas. Ratings reales, horarios y ubicación exacta. ¡Explora como un local!" %}{% endblock %}">
     <meta name="keywords" content="{% block meta_keywords %}{% trans "bares Medellín, restaurantes Medellín, rooftops Medellín, discotecas El Poblado, dónde comer Medellín, vida nocturna Medellín, mejores lugares Medellín" %}{% endblock %}">
     <meta name="author" content="ViveMedellín">
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+    <meta name="robots" content="{% block meta_robots %}index, follow, max-image-preview:large, max-snippet:-1{% endblock %}">
     <meta name="theme-color" content="#38ef7d">
     <meta name="geo.region" content="CO-ANT">
     <meta name="geo.placename" content="Medellín">
@@ -57,7 +57,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <link rel="preconnect" href="https://img.vivemedellin.co">
+    <link rel="preconnect" href="https://img.vivemedellin.net">
     {% block preload_lcp %}{% endblock %}
     
     <!-- CSS crítico inline para evitar FOUC + contener AdSense Auto Ads -->
@@ -149,16 +149,16 @@
       })();
     </script>
 
-    <!-- Canonical sin parámetros de consulta -->
+    <!-- Canonical estable, sin parámetros de consulta -->
     {% if request %}
-      {% with canonical_url=request.build_absolute_uri|cut:'?' %}
-        <link rel="canonical" href="{{ canonical_url }}">
-      {% endwith %}
+      <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
       <!-- Hreflang alternates (URLs absolutas) -->
       {% with path=request.path %}
         {% if path|slice:":4" == "/en/" %}
           {# EN page: build ES equivalent #}
-          {% if path == "/en/places/" %}
+          {% if request.resolver_match.url_name == "reviews_lugar" and lugar %}
+            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/lugar/{{ lugar.slug }}/rese%C3%B1as/" />
+          {% elif path == "/en/places/" %}
             <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/lugares/" />
           {% elif path|slice:":10" == "/en/places/" %}
             <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/lugares/{{ path|slice:"10:" }}" />
@@ -166,14 +166,37 @@
             <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/lugar/{{ path|slice:"9:" }}" />
           {% elif path == "/en/about-us/" %}
             <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/nosotros/" />
+          {% elif path == "/en/guides/" %}
+            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/guias/" />
+          {% elif path|slice:":12" == "/en/guides/" %}
+            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/guias/{{ path|slice:"12:" }}" />
           {% else %}
             <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}{{ path|slice:"3:" }}" />
           {% endif %}
           <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}{{ path }}" />
+          {% if request.resolver_match.url_name == "reviews_lugar" and lugar %}
+            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/lugar/{{ lugar.slug }}/rese%C3%B1as/" />
+          {% elif path == "/en/places/" %}
+            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/lugares/" />
+          {% elif path|slice:":10" == "/en/places/" %}
+            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/lugares/{{ path|slice:"10:" }}" />
+          {% elif path|slice:":9" == "/en/place/" %}
+            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/lugar/{{ path|slice:"9:" }}" />
+          {% elif path == "/en/about-us/" %}
+            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/nosotros/" />
+          {% elif path == "/en/guides/" %}
+            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/guias/" />
+          {% elif path|slice:":12" == "/en/guides/" %}
+            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/guias/{{ path|slice:"12:" }}" />
+          {% else %}
+            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}{{ path|slice:"3:" }}" />
+          {% endif %}
         {% else %}
           {# ES page: build EN equivalent #}
           <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}{{ path }}" />
-          {% if path == "/lugares/" %}
+          {% if request.resolver_match.url_name == "reviews_lugar" and lugar %}
+            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/place/{{ lugar.slug }}/reviews/" />
+          {% elif path == "/lugares/" %}
             <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/places/" />
           {% elif path|slice:":9" == "/lugares/" %}
             <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/places/{{ path|slice:"9:" }}" />
@@ -181,9 +204,14 @@
             <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/place/{{ path|slice:"7:" }}" />
           {% elif path == "/nosotros/" %}
             <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/about-us/" />
+          {% elif path == "/guias/" %}
+            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/guides/" />
+          {% elif path|slice:":7" == "/guias/" %}
+            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/guides/{{ path|slice:"7:" }}" />
           {% else %}
             <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en{{ path }}" />
           {% endif %}
+          <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}{{ path }}" />
         {% endif %}
       {% endwith %}
     {% endif %}
