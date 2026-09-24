@@ -149,71 +149,83 @@
       })();
     </script>
 
-    <!-- Canonical estable, sin parámetros de consulta -->
+    <!-- Canonical estable, sin query string -->
     {% if request %}
       <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
-      <!-- Hreflang alternates (URLs absolutas) -->
-      {% with path=request.path %}
-        {% if path|slice:":4" == "/en/" %}
-          {# EN page: build ES equivalent #}
-          {% if request.resolver_match.url_name == "reviews_lugar" and lugar %}
-            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/lugar/{{ lugar.slug }}/rese%C3%B1as/" />
-          {% elif path == "/en/places/" %}
-            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/lugares/" />
-          {% elif path|slice:":10" == "/en/places/" %}
-            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/lugares/{{ path|slice:"10:" }}" />
-          {% elif path|slice:":9" == "/en/place/" %}
-            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/lugar/{{ path|slice:"9:" }}" />
-          {% elif path == "/en/about-us/" %}
-            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/nosotros/" />
-          {% elif path == "/en/guides/" %}
-            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/guias/" />
-          {% elif path|slice:":12" == "/en/guides/" %}
-            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}/guias/{{ path|slice:"12:" }}" />
+      {# Hreflang por url_name. NUNCA publicar /place/ sin /en/ (bug histórico GSC). #}
+      {% if request.resolver_match %}
+      {% with host=request.get_host scheme=request.scheme un=request.resolver_match.url_name %}
+        {% if LANGUAGE_CODE|slice:":2" == "en" %}
+          {% if un == "reviews_lugar" and lugar %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugar/{{ lugar.slug }}/rese%C3%B1as/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/place/{{ lugar.slug }}/reviews/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugar/{{ lugar.slug }}/rese%C3%B1as/" />
+          {% elif un == "lugares_detail" and lugar %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugar/{{ lugar.slug }}/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/place/{{ lugar.slug }}/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugar/{{ lugar.slug }}/" />
+          {% elif un == "lugares_por_comuna" and region_actual %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugares/{{ region_actual.slug }}/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/places/{{ region_actual.slug }}/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugares/{{ region_actual.slug }}/" />
+          {% elif un == "lugares_list" %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugares/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/places/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugares/" />
+          {% elif un == "guia_detail" and guia %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/{{ guia.slug }}/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
+          {% elif un == "guias_index" %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/guias/" />
+          {% elif un == "about" or un == "about_es" %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/nosotros/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/about-us/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/nosotros/" />
           {% else %}
-            <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}{{ path|slice:"3:" }}" />
-          {% endif %}
-          <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}{{ path }}" />
-          {% if request.resolver_match.url_name == "reviews_lugar" and lugar %}
-            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/lugar/{{ lugar.slug }}/rese%C3%B1as/" />
-          {% elif path == "/en/places/" %}
-            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/lugares/" />
-          {% elif path|slice:":10" == "/en/places/" %}
-            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/lugares/{{ path|slice:"10:" }}" />
-          {% elif path|slice:":9" == "/en/place/" %}
-            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/lugar/{{ path|slice:"9:" }}" />
-          {% elif path == "/en/about-us/" %}
-            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/nosotros/" />
-          {% elif path == "/en/guides/" %}
-            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/guias/" />
-          {% elif path|slice:":12" == "/en/guides/" %}
-            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}/guias/{{ path|slice:"12:" }}" />
-          {% else %}
-            <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}{{ path|slice:"3:" }}" />
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}{{ request.path|slice:"3:" }}" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}{{ request.path }}" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}{{ request.path|slice:"3:" }}" />
           {% endif %}
         {% else %}
-          {# ES page: build EN equivalent #}
-          <link rel="alternate" hreflang="es" href="{{ request.scheme }}://{{ request.get_host }}{{ path }}" />
-          {% if request.resolver_match.url_name == "reviews_lugar" and lugar %}
-            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/place/{{ lugar.slug }}/reviews/" />
-          {% elif path == "/lugares/" %}
-            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/places/" />
-          {% elif path|slice:":9" == "/lugares/" %}
-            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/places/{{ path|slice:"9:" }}" />
-          {% elif path|slice:":7" == "/lugar/" %}
-            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/place/{{ path|slice:"7:" }}" />
-          {% elif path == "/nosotros/" %}
-            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/about-us/" />
-          {% elif path == "/guias/" %}
-            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/guides/" />
-          {% elif path|slice:":7" == "/guias/" %}
-            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en/guides/{{ path|slice:"7:" }}" />
+          {% if un == "reviews_lugar" and lugar %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugar/{{ lugar.slug }}/rese%C3%B1as/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/place/{{ lugar.slug }}/reviews/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugar/{{ lugar.slug }}/rese%C3%B1as/" />
+          {% elif un == "lugares_detail" and lugar %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugar/{{ lugar.slug }}/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/place/{{ lugar.slug }}/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugar/{{ lugar.slug }}/" />
+          {% elif un == "lugares_por_comuna" and region_actual %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugares/{{ region_actual.slug }}/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/places/{{ region_actual.slug }}/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugares/{{ region_actual.slug }}/" />
+          {% elif un == "lugares_list" %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugares/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/places/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugares/" />
+          {% elif un == "guia_detail" and guia %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/{{ guia.slug }}/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
+          {% elif un == "guias_index" %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/guias/" />
+          {% elif un == "about" or un == "about_es" %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/nosotros/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/about-us/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/nosotros/" />
           {% else %}
-            <link rel="alternate" hreflang="en" href="{{ request.scheme }}://{{ request.get_host }}/en{{ path }}" />
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}{{ request.path }}" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en{{ request.path }}" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}{{ request.path }}" />
           {% endif %}
-          <link rel="alternate" hreflang="x-default" href="{{ request.scheme }}://{{ request.get_host }}{{ path }}" />
         {% endif %}
       {% endwith %}
+      {% endif %}
     {% endif %}
 
     <!-- CSS principal -->
