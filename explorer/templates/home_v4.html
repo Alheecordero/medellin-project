@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "ViveMedellín | Bares, Restaurantes y Vida Nocturna en Medellín" %}{% endblock %}
+
+{% block meta_description %}{% blocktrans %}Tu guía local de Medellín: miles de bares, restaurantes, rooftops y discotecas con ratings de Google. Explora El Poblado, Laureles, Envigado y más.{% endblocktrans %}{% endblock %}
+
+{% block meta_keywords %}{% blocktrans %}bares Medellín, restaurantes Medellín, rooftops El Poblado, discotecas Medellín, dónde comer Medellín, vida nocturna Medellín, mejores bares El Poblado, restaurantes Laureles{% endblocktrans %}{% endblock %}
+
+{% block og_title %}{% trans "ViveMedellín | Los Mejores Bares y Restaurantes de Medellín" %}{% endblock %}
+
+{% block og_description %}{% blocktrans %}Descubre miles de lugares en Medellín: bares, restaurantes, rooftops y discotecas. Ratings de Google, horarios y ubicación exacta.{% endblocktrans %}{% endblock %}
+
+{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}{% endblock %}
+{% block og_image_alt %}{% trans "Vista panorámica de Medellín - ViveMedellín" %}{% endblock %}
+
+{% block preload_lcp %}
+<link
+  rel="preload"
+  as="image"
+  type="image/webp"
+  href="{% static 'img/hero-medellin-960.webp' %}"
+  imagesrcset="{% static 'img/hero-medellin-640.webp' %} 640w, {% static 'img/hero-medellin-960.webp' %} 960w, {% static 'img/hero-medellin-1440.webp' %} 1440w"
+  imagesizes="100vw"
+  fetchpriority="high">
+{% endblock %}
+
+{% block content %}
+{% get_current_language as LANGUAGE_CODE %}
+<div class="home-page home-page--v4">
+
+  <section class="v4-hero">
+    <div class="v4-hero__media" aria-hidden="true">
+      <img
+        src="{% static 'img/hero-medellin-960.webp' %}"
+        srcset="{% static 'img/hero-medellin-640.webp' %} 640w, {% static 'img/hero-medellin-960.webp' %} 960w, {% static 'img/hero-medellin-1440.webp' %} 1440w"
+        sizes="100vw"
+        alt=""
+        width="2400"
+        height="1590"
+        fetchpriority="high"
+        decoding="async" />
+    </div>
+    <div class="v4-hero__shade"></div>
+    <div class="v4-hero__inner">
+      <p class="v4-kicker" style="color:rgba(255,255,255,.7)">{% trans "La ciudad, en tu bolsillo" %}</p>
+      <h1 class="v4-brand-mark">Vive <span>Medellín</span></h1>
+      <p class="v4-hero__lead">{% trans "Planes reales para comer, tomar y salir. Sin ruido. Sin mapas interminables." %}</p>
+      <div class="v4-cta-row">
+        <a class="v4-btn v4-btn--primary" href="{% url 'explorer:lugares_list' %}?cerca=1">
+          <i class="bi bi-geo-alt-fill"></i> {% trans "Cerca de mí ahora" %}
+        </a>
+        <a class="v4-btn v4-btn--ghost" href="{% url 'explorer:lugares_list' %}">
+          <i class="bi bi-compass"></i> {% trans "¿Qué se te antoja?" %}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="v4-search-sticky">
+    <div class="v4-container">
+      <form class="v4-search" action="{% url 'explorer:lugares_list' %}" method="get" role="search">
+        <i class="bi bi-search"></i>
+        <input type="search" name="q" placeholder="{% trans 'Bares en Laureles, rooftop, bandeja…' %}" aria-label="{% trans 'Buscar' %}" />
+        <button type="submit" aria-label="{% trans 'Buscar' %}"><i class="bi bi-arrow-right"></i></button>
+      </form>
+    </div>
+  </div>
+
+  <section class="v4-section">
+    <div class="v4-container">
+      <div class="v4-section__head">
+        <div>
+          <span class="v4-kicker">{% trans "Estado de ánimo" %}</span>
+          <h2 class="v4-section__title">{% trans "¿Qué buscas hoy?" %}</h2>
+        </div>
+      </div>
+      <div class="v4-moods">
+        <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=restaurant">
+          <span class="v4-mood__icon"><i class="bi bi-egg-fried"></i></span>
+          <span class="v4-mood__label">{% trans "Comer" %}</span>
+        </a>
+        <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=bar">
+          <span class="v4-mood__icon"><i class="bi bi-cup-straw"></i></span>
+          <span class="v4-mood__label">{% trans "Tomar" %}</span>
+        </a>
+        <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=night_club">
+          <span class="v4-mood__icon"><i class="bi bi-moon-stars"></i></span>
+          <span class="v4-mood__label">{% trans "Salir" %}</span>
+        </a>
+        <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=cafe">
+          <span class="v4-mood__icon"><i class="bi bi-cup-hot"></i></span>
+          <span class="v4-mood__label">{% trans "Café" %}</span>
+        </a>
+        <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?q=rooftop">
+          <span class="v4-mood__icon"><i class="bi bi-building"></i></span>
+          <span class="v4-mood__label">{% trans "Rooftop" %}</span>
+        </a>
+        <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?q=en+vivo">
+          <span class="v4-mood__icon"><i class="bi bi-music-note-beamed"></i></span>
+          <span class="v4-mood__label">{% trans "En vivo" %}</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {% if lugares_imperdibles %}
+  <section class="v4-section">
+    <div class="v4-container">
+      <div class="v4-section__head">
+        <div>
+          <span class="v4-kicker">{% trans "Ahora mismo" %}</span>
+          <h2 class="v4-section__title">{% trans "Imperdibles cerca" %}</h2>
+        </div>
+        <a class="v4-section__link" href="{% url 'explorer:lugares_list' %}">{% trans "Ver todos" %}</a>
+      </div>
+      <div class="v4-rail">
+        {% for lugar in lugares_imperdibles %}
+        <a class="v4-place" href="{% url 'explorer:lugares_detail' lugar.slug %}" title="{{ lugar.nombre }}">
+          <div class="v4-place__media">
+            {% if lugar.imagen %}
+            <img src="{{ lugar.imagen }}" alt="" loading="lazy" decoding="async"
+                 onerror="if(this.dataset.fallbackDone!=='1'&&this.dataset.fallback){this.dataset.fallbackDone='1';this.src=this.dataset.fallback;return;}this.style.display='none';"
+                 data-fallback="{{ lugar.imagen_full|default:'' }}">
+            {% else %}
+            <img src="{% static 'img/placeholder.jpg' %}" alt="" loading="lazy">
+            {% endif %}
+            {% if lugar.rating %}
+            <span class="v4-place__rating"><i class="bi bi-star-fill"></i> {{ lugar.rating }}</span>
+            {% endif %}
+          </div>
+          <div class="v4-place__body">
+            <h3 class="v4-place__name">{{ lugar.nombre }}</h3>
+            <div class="v4-place__meta">
+              {% if lugar.tipo %}<span>{{ lugar.tipo }}</span>{% endif %}
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  {% with comunas_chips=comunas_medellin_chips|default:comunas_medellin %}
+  {% if comunas_chips %}
+  <section class="v4-section">
+    <div class="v4-container">
+      <div class="v4-section__head">
+        <div>
+          <span class="v4-kicker">{% trans "Barrios" %}</span>
+          <h2 class="v4-section__title">{% trans "Elige tu zona" %}</h2>
+        </div>
+      </div>
+      <div class="v4-zones">
+        {% for area in comunas_chips|slice:":3" %}
+        <a class="v4-zone v4-zone--{{ forloop.counter }}" href="{% url 'explorer:lugares_por_comuna' area.slug %}">
+          <span class="v4-zone__name">{{ area.name }}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+  {% endwith %}
+
+  <section class="v4-section" style="padding-bottom:2rem;">
+    <div class="v4-container">
+      <div class="v4-section__head">
+        <div>
+          <span class="v4-kicker">{% trans "Curaduría" %}</span>
+          <h2 class="v4-section__title">{% trans "Planes que enganchan" %}</h2>
+        </div>
+        <a class="v4-section__link" href="{% url 'explorer:guias_index' %}">{% trans "Guías" %}</a>
+      </div>
+      <div class="v4-rail">
+        <a class="v4-guide" href="{% url 'explorer:lugares_list' %}?q=laureles">
+          <span class="v4-guide__tag">{% trans "Sábado" %}</span>
+          <h3 class="v4-guide__title">{% trans "Primera cita en Laureles" %}</h3>
+          <span class="v4-guide__cta">{% trans "Ver ruta" %} →</span>
+        </a>
+        <a class="v4-guide" href="{% url 'explorer:lugares_list' %}?q=rooftop" style="background:#17324d">
+          <span class="v4-guide__tag">{% trans "Noche" %}</span>
+          <h3 class="v4-guide__title">{% trans "Rooftops con vista al valle" %}</h3>
+          <span class="v4-guide__cta">{% trans "Ver ruta" %} →</span>
+        </a>
+        <a class="v4-guide" href="{% url 'explorer:guias_index' %}" style="background:#3b1d18">
+          <span class="v4-guide__tag">{% trans "Local" %}</span>
+          <h3 class="v4-guide__title">{% trans "Donde van los paisas" %}</h3>
+          <span class="v4-guide__cta">{% trans "Ver ruta" %} →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {% if adsense_allowed %}
+  <section class="v4-section" style="padding-top:0;">
+    <div class="v4-container">
+      <div class="adsense-slot-card adsense-slot-card--home">
+        {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_HOME placement='home' exclude_auto=True extra_class='adsense-home-unit' %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  {% include 'components/schema_org.html' with schema_type='website' %}
+  {% include 'components/schema_org.html' with schema_type='organization' %}
+</div>
+{% endblock %}
+
+{% block extra_css %}{% endblock %}
+{% block extra_js %}{% endblock %}

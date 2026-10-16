@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription, CuratedGuide, CuratedGuideItem, PendingPlace, GooglePlaceId, PlaceDiscoveryRun, PlaceDiscoveryTask
+from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription, CuratedGuide, CuratedGuideItem, PendingPlace, GooglePlaceId, GooglePlaceDetails, PlaceDiscoveryRun, PlaceDiscoveryTask
 import json
 
 
@@ -376,11 +376,30 @@ class PendingPlaceAdmin(admin.ModelAdmin):
     marcar_descartado.short_description = "Descartar seleccionados"
 
 
+class TieneFichaFilter(admin.SimpleListFilter):
+    title = "ficha en Places"
+    parameter_name = "tiene_ficha"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("no", "Sin ficha"),
+            ("si", "Con ficha"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "no":
+            return queryset.sin_ficha()
+        if self.value() == "si":
+            return queryset.con_ficha()
+        return queryset
+
+
 @admin.register(GooglePlaceId)
 class GooglePlaceIdAdmin(admin.ModelAdmin):
     list_display = (
         "place_id",
         "source",
+        "tiene_ficha_display",
         "discovery_count",
         "areas_display",
         "types_display",
@@ -388,7 +407,7 @@ class GooglePlaceIdAdmin(admin.ModelAdmin):
         "first_seen_at",
         "last_seen_at",
     )
-    list_filter = ("source",)
+    list_filter = ("source", TieneFichaFilter)
     search_fields = ("place_id", "first_query")
     readonly_fields = (
         "first_seen_at",
@@ -399,6 +418,10 @@ class GooglePlaceIdAdmin(admin.ModelAdmin):
     )
     list_per_page = 100
 
+    @admin.display(description="Ficha", boolean=True)
+    def tiene_ficha_display(self, obj):
+        return Places.objects.filter(place_id=obj.place_id).exists()
+
     @admin.display(description="Zonas")
     def areas_display(self, obj):
         return ", ".join(obj.area_names[:3]) + ("…" if len(obj.area_names) > 3 else "")
@@ -406,6 +429,26 @@ class GooglePlaceIdAdmin(admin.ModelAdmin):
     @admin.display(description="Tipos")
     def types_display(self, obj):
         return ", ".join(obj.scan_types[:3]) + ("…" if len(obj.scan_types) > 3 else "")
+
+
+@admin.register(GooglePlaceDetails)
+class GooglePlaceDetailsAdmin(admin.ModelAdmin):
+    list_display = (
+        "place_id",
+        "display_name",
+        "tipo_family",
+        "tipo",
+        "primary_type",
+        "category",
+        "rating",
+        "fetch_status",
+        "tipo_confidence",
+        "fetched_at",
+    )
+    list_filter = ("fetch_status", "tipo_family", "tipo", "primary_type", "scraper_version")
+    search_fields = ("place_id", "display_name", "formatted_address", "phone", "category")
+    readonly_fields = ("created_at", "updated_at", "fetched_at", "raw_json")
+    list_per_page = 50
 
 
 @admin.register(PlaceDiscoveryRun)

@@ -50,6 +50,7 @@ from explorer.utils.google_places import (
 )
 from explorer.utils.place_discovery import (
     CATEGORY_GROUPS,
+    DEFAULT_CATEGORY_GROUPS,
     BBox,
     TaskSpec,
     categories,
@@ -131,7 +132,7 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--categorias",
-            default=",".join(CATEGORY_GROUPS),
+            default=",".join(DEFAULT_CATEGORY_GROUPS),
             help=f"Grupos de categorías separados por coma: {', '.join(CATEGORY_GROUPS)}",
         )
         parser.add_argument(
@@ -200,6 +201,14 @@ class Command(BaseCommand):
             action="store_true",
             help="Volver a encolar las tareas que quedaron en error",
         )
+        parser.add_argument(
+            "--only-saturated",
+            action="store_true",
+            help=(
+                "Ola W4: encolar cuadrantes hijos de tareas saturadas con "
+                "depth < --max-depth (sin resetear el plan completo)"
+            ),
+        )
 
     # ──────────────────────────────────────────────────────────────
     # Entrada
@@ -244,17 +253,47 @@ class Command(BaseCommand):
             "both": ("RELEVANCE", "DISTANCE"),
         }[options["rank"]]
 
-        specs = plan_text_tasks(areas, cats, ranks)
-        if options["nearby"]:
-            specs += plan_nearby_tasks(areas, options["nearby_radius"])
+        area_slugs = [area.slug for area in areas]
 
-        # Alcance de la corrida: las subtareas heredan la categoría del padre, así
-        # que filtrar por categoría cubre también los cuadrantes ya generados.
-        self.scope_categories = {spec.category for spec in specs}
-
-        self._print_plan(areas, cats, ranks, specs, options)
+        if options["only_saturated"]:
+            # W4: no replanifica el catálogo completo; solo cuadrantes más profundos.
+            parents = PlaceDiscoveryTask.objects.filter(
+                area_slug__in=area_slugs,
+                kind="text",
+                saturated=True,
+                status="done",
+                depth__lt=options["max_depth"],
+            )
+            if options["comuna"]:
+                pass  # ya filtrado por area_slugs
+            self.scope_categories = set(parents.values_list("category", flat=True).distinct())
+            if not self.scope_categories:
+                # Sin padres saturados aún: alcance vacío pero informativo.
+                self.scope_categories = {c.label for c in cats}
+            specs = []
+            self._print_plan(areas, cats, ranks, specs, options)
+            self.stdout.write(
+                self.style.WARNING(
+                    f"   Modo --only-saturated: padres candidatos={parents.count():,} "
+                    f"(depth < {options['max_depth']})"
+                )
+            )
+        else:
+            specs = plan_text_tasks(areas, cats, ranks)
+            if options["nearby"]:
+                specs += plan_nearby_tasks(areas, options["nearby_radius"])
+            # Alcance: subtareas heredan categoría del padre.
+            self.scope_categories = {spec.category for spec in specs}
+            self._print_plan(areas, cats, ranks, specs, options)
 
         if options["dry_run"]:
+            if options["only_saturated"]:
+                preview = self._preview_saturated_children(
+                    area_slugs, options["max_depth"]
+                )
+                self.stdout.write(
+                    f"   Cuadrantes nuevos estimados: {preview:,}"
+                )
             self.stdout.write(
                 self.style.WARNING("\n⚠️  DRY RUN — no se llamó a Google ni se escribió nada\n")
             )
@@ -264,7 +303,6 @@ class Command(BaseCommand):
         if not api_key:
             raise CommandError("GOOGLE_API_KEY no configurada.")
 
-        area_slugs = [area.slug for area in areas]
         if options["reset"]:
             # Solo lo que entra en este alcance: un --reset por comuna no debe
             # borrar el progreso de las demás.
@@ -273,8 +311,14 @@ class Command(BaseCommand):
                 self.style.WARNING(f"🗑️  {deleted:,} tareas borradas en este alcance")
             )
 
-        created = self._upsert_tasks(specs)
-        self.stdout.write(f"🗂️  Plan: {created:,} tareas nuevas registradas")
+        if options["only_saturated"]:
+            created = self._enqueue_saturated_children(area_slugs, options["max_depth"])
+            self.stdout.write(
+                f"🗂️  --only-saturated: {created:,} cuadrantes nuevos encolados"
+            )
+        else:
+            created = self._upsert_tasks(specs)
+            self.stdout.write(f"🗂️  Plan: {created:,} tareas nuevas registradas")
         if options["retry_errors"]:
             requeued = self._scoped_tasks(area_slugs).filter(status="error").update(
                 status="pending", error_message=""
@@ -324,6 +368,48 @@ class Command(BaseCommand):
                 nuevos, batch_size=500, ignore_conflicts=True
             )
         return len(nuevos)
+
+    def _saturated_parent_qs(self, area_slugs, max_depth: int):
+        return PlaceDiscoveryTask.objects.filter(
+            area_slug__in=area_slugs,
+            kind="text",
+            saturated=True,
+            status="done",
+            depth__lt=max_depth,
+        )
+
+    def _child_specs_from_saturated(
+        self, area_slugs, max_depth: int
+    ) -> list[TaskSpec]:
+        """Cuadrantes hijos de tareas saturadas que aún no alcanzaron max_depth."""
+        specs: list[TaskSpec] = []
+        for task in self._saturated_parent_qs(area_slugs, max_depth).iterator():
+            parent = self._job_from_task(task).to_spec()
+            for child in parent.children():
+                if child.depth <= max_depth:
+                    specs.append(child)
+        return specs
+
+    def _preview_saturated_children(self, area_slugs, max_depth: int) -> int:
+        specs = self._child_specs_from_saturated(area_slugs, max_depth)
+        if not specs:
+            return 0
+        known = set(
+            PlaceDiscoveryTask.objects.filter(
+                signature__in=[s.signature for s in specs]
+            ).values_list("signature", flat=True)
+        )
+        return sum(1 for s in specs if s.signature not in known)
+
+    def _enqueue_saturated_children(self, area_slugs, max_depth: int) -> int:
+        """
+        Ola W4: crea tareas pending para cuadrantes de zonas saturadas.
+        Amplía scope_categories con las categorías de los hijos.
+        """
+        specs = self._child_specs_from_saturated(area_slugs, max_depth)
+        if specs:
+            self.scope_categories |= {s.category for s in specs}
+        return self._upsert_tasks(specs)
 
     def _task_kwargs(self, spec: TaskSpec) -> dict:
         return {

@@ -38,6 +38,12 @@ urlpatterns = [
         content_type='text/plain'
     ), name='ads_txt'),
 
+    # Bing Webmaster Tools
+    path('BingSiteAuth.xml', TemplateView.as_view(
+        template_name='BingSiteAuth.xml',
+        content_type='application/xml'
+    ), name='bing_site_auth'),
+
     # utilidades de i18n
     path('i18n/', include('django.conf.urls.i18n')),
 

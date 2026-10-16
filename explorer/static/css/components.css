@@ -126,14 +126,15 @@
 .place-card__zone-glass {
   position: absolute;
   z-index: 2;
+  top: 0.75rem;
   left: 0.75rem;
-  right: 0.75rem;
-  bottom: 0.75rem;
+  right: auto;
+  bottom: auto;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   width: fit-content;
-  max-width: calc(100% - 1.5rem);
+  max-width: min(55%, calc(100% - 5.5rem)); /* room for rating top-right */
   padding: 0.35rem 0.65rem;
   border-radius: 999px;
   font-size: 0.72rem;
@@ -143,6 +144,11 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+}
+.place-card__zone-glass span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .place-card__zone-glass i {

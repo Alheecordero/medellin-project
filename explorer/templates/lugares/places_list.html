@@ -36,9 +36,20 @@
         <!-- Título -->
         <div class="text-center mb-4">
           <h1 class="places-title fw-bold">
-            <span class="title-main">{{ titulo_pagina }}</span>
+            <span class="title-main" id="places-title-main">{% if modo_cerca %}{% trans "Cerca de ti" %}{% else %}{{ titulo_pagina }}{% endif %}</span>
           </h1>
-          <p class="lead places-lead">{{ descripcion_pagina }}</p>
+          <p class="lead places-lead" id="places-lead">
+            {% if cerca_pendiente %}
+              
+              <span class="visually-hidden">{% trans "Obteniendo tu ubicación…" %}</span>
+            
+            {% elif modo_cerca %}
+              {% trans "Lugares ordenados por distancia a tu ubicación." %}
+            {% else %}
+              {{ descripcion_pagina }}
+            {% endif %}
+          </p>
+          <div id="cerca-status" class="cerca-status" hidden></div>
         </div>
 
         <!-- Filtros estilo HOME -->
@@ -187,11 +198,17 @@
       </div>
 
       <!-- Card Inferior: Grid de Lugares -->
-      <div class="places-grid-card" id="places-grid-container">
-        {% if lugares %}
+      <div class="places-grid-card" id="places-grid-container"{% if cerca_pendiente %} data-cerca-pending="1"{% endif %}>
+        {% if cerca_pendiente %}
+          <div class="text-center py-5 cerca-loading-panel" id="cerca-loading-panel">
+            <div class="spinner-border text-success mb-3" role="status" aria-hidden="true"></div>
+            <h3 class="places-empty-title">{% trans "Buscando cerca de ti" %}</h3>
+            <p class="places-empty-text mb-0">{% trans "Necesitamos tu ubicación para ordenar por distancia." %}</p>
+          </div>
+        {% elif lugares %}
           <div class="places-grid">
             {% for lugar in lugares %}
-              {% include 'components/place_card.html' with lugar=lugar card_variant='horizontal' %}
+              {% include 'components/place_card.html' with lugar=lugar card_variant='horizontal' show_distance=modo_cerca distance_value=lugar.distance_display %}
               {% if forloop.counter == 4 %}
                 {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_LIST_MOBILE|default:settings.ADSENSE_SLOT_LIST placement='list_first' unit_key='after-4' exclude_auto=True extra_class='adsense-inline-list' %}
               {% elif forloop.counter == 12 %}
@@ -252,6 +269,63 @@
 <style>
 /* ── PLACES LIST - Light Professional Theme ── */
 
+/* P0 visibility: prevent horizontal clip of centered titles */
+.places-section,
+.places-main-wrapper,
+.places-header-card,
+.filtros-home-style,
+.places-grid-card {
+  max-width: 100%;
+  overflow-x: clip;
+}
+.places-header-card {
+  overflow: visible; /* dropdowns must escape */
+}
+.filtros-home-style {
+  overflow: visible;
+}
+.places-header-card .text-center {
+  max-width: 100%;
+  padding-inline: 0.15rem;
+  overflow: visible;
+}
+.places-title {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal !important;
+  padding-inline: 0.25rem;
+  box-sizing: border-box;
+}
+.places-title .title-main {
+  display: inline !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  max-width: none !important;
+}
+.places-lead {
+  max-width: 100% !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  padding-inline: 0.35rem;
+  box-sizing: border-box;
+}
+.dropdown-menu-filtros {
+  position: absolute !important;
+  left: 0;
+  right: auto;
+  width: max-content;
+  max-width: min(100vw - 2rem, 360px) !important;
+  min-width: min(100%, 260px) !important;
+}
+.filtros-home-style .dropdown {
+  position: relative;
+  max-width: 100%;
+}
+
+
 .places-section {
   background:
     radial-gradient(circle at top left, rgba(17,153,142,0.08), transparent 34rem),
@@ -282,14 +356,14 @@
   box-shadow: 0 18px 50px rgba(15,23,42,0.07);
   border: 1px solid #e2ebe7;
   position: relative;
-  z-index: 10;
+  z-index: 60; /* above v4-bottom-nav (50) so filter dropdowns stay usable */
   margin-bottom: 1.5rem;
   overflow: visible;
 }
 
 /* Título */
 .places-title {
-  font-size: 2rem;
+  font-size: clamp(1.45rem, 6vw, 2rem);
   font-weight: 800;
   color: #111827;
   position: relative;
@@ -353,8 +427,44 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.5rem;
   box-shadow: none !important;
+  min-width: 0;
 }
+.btn-filtro-dropdown > span:first-of-type,
+.btn-filtro-dropdown #area-label,
+.btn-filtro-dropdown #tipo-label-btn,
+.btn-filtro-dropdown #features-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.places-title .title-main {
+  display: inline;
+  max-width: 100%;
+  overflow: visible;
+  white-space: normal;
+  line-height: 1.15;
+  word-break: break-word;
+}
+.places-lead {
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 0.25rem;
+  overflow: visible;
+  white-space: normal;
+}
+.cerca-status {
+  margin-top: 0.85rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #0f766e;
+}
+.cerca-status--error { color: #b91c1c; }
+.cerca-status .btn { margin-top: 0.55rem; }
 
 .btn-filtro-dropdown i {
   color: #11998e;
@@ -372,6 +482,9 @@
   border-radius: 16px;
   padding: 0.45rem;
   box-shadow: 0 20px 45px rgba(15,23,42,0.14) !important;
+  max-height: min(60svh, calc(100svh - var(--v4-nav-h, 68px) - 8rem));
+  overflow-y: auto;
+  z-index: 70 !important;
 }
 
 .dropdown-item-filtro {
@@ -550,7 +663,7 @@
 
 /* Mobile */
 @media (max-width: 991px) {
-  .places-section { padding: 1.25rem 0 2.5rem; }
+  .places-section { padding: 1.25rem 0 calc(var(--v4-nav-h, 68px) + 1.5rem + env(safe-area-inset-bottom, 0px)); }
   .places-main-wrapper { padding: 0 0.5rem; }
   .places-header-card {
     padding: 1.35rem 0.9rem 1rem;
@@ -729,13 +842,17 @@ $(document).ready(function() {
     // ═══════════════════════════════════════════════════════════════
     
     // Estado inicial de filtros (desde el servidor)
+    const _bootParams = new URLSearchParams(window.location.search);
     const filtros = {
         area: '{{ region_actual.slug|default:"" }}',
         areaName: '{{ region_actual.name|default:"" }}',
         tipo: '{{ tipo_actual|default:"" }}',
         tipoLabel: '{{ tipo_actual_label|default:"" }}',
         caracteristicas: {},
-        pagina: 1
+        pagina: 1,
+        lat: _bootParams.get('lat') || '',
+        lng: _bootParams.get('lng') || '',
+        radio: _bootParams.get('radio') || '3'
     };
     
     // Textos traducidos
@@ -923,6 +1040,11 @@ $(document).ready(function() {
         if (filtros.area) params.append('area', filtros.area);
         if (filtros.tipo) params.append('tipo', filtros.tipo);
         if (filtros.pagina > 1) params.append('page', filtros.pagina);
+        if (filtros.lat && filtros.lng) {
+            params.append('lat', filtros.lat);
+            params.append('lng', filtros.lng);
+            params.append('radio', filtros.radio || '3');
+        }
         
         Object.keys(filtros.caracteristicas).forEach(key => {
             params.append(key, 'true');
@@ -930,7 +1052,7 @@ $(document).ready(function() {
         
         // Actualizar URL sin recargar (History API)
         const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
-        window.history.pushState({filtros: filtros}, '', newUrl);
+        window.history.pushState({filtros: Object.assign({}, filtros)}, '', newUrl);
         
         // Petición AJAX
         currentRequest = $.ajax({
@@ -1064,6 +1186,159 @@ $(document).ready(function() {
             ejecutarBusqueda();
         }
     });
+
+    // ═══════════════════════════════════════════════════════════════
+    // CERCA DE MÍ: ?cerca=1 → geolocalizar → ?lat=&lng=&radio=
+    // ═══════════════════════════════════════════════════════════════
+    (function initCercaDeMi() {
+        const params = new URLSearchParams(window.location.search);
+        const wantsCerca = params.get('cerca') === '1' || params.get('cerca') === 'true';
+        const hasCoords = params.get('lat') && params.get('lng');
+        if (!wantsCerca || hasCoords) return;
+
+        const $status = $('#cerca-status');
+        const $lead = $('#places-lead');
+        const $grid = $('#places-grid-container');
+        const NEAR_API = '{% url "explorer:lugares_cercanos_near_me" %}';
+        const T_NEAR = {
+            locating: '{% trans "Detectando tu ubicación…" %}',
+            loading: '{% trans "Buscando lugares cerca de ti…" %}',
+            denied: '{% trans "No pudimos obtener tu ubicación. Activa el permiso de ubicación e inténtalo de nuevo." %}',
+            browseAll: '{% trans "Ver todos los lugares" %}',
+            unsupported: '{% trans "Tu navegador no soporta geolocalización." %}',
+            empty: '{% trans "No encontramos lugares en ese radio. Ampliando búsqueda…" %}',
+            error: '{% trans "Error al buscar lugares cercanos." %}',
+            found: '{% trans "lugares cerca de ti" %}',
+            retry: '{% trans "Reintentar" %}'
+        };
+
+        function showStatus(msg, isError) {
+            $status.prop('hidden', false)
+                .toggleClass('cerca-status--error', !!isError)
+                .html(msg);
+        }
+
+        function setLoading(on) {
+            $grid.toggleClass('loading', !!on);
+        }
+
+        // Estado inicial visible (no dejar la lista genérica debajo)
+        showStatus('<i class="bi bi-geo-alt"></i> ' + T_NEAR.locating, false);
+        
+        function renderNearResults(data, radioKm) {
+            const lugares = data.lugares || [];
+            const total = data.total || lugares.length;
+            $('#places-title-main').text('{% trans "Cerca de ti" %}');
+            $lead.text(data.mensaje || (total + ' ' + T_NEAR.found));
+            showStatus(
+                '<i class="bi bi-geo-alt-fill"></i> ' +
+                (data.filtros_aplicados && data.filtros_aplicados.radio_display
+                    ? data.filtros_aplicados.radio_display
+                    : (radioKm + ' km')),
+                false
+            );
+
+            if (!lugares.length) {
+                $grid.html(`
+                    <div class="text-center py-5">
+                        <i class="bi bi-geo display-1 mb-3 places-empty-icon"></i>
+                        <h3 class="places-empty-title">${T_NEAR.empty}</h3>
+                        <button type="button" class="btn btn-gradient-green rounded-pill px-4" id="cerca-retry-btn">${T_NEAR.retry}</button>
+                    </div>`);
+                $('#cerca-retry-btn').on('click', function() { locateAndSearch(5); });
+                return;
+            }
+
+            let html = '<div class="places-grid">';
+            lugares.forEach(function(lugar) {
+                // Normalizar distancia para la card
+                if (lugar.distancia != null && lugar.distancia_km == null) {
+                    lugar.distancia_km = lugar.distancia;
+                }
+                html += generarPlaceCardHtml(lugar, {
+                    viewDetails: T.viewDetails,
+                    featured: T.featured,
+                    exclusive: T.exclusive,
+                    top: T.top
+                });
+            });
+            html += '</div>';
+            $grid.html(html);
+        }
+
+        function fetchNearby(lat, lng, radioKm) {
+            setLoading(true);
+            showStatus('<i class="bi bi-arrow-repeat"></i> ' + T_NEAR.loading, false);
+            $.ajax({
+                url: NEAR_API,
+                type: 'GET',
+                data: { lat: lat, lng: lng, radio: radioKm },
+                success: function(resp) {
+                    setLoading(false);
+                    if (resp.success === false || resp.error) {
+                        showStatus(resp.error || T_NEAR.error, true);
+                        return;
+                    }
+                    // Si no hay resultados con radio chico, ampliar una vez
+                    if ((!resp.lugares || !resp.lugares.length) && radioKm < 5) {
+                        showStatus(T_NEAR.empty, false);
+                        fetchNearby(lat, lng, 5);
+                        return;
+                    }
+                    // Actualizar URL con coords (sin recargar) para compartir / back
+                    const next = new URLSearchParams(window.location.search);
+                    next.delete('cerca');
+                    next.set('lat', String(lat));
+                    next.set('lng', String(lng));
+                    next.set('radio', String(radioKm));
+                    window.history.replaceState({}, '', window.location.pathname + '?' + next.toString());
+                    filtros.lat = String(lat);
+                    filtros.lng = String(lng);
+                    filtros.radio = String(radioKm);
+                    renderNearResults(resp, radioKm);
+                },
+                error: function() {
+                    setLoading(false);
+                    showStatus(T_NEAR.error, true);
+                }
+            });
+        }
+
+        function locateAndSearch(radioKm) {
+            if (!navigator.geolocation) {
+                showStatus(T_NEAR.unsupported, true);
+                return;
+            }
+            showStatus('<i class="bi bi-geo-alt"></i> ' + T_NEAR.locating, false);
+            setLoading(true);
+            navigator.geolocation.getCurrentPosition(
+                function(pos) {
+                    fetchNearby(pos.coords.latitude, pos.coords.longitude, radioKm || 3);
+                },
+                function(err) {
+                    setLoading(false);
+                    $status.prop('hidden', true).empty();
+                    $lead.text('');
+                    $grid.html(
+                        '<div class="text-center py-5">' +
+                        '<i class="bi bi-geo-alt display-4 mb-3 places-empty-icon"></i>' +
+                        '<h3 class="places-empty-title">' + T_NEAR.denied + '</h3>' +
+                        '<div class="d-flex flex-wrap gap-2 justify-content-center mt-3">' +
+                        '<a class="btn btn-sm btn-outline-secondary rounded-pill px-3" href="{% url "explorer:lugares_list" %}">' + T_NEAR.browseAll + '</a>' +
+                        '<button type="button" class="btn btn-sm btn-gradient-green rounded-pill px-3" id="cerca-retry-btn">' + T_NEAR.retry + '</button>' +
+                        '</div></div>'
+                    );
+                    $('#cerca-retry-btn').on('click', function() {
+                      $grid.html('<div class="text-center py-5 cerca-loading-panel"><div class="spinner-border text-success mb-3"></div><h3 class="places-empty-title">' + T_NEAR.loading + '</h3></div>');
+                      locateAndSearch(3);
+                    });
+                },
+                { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
+            );
+        }
+
+        locateAndSearch(3);
+    })();
     
     function sincronizarUI() {
         // Área

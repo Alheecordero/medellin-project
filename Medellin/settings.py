@@ -258,6 +258,9 @@ ADSENSE_SLOT_GLOBAL = env('ADSENSE_SLOT_GLOBAL', default='6541608871')
 ADSENSE_SLOT_LIST_MOBILE = env('ADSENSE_SLOT_LIST_MOBILE', default='')
 ADSENSE_SLOT_REVIEWS = env('ADSENSE_SLOT_REVIEWS', default='')
 ADSENSE_SLOT_DETAIL_BOTTOM = env('ADSENSE_SLOT_DETAIL_BOTTOM', default='')
+
+# Frontend V4 (mobile-first). Rollback inmediato: VIBE_V4=False en .env + restart.
+VIBE_V4 = env.bool('VIBE_V4', default=False)
 ADSENSE_SENSITIVE_KEYWORDS = [
     'swinger',
     'strip club',

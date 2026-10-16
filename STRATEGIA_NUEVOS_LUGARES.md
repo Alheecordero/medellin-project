@@ -60,6 +60,8 @@ Grilla → scan_nuevos_lugares (Nearby Search Pro) → PendingPlace → procesar
 |----------|---------|--------------|
 | **Barrido por comuna × categoría (recomendado)** | `python manage.py discover_medellin_places` | **$0** |
 | Ver progreso del barrido por comuna | `python manage.py discover_medellin_places --status` | $0 |
+| **Campaña multi-ola W1–W7** | `python manage.py pipeline_discover_ids --desde W1 --skip-nearby` | **$0** (+ Nearby en W7) |
+| **IDs sin ficha (cola enriquecer)** | `python manage.py report_ids_sin_ficha --por-area` | $0 |
 | **Grilla cobertura total** | `python manage.py generar_grilla_cobertura --preset all --dry-run` | $0 |
 | Grilla Medellín + Envigado (legacy) | `python manage.py generar_grilla_vive_medellin` | $0 |
 | **Descubrir place_id gratis → catálogo** | `python manage.py scan_place_ids_gratis --preset all` | **$0** |
@@ -118,6 +120,34 @@ Nearby Search **no tiene tarifa IDs Only**: cada llamada se cobra como
 Nearby Search Pro (5.000 gratis al mes, luego ~$32 por 1.000). Por eso va detrás
 de un tope explícito de llamadas y solo se ejecuta cuando ya no quedan tareas
 gratuitas pendientes.
+
+### A0b) Campaña multi-ola W1–W7 (`pipeline_discover_ids`)
+
+Para maximizar IDs **únicos** no basta con repetir el mismo plan: cada ola debe
+cambiar área, query, rank o geometría (la firma de `PlaceDiscoveryTask` es única).
+
+| Ola | Qué hace | Costo |
+|-----|----------|-------|
+| **W1** | `discover_medellin_places --municipios` | $0 |
+| **W2** | Grilla `SCAN_AREAS` + pasada `bias` | $0 |
+| **W3** | Pasadas `restriction` + `generico` | $0 |
+| **W4** | `--only-saturated --max-depth 3` (cuadrantes más finos) | $0 |
+| **W5** | `--categorias extra` (tipos hospitality/turismo/ocio) | $0 |
+| **W6** | Sub-grilla + rescan huecos (`smart`) | $0 |
+| **W7** | Nearby acotado (`--nearby-budget 400`) | cuota Nearby |
+
+```bash
+python manage.py pipeline_discover_ids                  # ver plan
+python manage.py pipeline_discover_ids --status
+python manage.py pipeline_discover_ids --ola W1
+python manage.py pipeline_discover_ids --desde W2 --skip-nearby
+python manage.py pipeline_discover_ids --desde W1 --dry-run
+python manage.py discover_medellin_places --only-saturated --max-depth 3 --municipios
+python manage.py discover_medellin_places --municipios --categorias extra
+```
+
+Tras cada ola el pipeline reporta el **delta** de `GooglePlaceId`. Si el delta es 0,
+la siguiente ola en ese alcance suele aportar poco.
 
 ### A) Descubrir todos los place_id gratis (cobertura total)
 

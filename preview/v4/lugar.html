@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>El Cielo · ViveMedellín V4</title>
+  <meta name="theme-color" content="#0b1220" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="./vibe-v4.css" />
+  <style>
+    .v4-preview-banner {
+      position: sticky; top: 0; z-index: 60;
+      background: #c8f54a; color: #0b1220;
+      font: 700 0.78rem/1.2 Manrope, system-ui, sans-serif;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      text-align: center; padding: 0.55rem 0.75rem;
+    }
+    .v4-preview-nav {
+      display: flex; gap: 0.4rem; justify-content: center; flex-wrap: nowrap;
+      padding: 0.5rem 0.65rem; background: #0b1220; position: sticky; top: 34px; z-index: 59;
+    }
+    .v4-preview-nav a {
+      color: #c8f54a; font: 700 0.75rem Manrope, sans-serif;
+      padding: 0.35rem 0.7rem; border: 1px solid rgba(200,245,74,.35); border-radius: 999px;
+      white-space: nowrap;
+    }
+    .v4-preview-nav a.active { background: #c8f54a; color: #0b1220; }
+    body.vibe-v4 { padding-bottom: calc(var(--v4-nav-h) + 78px + env(safe-area-inset-bottom, 0px)); }
+  </style>
+</head>
+<body class="vibe-v4">
+  <div class="v4-preview-banner">Preview local · ficha detail mejorada · no es producción</div>
+  <div class="v4-preview-nav">
+    <a href="./index.html">Home</a>
+    <a href="./lugares.html">Explorar</a>
+    <a class="active" href="./lugar.html">Ficha</a>
+  </div>
+
+  <main>
+    <!-- Gallery hero -->
+    <section class="v4-gallery" aria-label="Fotos del lugar">
+      <div class="v4-gallery__track" id="galleryTrack">
+        <figure class="v4-gallery__slide is-active">
+          <img src="./img/medellin-5991889.jpg" alt="Salón El Cielo" fetchpriority="high" />
+        </figure>
+        <figure class="v4-gallery__slide">
+          <img src="./img/pexels-cesar-gaviria-232160-16637443.jpg" alt="Ambiente" loading="lazy" />
+        </figure>
+        <figure class="v4-gallery__slide">
+          <img src="./img/medellin-249403.jpg" alt="Vista" loading="lazy" />
+        </figure>
+        <figure class="v4-gallery__slide">
+          <img src="./img/juan-saravia-03gVOLHq9ec-unsplash.jpg" alt="Detalle" loading="lazy" />
+        </figure>
+      </div>
+      <div class="v4-gallery__shade"></div>
+
+      <a class="v4-gallery__back" href="./lugares.html" aria-label="Volver"><i class="bi bi-arrow-left"></i></a>
+      <div class="v4-gallery__actions">
+        <button type="button" aria-label="Compartir"><i class="bi bi-share"></i></button>
+        <button type="button" aria-label="Guardar" class="is-on"><i class="bi bi-bookmark-fill"></i></button>
+      </div>
+
+      <div class="v4-gallery__chrome">
+        <span class="v4-gallery__count"><i class="bi bi-images"></i> 1 / 4</span>
+        <div class="v4-gallery__dots" aria-hidden="true">
+          <button type="button" class="is-on" data-i="0"></button>
+          <button type="button" data-i="1"></button>
+          <button type="button" data-i="2"></button>
+          <button type="button" data-i="3"></button>
+        </div>
+      </div>
+    </section>
+
+    <div class="v4-detail-sheet">
+      <div class="v4-container">
+        <div class="v4-detail-head">
+          <p class="v4-kicker">Alta cocina · El Poblado</p>
+          <h1 class="v4-detail-title">El Cielo</h1>
+          <div class="v4-detail-meta">
+            <span class="v4-pill v4-pill--star"><i class="bi bi-star-fill"></i> 4.8 · 2.1k</span>
+            <span class="v4-pill v4-pill--open"><span class="v4-dot"></span> Abierto · cierra 11pm</span>
+            <span class="v4-pill">$$$$</span>
+            <span class="v4-pill"><i class="bi bi-geo"></i> 1.2 km</span>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="v4-quick">
+          <a class="v4-quick__item" href="tel:+573001112233">
+            <span class="v4-quick__ico"><i class="bi bi-telephone-fill"></i></span>
+            <span>Llamar</span>
+          </a>
+          <a class="v4-quick__item" href="#">
+            <span class="v4-quick__ico"><i class="bi bi-compass"></i></span>
+            <span>Cómo llegar</span>
+          </a>
+          <a class="v4-quick__item" href="#">
+            <span class="v4-quick__ico"><i class="bi bi-globe2"></i></span>
+            <span>Web</span>
+          </a>
+          <a class="v4-quick__item" href="#">
+            <span class="v4-quick__ico"><i class="bi bi-instagram"></i></span>
+            <span>IG</span>
+          </a>
+        </div>
+
+        <div class="v4-detail-block" style="border-top:0;padding-top:0.35rem;">
+          <h2>Por qué ir</h2>
+          <p>Alta cocina colombiana con menú degustación y sala íntima. Ideal para impresionar sin salir del Poblado. Reserva con anticipación los fines de semana — los viernes se llena.</p>
+        </div>
+
+        <div class="v4-detail-block">
+          <h2>Lo que tiene</h2>
+          <div class="v4-amenities">
+            <span><i class="bi bi-wifi"></i> WiFi</span>
+            <span><i class="bi bi-credit-card"></i> Tarjeta</span>
+            <span><i class="bi bi-cup-straw"></i> Cócteles</span>
+            <span><i class="bi bi-flower1"></i> Terraza</span>
+            <span><i class="bi bi-people"></i> Grupos</span>
+            <span><i class="bi bi-universal-access"></i> Accesible</span>
+          </div>
+        </div>
+
+        <div class="v4-detail-block">
+          <div class="v4-detail-block__row">
+            <h2>Horario</h2>
+            <span class="v4-pill v4-pill--open">Abierto ahora</span>
+          </div>
+          <div class="v4-hours">
+            <div class="is-today"><span>Hoy · Jue</span><span>12:00 – 22:00</span></div>
+            <div><span>Vie – Sáb</span><span>12:00 – 23:00</span></div>
+            <div><span>Domingo</span><span>12:00 – 17:00</span></div>
+            <div><span>Lun – Mié</span><span>12:00 – 22:00</span></div>
+          </div>
+        </div>
+
+        <div class="v4-detail-block">
+          <h2>Dónde está</h2>
+          <p class="v4-address"><i class="bi bi-geo-alt-fill"></i> Calle 9A #37-17 · El Poblado, Medellín</p>
+          <a class="v4-map" href="#" aria-label="Abrir en mapas">
+            <img src="./img/medellin-2343953.jpg" alt="" loading="lazy" />
+            <span><i class="bi bi-map"></i> Abrir mapa</span>
+          </a>
+        </div>
+
+        <div class="v4-detail-block">
+          <div class="v4-detail-block__row">
+            <h2>Reseñas</h2>
+            <a class="v4-section__link" href="#">Ver todas</a>
+          </div>
+          <div class="v4-review-score">
+            <div class="v4-review-score__big">4.8</div>
+            <div>
+              <div class="v4-stars" aria-hidden="true">
+                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+              </div>
+              <p>2.140 opiniones en Google</p>
+            </div>
+          </div>
+          <article class="v4-review">
+            <header>
+              <span class="v4-avatar">M</span>
+              <div>
+                <strong>María G.</strong>
+                <small>hace 2 semanas · ★★★★★</small>
+              </div>
+            </header>
+            <p>“Menú degustación impecable. El servicio es lento a propósito — disfrútalo. Pedí mesa con vista al valle.”</p>
+          </article>
+          <article class="v4-review">
+            <header>
+              <span class="v4-avatar">J</span>
+              <div>
+                <strong>James R.</strong>
+                <small>hace 1 mes · ★★★★★</small>
+              </div>
+            </header>
+            <p>“Best tasting menu in Medellín. Book ahead for Friday. Worth every peso.”</p>
+          </article>
+        </div>
+
+        <div class="v4-detail-block">
+          <div class="v4-detail-block__row">
+            <h2>Cerca y similares</h2>
+            <a class="v4-section__link" href="./lugares.html">Más</a>
+          </div>
+          <div class="v4-rail" style="margin-inline:0;padding-inline:0;">
+            <a class="v4-place" href="./lugar.html">
+              <div class="v4-place__media">
+                <img src="./img/pexels-cesar-gaviria-232160-16637443.jpg" alt="" loading="lazy" />
+                <span class="v4-place__rating"><i class="bi bi-star-fill"></i> 4.6</span>
+              </div>
+              <div class="v4-place__body">
+                <h3 class="v4-place__name">Carmen</h3>
+                <div class="v4-place__meta"><span>Bar</span>·<span>Provenza</span>·<span>0.8 km</span></div>
+              </div>
+            </a>
+            <a class="v4-place" href="./lugar.html">
+              <div class="v4-place__media">
+                <img src="./img/medellin-249403.jpg" alt="" loading="lazy" />
+                <span class="v4-place__rating"><i class="bi bi-star-fill"></i> 4.7</span>
+              </div>
+              <div class="v4-place__body">
+                <h3 class="v4-place__name">Pergamino</h3>
+                <div class="v4-place__meta"><span>Café</span>·<span>Laureles</span>·<span>3.2 km</span></div>
+              </div>
+            </a>
+            <a class="v4-place" href="./lugar.html">
+              <div class="v4-place__media">
+                <img src="./img/medellin-2343953.jpg" alt="" loading="lazy" />
+                <span class="v4-place__rating"><i class="bi bi-star-fill"></i> 4.5</span>
+              </div>
+              <div class="v4-place__body">
+                <h3 class="v4-place__name">Salón Amador</h3>
+                <div class="v4-place__meta"><span>Rooftop</span>·<span>Centro</span>·<span>4.1 km</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="v4-sticky-cta v4-sticky-cta--detail">
+    <a class="v4-sticky-cta__ghost" href="tel:+573001112233"><i class="bi bi-telephone"></i> Llamar</a>
+    <a class="v4-sticky-cta__primary" href="#"><i class="bi bi-compass"></i> Cómo llegar</a>
+  </div>
+
+  <nav class="v4-bottom-nav" aria-label="Navegación principal">
+    <a href="./index.html"><i class="bi bi-house-door"></i><span>Inicio</span></a>
+    <a href="./lugares.html"><i class="bi bi-search"></i><span>Buscar</span></a>
+    <a class="active" href="./lugares.html"><i class="bi bi-geo-alt-fill"></i><span>Cerca</span></a>
+    <a href="#"><i class="bi bi-bookmark"></i><span>Guardados</span></a>
+    <a href="#"><i class="bi bi-journal-richtext"></i><span>Guías</span></a>
+  </nav>
+
+  <script>
+    (function () {
+      var track = document.getElementById('galleryTrack');
+      var slides = Array.prototype.slice.call(track.querySelectorAll('.v4-gallery__slide'));
+      var dots = Array.prototype.slice.call(document.querySelectorAll('.v4-gallery__dots button'));
+      var count = document.querySelector('.v4-gallery__count');
+      var i = 0;
+      function go(n) {
+        i = (n + slides.length) % slides.length;
+        slides.forEach(function (s, idx) { s.classList.toggle('is-active', idx === i); });
+        dots.forEach(function (d, idx) { d.classList.toggle('is-on', idx === i); });
+        count.innerHTML = '<i class="bi bi-images"></i> ' + (i + 1) + ' / ' + slides.length;
+        track.style.transform = 'translateX(' + (-i * 100) + '%)';
+      }
+      dots.forEach(function (d) {
+        d.addEventListener('click', function () { go(+d.dataset.i); });
+      });
+      var startX = 0;
+      track.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
+      track.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - startX;
+        if (Math.abs(dx) > 40) go(i + (dx < 0 ? 1 : -1));
+      });
+      // also allow click-next on image
+      track.addEventListener('click', function (e) {
+        if (e.target.closest('a,button')) return;
+        go(i + 1);
+      });
+    })();
+  </script>
+</body>
+</html>

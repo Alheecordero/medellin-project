@@ -256,6 +256,12 @@ class SearchMixin:
 class HomeView(TemplateView):
     """Vista de inicio que muestra lugares agrupados por regiones OSM."""
     template_name = "home.html"
+
+    def get_template_names(self):
+        from django.conf import settings
+        if getattr(settings, "VIBE_V4", False):
+            return ["home_v4.html"]
+        return [self.template_name]
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -572,9 +578,16 @@ class PlacesListView(ListView):
         if tipo:
             qs = qs.filter(tipo=tipo)
             
-        # Filtro por comuna/barrio
+        # Filtro por área (slug AJAX) o comuna (osm_id SSR)
+        area_slug = (self.request.GET.get('area') or '').strip()
         comuna = self.request.GET.get('comuna')
-        if comuna:
+        if area_slug:
+            try:
+                region = RegionOSM.objects.get(slug=area_slug)
+                qs = qs.filter(comuna_osm_id=region.osm_id)
+            except RegionOSM.DoesNotExist:
+                pass
+        elif comuna:
             qs = qs.filter(comuna_osm_id=comuna)
             
         # Filtros especiales de características
@@ -589,6 +602,28 @@ class PlacesListView(ListView):
             valor = self.request.GET.get(filtro)
             if valor == 'true':
                 qs = qs.filter(**{filtro: True})
+
+        # Near me: ?lat=&lng= (después de geolocalizar desde ?cerca=1)
+        lat = self.request.GET.get('lat')
+        lng = self.request.GET.get('lng')
+        if lat and lng:
+            try:
+                from django.contrib.gis.geos import Point
+                from django.contrib.gis.db.models.functions import Distance
+                from django.contrib.gis.measure import D
+                lat_f = float(lat)
+                lng_f = float(lng)
+                radio_km = float(self.request.GET.get('radio', '3') or 3)
+                radio_km = max(0.5, min(radio_km, 15))
+                if 5.0 <= lat_f <= 7.0 and -76.0 <= lng_f <= -74.0:
+                    user_point = Point(lng_f, lat_f, srid=4326)
+                    qs = (
+                        qs.filter(ubicacion__distance_lte=(user_point, D(km=radio_km)))
+                        .annotate(distancia_m=Distance('ubicacion', user_point))
+                        .order_by('distancia_m', '-es_destacado', '-weighted_rating', '-rating')
+                    )
+            except (TypeError, ValueError):
+                pass
             
         return qs
     
@@ -600,6 +635,31 @@ class PlacesListView(ListView):
         tipo_actual = self.request.GET.get("tipo", "")
         busqueda_actual = self.request.GET.get("q", "")
         comuna_actual = self.request.GET.get("comuna", "")
+        area_actual = (self.request.GET.get("area") or "").strip()
+        context['modo_cerca'] = bool(
+            self.request.GET.get('cerca')
+            or (self.request.GET.get('lat') and self.request.GET.get('lng'))
+        )
+        context['cerca_pendiente'] = bool(self.request.GET.get('cerca')) and not (
+            self.request.GET.get('lat') and self.request.GET.get('lng')
+        )
+
+        # Distancia legible en cards SSR del modo cerca
+        if context.get('modo_cerca'):
+            for lugar in context.get('lugares') or context.get('object_list') or []:
+                dist = getattr(lugar, 'distancia_m', None)
+                if dist is None:
+                    lugar.distance_display = ''
+                    continue
+                try:
+                    km = float(getattr(dist, 'km', dist) or 0)
+                except (TypeError, ValueError):
+                    lugar.distance_display = ''
+                    continue
+                if km < 1:
+                    lugar.distance_display = f"{int(round(km * 1000))} m"
+                else:
+                    lugar.distance_display = f"{km:.1f} km"
         
         # Mapeo de tipos a títulos y descripciones SEO-friendly
         # Diccionario base con tipos comunes y sus descripciones SEO
@@ -752,7 +812,12 @@ class PlacesListView(ListView):
 
         # Obtener información de la comuna si está filtrada
         comuna_info = None
-        if comuna_actual:
+        if area_actual:
+            try:
+                comuna_info = RegionOSM.objects.get(slug=area_actual)
+            except RegionOSM.DoesNotExist:
+                pass
+        if comuna_info is None and comuna_actual:
             try:
                 comuna_info = RegionOSM.objects.get(osm_id=comuna_actual)
             except RegionOSM.DoesNotExist:
@@ -1620,8 +1685,35 @@ def places_filter_ajax(request):
                     'label': str(caracteristicas_labels.get(caract, caract))
                 })
         
+        # Geo (modo cerca): preservar lat/lng/radio al filtrar
+        lat = request.GET.get('lat')
+        lng = request.GET.get('lng')
+        geo_active = False
+        if lat and lng:
+            try:
+                from django.contrib.gis.geos import Point
+                from django.contrib.gis.db.models.functions import Distance
+                from django.contrib.gis.measure import D
+                lat_f = float(lat)
+                lng_f = float(lng)
+                radio_km = float(request.GET.get('radio', '3') or 3)
+                radio_km = max(0.5, min(radio_km, 15))
+                if 5.0 <= lat_f <= 7.0 and -76.0 <= lng_f <= -74.0:
+                    user_point = Point(lng_f, lat_f, srid=4326)
+                    qs = (
+                        qs.filter(ubicacion__distance_lte=(user_point, D(km=radio_km)))
+                        .annotate(distancia_m=Distance('ubicacion', user_point))
+                        .order_by('distancia_m', '-es_destacado', '-weighted_rating', '-rating')
+                    )
+                    geo_active = True
+            except (TypeError, ValueError):
+                geo_active = False
+
         # Ordenar
-        qs = qs.prefetch_related('fotos').order_by('-es_destacado', '-weighted_rating', '-rating', 'nombre')
+        if not geo_active:
+            qs = qs.prefetch_related('fotos').order_by('-es_destacado', '-weighted_rating', '-rating', 'nombre')
+        else:
+            qs = qs.prefetch_related('fotos')
         
         # Paginación
         total_count = qs.count()
@@ -1632,7 +1724,7 @@ def places_filter_ajax(request):
         resultados = []
         for lugar in page_obj:
             primera_foto = lugar.fotos.first()
-            resultados.append({
+            item = {
                 'nombre': lugar.nombre,
                 'slug': lugar.slug,
                 'rating': lugar.rating or 0.0,
@@ -1644,7 +1736,16 @@ def places_filter_ajax(request):
                 'precio': lugar.precio,
                 'direccion': lugar.direccion,
                 'url': reverse('explorer:lugares_detail', kwargs={'slug': lugar.slug}) if lugar.slug else None
-            })
+            }
+            dist = getattr(lugar, 'distancia_m', None)
+            if dist is not None:
+                try:
+                    km = float(getattr(dist, 'km', dist) or 0)
+                    item['distancia'] = round(km, 2)
+                    item['distancia_km'] = round(km, 2)
+                except (TypeError, ValueError):
+                    pass
+            resultados.append(item)
         
         # Construir mensaje
         if total_count == 0:
@@ -1722,7 +1823,7 @@ def lugares_cercanos_ajax_view(request):
     # Obtener coordenadas
     lat = request.GET.get('lat')
     lng = request.GET.get('lng')
-    radio = request.GET.get('radio', '0.8')  # Radio por defecto 800m
+    radio = request.GET.get('radio', '3')  # Radio por defecto 3km (antes 0.8 quedaba vacío)
     
     # Obtener filtros opcionales
     tipo = request.GET.get('tipo', '').strip()
@@ -1820,7 +1921,7 @@ def lugares_cercanos_ajax_view(request):
         
         lugares_cercanos = qs.prefetch_related('fotos').annotate(
             distancia_metros=Distance('ubicacion', user_location)
-        ).order_by('distancia_metros', '-es_destacado', '-weighted_rating', '-rating')[:15]
+        ).order_by('distancia_metros', '-es_destacado', '-weighted_rating', '-rating')[:24]
         
         # Formatear resultados
         resultados = []

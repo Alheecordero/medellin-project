@@ -1,7 +1,7 @@
 {% load static %}
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
-{% now "Ymd" as STATIC_BUST %}
+{% now "YmdHi" as STATIC_BUST %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
@@ -245,10 +245,14 @@
     <link rel="stylesheet" href="{% static 'css/topbar.css' %}?v={{ STATIC_BUST }}">
     <link rel="stylesheet" href="{% static 'css/brand-theme.css' %}?v={{ STATIC_BUST }}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}?v={{ STATIC_BUST }}">
+    {% if vibe_v4 %}
+    <link rel="stylesheet" href="{% static 'css/vibe-v4.css' %}?v={{ STATIC_BUST }}">
+    <meta name="theme-color" content="#0b1220">
+    {% endif %}
     
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="{% if vibe_v4 %}vibe-v4{% endif %}">
     {% block navbar %}{% include 'components/topbar.html' %}{% endblock %}
 
     <!-- Contenido principal -->
@@ -264,6 +268,10 @@
 
     <!-- Footer -->
     {% include 'footer.html' %}
+
+    {% if vibe_v4 %}
+      {% include 'components/v4_bottom_nav.html' %}
+    {% endif %}
 
     <!-- Scripts globales -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

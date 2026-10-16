@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Staging local — GooglePlaceDetails</title>
+  <style>
+    :root { --bg:#0f1419; --card:#1a222c; --text:#e8eef4; --muted:#8b9aab; --acc:#3d9cf0; --ok:#3ecf8e; --warn:#f0b429; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, sans-serif; background:var(--bg); color:var(--text); }
+    header { padding:1.25rem 1.5rem; border-bottom:1px solid #2a3542; }
+    header h1 { margin:0 0 .35rem; font-size:1.25rem; }
+    header p { margin:0; color:var(--muted); font-size:.9rem; }
+    .badge { display:inline-block; padding:.15rem .5rem; border-radius:4px; font-size:.75rem; background:#2a3542; color:var(--warn); }
+    main { padding:1.25rem 1.5rem 3rem; max-width:1100px; margin:0 auto; }
+    form { display:flex; flex-wrap:wrap; gap:.75rem; margin-bottom:1.25rem; align-items:end; }
+    label { display:flex; flex-direction:column; gap:.25rem; font-size:.8rem; color:var(--muted); }
+    input, select { background:var(--card); border:1px solid #2a3542; color:var(--text); padding:.45rem .6rem; border-radius:6px; min-width:160px; }
+    button, .btn { background:var(--acc); color:#fff; border:0; padding:.5rem .9rem; border-radius:6px; cursor:pointer; text-decoration:none; font-size:.9rem; }
+    table { width:100%; border-collapse:collapse; font-size:.9rem; }
+    th, td { text-align:left; padding:.55rem .5rem; border-bottom:1px solid #2a3542; vertical-align:top; }
+    th { color:var(--muted); font-weight:600; font-size:.75rem; text-transform:uppercase; letter-spacing:.03em; }
+    a { color:var(--acc); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    .tag { font-size:.72rem; padding:.12rem .4rem; border-radius:4px; background:#243040; color:#9ec5ea; }
+    .tag.new { background:#1a3a2a; color:var(--ok); }
+    .tag.old { background:#3a2a1a; color:var(--warn); }
+    .pager { margin-top:1.25rem; display:flex; gap:1rem; align-items:center; color:var(--muted); }
+    .stats { margin-bottom:1rem; color:var(--muted); font-size:.9rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Staging local — nuevos detalles Maps</h1>
+    <p>Solo <code>DEBUG</code>. Datos de <strong>GooglePlaceDetails</strong> (no son fichas públicas de Places).
+      <span class="badge">LOCAL</span></p>
+  </header>
+  <main>
+    <div class="stats">Total OK en DB: <strong>{{ total_ok }}</strong>
+      {% if only_new %} · filtro: sin ficha en Places{% endif %}
+    </div>
+    <form method="get">
+      <label>Buscar
+        <input type="search" name="q" value="{{ q }}" placeholder="nombre, place_id, zona…">
+      </label>
+      <label>Familia
+        <select name="family">
+          <option value="">(todas)</option>
+          {% for f in families %}
+          <option value="{{ f }}" {% if family == f %}selected{% endif %}>{{ f }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label style="flex-direction:row; align-items:center; gap:.4rem; margin-top:1.2rem;">
+        <input type="checkbox" name="only_new" value="1" {% if only_new %}checked{% endif %}>
+        Solo nuevos (sin Places)
+      </label>
+      <button type="submit">Filtrar</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Familia / tipo</th>
+          <th>Categoría</th>
+          <th>Rating</th>
+          <th>Estado</th>
+          <th>Fetched</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for obj in page %}
+        <tr>
+          <td>
+            <a href="{% url 'staging_local_detail' obj.place_id %}">{{ obj.display_name|default:obj.place_id }}</a>
+            <div style="color:var(--muted); font-size:.75rem;">{{ obj.place_id }}</div>
+          </td>
+          <td><span class="tag">{{ obj.tipo_family }}</span> {{ obj.tipo }}</td>
+          <td>{{ obj.category|default:"—" }}</td>
+          <td>{% if obj.rating %}{{ obj.rating }}{% if obj.user_rating_count %} ({{ obj.user_rating_count }}){% endif %}{% else %}—{% endif %}</td>
+          <td>
+            {% if obj.place_id in published_on_page %}
+              <span class="tag old">ya en Places</span>
+            {% else %}
+              <span class="tag new">solo staging</span>
+            {% endif %}
+          </td>
+          <td style="white-space:nowrap; color:var(--muted); font-size:.8rem;">{{ obj.fetched_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">Sin resultados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="pager">
+      {% if page.has_previous %}
+        <a class="btn" href="?page={{ page.previous_page_number }}&q={{ q }}&family={{ family }}{% if only_new %}&only_new=1{% endif %}">← Anterior</a>
+      {% endif %}
+      <span>Pág. {{ page.number }} / {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}
+        <a class="btn" href="?page={{ page.next_page_number }}&q={{ q }}&family={{ family }}{% if only_new %}&only_new=1{% endif %}">Siguiente →</a>
+      {% endif %}
+    </div>
+  </main>
+</body>
+</html>

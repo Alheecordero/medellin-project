@@ -17,13 +17,17 @@ from dataclasses import dataclass, field, replace
 
 from explorer.utils.google_places import meters_to_deg_lat, meters_to_deg_lng
 from explorer.utils.vive_areas import (
+    BARRIO_SEARCH_TYPES,
     CUISINE_SEARCH_TYPES,
+    EXTRA_SEARCH_TYPES,
     GENERIC_SEARCH_QUERIES,
     SCAN_AREAS,
     VIVE_SEARCH_TYPES,
 )
 
-CATEGORY_GROUPS = ("base", "cocina", "generico")
+CATEGORY_GROUPS = ("base", "cocina", "generico", "extra", "barrio")
+# Default del comando: sin "extra"/"barrio" (esas olas se lanzan aparte).
+DEFAULT_CATEGORY_GROUPS = ("base", "cocina", "generico")
 DEFAULT_CITY = "Medellín"
 COMUNA_ADMIN_LEVEL = "8"
 MUNICIPIO_ADMIN_LEVEL = "6"
@@ -229,8 +233,10 @@ def discovery_areas(
     return areas
 
 
-def categories(groups: tuple[str, ...] | list[str] = CATEGORY_GROUPS) -> list[Category]:
-    """Categorías de búsqueda por grupo: base, cocina y genérico."""
+def categories(
+    groups: tuple[str, ...] | list[str] = DEFAULT_CATEGORY_GROUPS,
+) -> list[Category]:
+    """Categorías de búsqueda por grupo: base, cocina, genérico y extra."""
     selected: list[Category] = []
     groups = tuple(groups)
 
@@ -243,6 +249,12 @@ def categories(groups: tuple[str, ...] | list[str] = CATEGORY_GROUPS) -> list[Ca
     if "generico" in groups:
         for label in GENERIC_SEARCH_QUERIES:
             selected.append(Category(label, "", "generico"))
+    if "extra" in groups:
+        for label, included_type in EXTRA_SEARCH_TYPES:
+            selected.append(Category(label, included_type, "extra"))
+    if "barrio" in groups:
+        for label, included_type in BARRIO_SEARCH_TYPES:
+            selected.append(Category(label, included_type, "barrio"))
 
     # Un mismo includedType puede repetirse con distinto texto (ej. bar/rooftop):
     # eso es deseado, pero no queremos la misma pareja dos veces.
@@ -261,8 +273,11 @@ def build_query(category: Category, area: DiscoveryArea) -> str:
     Consulta de texto anclada al área.
 
     Nombrar la zona es lo que permite pasar del techo de 60 resultados por
-    consulta: cada comuna devuelve su propio conjunto.
+    consulta: cada comuna / barrio devuelve su propio conjunto.
     """
+    if category.group == "barrio":
+        # El label ya trae el barrio («restaurante en Provenza»).
+        return f"{category.label}, Medellín"[:200]
     if area.kind == "comuna":
         return f"{category.label} en {area.name}, {DEFAULT_CITY}"[:200]
     return f"{category.label} en {area.name}, Antioquia"[:200]
@@ -275,8 +290,11 @@ def plan_text_tasks(
 ) -> list[TaskSpec]:
     """Una tarea Text Search por área × categoría × orden de ranking."""
     specs: list[TaskSpec] = []
+    barrio_cats = [cat for cat in cats if cat.group == "barrio"]
+    other_cats = [cat for cat in cats if cat.group != "barrio"]
+
     for area in areas:
-        for cat in cats:
+        for cat in other_cats:
             query = build_query(cat, area)
             for rank in ranks:
                 specs.append(
@@ -290,6 +308,45 @@ def plan_text_tasks(
                         query=query,
                         rank_preference=rank,
                         bbox=area.bbox,
+                    )
+                )
+
+    # Barrios: una sola bbox metropolitana (el texto ya ancla el barrio).
+    # Evita multiplicar la misma consulta × 22 comunas.
+    if barrio_cats:
+        if areas:
+            anchor = DiscoveryArea(
+                name="Área metropolitana",
+                slug="area-metro",
+                kind="bbox",
+                bbox=BBox(
+                    min(a.bbox.lat_min for a in areas),
+                    min(a.bbox.lng_min for a in areas),
+                    max(a.bbox.lat_max for a in areas),
+                    max(a.bbox.lng_max for a in areas),
+                ),
+            )
+        else:
+            anchor = DiscoveryArea(
+                name="Medellín",
+                slug="medellin",
+                kind="bbox",
+                bbox=bbox_from_scan_area(SCAN_AREAS["Medellín"]),
+            )
+        for cat in barrio_cats:
+            query = build_query(cat, anchor)
+            for rank in ranks:
+                specs.append(
+                    TaskSpec(
+                        kind="text",
+                        area_name=anchor.name,
+                        area_slug=anchor.slug,
+                        area_kind=anchor.kind,
+                        category=cat.label,
+                        included_type=cat.included_type,
+                        query=query,
+                        rank_preference=rank,
+                        bbox=anchor.bbox,
                     )
                 )
     return specs

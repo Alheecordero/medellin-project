@@ -1,0 +1,1644 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "ViveMedellín | Bares, Restaurantes y Vida Nocturna en Medellín" %}{% endblock %}
+
+{% block meta_description %}{% blocktrans %}Tu guía local de Medellín: miles de bares, restaurantes, rooftops y discotecas con ratings de Google. Explora El Poblado, Laureles, Envigado y más.{% endblocktrans %}{% endblock %}
+
+{% block meta_keywords %}{% blocktrans %}bares Medellín, restaurantes Medellín, rooftops El Poblado, discotecas Medellín, dónde comer Medellín, vida nocturna Medellín, mejores bares El Poblado, restaurantes Laureles{% endblocktrans %}{% endblock %}
+
+{% block og_title %}{% trans "ViveMedellín | Los Mejores Bares y Restaurantes de Medellín" %}{% endblock %}
+
+{% block og_description %}{% blocktrans %}Descubre miles de lugares en Medellín: bares, restaurantes, rooftops y discotecas. Ratings de Google, horarios y ubicación exacta.{% endblocktrans %}{% endblock %}
+
+{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}{% endblock %}
+{% block og_image_alt %}{% trans "Vista panorámica de Medellín - ViveMedellín" %}{% endblock %}
+
+{% block preload_lcp %}
+<link
+  rel="preload"
+  as="image"
+  type="image/webp"
+  href="{% static 'img/hero-medellin-960.webp' %}"
+  imagesrcset="{% static 'img/hero-medellin-640.webp' %} 640w, {% static 'img/hero-medellin-960.webp' %} 960w, {% static 'img/hero-medellin-1440.webp' %} 1440w"
+  imagesizes="100vw"
+  fetchpriority="high">
+{% endblock %}
+
+{% block content %}
+<div class="home-page">
+{% get_current_language as LANGUAGE_CODE %}
+
+<!-- ── HERO V3: imagen full-width de fondo, texto sobrepuesto ── -->
+<section class="hero-v3">
+  <!-- Imagen de fondo completa -->
+  <div class="hero-v3__bg" aria-hidden="true">
+    <picture>
+      <source
+        type="image/webp"
+        srcset="{% static 'img/hero-medellin-640.webp' %} 640w, {% static 'img/hero-medellin-960.webp' %} 960w, {% static 'img/hero-medellin-1440.webp' %} 1440w"
+        sizes="100vw">
+      <img
+        src="{% static 'img/hero-medellin-960.webp' %}"
+        alt=""
+        class="hero-v3__bg-img"
+        width="2400"
+        height="1590"
+        fetchpriority="high"
+        decoding="async">
+    </picture>
+    <div class="hero-v3__overlay"></div>
+  </div>
+
+  <!-- Contenido del hero -->
+  <div class="container hero-v3__body">
+    <div class="hero-v3__content">
+      <div class="home-kicker-v3">{% trans "La guía local para vivir Medellín" %}</div>
+      <h1 class="hero-v3__title">
+        {% blocktrans trimmed %}Encuentra los mejores lugares para vivir Medellín{% endblocktrans %}
+      </h1>
+      <p class="hero-v3__sub">
+        {% blocktrans trimmed %}Busca restaurantes, bares, cafés, cultura y planes por zona o cerca de ti.{% endblocktrans %}
+      </p>
+
+      <!-- Search Bar (desktop; en móvil priorizamos los CTAs) -->
+      <div class="hero-v3__search d-none d-md-block">
+        <div class="search-bar-v3">
+          <i class="bi bi-search search-bar-v3__icon"></i>
+          <input type="text"
+                 id="search-places"
+                 class="search-bar-v3__input"
+                 placeholder="{% trans '¿Qué buscas? Ej. bares en El Poblado' %}"
+                 aria-label="{% trans 'Buscar lugares en Medellín' %}">
+          <button class="search-bar-v3__btn" type="button" aria-label="{% trans 'Buscar' %}">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- CTAs -->
+      <div class="hero-v3__ctas">
+        <button id="cerca-de-mi-btn" class="btn-hero-primary" type="button">
+          <i id="ubicacion-icon" class="bi bi-geo-fill"></i>
+          <span id="ubicacion-text">{% trans "Buscar cerca de mí" %}</span>
+        </button>
+        <a href="{% url 'explorer:lugares_list' %}" class="btn-hero-secondary">
+          <i class="bi bi-map"></i>{% trans "Explorar por zonas" %}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── INTENTIONS (chips de tipo) ── -->
+<section class="intentions-section">
+  <div class="container">
+    <div class="intentions-panel">
+      <div class="section-row-v2 intentions-panel__head">
+        <div>
+          <span class="section-row-v2__label">{% trans "Explorar por intención" %}</span>
+          <p class="intentions-panel__sub">{% trans "Restaurantes, bares, cafés y más en Medellín" %}</p>
+        </div>
+        <a href="{% url 'explorer:lugares_list' %}" class="section-row-v2__link">{% trans "Ver todos" %} →</a>
+      </div>
+    <div class="intentions-grid" aria-label="{% trans 'Explorar por intención' %}">
+      <a href="{% url 'explorer:lugares_list' %}?tipo=restaurant" class="intention-chip">
+        <span class="intention-chip__icon"><i class="bi bi-egg-fried"></i></span>
+        <span class="intention-chip__label">{% trans "Restaurantes" %}</span>
+      </a>
+      <a href="{% url 'explorer:lugares_list' %}?tipo=bar" class="intention-chip">
+        <span class="intention-chip__icon"><i class="bi bi-cup-straw"></i></span>
+        <span class="intention-chip__label">{% trans "Bares" %}</span>
+      </a>
+      <a href="{% url 'explorer:lugares_list' %}?tipo=cafe" class="intention-chip">
+        <span class="intention-chip__icon"><i class="bi bi-cup-hot"></i></span>
+        <span class="intention-chip__label">{% trans "Cafés" %}</span>
+      </a>
+      <a href="{% url 'explorer:lugares_list' %}?live_music=true" class="intention-chip">
+        <span class="intention-chip__icon"><i class="bi bi-music-note-beamed"></i></span>
+        <span class="intention-chip__label">{% trans "Música en vivo" %}</span>
+      </a>
+      <a href="{% url 'explorer:lugares_list' %}?outdoor_seating=true" class="intention-chip">
+        <span class="intention-chip__icon"><i class="bi bi-umbrella"></i></span>
+        <span class="intention-chip__label">{% trans "Terrazas" %}</span>
+      </a>
+      <a href="{% url 'explorer:lugares_list' %}?allows_dogs=true" class="intention-chip">
+        <span class="intention-chip__icon"><i class="bi bi-heart"></i></span>
+        <span class="intention-chip__label">{% trans "Pet friendly" %}</span>
+      </a>
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ZONAS POPULARES + FILTROS AVANZADOS ── -->
+{% if comunas_medellin_chips or comunas_medellin %}
+<section class="zonas-pills-section">
+  <div class="container">
+    {% with comunas_chips=comunas_medellin_chips|default:comunas_medellin %}
+    {% if comunas_chips %}
+    <div class="section-row-v2 mb-3">
+      <span class="section-row-v2__label">{% trans "Zonas populares" %}</span>
+      <a href="{% url 'explorer:lugares_list' %}" class="section-row-v2__link">{% trans "Ver todas" %} →</a>
+    </div>
+    <div class="zonas-pills-row">
+      {% for area in comunas_chips|slice:":8" %}
+      <a href="{% url 'explorer:lugares_por_comuna' area.slug %}" class="zona-pill">{{ area.name }}</a>
+      {% endfor %}
+      <a href="{% url 'explorer:lugares_list' %}" class="zona-pill zona-pill--all">{% trans "+ Ver más" %}</a>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Filtros avanzados colapsables -->
+    <details class="advanced-filters-home mt-3">
+      <summary><i class="bi bi-sliders me-2"></i>{% trans "Filtros avanzados" %}</summary>
+      <div class="filtros-home mt-3">
+        <div class="row g-3">
+          <!-- 1. ÁREAS -->
+          <div class="col-lg-4 col-md-6">
+            <div class="dropdown" style="position:relative;z-index:1000;">
+              <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button" id="areasDropdown" data-bs-toggle="dropdown" data-bs-placement="bottom" data-bs-auto-close="true" aria-expanded="false">
+                <i class="bi bi-geo-alt me-2"></i>
+                <span id="area-selected-text">{% trans "Seleccionar Área" %}</span>
+                <span id="area-check" class="ms-2" style="display:none;">✓</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="areasDropdown">
+                {% if comunas_medellin %}
+                  <li class="dropdown-header"><i class="bi bi-building me-2 text-success"></i>{% trans "Medellín (Áreas)" %}</li>
+                  {% for area in comunas_medellin %}
+                  <li><a class="dropdown-item dropdown-item-filtro area-option" href="javascript:void(0)" data-area-id="{{ area.osm_id }}" data-area-name="{{ area.name }}" data-area-slug="{{ area.slug }}">
+                    <i class="bi bi-geo-alt me-2 text-primary"></i>
+                    <div><div class="fw-semibold">{{ area.name }}</div><small class="text-muted">{% trans "Explorar esta comuna" %}</small></div>
+                  </a></li>
+                  {% endfor %}
+                {% endif %}
+                {% if otras_regiones %}
+                  <li><hr class="dropdown-divider"></li>
+                  <li class="dropdown-header"><i class="bi bi-map me-2 text-info"></i>{% trans "Otras áreas de Antioquia" %}</li>
+                  {% for area in otras_regiones %}
+                  <li><a class="dropdown-item dropdown-item-filtro area-option" href="javascript:void(0)" data-area-id="{{ area.osm_id }}" data-area-name="{{ area.name }}" data-area-slug="{{ area.slug }}">
+                    <i class="bi bi-geo-alt me-2 text-primary"></i>
+                    <div><div class="fw-semibold">{{ area.name }}</div><small class="text-muted">{% trans "Explorar esta área" %}</small></div>
+                  </a></li>
+                  {% endfor %}
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+          <!-- 2. CATEGORÍAS -->
+          <div class="col-lg-4 col-md-6">
+            <div class="dropdown" style="position:relative;z-index:999;">
+              <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button" id="categoriasDropdown" data-bs-toggle="dropdown" data-bs-placement="bottom" data-bs-auto-close="true" aria-expanded="false">
+                <i class="bi bi-grid-3x3-gap me-2"></i>
+                <span id="categoria-selected-text">{% trans "Seleccionar Tipo" %}</span>
+                <span id="categoria-check" class="ms-2" style="display:none;">✓</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="categoriasDropdown">
+                {% for categoria in categorias_reales %}
+                <li class="dropdown-header"><i class="{{ categoria.icon }} me-2 text-{{ categoria.color }}"></i>{{ categoria.name }}</li>
+                {% for subcategoria in categoria.subcategorias %}
+                <li><a class="dropdown-item dropdown-item-filtro categoria-option" href="javascript:void(0)" data-categoria-id="{{ subcategoria.value }}" data-categoria-name="{{ subcategoria.name }}">
+                  <i class="bi bi-arrow-right me-2 text-muted"></i>
+                  <div><div class="fw-semibold">{{ subcategoria.name }}</div></div>
+                </a></li>
+                {% endfor %}
+                {% if not forloop.last %}<li><hr class="dropdown-divider"></li>{% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          <!-- 3. CARACTERÍSTICAS -->
+          <div class="col-lg-4 col-md-6">
+            <div class="dropdown" style="position:relative;z-index:998;">
+              <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button" id="etiquetasDropdown" data-bs-toggle="dropdown" data-bs-placement="bottom" data-bs-auto-close="true" aria-expanded="false">
+                <i class="bi bi-stars me-2"></i>
+                <span id="caracteristica-selected-text">{% trans "Características" %}</span>
+                <span id="caracteristica-check" class="ms-2" style="display:none;">✓</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="etiquetasDropdown">
+                <li><a class="dropdown-item dropdown-item-filtro caracteristica-option" href="javascript:void(0)" data-caracteristica-id="none" data-caracteristica-name="{% trans 'Sin característica especial' %}">
+                  <i class="bi bi-x-circle me-2 text-muted"></i>
+                  <div><div class="fw-semibold">{% trans "Sin característica especial" %}</div><small class="text-muted">{% trans "Buscar sin filtros adicionales" %}</small></div>
+                </a></li>
+                <li><hr class="dropdown-divider"></li>
+                {% for grupo in etiquetas_especiales %}
+                <li class="dropdown-header"><i class="{{ grupo.icon }} me-2 text-warning"></i>{{ grupo.name }}</li>
+                {% for opcion in grupo.opciones %}
+                <li><a class="dropdown-item dropdown-item-filtro caracteristica-option" href="javascript:void(0)" data-caracteristica-id="{{ opcion.field }}" data-caracteristica-name="{{ opcion.name }}">
+                  <i class="{{ opcion.icon }} me-2 text-success"></i>
+                  <div><div class="fw-semibold">{{ opcion.name }}</div></div>
+                </a></li>
+                {% endfor %}
+                {% if not forloop.last %}<li><hr class="dropdown-divider"></li>{% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── ADSENSE HOME (slot ADSENSE_SLOT_HOME) ── -->
+{% if adsense_allowed %}
+<section class="home-monetization-zone" aria-label="{% trans 'Publicidad' %}">
+  <div class="container">
+    <div class="adsense-slot-card adsense-slot-card--home">
+      {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_HOME placement='home' exclude_auto=True extra_class='adsense-home-unit' %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── IMPERDIBLES AHORA ── -->
+{% if lugares_imperdibles %}
+<section class="imperdibles-section">
+  <div class="container">
+    <div class="section-row-v2 mb-4">
+      <h2 class="section-row-v2__title">{% trans "Imperdibles ahora" %}</h2>
+      <a href="{% url 'explorer:lugares_list' %}" class="section-row-v2__link">{% trans "Ver todos" %} →</a>
+    </div>
+    <div class="imperdibles-scroll">
+      {% for lugar in lugares_imperdibles %}
+      <a href="{% url 'explorer:lugares_detail' lugar.slug %}" class="imp-card" title="{{ lugar.nombre }}">
+        <div class="imp-card__img-wrap">
+          {% if lugar.imagen %}
+          <img src="{{ lugar.imagen }}" alt="{{ lugar.nombre }}" loading="lazy" decoding="async"
+               onerror="if(this.dataset.fallbackDone!=='1'&&this.dataset.fallback){this.dataset.fallbackDone='1';this.src=this.dataset.fallback;return;}this.style.display='none';this.parentElement.classList.add('is-placeholder');"
+               data-fallback="{{ lugar.imagen_full|default:'' }}">
+          {% endif %}
+          <div class="imp-card__placeholder"></div>
+          <span class="imp-card__badge"><i class="bi bi-star-fill"></i> {{ lugar.rating }}</span>
+        </div>
+        <div class="imp-card__body">
+          <div class="imp-card__title">{{ lugar.nombre }}</div>
+          <div class="imp-card__meta">
+            <span class="imp-card__type">{{ lugar.tipo }}</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── EXPLORA POR ZONAS (image cards) ── -->
+{% with comunas_chips=comunas_medellin_chips|default:comunas_medellin %}
+{% if comunas_chips %}
+<section class="zonas-img-section">
+  <div class="container">
+    <div class="section-row-v2 mb-4">
+      <h2 class="section-row-v2__title">{% trans "Explora por zonas" %}</h2>
+    </div>
+    <div class="zonas-img-grid">
+      {% for area in comunas_chips|slice:":6" %}
+      <a href="{% url 'explorer:lugares_por_comuna' area.slug %}" class="zona-img-card zona-img-card--{{ forloop.counter }}">
+        <div class="zona-img-card__overlay"></div>
+        <div class="zona-img-card__text">
+          <span class="zona-img-card__name">{{ area.name }}</span>
+          <span class="zona-img-card__arrow">→</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endwith %}
+
+<!-- ── LOADING / RESULTADOS AJAX ── -->
+<div id="ajax-loading" class="text-center py-5" style="display:none;">
+  <div class="spinner-border text-success" role="status">
+    <span class="visually-hidden">{% trans "Cargando..." %}</span>
+  </div>
+  <div class="mt-3">
+    <h5>{% trans "Buscando lugares..." %}</h5>
+    <p class="text-muted">{% trans "Esto puede tardar unos segundos" %}</p>
+  </div>
+</div>
+
+<section id="search-results-section" style="display:none;">
+  <div id="ajax-results"></div>
+</section>
+
+<!-- Schema.org JSON-LD -->
+{% include 'components/schema_org.html' with schema_type='website' %}
+{% include 'components/schema_org.html' with schema_type='organization' %}
+
+<!-- Pre-carga i18n para JS -->
+<div class="visually-hidden" aria-hidden="true">
+  {% trans "Obteniendo ubicación..." %}
+  {% trans "Ubicación encontrada" %}
+  {% trans "Permiso de ubicación denegado. Por favor, habilita la ubicación en tu navegador." %}
+  {% trans "No se pudo determinar tu ubicación. Intenta de nuevo." %}
+  {% trans "La solicitud de ubicación tardó demasiado. Intenta de nuevo." %}
+  {% trans "Error desconocido al obtener la ubicación." %}
+  {% trans "Error en la búsqueda" %}
+  {% trans "Error de conexión" %}
+  {% trans "No hay lugares cercanos disponibles en este momento." %}
+  {% trans "Error al cargar lugares cercanos." %}
+  {% trans "Reintentar" %}
+  {% trans "No hay lugares similares disponibles en este momento." %}
+  {% trans "Error al cargar lugares similares." %}
+  {% trans "No hay más lugares en esta zona disponibles en este momento." %}
+  {% trans "Error al cargar lugares de la zona." %}
+</div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}?v={{ STATIC_BUST }}">
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Idioma (normalizado). Django puede entregar 'en-us', 'en', etc.
+const CURRENT_LANG_RAW = ('{{ LANGUAGE_CODE|default:"es" }}' || 'es').toLowerCase();
+const CURRENT_LANG = CURRENT_LANG_RAW.slice(0, 2); // 'es' | 'en'
+// Helper seguro para traducciones en JS (usa djangojs si está disponible)
+const gettext = (window.gettext) ? window.gettext : (s => s);
+// Fallbacks para pluralización/interpolación si por algún motivo jsi18n no cargó (evita que el JS se rompa en EN)
+const ngettext = (window.ngettext) ? window.ngettext : ((singular, plural, count) => (Number(count) === 1 ? singular : plural));
+// Slots AdSense (mismos puntos que places_list: top móvil, mid desktop, bottom)
+const ADS = {
+    client: '{{ settings.ADSENSE_CLIENT|default:"" }}',
+    home: '{{ settings.ADSENSE_SLOT_HOME|default:"" }}',
+    list: '{{ settings.ADSENSE_SLOT_LIST|default:"" }}',
+    listMobile: '{{ settings.ADSENSE_SLOT_LIST_MOBILE|default:settings.ADSENSE_SLOT_LIST|default:"" }}'
+};
+const ADS_LABEL = '{% trans "Publicidad" %}';
+
+function renderAdBlock(slot, placement, unitKey, extraClass = '') {
+    if (!ADS.client || !slot) return '';
+    const id = `ads-fixed-${placement}-${slot}-${unitKey}`;
+    return `
+        <div class="adsense-fixed-unit my-4 ${extraClass}" data-nosnippet data-ad-layout="-exclude">
+            <div class="adsense-fixed-label text-center mb-2">${ADS_LABEL}</div>
+            <ins class="adsbygoogle adsense-manual"
+                 id="${id}"
+                 style="display:block"
+                 data-ad-client="${ADS.client}"
+                 data-ad-slot="${slot}"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+        </div>
+    `;
+}
+
+function hydrateAds($scope) {
+    ($scope || $(document)).find('ins.adsbygoogle.adsense-manual').each(function () {
+        if (this.dataset.adsInit === '1') return;
+        this.dataset.adsInit = '1';
+        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+        setTimeout(() => {
+            if (this.getAttribute('data-ad-status') === 'unfilled') {
+                const wrapper = this.closest('.adsense-fixed-unit');
+                if (wrapper) wrapper.style.display = 'none';
+            }
+        }, 1800);
+    });
+}
+
+const interpolate = (window.interpolate) ? window.interpolate : ((fmt, obj) => {
+    try {
+        // Regex para %(key)s - construido sin backslashes problemáticos en templates
+        const re = new RegExp('%[(]([^)]+)[)]s', 'g');
+        return String(fmt).replace(re, (_, k) => (obj && obj[k] !== undefined ? obj[k] : ''));
+    } catch (_) {
+        return String(fmt);
+    }
+});
+
+// Helper global para rango de precios (coherente con form_tags.format_price_range)
+function formatPriceRangeJs(raw) {
+    if (!raw) return '';
+    const val = String(raw).toUpperCase();
+    const map = {
+        '$': '$',
+        '$$': '$$',
+        '$$$': '$$$',
+        '$$$$': '$$$$',
+        'PRICE_LEVEL_INEXPENSIVE': '$',
+        'PRICE_LEVEL_MODERATE': '$$',
+        'PRICE_LEVEL_EXPENSIVE': '$$$',
+        'PRICE_LEVEL_VERY_EXPENSIVE': '$$$$',
+    };
+    if (map[val]) return map[val];
+    if (/^\$+$/.test(val) && val.length <= 4) return val;
+    return '';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FUNCIÓN GLOBAL: Genera HTML de card idéntica al componente place_card.html
+// Usa clases BEM: place-card__* para consistencia total
+// ═══════════════════════════════════════════════════════════════════
+function generarPlaceCardHtml(lugar, opciones = {}) {
+    const T = {
+        viewDetails: opciones.viewDetails || '{% trans "Ver detalles" %}',
+        featured: opciones.featured || '{% trans "Destacado" %}',
+        exclusive: opciones.exclusive || '{% trans "Exclusivo" %}',
+        top: opciones.top || '{% trans "Top" %}'
+    };
+    
+    // Distancia formateada
+    const distancia = lugar.distancia_km || lugar.distancia;
+    const distanciaStr = distancia ? (distancia < 1 ? `${Math.round(distancia * 1000)} m` : `${Number(distancia).toFixed(1)} km`) : '';
+    
+    // Precio formateado
+    const precio = formatPriceRangeJs(lugar.precio);
+    
+    // URL
+    const url = lugar.url || (typeof buildPlaceUrl === 'function' ? buildPlaceUrl(lugar.slug, null) : `/lugar/${lugar.slug}/`);
+    
+    // Imagen con fallback a original si falla, luego placeholder
+    const imagenFull = lugar.imagen_full || '';
+    const imgAlt = (lugar.nombre || '').replace(/"/g, '&quot;');
+    let imagenHtml;
+    if (lugar.imagen) {
+        const errorHandler = imagenFull 
+            ? `this.onerror=function(){this.style.display='none';this.nextElementSibling.style.display='flex';};this.src='${imagenFull}';`
+            : `this.style.display='none';this.nextElementSibling.style.display='flex';`;
+        imagenHtml = `
+            <img src="${lugar.imagen}" class="place-card__img" alt="${imgAlt}" loading="lazy" onerror="${errorHandler}">
+            <div class="place-card__placeholder" style="display:none;"><i class="bi bi-image"></i></div>`;
+    } else {
+        imagenHtml = `<div class="place-card__placeholder"><i class="bi bi-image"></i></div>`;
+    }
+    
+    // Rating badge con número de reviews
+    let ratingHtml = '';
+    if (typeof lugar.rating === 'number') {
+        const reviewsCount = lugar.total_reviews ? `<small class="place-card__reviews">(${lugar.total_reviews})</small>` : '';
+        ratingHtml = `<div class="place-card__rating"><i class="bi bi-star-fill"></i><span>${lugar.rating.toFixed(1)}</span>${reviewsCount}</div>`;
+    }
+    
+    // Distance badge
+    const distanceHtml = distanciaStr 
+        ? `<div class="place-card__distance"><i class="bi bi-geo-alt"></i><span>${distanciaStr}</span></div>` 
+        : '';
+    
+    // Badges
+    let badgesHtml = `<span class="place-card__badge place-card__badge--type"><i class="bi bi-geo-alt"></i>${lugar.tipo || ''}</span>`;
+    if (lugar.es_destacado) {
+        badgesHtml += `<span class="place-card__badge place-card__badge--featured"><i class="bi bi-star-fill"></i>${T.featured}</span>`;
+    }
+    if (lugar.es_exclusivo) {
+        badgesHtml += `<span class="place-card__badge place-card__badge--exclusive"><i class="bi bi-gem"></i>${T.exclusive}</span>`;
+    }
+    if (typeof lugar.rating === 'number' && lugar.rating >= 4.5) {
+        badgesHtml += `<span class="place-card__badge place-card__badge--top-rated"><i class="bi bi-award"></i>${T.top}</span>`;
+    }
+    
+    // Precio
+    const precioHtml = precio 
+        ? `<div class="place-card__meta"><i class="bi bi-cash-stack"></i><span>${precio}</span></div>` 
+        : '';
+    
+    // Dirección (truncada a 45 chars)
+    const direccion = lugar.direccion ? lugar.direccion.substring(0, 45) + (lugar.direccion.length > 45 ? '...' : '') : '';
+    const direccionHtml = direccion 
+        ? `<div class="place-card__address"><i class="bi bi-map"></i><span>${direccion}</span></div>` 
+        : '';
+    
+    const arrowHtml = lugar.slug
+        ? `<div class="place-card__arrow" aria-hidden="true"><i class="bi bi-arrow-right-circle-fill"></i></div>`
+        : '';
+
+    return `
+        <div class="place-card-wrapper">
+            <a href="${url}" class="place-card place-card--link place-card--horizontal" title="${imgAlt}">
+                <div class="place-card__media">
+                    ${imagenHtml}
+                    ${ratingHtml}
+                    ${distanceHtml}
+                </div>
+                <div class="place-card__body">
+                    <h3 class="place-card__title">${lugar.nombre}</h3>
+                    <div class="place-card__badges">${badgesHtml}</div>
+                    ${precioHtml}
+                    ${direccionHtml}
+                    ${arrowHtml}
+                </div>
+            </a>
+        </div>`;
+}
+
+// Helper para construir la URL del detalle de un lugar
+function buildPlaceUrl(slug, backendUrl) {
+    if (backendUrl) return backendUrl;
+    if (!slug) return null;
+    if (CURRENT_LANG === 'es') {
+        return `/lugar/${slug}/`;
+    }
+    return `/en/place/${slug}/`;
+}
+
+// Helper para construir la URL de lista de lugares (con o sin comuna)
+function buildPlacesListUrl(areaSlug) {
+    if (!areaSlug) {
+        // Usa la URL i18n de Django para la lista general
+        return '{% url "explorer:lugares_list" %}';
+    }
+    if (CURRENT_LANG === 'es') {
+        return `/lugares/${areaSlug}/`;
+    }
+    // Versión traducida de "lugares/" -> "places/"
+    return `/en/places/${areaSlug}/`;
+}
+
+// Búsqueda semántica (Enter o botón)
+$(document).ready(function() {
+    function ejecutarBusquedaSemantica(texto) {
+        if (!texto || texto.length < 2) return;
+        $('#ajax-loading').show();
+        $('#ajax-results').hide();
+        $('#search-results-section').hide();
+        $.ajax({
+            url: "{% url 'explorer:semantic_search_ajax' %}",
+            type: 'GET',
+            data: { q: texto, top: 12 },
+            success: function(resp) {
+                $('#ajax-loading').hide();
+                if (resp.success) {
+                    renderizarResultadosSemanticos(resp);
+                } else {
+                    mostrarError(gettext('Error en búsqueda semántica') + ': ' + resp.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#ajax-loading').hide();
+                mostrarError(gettext('Error de conexión') + ': ' + error);
+            }
+        });
+    }
+    $('#search-places').on('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            ejecutarBusquedaSemantica($(this).val().trim());
+        }
+    });
+    $('.search-modern-clean button').on('click', function() {
+        ejecutarBusquedaSemantica($('#search-places').val().trim());
+    });
+    
+    // Smooth scroll for anchor links
+    $('a[href^="#"]').on('click', function(e) {
+        e.preventDefault();
+        const target = $(this.getAttribute('href'));
+        if(target.length) {
+            $('html, body').animate({
+                scrollTop: target.offset().top - 80
+            }, 800);
+        }
+    });
+    
+    // Variables para almacenar selecciones
+    let filtrosSeleccionados = {
+        area: null,
+        categoria: null,
+        caracteristica: null
+    };
+    
+    // Variable para almacenar ubicación del usuario
+    let ubicacionUsuario = null;
+
+    // Control de búsquedas: auto-búsqueda con debounce y una sola request activa
+    let currentSearchRequest = null;
+    let searchTimeoutId = null;
+    const SEARCH_DEBOUNCE_MS = 600;
+
+    // Imperdibles mobile: mostrar 3 y expandir con flecha
+    $('.imperdibles-toggle').on('click', function() {
+        const $btn = $(this);
+        const $wrapper = $btn.closest('.imperdibles-home');
+        const expanded = $wrapper.toggleClass('imperdibles-home--expanded').hasClass('imperdibles-home--expanded');
+        $btn.attr('aria-expanded', expanded ? 'true' : 'false');
+        $btn.find('span').text(expanded ? '{% trans "Ver menos" %}' : '{% trans "Ver más" %}');
+    });
+    
+    function closeAllHomeDropdowns() {
+        document.querySelectorAll('.dropdown-menu-filtros, .dropdown-menu').forEach(menu => {
+            menu.classList.remove('show');
+            menu.removeAttribute('data-bs-popper');
+            menu.removeAttribute('data-popper-placement');
+            menu.style.cssText = '';
+        });
+        document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
+            btn.classList.remove('show');
+            btn.setAttribute('aria-expanded', 'false');
+            if (window.bootstrap && window.bootstrap.Dropdown) {
+                const inst = window.bootstrap.Dropdown.getInstance(btn);
+                if (inst) inst.hide();
+            }
+        });
+        document.querySelectorAll('.dropdown.show').forEach(el => el.classList.remove('show'));
+    }
+
+    function initHomeDropdowns(scope) {
+        const root = scope || document;
+        if (!window.bootstrap || !window.bootstrap.Dropdown) return;
+        root.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(btn => {
+            const existing = window.bootstrap.Dropdown.getInstance(btn);
+            if (existing) existing.dispose();
+            new window.bootstrap.Dropdown(btn, { autoClose: 'outside' });
+        });
+    }
+
+    $(window).on('scroll', function() {
+        if ($('.dropdown-menu-filtros.show').length) closeAllHomeDropdowns();
+    });
+    
+    // Función para actualizar estado de filtros
+    function actualizarEstadoFiltros() {
+        const requiredCount = (filtrosSeleccionados.area !== null ? 1 : 0) + (filtrosSeleccionados.categoria !== null ? 1 : 0);
+        const totalCount = Object.values(filtrosSeleccionados).filter(v => v !== null).length;
+        
+        // Texto simple y robusto para el contador (evita depender de ngettext en JS)
+        let countLabel;
+        if (CURRENT_LANG === 'en') {
+            countLabel = `${requiredCount}/2 required`;
+        } else {
+            countLabel = `${requiredCount}/2 obligatorios`;
+        }
+        $('#filtros-count').text(countLabel);
+        
+        if (totalCount > 0) {
+            $('#filtros-estado').show();
+            
+            // Actualizar resumen
+            let resumen = [];
+            if (filtrosSeleccionados.area) resumen.push(`📍 ${filtrosSeleccionados.area.name}`);
+            if (filtrosSeleccionados.categoria) resumen.push(`🏢 ${filtrosSeleccionados.categoria.name}`);
+        if (filtrosSeleccionados.caracteristica) resumen.push(`⭐ ${filtrosSeleccionados.caracteristica.name}`);
+            $('#filtros-resumen').html(resumen.join(' • '));
+            
+            // Solo requiere área y categoría para habilitar búsqueda
+            if (requiredCount === 2) {
+                $('#buscar-btn').show().prop('disabled', false);
+                // Disparar auto-búsqueda con debounce
+                programarBusquedaAuto();
+            } else {
+                $('#buscar-btn').prop('disabled', true);
+            }
+        } else {
+            $('#filtros-estado').hide();
+            $('#buscar-btn').hide();
+        }
+    }
+    
+    // Función para limpiar filtros
+    function limpiarFiltros() {
+        filtrosSeleccionados = {
+            area: null,
+            categoria: null,
+            caracteristica: null
+        };
+        
+        // Resetear UI de áreas
+        $('#area-selected-text').text(gettext('Seleccionar Área'));
+        $('#area-check').hide();
+        $('#areasDropdown').removeClass('selected');
+        
+        // Resetear UI de categorías
+        $('#categoria-selected-text').text(gettext('Seleccionar Tipo'));
+        $('#categoria-check').hide();
+        $('#categoriasDropdown').removeClass('selected');
+        
+        // Resetear UI de características
+        $('#caracteristica-selected-text').text(gettext('Características'));
+        $('#caracteristica-check').hide();
+        $('#etiquetasDropdown').removeClass('selected');
+        
+        // Cancelar búsquedas pendientes
+        if (searchTimeoutId) {
+            clearTimeout(searchTimeoutId);
+            searchTimeoutId = null;
+        }
+        if (currentSearchRequest) {
+            currentSearchRequest.abort();
+            currentSearchRequest = null;
+        }
+
+        // Ocultar resultados y estado
+        $('#ajax-results').hide();
+        $('#search-results-section').hide();
+        $('#filtros-estado').hide();
+        $('#buscar-btn').hide();
+        
+        actualizarEstadoFiltros();
+    }
+    
+    // Botón para limpiar filtros
+    $('#limpiar-filtros-btn').on('click', function(e) {
+        e.preventDefault();
+        limpiarFiltros();
+    });
+    
+    // Manejar selección de área
+    $('.area-option').on('click', function(e) {
+        e.preventDefault();
+        filtrosSeleccionados.area = {
+            id: $(this).data('area-id'),
+            name: $(this).data('area-name'),
+            slug: $(this).data('area-slug')
+        };
+        $('#area-selected-text').text(filtrosSeleccionados.area.name);
+        $('#area-check').show();
+        $('#areasDropdown').addClass('selected');
+        $('#areasDropdown').dropdown('hide');
+        actualizarEstadoFiltros();
+    });
+    
+    // Manejar selección de categoría
+    $('.categoria-option').on('click', function(e) {
+        e.preventDefault();
+        filtrosSeleccionados.categoria = {
+            id: $(this).data('categoria-id'),
+            name: $(this).data('categoria-name')
+        };
+        $('#categoria-selected-text').text(filtrosSeleccionados.categoria.name);
+        $('#categoria-check').show();
+        $('#categoriasDropdown').addClass('selected');
+        $('#categoriasDropdown').dropdown('hide');
+        actualizarEstadoFiltros();
+    });
+    
+    // Manejar selección de característica
+    $('.caracteristica-option').on('click', function(e) {
+        e.preventDefault();
+        const caracteristicaId = $(this).data('caracteristica-id');
+        const caracteristicaName = $(this).data('caracteristica-name');
+        
+        if (caracteristicaId === 'none') {
+            filtrosSeleccionados.caracteristica = null;
+            $('#caracteristica-selected-text').text(gettext('Características (Opcional)'));
+            $('#caracteristica-check').hide();
+            $('#etiquetasDropdown').removeClass('selected');
+        } else {
+            filtrosSeleccionados.caracteristica = {
+                id: caracteristicaId,
+                name: caracteristicaName
+            };
+            $('#caracteristica-selected-text').text(filtrosSeleccionados.caracteristica.name);
+            $('#caracteristica-check').show();
+            $('#etiquetasDropdown').addClass('selected');
+        }
+        
+        $('#etiquetasDropdown').dropdown('hide');
+        actualizarEstadoFiltros();
+    });
+    
+    // Programar auto-búsqueda (debounced)
+    function programarBusquedaAuto() {
+        // Solo buscar si tenemos área y categoría
+        if (!filtrosSeleccionados.area || !filtrosSeleccionados.categoria) {
+            return;
+        }
+
+        if (searchTimeoutId) {
+            clearTimeout(searchTimeoutId);
+        }
+
+        searchTimeoutId = setTimeout(ejecutarBusquedaFiltros, SEARCH_DEBOUNCE_MS);
+    }
+
+    // Ejecutar búsqueda AJAX (garantizando una sola request activa)
+    function ejecutarBusquedaFiltros() {
+        searchTimeoutId = null;
+
+        if (!filtrosSeleccionados.area || !filtrosSeleccionados.categoria) {
+            return;
+        }
+
+        // Cancelar request anterior si sigue en curso
+        if (currentSearchRequest && currentSearchRequest.readyState !== 4) {
+            currentSearchRequest.abort();
+        }
+
+        // Mostrar loading
+        $('#ajax-loading').show();
+        $('#ajax-results').hide();
+        $('#search-results-section').hide();
+
+        currentSearchRequest = $.ajax({
+            url: "{% url 'explorer:filtros_ajax' %}",
+            type: 'GET',
+            data: {
+                area: filtrosSeleccionados.area.id,
+                categoria: filtrosSeleccionados.categoria.id,
+                caracteristica: filtrosSeleccionados.caracteristica ? filtrosSeleccionados.caracteristica.id : 'all'
+            },
+            success: function(response) {
+                $('#ajax-loading').hide();
+                
+                if (response.success) {
+                    renderizarResultados(response);
+                } else {
+                    mostrarError('Error en la búsqueda: ' + response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                if (status === 'abort') {
+                    // Búsqueda cancelada por una nueva, no mostrar error
+                    return;
+                }
+                $('#ajax-loading').hide();
+                mostrarError('Error de conexión: ' + error);
+            },
+            complete: function() {
+                currentSearchRequest = null;
+            }
+        });
+    }
+
+    // Botón "Buscar Lugares" como disparador manual adicional (sin debounce)
+    $('#buscar-btn').on('click', function() {
+        ejecutarBusquedaFiltros();
+    });
+    
+    // Función para generar URL completa con slugs
+    function generarUrlCompleta(data) {
+        let baseUrl;
+        let params = new URLSearchParams();
+        
+        // Priorizar slug de área seleccionada, luego del area_info del response
+        let areaSlug = null;
+        if (filtrosSeleccionados.area && filtrosSeleccionados.area.slug) {
+            areaSlug = filtrosSeleccionados.area.slug;
+        } else if (data.area_info && data.area_info.slug) {
+            areaSlug = data.area_info.slug;
+        }
+        
+        // Usar helper que respeta el idioma actual
+        baseUrl = buildPlacesListUrl(areaSlug);
+        if (!areaSlug && filtrosSeleccionados.area) {
+            // Cuando no tenemos slug pero sí id de comuna, añadirlo como query param
+            params.append('comuna', filtrosSeleccionados.area.id);
+        }
+        
+        // Agregar otros filtros como parámetros
+        if (filtrosSeleccionados.categoria && filtrosSeleccionados.categoria.id !== 'all') {
+            params.append('tipo', filtrosSeleccionados.categoria.id);
+        }
+        
+        if (filtrosSeleccionados.caracteristica && filtrosSeleccionados.caracteristica.id !== 'all') {
+            params.append(filtrosSeleccionados.caracteristica.id, 'true');
+        }
+        
+        // Construir URL final
+        return params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+    }
+    
+    // Función para renderizar resultados
+    function renderizarResultados(data) {
+        // Cerrar TODOS los dropdowns de forma agresiva (pero sin dejar inline display:none)
+        closeAllHomeDropdowns();
+        
+        // Mensaje de resultados: usar ngettext si está disponible, si no, fallback simple (ES)
+        let msgResultados;
+        if (typeof ngettext === 'function' && typeof interpolate === 'function') {
+            msgResultados = interpolate(
+                ngettext(
+                    'Encontramos %s lugar que coincide con tus filtros',
+                    'Encontramos %s lugares que coinciden con tus filtros',
+                    data.total
+                ),
+                [data.total]
+            );
+        } else {
+            msgResultados = data.total === 1
+                ? `Encontramos ${data.total} lugar que coincide con tus filtros`
+                : `Encontramos ${data.total} lugares que coinciden con tus filtros`;
+        }
+
+        let html = `
+            <div class="semantic-home-wrapper">
+                <div class="semantic-home-header text-center mb-4">
+                    <h2 class="fw-bold semantic-home-title">{% trans "Resultados de tu Búsqueda" %}</h2>
+                    <p class="lead mb-0">${msgResultados}</p>
+                    <div class="mt-3">
+                        <span class="badge fs-6 px-3 py-2 me-2 mb-1">📍 ${filtrosSeleccionados.area.name}</span>
+                        <span class="badge fs-6 px-3 py-2 me-2 mb-1">🏢 ${filtrosSeleccionados.categoria.name}</span>
+                        ${filtrosSeleccionados.caracteristica ?
+                            `<span class="badge fs-6 px-3 py-2 mb-1">⭐ ${filtrosSeleccionados.caracteristica.name}</span>` :
+                            `<span class="badge fs-6 px-3 py-2 mb-1">${gettext('Sin filtro especial')}</span>`
+                        }
+                    </div>
+                </div>
+        `;
+        html += renderAdBlock(ADS.listMobile, 'home_filter_top', 'top', '');
+        html += `<div class="semantic-home-grid places-grid">`;
+        data.lugares.forEach((lugar, i) => {
+            html += generarPlaceCardHtml(lugar);
+            if (i === 7) {
+                html += renderAdBlock(ADS.list, 'home_filter_mid', 'mid', 'adsense-desktop-only adsense-inline-list');
+            }
+        });
+        html += `</div>`;
+        html += renderAdBlock(ADS.list, 'home_filter_bottom', 'bottom', '');
+        html += `
+                <div class="text-center mt-4">
+                    <a href="${generarUrlCompleta(data)}"
+                       class="btn btn-gradient-green btn-lg rounded-pill px-4">
+                        <i class="bi bi-arrow-right me-2"></i>{% trans "Ver Todos los Resultados" %}
+                    </a>
+                </div>
+            </div>
+        `;
+        
+        $('#ajax-results').html(html).show();
+        hydrateAds($('#ajax-results'));
+        $('#search-results-section').show();
+        
+        // Scroll suave a los resultados
+        $('html, body').animate({
+            scrollTop: $('#ajax-results').offset().top - 100
+        }, 800);
+    }
+    
+    // Función para mostrar errores
+    function mostrarError(mensaje) {
+        $('#ajax-results').html(`
+            <div class="container py-5">
+                <div class="text-center text-white">
+                    <i class="bi bi-exclamation-triangle fs-1 text-warning mb-3"></i>
+                    <h3>{% trans "¡Ups! Algo salió mal" %}</h3>
+                    <p class="lead">${mensaje}</p>
+                    <button class="btn btn-outline-light" onclick="location.reload();">
+                        <i class="bi bi-arrow-clockwise me-2"></i>{% trans "Intentar de nuevo" %}
+                    </button>
+                </div>
+            </div>
+        `).show();
+    }
+    
+    // ═══════════════════════════════════════════════════════════════
+    // NEAR ME - GEOLOCALIZACIÓN PROFESIONAL
+    // ═══════════════════════════════════════════════════════════════
+    
+    // Estado global de Near Me
+    let nearMeActivo = false;
+    let tipoNearMe = null;
+    let featureNearMe = null;
+    let radioDistancia = 2;
+    
+    // Labels traducidos - TODOS los tipos
+    const TIPOS_LABELS = {
+        'restaurant': '{% trans "Restaurantes" %}',
+        'bar': '{% trans "Bares" %}',
+        'cafe': '{% trans "Cafés" %}',
+        'bakery': '{% trans "Panaderías" %}',
+        'night_club': '{% trans "Discotecas" %}',
+        'rooftop_bar': '{% trans "Rooftops" %}',
+        'karaoke': '{% trans "Karaokes" %}',
+        'sports_bar': '{% trans "Bares Deportivos" %}',
+        'casino': '{% trans "Casinos" %}',
+        'bowling_alley': '{% trans "Boleras" %}',
+        'spa': '{% trans "Spas" %}',
+        'art_gallery': '{% trans "Galerías de Arte" %}',
+        'museum': '{% trans "Museos" %}',
+        'tourist_attraction': '{% trans "Atracciones Turísticas" %}',
+        'all': '{% trans "Todos" %}'
+    };
+    
+    // Labels traducidos - TODAS las características
+    const FEATURES_LABELS = {
+        'outdoor_seating': '{% trans "Terraza" %}',
+        'live_music': '{% trans "Música en Vivo" %}',
+        'good_for_groups': '{% trans "Para Grupos" %}',
+        'good_for_children': '{% trans "Para Niños" %}',
+        'delivery': '{% trans "Delivery" %}',
+        'takeout': '{% trans "Para Llevar" %}',
+        'dine_in': '{% trans "Comer en Local" %}',
+        'reservable': '{% trans "Reservaciones" %}',
+        'serves_cocktails': '{% trans "Cócteles" %}',
+        'serves_wine': '{% trans "Vinos" %}',
+        'serves_coffee': '{% trans "Café Especialidad" %}',
+        'serves_dessert': '{% trans "Postres" %}',
+        'allows_dogs': '{% trans "Pet Friendly" %}',
+        'wheelchair_accessible_entrance': '{% trans "Acceso Accesible" %}',
+        'accepts_credit_cards': '{% trans "Tarjetas de Crédito" %}'
+    };
+    
+    // Textos
+    const T_NEAR_ME = '{% trans "Buscar cerca de mí" %}';
+    const T_LOCATING = '{% trans "Localizando..." %}';
+    const T_ACTIVE = '{% trans "GPS Activo" %}';
+    
+    // Click handler para Near Me
+    $('#cerca-de-mi-btn').on('click', function() {
+        if (nearMeActivo) {
+            desactivarNearMe();
+        } else {
+            activarNearMe();
+        }
+    });
+    
+    // Exponer funciones globalmente
+    window.activarNearMe = activarNearMe;
+    window.desactivarNearMe = desactivarNearMe;
+
+    function activarNearMe() {
+        const $btn = $('#cerca-de-mi-btn');
+        const $text = $('#ubicacion-text');
+        const $icon = $('#ubicacion-icon');
+        
+        // Verificar soporte
+        if (!navigator.geolocation) {
+            mostrarErrorNearMe('{% trans "Tu navegador no soporta geolocalización" %}');
+            return;
+        }
+        
+        // Estado: localizando
+        $btn.addClass('locating').removeClass('active error');
+        $text.text(T_LOCATING);
+        
+        // Solicitar ubicación
+        navigator.geolocation.getCurrentPosition(
+            // Éxito
+            function(pos) {
+                ubicacionUsuario = {
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude,
+                    accuracy: pos.coords.accuracy
+                };
+                nearMeActivo = true;
+                
+                // UI: activo
+                $btn.removeClass('locating').addClass('active');
+                $text.text(T_ACTIVE + ' ✓');
+                
+                // Deshabilitar área y buscar
+                deshabilitarSelectArea();
+                buscarLugaresCercanos();
+            },
+            // Error
+            function(err) {
+                $btn.removeClass('locating').addClass('error');
+                let msg = '{% trans "Error de ubicación" %}';
+                
+                if (err.code === 1) msg = '{% trans "Permiso denegado. Habilita la ubicación." %}';
+                else if (err.code === 2) msg = '{% trans "Ubicación no disponible" %}';
+                else if (err.code === 3) msg = '{% trans "Tiempo de espera agotado" %}';
+                
+                $text.text(msg);
+                
+                // Reset después de 3s
+                setTimeout(() => {
+                    $btn.removeClass('error');
+                    $text.text(T_NEAR_ME);
+                }, 3000);
+            },
+            // Opciones
+            { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
+        );
+    }
+    
+    function desactivarNearMe() {
+        nearMeActivo = false;
+        nearMeResultsVisible = false;
+        tipoNearMe = null;
+        featureNearMe = null;
+        ubicacionUsuario = null;
+        
+        const $btn = $('#cerca-de-mi-btn');
+        $btn.removeClass('active locating error');
+        $('#ubicacion-text').text(T_NEAR_ME);
+        
+        habilitarSelectArea();
+        $('#ajax-results').fadeOut(200);
+        $('#search-results-section').fadeOut(200);
+        
+        // Scroll suave de vuelta al hero
+        const topbarH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--site-topbar-h'), 10) || 64;
+        $('html, body').animate({
+            scrollTop: Math.max(0, ($('.hero-v3').offset()?.top || 0) - topbarH)
+        }, 400);
+    }
+    
+    function mostrarErrorNearMe(msg) {
+        const $btn = $('#cerca-de-mi-btn');
+        $btn.removeClass('locating active').addClass('error');
+        $('#ubicacion-text').text(msg);
+        
+        setTimeout(() => {
+            $btn.removeClass('error');
+            $('#ubicacion-text').text(T_NEAR_ME);
+        }, 3000);
+    }
+    
+    // Exclusividad: Near Me vs Select Area
+    function deshabilitarSelectArea() {
+        // Limpiar selección de área
+        filtrosSeleccionados.area = null;
+        $('#area-selected-text').text('{% trans "Usando Near Me" %}');
+        $('#area-check').hide();
+        $('#areasDropdown').addClass('disabled').prop('disabled', true);
+        
+        // Deshabilitar visualmente el dropdown
+        $('#areasDropdown').css({
+            'opacity': '0.5',
+            'pointer-events': 'none'
+        });
+    }
+    
+    function habilitarSelectArea() {
+        $('#areasDropdown').removeClass('disabled').prop('disabled', false);
+        $('#area-selected-text').text(gettext('Seleccionar Área'));
+        $('#areasDropdown').css({
+            'opacity': '1',
+            'pointer-events': 'auto'
+        });
+                }
+                
+    // Si el usuario selecciona un área, desactivar Near Me
+    $('.area-option').on('click', function() {
+        if (nearMeActivo) {
+            desactivarNearMe();
+        }
+    });
+    
+    // Flag para saber si es una actualización de filtros
+    let nearMeResultsVisible = false;
+    
+    function buscarLugaresCercanos(esActualizacion = false) {
+        if (!ubicacionUsuario) {
+            mostrarErrorNearMe('{% trans "Ubicación no disponible" %}');
+            return;
+        }
+        
+        // Si ya hay resultados visibles, solo mostrar loading en el grid
+        if (esActualizacion && nearMeResultsVisible) {
+            $('.semantic-home-grid').addClass('loading');
+            $('.semantic-home-title').addClass('updating');
+        } else {
+        $('#ajax-loading').show();
+        $('#ajax-results').hide();
+            $('#search-results-section').hide();
+        }
+        
+        // Construir datos de la petición
+        const requestData = {
+            lat: ubicacionUsuario.lat,
+            lng: ubicacionUsuario.lng,
+            radio: radioDistancia
+        };
+        
+        // Agregar tipo si está seleccionado
+        if (tipoNearMe) {
+            requestData.tipo = tipoNearMe;
+        }
+        
+        // Agregar característica si está seleccionada (desde chips o dropdown)
+        if (featureNearMe) {
+            requestData.caracteristica = featureNearMe;
+        } else if (filtrosSeleccionados.caracteristica && filtrosSeleccionados.caracteristica.id !== 'none') {
+            requestData.caracteristica = filtrosSeleccionados.caracteristica.id;
+        }
+        
+        // Llamada AJAX
+        $.ajax({
+            url: "{% url 'explorer:lugares_cercanos_near_me' %}",
+            type: 'GET',
+            data: requestData,
+            success: function(response) {
+                $('#ajax-loading').hide();
+                if (response.success) {
+                    renderizarResultadosCercanos(response);
+                } else {
+                    mostrarError(response.error || '{% trans "Error en la búsqueda" %}');
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#ajax-loading').hide();
+                mostrarError('{% trans "Error de conexión" %}');
+            }
+        });
+    }
+    
+    // Botón buscar (unificado)
+    $('#buscar-btn').on('click', function() {
+        if (nearMeActivo && ubicacionUsuario) {
+            buscarLugaresCercanos();
+        } else if (filtrosSeleccionados.area && filtrosSeleccionados.categoria) {
+            ejecutarBusquedaFiltros();
+        }
+    });
+    
+    function renderizarResultadosCercanos(data) {
+        // Cerrar TODOS los dropdowns de forma agresiva (pero sin forzar display:none permanente)
+        closeAllHomeDropdowns();
+        
+        // Textos traducidos inyectados desde servidor
+        const T_VIEW_DETAILS = '{% trans "Ver detalles" %}';
+        const T_NO_DETAILS = '{% trans "Sin detalles" %}';
+        const T_FEATURED = '{% trans "Destacado" %}';
+        const T_EXCLUSIVE = '{% trans "Exclusivo" %}';
+        const T_TOP_RATED = '{% trans "Top Valorado" %}';
+        const T_PLACES_NEAR = '{% trans "Lugares cerca de mí" %}';
+        const T_NEAR_ME = '{% trans "cerca de mí" %}';
+        const T_WITH = '{% trans "con" %}';
+        const T_PLACES_WITH = '{% trans "Lugares con" %}';
+        const T_NO_RESULTS = '{% trans "Sin resultados" %}';
+        const T_TRY_EXPANDING = '{% trans "Intenta ampliar el radio de búsqueda" %}';
+        
+        // ═══════════════════════════════════════════════════════════════
+        // USAR DATOS REALES DEL BACKEND (no variables locales)
+        // ═══════════════════════════════════════════════════════════════
+        const filtros = data.filtros_aplicados || {};
+        const tipoLabelReal = filtros.tipo_label || '';
+        const featureLabelReal = filtros.caracteristica_label || '';
+        const radioReal = filtros.radio_km || radioDistancia;
+        const radioDisplay = filtros.radio_display || `${radioReal}km`;
+        const totalReal = data.total || 0;
+        
+        // Sincronizar variables locales con datos reales del backend
+        tipoNearMe = filtros.tipo || null;
+        featureNearMe = filtros.caracteristica || null;
+        radioDistancia = radioReal;
+        
+        // Construir título basado en datos REALES
+        let titulo;
+        if (totalReal === 0) {
+            titulo = T_NO_RESULTS;
+        } else if (tipoLabelReal && featureLabelReal) {
+            titulo = `${totalReal} ${tipoLabelReal} ${T_WITH} ${featureLabelReal}`;
+        } else if (tipoLabelReal) {
+            titulo = `${totalReal} ${tipoLabelReal} ${T_NEAR_ME}`;
+        } else if (featureLabelReal) {
+            titulo = `${totalReal} ${T_PLACES_WITH} ${featureLabelReal}`;
+        } else {
+            titulo = `${totalReal} ${T_PLACES_NEAR}`;
+        }
+        
+        // Subtítulo: usar mensaje del backend (ya viene traducido y formateado)
+        let subtitulo = data.mensaje || '';
+        if (totalReal === 0) {
+            subtitulo = `${data.mensaje}<br><small class="text-muted">${T_TRY_EXPANDING}</small>`;
+        }
+        
+        // Construir badges con datos reales
+        const filtrosActivos = [];
+        if (tipoLabelReal) {
+            filtrosActivos.push(`<span class="badge me-1"><i class="bi bi-check2 me-1"></i>${tipoLabelReal}</span>`);
+        }
+        if (featureLabelReal) {
+            filtrosActivos.push(`<span class="badge me-1"><i class="bi bi-check2 me-1"></i>${featureLabelReal}</span>`);
+        }
+        filtrosActivos.push(`<span class="badge"><i class="bi bi-geo-alt me-1"></i>${radioDisplay}</span>`);
+        
+        const filtrosHtml = `<div class="mt-2">${filtrosActivos.join('')}</div>`;
+        
+        // Labels para dropdowns (basados en datos reales)
+        const tipoSelectedLabel = tipoLabelReal || '{% trans "Tipo" %}';
+        const featureSelectedLabel = featureLabelReal || '{% trans "Características" %}';
+        
+        let html = `
+            <div class="semantic-home-wrapper">
+                <!-- Botón cerrar -->
+                <button class="btn-close-nearme" onclick="window.desactivarNearMe()" title="{% trans 'Cerrar' %}">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+                
+                <div class="semantic-home-header text-center mb-3">
+                    <h2 class="fw-bold semantic-home-title">${titulo}</h2>
+                    <p class="lead mb-0">${subtitulo}</p>
+                    ${filtrosHtml}
+                    <div class="nearme-filters-wrap mt-3">
+                    <div class="filtros-nearme-results">
+                        <div class="row g-2 justify-content-center nearme-dropdowns-row">
+                            <div class="col-lg-3 col-md-4 col-12">
+                                <div class="dropdown">
+                                    <button class="btn btn-filtro-dropdown w-100 dropdown-toggle ${tipoNearMe ? 'selected' : ''}" type="button"
+                                            id="tipoNearMeDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+                                        <i class="bi bi-grid-3x3-gap me-2"></i>
+                                        <span>${tipoSelectedLabel}</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="tipoNearMeDropdown">
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="">
+                                            <i class="bi bi-grid me-2 text-primary"></i>{% trans "Todos los tipos" %}
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Comida & Bebida -->
+                                        <li class="dropdown-header"><i class="bi bi-cup-straw me-2"></i>{% trans "Comida & Bebida" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="restaurant">
+                                            <i class="bi bi-egg-fried me-2 text-warning"></i>{% trans "Restaurantes" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="bar">
+                                            <i class="bi bi-cup-straw me-2 text-info"></i>{% trans "Bares" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="cafe">
+                                            <i class="bi bi-cup-hot me-2 text-success"></i>{% trans "Cafés" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="bakery">
+                                            <i class="bi bi-cake me-2 text-warning"></i>{% trans "Panaderías" %}
+                                        </a></li>
+                                        
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Vida Nocturna -->
+                                        <li class="dropdown-header"><i class="bi bi-moon-stars me-2"></i>{% trans "Vida Nocturna" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="night_club">
+                                            <i class="bi bi-moon-stars me-2 text-purple"></i>{% trans "Discotecas" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="rooftop_bar">
+                                            <i class="bi bi-building me-2 text-primary"></i>{% trans "Rooftops" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="karaoke">
+                                            <i class="bi bi-mic me-2 text-info"></i>{% trans "Karaokes" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="sports_bar">
+                                            <i class="bi bi-controller me-2 text-success"></i>{% trans "Bares Deportivos" %}
+                                        </a></li>
+                                        
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Entretenimiento -->
+                                        <li class="dropdown-header"><i class="bi bi-controller me-2"></i>{% trans "Entretenimiento" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="casino">
+                                            <i class="bi bi-dice-5 me-2 text-danger"></i>{% trans "Casinos" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="bowling_alley">
+                                            <i class="bi bi-circle me-2 text-primary"></i>{% trans "Boleras" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="spa">
+                                            <i class="bi bi-droplet me-2 text-info"></i>{% trans "Spas" %}
+                                        </a></li>
+                                        
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Cultura -->
+                                        <li class="dropdown-header"><i class="bi bi-palette me-2"></i>{% trans "Cultura & Arte" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="art_gallery">
+                                            <i class="bi bi-palette me-2 text-warning"></i>{% trans "Galerías de Arte" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="museum">
+                                            <i class="bi bi-bank me-2 text-secondary"></i>{% trans "Museos" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro tipo-nearme-option" href="javascript:void(0)" data-tipo="tourist_attraction">
+                                            <i class="bi bi-camera me-2 text-success"></i>{% trans "Atracciones Turísticas" %}
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Dropdown: Características (COMPLETO) -->
+                            <div class="col-lg-3 col-md-4 col-12">
+                                <div class="dropdown">
+                                    <button class="btn btn-filtro-dropdown w-100 dropdown-toggle ${featureNearMe ? 'selected' : ''}" type="button"
+                                            id="featureNearMeDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+                                        <i class="bi bi-stars me-2"></i>
+                                        <span>${featureSelectedLabel}</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="featureNearMeDropdown">
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="">
+                                            <i class="bi bi-x-circle me-2 text-muted"></i>{% trans "Sin filtro especial" %}
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Ambiente -->
+                                        <li class="dropdown-header"><i class="bi bi-stars me-2"></i>{% trans "Ambiente" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="outdoor_seating">
+                                            <i class="bi bi-tree me-2 text-success"></i>{% trans "Terraza" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="live_music">
+                                            <i class="bi bi-music-note-beamed me-2 text-warning"></i>{% trans "Música en Vivo" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="good_for_groups">
+                                            <i class="bi bi-people me-2 text-info"></i>{% trans "Para Grupos" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="good_for_children">
+                                            <i class="bi bi-emoji-smile me-2 text-success"></i>{% trans "Para Niños" %}
+                                        </a></li>
+                                        
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Servicios -->
+                                        <li class="dropdown-header"><i class="bi bi-bicycle me-2"></i>{% trans "Servicios" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="delivery">
+                                            <i class="bi bi-bicycle me-2 text-primary"></i>{% trans "Delivery" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="takeout">
+                                            <i class="bi bi-bag me-2 text-success"></i>{% trans "Para Llevar" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="dine_in">
+                                            <i class="bi bi-house me-2 text-info"></i>{% trans "Comer en Local" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="reservable">
+                                            <i class="bi bi-calendar-check me-2 text-warning"></i>{% trans "Reservaciones" %}
+                                        </a></li>
+                                        
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Especialidades -->
+                                        <li class="dropdown-header"><i class="bi bi-cup-straw me-2"></i>{% trans "Especialidades" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="serves_cocktails">
+                                            <i class="bi bi-cup-straw me-2 text-danger"></i>{% trans "Cócteles" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="serves_wine">
+                                            <i class="bi bi-cup me-2 text-purple"></i>{% trans "Vinos" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="serves_coffee">
+                                            <i class="bi bi-cup-hot me-2 text-warning"></i>{% trans "Café Especialidad" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="serves_dessert">
+                                            <i class="bi bi-cake me-2 text-pink"></i>{% trans "Postres" %}
+                                        </a></li>
+                                        
+                                        <li><hr class="dropdown-divider"></li>
+                                        
+                                        <!-- Accesibilidad -->
+                                        <li class="dropdown-header"><i class="bi bi-universal-access me-2"></i>{% trans "Accesibilidad" %}</li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="allows_dogs">
+                                            <i class="bi bi-heart me-2 text-danger"></i>{% trans "Pet Friendly" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="wheelchair_accessible_entrance">
+                                            <i class="bi bi-universal-access me-2 text-primary"></i>{% trans "Acceso Accesible" %}
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro feature-nearme-option" href="javascript:void(0)" data-feature="accepts_credit_cards">
+                                            <i class="bi bi-credit-card me-2 text-success"></i>{% trans "Tarjetas de Crédito" %}
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Dropdown: Distancia -->
+                            <div class="col-lg-3 col-md-4 col-12">
+                                <div class="dropdown">
+                                    <button class="btn btn-filtro-dropdown w-100 dropdown-toggle" type="button"
+                                            id="distanceNearMeDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+                                        <i class="bi bi-rulers me-2"></i>
+                                        <span id="distance-label-result">${radioDisplay}</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-filtros shadow-lg" aria-labelledby="distanceNearMeDropdown">
+                                        <li><a class="dropdown-item dropdown-item-filtro distance-nearme-option" href="javascript:void(0)" data-distance="1">
+                                            <i class="bi bi-geo me-2"></i>1 km
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro distance-nearme-option" href="javascript:void(0)" data-distance="2">
+                                            <i class="bi bi-geo me-2"></i>2 km
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro distance-nearme-option" href="javascript:void(0)" data-distance="3">
+                                            <i class="bi bi-geo me-2"></i>3 km
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro distance-nearme-option" href="javascript:void(0)" data-distance="5">
+                                            <i class="bi bi-geo me-2"></i>5 km
+                                        </a></li>
+                                        <li><a class="dropdown-item dropdown-item-filtro distance-nearme-option" href="javascript:void(0)" data-distance="10">
+                                            <i class="bi bi-geo me-2"></i>10 km
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+        `;
+        html += renderAdBlock(ADS.listMobile, 'home_nearme_top', 'top', '');
+        html += `<div class="semantic-home-grid places-grid">`;
+        data.lugares.forEach((lugar, i) => {
+            html += generarPlaceCardHtml(lugar);
+            if (i === 7) {
+                html += renderAdBlock(ADS.list, 'home_nearme_mid', 'mid', 'adsense-desktop-only adsense-inline-list');
+            }
+        });
+        html += `</div>`;
+        html += renderAdBlock(ADS.list, 'home_nearme_bottom', 'bottom', '');
+        html += `
+                <div class="nearby-actions mt-4 d-flex flex-wrap justify-content-center gap-2">
+                    <button class="btn btn-outline-secondary rounded-pill px-3" onclick="window.activarNearMe()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Actualizar Ubicación" %}
+                    </button>
+                    <a href="{% url 'explorer:lugares_list' %}" class="btn btn-gradient-green rounded-pill px-3">
+                        <i class="bi bi-compass me-1"></i>{% trans "Ver Todos los Lugares" %}
+                    </a>
+                </div>
+            </div>
+        `;
+        
+        // Detectar si es una actualización (ya hay resultados)
+        const $container = $('#ajax-results');
+        const isUpdate = nearMeResultsVisible && $container.find('.semantic-home-wrapper').length > 0;
+        
+        if (isUpdate) {
+            // Solo actualizar el título, mensaje, badges y grid (sin recargar los filtros)
+            $('.semantic-home-title').removeClass('updating').html(titulo);
+            $('.semantic-home-header .lead').first().html(subtitulo);
+            
+            // Actualizar badges de filtros activos (con datos reales del backend)
+            $('.semantic-home-header .mt-2').first().html(filtrosActivos.join(''));
+            
+            // Actualizar labels de los dropdowns con datos reales
+            $('#tipoNearMeDropdown span').text(tipoSelectedLabel);
+            $('#featureNearMeDropdown span').text(featureSelectedLabel);
+            $('#distance-label-result').text(radioDisplay);
+            
+            // Actualizar clases selected de los dropdowns (basado en datos reales)
+            $('#tipoNearMeDropdown').toggleClass('selected', !!tipoLabelReal);
+            $('#featureNearMeDropdown').toggleClass('selected', !!featureLabelReal);
+        
+            let gridHtml = '';
+            data.lugares.forEach((lugar, index) => {
+                gridHtml += generarCardHtml(lugar);
+                if (index === 7) {
+                    gridHtml += renderAdBlock(ADS.list, 'home_nearme_mid', 'mid', 'adsense-desktop-only adsense-inline-list');
+                }
+            });
+            const $grid = $('.semantic-home-grid');
+            $grid.removeClass('loading');
+            $grid.fadeOut(150, function() {
+                $(this).html(gridHtml).fadeIn(200, function() { hydrateAds($grid); });
+            });
+        } else {
+            // Primera vez: renderizar todo
+            closeAllHomeDropdowns();
+            $container.html(html);
+            closeAllHomeDropdowns();
+            initHomeDropdowns($container[0]);
+            $container.hide().fadeIn(300, function() {
+                closeAllHomeDropdowns();
+                hydrateAds($container);
+            });
+            $('#search-results-section').fadeIn(300);
+            nearMeResultsVisible = true;
+            
+            // Scroll suave solo la primera vez
+        $('html, body').animate({
+                scrollTop: $container.offset().top - 100
+            }, 600);
+    }
+    
+        // Event handlers (usar delegación para que funcionen siempre)
+        $(document).off('click', '.tipo-nearme-option').on('click', '.tipo-nearme-option', function(e) {
+            e.preventDefault();
+            tipoNearMe = $(this).data('tipo') || null;
+            const label = $(this).text().trim() || '{% trans "Tipo" %}';
+            $('#tipoNearMeDropdown span').first().text(label);
+            $('#tipoNearMeDropdown').toggleClass('selected', !!tipoNearMe);
+            closeAllHomeDropdowns();
+            buscarLugaresCercanos(true);
+        });
+        
+        $(document).off('click', '.feature-nearme-option').on('click', '.feature-nearme-option', function(e) {
+            e.preventDefault();
+            featureNearMe = $(this).data('feature') || null;
+            const label = $(this).text().trim() || '{% trans "Características" %}';
+            $('#featureNearMeDropdown span').first().text(label);
+            $('#featureNearMeDropdown').toggleClass('selected', !!featureNearMe);
+            closeAllHomeDropdowns();
+            buscarLugaresCercanos(true);
+        });
+        
+        $(document).off('click', '.distance-nearme-option').on('click', '.distance-nearme-option', function(e) {
+            e.preventDefault();
+            radioDistancia = parseInt($(this).data('distance'), 10);
+            closeAllHomeDropdowns();
+            buscarLugaresCercanos(true);
+        });
+    }
+    
+    // Helper para generar HTML de una card
+    // Esta función ahora usa generarPlaceCardHtml para mantener consistencia
+    function generarCardHtml(lugar) {
+        return generarPlaceCardHtml(lugar);
+    }
+
+    function renderizarResultadosSemanticos(data) {
+        // Cerrar TODOS los dropdowns de forma agresiva (sin bloquear futuros clics)
+        closeAllHomeDropdowns();
+        
+        const T_VIEW_DETAILS = '{% trans "Ver detalles" %}';
+        const T_NO_DETAILS = '{% trans "Sin detalles" %}';
+        
+        let html = `
+            <div class="semantic-home-wrapper">
+                <div class="semantic-home-header text-center mb-4">
+                    <h2 class="fw-bold semantic-home-title">${gettext('Resultados Semánticos')}</h2>
+                    <p class="lead mb-0">${gettext('Consulta')}: <span class="semantic-home-query">“${data.query || ''}”</span></p>
+                </div>
+        `;
+        html += renderAdBlock(ADS.listMobile, 'home_semantic_top', 'top', '');
+        html += `<div class="semantic-home-grid places-grid">`;
+        (data.lugares || []).forEach((lugar, i) => {
+            html += generarPlaceCardHtml(lugar);
+            if (i === 7) {
+                html += renderAdBlock(ADS.list, 'home_semantic_mid', 'mid', 'adsense-desktop-only adsense-inline-list');
+            }
+        });
+        html += `</div>`;
+        html += renderAdBlock(ADS.list, 'home_semantic_bottom', 'bottom', '');
+        
+        $('#ajax-results').html(html).show();
+        hydrateAds($('#ajax-results'));
+        $('#search-results-section').show();
+        $('html, body').animate({ scrollTop: $('#ajax-results').offset().top - 100 }, 800);
+    }
+});
+</script>
+{% endblock %}

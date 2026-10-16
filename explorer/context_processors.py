@@ -43,6 +43,7 @@ def settings_context(request):
     """Context processor para hacer settings específicas disponibles en templates"""
     return {
         'adsense_allowed': True,
+        'vibe_v4': getattr(settings, 'VIBE_V4', False),
         'settings': {
             'GOOGLE_ANALYTICS_ID': getattr(settings, 'GOOGLE_ANALYTICS_ID', None),
             'ADSENSE_CLIENT': getattr(settings, 'ADSENSE_CLIENT', None),
@@ -54,5 +55,6 @@ def settings_context(request):
             'ADSENSE_SLOT_REVIEWS': getattr(settings, 'ADSENSE_SLOT_REVIEWS', ''),
             'ADSENSE_SLOT_DETAIL_BOTTOM': getattr(settings, 'ADSENSE_SLOT_DETAIL_BOTTOM', ''),
             'DEBUG': getattr(settings, 'DEBUG', False),
+            'VIBE_V4': getattr(settings, 'VIBE_V4', False),
         }
     }

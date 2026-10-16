@@ -541,19 +541,25 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.WARNING("   --rescan-vacios requiere migración 0031 (google_ids_places)")
             )
+        columns = initialgrid_db_columns()
         if pasada == "bias":
+            # Pendientes = sin pasada bias en text_scan_passes (no solo el flag booleano:
+            # puntos marcados processed por otras pasadas quedaban fuera y no se
+            # volvían a barrer).
+            if "text_scan_passes" in columns:
+                return qs.exclude(text_scan_passes__contains=["bias"])
             if has_db_text_scan_field():
                 return qs.filter(is_text_scan_processed=False)
             done = load_progress_ids()
             if done:
                 return qs.exclude(id__in=done)
             return qs
-        if "text_scan_passes" not in initialgrid_db_columns():
+        if "text_scan_passes" not in columns:
             raise CommandError(
                 f"La pasada {pasada} requiere la columna text_scan_passes (migración 0033)."
             )
-        # restriction / generico: requiere bias hecho, pasada pendiente
-        return qs.filter(is_text_scan_processed=True).exclude(
+        # restriction / generico: bias hecho, esta pasada pendiente
+        return qs.filter(text_scan_passes__contains=["bias"]).exclude(
             text_scan_passes__contains=[pasada]
         )
 

@@ -31,9 +31,12 @@ iframe {
 }
 
 .place-card__zone-glass {
+  /* keep in sync with components.css: top-left, leave rating space */
   bottom: auto;
   top: 0.75rem;
+  left: 0.75rem;
   right: auto;
+  max-width: min(55%, calc(100% - 5.5rem));
 }
 
 .place-card__distance {
@@ -80,9 +83,12 @@ iframe {
   .dropdown-menu-filtros {
     min-width: 0;
     max-width: calc(100vw - 2rem);
-    max-height: min(60svh, 420px);
+    max-height: min(50svh, calc(100svh - var(--v4-nav-h, 68px) - 7rem));
     overflow: auto;
     z-index: 1060 !important;
+  }
+  body.vibe-v4 .places-header-card {
+    z-index: 60;
   }
 
   .scroll-to-top {
@@ -109,4 +115,16 @@ iframe {
     width: 34px;
     height: 34px;
   }
+}
+
+
+/* places-section overflow safety: clip was cutting centered titles on mobile */
+body.vibe-v4 .places-section,
+body.vibe-v4 .places-header-card,
+body.vibe-v4 .places-title,
+body.vibe-v4 .places-lead {
+  overflow-x: visible;
+}
+body.vibe-v4 main {
+  overflow-x: clip;
 }

@@ -529,6 +529,48 @@ class Initialgrid(models.Model):
 # Catálogo independiente de Google Place IDs (barrido de grilla)
 # ────────────────────────────────────────────────────────────────
 
+class GooglePlaceIdQuerySet(models.QuerySet):
+    def con_ficha(self):
+        """IDs que ya tienen fila en Places (ficha publicada/importada)."""
+        from django.db.models import Exists, OuterRef
+
+        return self.filter(
+            Exists(Places.objects.filter(place_id=OuterRef("place_id")))
+        )
+
+    def sin_ficha(self):
+        """IDs descubiertos que aún no tienen ficha en Places."""
+        from django.db.models import Exists, OuterRef
+
+        return self.filter(
+            ~Exists(Places.objects.filter(place_id=OuterRef("place_id")))
+        )
+
+    def con_details(self):
+        """IDs con snapshot scrapeado en GooglePlaceDetails (status ok)."""
+        from django.db.models import Exists, OuterRef
+
+        return self.filter(
+            Exists(
+                GooglePlaceDetails.objects.filter(
+                    place_id=OuterRef("place_id"), fetch_status="ok"
+                )
+            )
+        )
+
+    def sin_details(self):
+        """IDs sin snapshot ok en GooglePlaceDetails (cola del scraper Maps)."""
+        from django.db.models import Exists, OuterRef
+
+        return self.filter(
+            ~Exists(
+                GooglePlaceDetails.objects.filter(
+                    place_id=OuterRef("place_id"), fetch_status="ok"
+                )
+            )
+        )
+
+
 class GooglePlaceId(models.Model):
     """
     Registro maestro de Google Place IDs descubiertos por barrido.
@@ -595,6 +637,8 @@ class GooglePlaceId(models.Model):
         help_text="Consultas distintas que devolvieron este place_id",
     )
 
+    objects = GooglePlaceIdQuerySet.as_manager()
+
     class Meta:
         verbose_name = "Google Place ID (catálogo)"
         verbose_name_plural = "Google Place IDs (catálogo)"
@@ -605,6 +649,152 @@ class GooglePlaceId(models.Model):
 
     def __str__(self):
         return self.place_id
+
+    @property
+    def tiene_ficha(self) -> bool:
+        return Places.objects.filter(place_id=self.place_id).exists()
+
+
+class GooglePlaceDetails(models.Model):
+    """
+    Snapshot de ficha desde Google Maps (Playwright), sin Places API de pago.
+
+    Staging: no publica a Places. Guarda tipado + raw_json + photo_urls
+    (sin descargar bytes; Plan 2 = media).
+    """
+
+    FETCH_STATUS_CHOICES = (
+        ("ok", "OK"),
+        ("error", "Error"),
+        ("not_found", "No encontrado"),
+        ("blocked", "Bloqueado /sorry"),
+    )
+
+    catalog_entry = models.OneToOneField(
+        GooglePlaceId,
+        on_delete=models.CASCADE,
+        related_name="details",
+        null=True,
+        blank=True,
+    )
+    place_id = models.CharField(max_length=255, unique=True, db_index=True)
+    cid = models.CharField(
+        max_length=80,
+        blank=True,
+        default="",
+        help_text="CID hex Maps (0x…:0x…) si aparece en la URL",
+    )
+
+    display_name = models.CharField(max_length=500, blank=True, default="")
+    category = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+        db_index=True,
+        help_text="Etiqueta cruda del panel Maps",
+    )
+    primary_type = models.CharField(
+        max_length=100,
+        blank=True,
+        default="",
+        db_index=True,
+        help_text="Código Google canónico (snake_case)",
+    )
+    tipo = models.CharField(
+        max_length=255,
+        choices=PLACE_TYPE_CHOICES,
+        default="otros",
+        db_index=True,
+        help_text="Tipo Vive (mismo vocabulario que Places.tipo)",
+    )
+    tipo_family = models.CharField(
+        max_length=40,
+        blank=True,
+        default="other",
+        db_index=True,
+        help_text="Bucket de control: food, nightlife, lodging, …",
+    )
+    tipo_source = models.CharField(
+        max_length=40,
+        blank=True,
+        default="",
+        help_text="maps_category | scan_types | search_query | …",
+    )
+    tipo_confidence = models.FloatField(null=True, blank=True)
+    types = ArrayField(models.CharField(max_length=100), blank=True, default=list)
+    business_status = models.CharField(max_length=40, blank=True, default="", db_index=True)
+
+    lat = models.FloatField(null=True, blank=True)
+    lng = models.FloatField(null=True, blank=True)
+    ubicacion = gis_models.PointField(srid=4326, geography=True, null=True, blank=True)
+    formatted_address = models.TextField(blank=True, default="")
+    plus_code = models.CharField(max_length=120, blank=True, default="")
+
+    rating = models.FloatField(null=True, blank=True, db_index=True)
+    user_rating_count = models.PositiveIntegerField(null=True, blank=True)
+
+    phone = models.CharField(max_length=80, blank=True, default="")
+    website_uri = models.URLField(max_length=1000, blank=True, default="")
+    google_maps_uri = models.URLField(max_length=1000, blank=True, default="")
+    menu_uri = models.URLField(max_length=1000, blank=True, default="")
+
+    price_level = models.CharField(
+        max_length=10,
+        blank=True,
+        default="",
+        help_text="Nivel de precio Maps ($, $$, …)",
+    )
+    description = models.TextField(
+        blank=True,
+        default="",
+        help_text="Descripción / texto del negocio si aparece en Acerca de",
+    )
+
+    open_now = models.BooleanField(null=True, blank=True)
+    hours_text = models.TextField(blank=True, default="")
+    weekday_descriptions = models.TextField(blank=True, default="")
+
+    dine_in = models.BooleanField(null=True, blank=True)
+    takeout = models.BooleanField(null=True, blank=True)
+    delivery = models.BooleanField(null=True, blank=True)
+    amenities = models.JSONField(
+        null=True,
+        blank=True,
+        help_text="Atributos visibles en Maps (dict flexible)",
+    )
+
+    reviews = models.JSONField(null=True, blank=True)
+    photo_urls = models.JSONField(
+        null=True,
+        blank=True,
+        help_text="URLs CDN de fotos (sin bytes). Plan 2 = descargar.",
+    )
+    photos_meta = models.JSONField(null=True, blank=True)
+
+    fetched_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    fetch_status = models.CharField(
+        max_length=20, choices=FETCH_STATUS_CHOICES, default="ok", db_index=True
+    )
+    error_message = models.TextField(blank=True, default="")
+    scraper_version = models.CharField(max_length=40, blank=True, default="maps_v1")
+    raw_json = models.JSONField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Google Place Details (staging)"
+        verbose_name_plural = "Google Place Details (staging)"
+        ordering = ["-fetched_at"]
+        indexes = [
+            models.Index(fields=["category", "rating"]),
+            models.Index(fields=["fetch_status", "fetched_at"]),
+            models.Index(fields=["tipo_family", "tipo"]),
+            models.Index(fields=["primary_type", "tipo_family"]),
+        ]
+
+    def __str__(self):
+        return self.display_name or self.place_id
 
 
 # ────────────────────────────────────────────────────────────────

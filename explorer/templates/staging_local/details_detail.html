@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>{{ obj.display_name|default:obj.place_id }} — staging local</title>
+  <style>
+    :root { --bg:#0f1419; --card:#1a222c; --text:#e8eef4; --muted:#8b9aab; --acc:#3d9cf0; --ok:#3ecf8e; --warn:#f0b429; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, sans-serif; background:var(--bg); color:var(--text); line-height:1.45; }
+    header { padding:1.25rem 1.5rem; border-bottom:1px solid #2a3542; }
+    header a { color:var(--acc); font-size:.9rem; }
+    h1 { margin:.5rem 0 .25rem; font-size:1.5rem; }
+    .meta { color:var(--muted); font-size:.9rem; }
+    .badge { display:inline-block; padding:.15rem .5rem; border-radius:4px; font-size:.75rem; margin-right:.35rem; }
+    .badge.new { background:#1a3a2a; color:var(--ok); }
+    .badge.old { background:#3a2a1a; color:var(--warn); }
+    .badge.local { background:#2a3542; color:var(--warn); }
+    main { padding:1.25rem 1.5rem 3rem; max-width:960px; margin:0 auto; }
+    section { background:var(--card); border-radius:10px; padding:1rem 1.1rem; margin-bottom:1rem; }
+    section h2 { margin:0 0 .75rem; font-size:1rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+    dl { display:grid; grid-template-columns:160px 1fr; gap:.35rem .75rem; margin:0; font-size:.92rem; }
+    dt { color:var(--muted); }
+    dd { margin:0; word-break:break-word; }
+    .photos { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:.5rem; }
+    .photos img { width:100%; height:110px; object-fit:cover; border-radius:8px; background:#111; }
+    .amen { display:flex; flex-wrap:wrap; gap:.4rem; }
+    .amen span { background:#243040; padding:.2rem .5rem; border-radius:4px; font-size:.8rem; }
+    .review { border-top:1px solid #2a3542; padding:.65rem 0; font-size:.88rem; color:#c5d0db; }
+    pre { overflow:auto; max-height:320px; background:#11161c; padding:.75rem; border-radius:8px; font-size:.75rem; color:#9ec5ea; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="{% url 'staging_local_list' %}">← Volver al listado</a>
+    <span class="badge local">LOCAL / STAGING</span>
+    {% if tiene_places %}
+      <span class="badge old">también existe en Places</span>
+    {% else %}
+      <span class="badge new">solo staging (nuevo)</span>
+    {% endif %}
+    <h1>{{ obj.display_name|default:"(sin nombre)" }}</h1>
+    <p class="meta">{{ obj.category|default:obj.tipo }} · {{ obj.tipo_family }} / {{ obj.tipo }}
+      {% if obj.rating %} · ★ {{ obj.rating }}{% if obj.user_rating_count %} ({{ obj.user_rating_count }}){% endif %}{% endif %}
+      {% if obj.price_level %} · {{ obj.price_level }}{% endif %}
+    </p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Identidad</h2>
+      <dl>
+        <dt>place_id</dt><dd><code>{{ obj.place_id }}</code></dd>
+        <dt>CID</dt><dd>{{ obj.cid|default:"—" }}</dd>
+        <dt>primary_type</dt><dd>{{ obj.primary_type|default:"—" }}</dd>
+        <dt>types</dt><dd>{{ obj.types|join:", "|default:"—" }}</dd>
+        <dt>scraper</dt><dd>{{ obj.scraper_version }} · {{ obj.fetch_status }} · {{ obj.fetched_at }}</dt>
+        <dt>clasificación</dt><dd>{{ obj.tipo_source }} (conf {{ obj.tipo_confidence }})</dd>
+      </dl>
+    </section>
+
+    <section>
+      <h2>Ubicación & contacto</h2>
+      <dl>
+        <dt>Dirección</dt><dd>{{ obj.formatted_address|default:"—" }}</dd>
+        <dt>Coords</dt><dd>{% if obj.lat %}{{ obj.lat }}, {{ obj.lng }}{% else %}—{% endif %}</dd>
+        <dt>Plus code</dt><dd>{{ obj.plus_code|default:"—" }}</dd>
+        <dt>Teléfono</dt><dd>{{ obj.phone|default:"—" }}</dd>
+        <dt>Web</dt><dd>{% if obj.website_uri %}<a href="{{ obj.website_uri }}" target="_blank" rel="noopener">{{ obj.website_uri }}</a>{% else %}—{% endif %}</dd>
+        <dt>Maps</dt><dd>{% if obj.google_maps_uri %}<a href="{{ obj.google_maps_uri }}" target="_blank" rel="noopener">Abrir Maps</a>{% else %}—{% endif %}</dd>
+        <dt>Menú</dt><dd>{% if obj.menu_uri %}<a href="{{ obj.menu_uri }}" target="_blank" rel="noopener">{{ obj.menu_uri }}</a>{% else %}—{% endif %}</dd>
+      </dl>
+    </section>
+
+    <section>
+      <h2>Horario</h2>
+      <dl>
+        <dt>Open now</dt><dd>{{ obj.open_now|default:"—" }}</dd>
+        <dt>hours_text</dt><dd>{{ obj.hours_text|default:"—" }}</dd>
+        <dt>Semanal</dt><dd><pre style="max-height:160px;margin:0;white-space:pre-wrap;">{{ obj.weekday_descriptions|default:"—" }}</pre></dd>
+      </dl>
+    </section>
+
+    {% if obj.description %}
+    <section>
+      <h2>Descripción</h2>
+      <p>{{ obj.description }}</p>
+    </section>
+    {% endif %}
+
+    <section>
+      <h2>Amenities</h2>
+      {% if amenities %}
+      <div class="amen">
+        {% for k,v in amenities.items %}
+          {% if v %}<span>{{ k }}</span>{% endif %}
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="meta">Sin amenities tipados. dine_in={{ obj.dine_in }} takeout={{ obj.takeout }} delivery={{ obj.delivery }}</p>
+      {% endif %}
+    </section>
+
+    <section>
+      <h2>Fotos</h2>
+      <p class="meta">Plan 1 no guarda imágenes ni URLs CDN. Las fotos se scrapean en fase 2 solo de lugares seleccionados.</p>
+    </section>
+
+    <section>
+      <h2>Reseñas scrapeadas — {{ reviews|length }}</h2>
+      {% for r in reviews %}
+        <div class="review">{{ r.text|default:r }}</div>
+      {% empty %}
+        <p class="meta">Sin reviews en staging.</p>
+      {% endfor %}
+    </section>
+
+    {% if tiene_places and place_pub %}
+    <section>
+      <h2>Ficha Places (público / ya existía)</h2>
+      <dl>
+        <dt>nombre</dt><dd>{{ place_pub.nombre }}</dt>
+        <dt>slug</dt><dd>{% if place_pub.slug %}<a href="{% url 'explorer:lugares_detail' place_pub.slug %}">{{ place_pub.slug }}</a>{% else %}—{% endif %}</dd>
+        <dt>tipo</dt><dd>{{ place_pub.tipo }}</dd>
+      </dl>
+    </section>
+    {% endif %}
+
+    <section>
+      <h2>raw_json (recorte)</h2>
+      <pre>{{ raw_pretty }}</pre>
+    </section>
+  </main>
+</body>
+</html>
