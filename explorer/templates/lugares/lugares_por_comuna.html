@@ -124,9 +124,7 @@
 {% block extra_css %}
 <style>
 .places-section {
-  background:
-    radial-gradient(circle at top left, rgba(17,153,142,0.08), transparent 34rem),
-    linear-gradient(180deg, #fbfcfa 0%, #f5f7f4 100%);
+  background: transparent;
   min-height: 100vh;
   padding: 2rem 0 4rem;
 }
@@ -154,7 +152,7 @@
   transform: translateX(-50%);
   width: 60px;
   height: 3px;
-  background: #11998e;
+  background: #0b1220;
   border-radius: 2px;
 }
 .title-main { color: #111827; }
@@ -180,8 +178,8 @@
   min-height: 178px;
 }
 .places-grid .place-card:hover {
-  border-color: #99f6e4;
-  box-shadow: 0 14px 30px rgba(17,153,142,0.11);
+  border-color: rgba(11, 18, 32, 0.12);
+  box-shadow: 0 14px 30px rgba(11, 18, 32, 0.08);
 }
 .places-empty-icon { color: #9ca3af !important; }
 .places-empty-title { color: #111827; }
@@ -193,7 +191,7 @@
   min-height: 34px;
   padding: 0.45rem 0.85rem;
   border-radius: 999px;
-  background: #11998e;
+  background: #0b1220;
   color: #fff;
   font-size: 0.82rem;
   font-weight: 700;
@@ -201,13 +199,13 @@
 .places-grid .place-card__arrow i { display: none; }
 .pagination .page-link {
   border: 1px solid #d1d5db;
-  color: #11998e;
+  color: #0b1220;
   font-weight: 500;
   background: #fff;
 }
 .pagination .page-link:hover {
-  background: #f0fdfa;
-  border-color: #99f6e4;
+  background: #f7f4ee;
+  border-color: rgba(11, 18, 32, 0.12);
 }
 @media (min-width: 992px) {
   .places-grid .place-card--horizontal {

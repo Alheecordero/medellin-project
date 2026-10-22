@@ -47,7 +47,7 @@
       <p class="v4-kicker" style="color:rgba(255,255,255,.7)">{% trans "La ciudad, en tu bolsillo" %}</p>
       <h1 class="v4-brand-mark">Vive <span>Medellín</span></h1>
       <p class="v4-hero__lead">{% trans "Planes reales para comer, tomar y salir. Sin ruido. Sin mapas interminables." %}</p>
-      <div class="v4-cta-row">
+      <div class="v4-cta-row v4-hero__actions">
         <a class="v4-btn v4-btn--primary" href="{% url 'explorer:lugares_list' %}?cerca=1">
           <i class="bi bi-geo-alt-fill"></i> {% trans "Cerca de mí ahora" %}
         </a>
@@ -57,16 +57,6 @@
       </div>
     </div>
   </section>
-
-  <div class="v4-search-sticky">
-    <div class="v4-container">
-      <form class="v4-search" action="{% url 'explorer:lugares_list' %}" method="get" role="search">
-        <i class="bi bi-search"></i>
-        <input type="search" name="q" placeholder="{% trans 'Bares en Laureles, rooftop, bandeja…' %}" aria-label="{% trans 'Buscar' %}" />
-        <button type="submit" aria-label="{% trans 'Buscar' %}"><i class="bi bi-arrow-right"></i></button>
-      </form>
-    </div>
-  </div>
 
   <section class="v4-section">
     <div class="v4-container">
@@ -106,7 +96,7 @@
   </section>
 
   {% if lugares_imperdibles %}
-  <section class="v4-section">
+  <section class="v4-section v4-section--near">
     <div class="v4-container">
       <div class="v4-section__head">
         <div>
@@ -145,7 +135,7 @@
 
   {% with comunas_chips=comunas_medellin_chips|default:comunas_medellin %}
   {% if comunas_chips %}
-  <section class="v4-section">
+  <section class="v4-section v4-section--zones">
     <div class="v4-container">
       <div class="v4-section__head">
         <div>

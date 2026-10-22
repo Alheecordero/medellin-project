@@ -53,156 +53,121 @@
 {% include 'components/schema_org.html' with schema_type='breadcrumbs' breadcrumbs=breadcrumbs %}
 
 <section class="detail-section">
-  <div class="container py-4">
-    <div class="detail-main-wrapper">
+  <div class="place-sheet">
 
-      <!-- CARD PRINCIPAL -->
-      <div class="detail-main-card">
-        
-        <!-- Navegación Interior -->
-        <div class="detail-nav">
-          <nav aria-label="{% trans 'Migas de pan' %}">
-            <ol class="breadcrumb mb-0">
-              {% for crumb in breadcrumbs %}
-                <li class="breadcrumb-item{% if forloop.last %} active{% endif %}"{% if forloop.last %} aria-current="page"{% endif %}>
-                  {% if forloop.last %}{{ crumb.name }}{% else %}<a href="{{ crumb.url }}">{{ crumb.name }}</a>{% endif %}
-                </li>
-              {% endfor %}
-            </ol>
-          </nav>
+    <div class="place-sheet__bar">
+      <a class="place-sheet__back" href="{% if lugar.comuna %}{% url 'explorer:lugares_por_comuna' lugar.comuna.slug %}{% else %}{% url 'explorer:lugares_list' %}{% endif %}">
+        {% include "components/lucide_icon.html" with name="chevron-left" size="20" %}
+        {% trans "Volver" %}
+      </a>
+      <button type="button" class="place-sheet__share" id="place-share" aria-label="{% trans 'Compartir' %}">
+        {% include "components/lucide_icon.html" with name="share" size="20" %}
+      </button>
+    </div>
+
+    {% for foto in lugar.get_fotos %}
+      {% if forloop.first %}
+        <button type="button" class="place-sheet__hero" data-img-src="{{ foto.imagen|media_url }}" data-bs-toggle="modal" data-bs-target="#imagenModal">
+          <img src="{{ foto.imagen_mediana|default:foto.imagen|media_url }}"
+               {% if foto.imagen_miniatura and foto.imagen_mediana %}
+               srcset="{{ foto.imagen_miniatura|media_url }} 400w, {{ foto.imagen_mediana|media_url }} 800w, {{ foto.imagen|media_url }} 1600w"
+               sizes="(max-width: 520px) 100vw, 440px"
+               {% endif %}
+               alt="{{ lugar.nombre }}"
+               loading="eager" fetchpriority="high">
+        </button>
+      {% endif %}
+    {% endfor %}
+
+    <h1 class="place-sheet__title">{{ lugar.nombre }}</h1>
+    <p class="place-sheet__meta">
+      <span>{{ lugar|place_type_label }}</span>
+      {% if lugar.rating %}
+        <span aria-hidden="true">·</span>
+        <span class="place-sheet__rating">
+          {% include "components/lucide_icon.html" with name="star" size="16" %}
+          {{ lugar.rating|floatformat:1 }}
+          {% if lugar.total_reviews %}<small>({{ lugar.total_reviews }})</small>{% endif %}
+        </span>
+      {% endif %}
+      {% if lugar.precio %}
+        <span aria-hidden="true">·</span>
+        <span>{{ lugar.precio|format_price_range }}</span>
+      {% endif %}
+    </p>
+    {% if lugar.direccion %}
+      <p class="place-sheet__address">
+        {% include "components/lucide_icon.html" with name="map-pin" size="16" %}
+        <span>{{ lugar.direccion }}</span>
+      </p>
+    {% elif lugar.comuna %}
+      <p class="place-sheet__address">
+        {% include "components/lucide_icon.html" with name="map-pin" size="16" %}
+        <a href="{% url 'explorer:lugares_por_comuna' lugar.comuna.slug %}">{{ lugar.comuna.name }}</a>
+      </p>
+    {% endif %}
+
+    <div class="place-sheet__card">
+      {% if lugar.telefono %}
+        <a class="place-sheet__phone" href="tel:{{ lugar.telefono }}">
+          {% include "components/lucide_icon.html" with name="phone" size="16" %}
+          <span>{{ lugar.telefono }}</span>
+        </a>
+      {% endif %}
+
+      {% if lugar.ubicacion %}
+        {% with lat=lugar.ubicacion.y|unlocalize lng=lugar.ubicacion.x|unlocalize %}
+        <p class="place-sheet__label">{% trans "Cómo llegar" %}</p>
+        <div class="place-sheet__routes">
+          <a class="place-sheet__route" href="https://www.google.com/maps/dir/?api=1&destination={{ lat }},{{ lng }}&travelmode=walking" target="_blank" rel="noopener">
+            {% include "components/lucide_icon.html" with name="footprints" size="16" %}
+            {% trans "A pie" %}
+          </a>
+          <a class="place-sheet__route" href="https://www.google.com/maps/dir/?api=1&destination={{ lat }},{{ lng }}&travelmode=transit" target="_blank" rel="noopener">
+            {% include "components/lucide_icon.html" with name="bus" size="16" %}
+            {% trans "Transporte" %}
+          </a>
+          <a class="place-sheet__route" href="https://www.google.com/maps/dir/?api=1&destination={{ lat }},{{ lng }}&travelmode=driving" target="_blank" rel="noopener">
+            {% include "components/lucide_icon.html" with name="car" size="16" %}
+            {% trans "En carro" %}
+          </a>
+          <a class="place-sheet__route" href="https://waze.com/ul?ll={{ lat }},{{ lng }}&navigate=yes" target="_blank" rel="noopener">
+            {% include "components/lucide_icon.html" with name="navigation" size="16" %}
+            Waze
+          </a>
+          <a class="place-sheet__route place-sheet__route--wide" href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint={{ lat }},{{ lng }}" target="_blank" rel="noopener">
+            {% include "components/lucide_icon.html" with name="map" size="16" %}
+            Street View
+          </a>
         </div>
+        {% endwith %}
+      {% elif lugar.google_maps_uri %}
+        <a class="place-sheet__route place-sheet__route--wide" href="{{ lugar.google_maps_uri }}" target="_blank" rel="noopener">
+          {% include "components/lucide_icon.html" with name="map" size="16" %}
+          Google Maps
+        </a>
+      {% endif %}
 
-        <!-- HERO: Galería Grande + Info Superpuesta (excluir de Auto Ads) -->
-        <div class="detail-hero" data-nosnippet data-ad-layout="-exclude">
-          {% if lugar.get_fotos %}
-          <div id="carouselFotos" class="carousel slide hero-carousel" data-bs-ride="carousel">
-              <div class="carousel-inner">
-                {% for foto in lugar.get_fotos %}
-                  <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                <img src="{% if forloop.first %}{{ foto.imagen_mediana|default:foto.imagen|media_url }}{% else %}{{ foto.imagen_miniatura|default:foto.imagen_mediana|default:foto.imagen|media_url }}{% endif %}"
-                     {% if foto.imagen_miniatura and foto.imagen_mediana %}
-                     srcset="{{ foto.imagen_miniatura|media_url }} 400w, {{ foto.imagen_mediana|media_url }} 800w, {{ foto.imagen|media_url }} 1600w"
-                     {% elif foto.imagen_mediana %}
-                     srcset="{{ foto.imagen_mediana|media_url }} 800w, {{ foto.imagen|media_url }} 1600w"
-                     {% endif %}
-                     sizes="(max-width: 576px) 100vw, (max-width: 992px) 100vw, 1100px"
-                     class="hero-img" 
-                     alt="{{ lugar.nombre }}" 
-                     data-bs-toggle="modal" 
-                     data-bs-target="#imagenModal" 
-                     data-img-src="{{ foto.imagen|media_url }}"
-                     onerror="this.onerror=null; this.srcset=''; this.src='{{ foto.imagen|media_url }}';"
-                     {% if forloop.first %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
-                  </div>
-                {% endfor %}
-              </div>
-              {% if lugar.get_fotos|length > 1 %}
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselFotos" data-bs-slide="prev">
-                  <span class="carousel-control-prev-icon"></span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselFotos" data-bs-slide="next">
-                  <span class="carousel-control-next-icon"></span>
-                </button>
-              {% endif %}
-            <div class="hero-overlay"></div>
-            <div class="hero-badges">
-              {% if lugar.es_destacado %}<span class="detail-badge featured"><i class="bi bi-star-fill me-1"></i>{% trans "Destacado" %}</span>{% endif %}
-              {% if lugar.es_exclusivo %}<span class="detail-badge exclusive"><i class="bi bi-gem me-1"></i>{% trans "Exclusivo" %}</span>{% endif %}
-              <a href="{% url 'explorer:lugares_list' %}?tipo={{ lugar.tipo|urlencode }}" class="detail-badge type">{{ lugar|place_type_label }}</a>
-              </div>
-            <div class="hero-photo-count"><i class="bi bi-images me-1"></i>{{ lugar.get_fotos|length }}</div>
-            {% if lugar.rating %}<div class="hero-rating"><i class="bi bi-star-fill me-1"></i>{{ lugar.rating|floatformat:1 }}{% if lugar.total_reviews %}<small class="hero-reviews">({{ lugar.total_reviews }})</small>{% endif %}</div>{% endif %}
-          </div>
-          {% endif %}
-        </div>
+      {% if lugar.sitio_web %}
+        <a class="place-sheet__route place-sheet__route--wide place-sheet__route--web" href="{{ lugar.sitio_web }}" target="_blank" rel="noopener">
+          {% include "components/lucide_icon.html" with name="globe" size="16" %}
+          {% trans "Sitio web" %}
+        </a>
+      {% endif %}
 
-        <!-- TÍTULO Y META (excluir de Auto Ads) -->
-        <div class="detail-header">
-          <h1 class="detail-title">{{ lugar.nombre }}</h1>
-          <div class="detail-meta">
-            {% if lugar.comuna %}<a href="{% url 'explorer:lugares_por_comuna' lugar.comuna.slug %}" class="meta-chip"><i class="bi bi-geo-alt me-1"></i>{{ lugar.comuna.name }}</a>{% endif %}
-            {% if lugar.precio %}<span class="meta-chip"><i class="bi bi-cash-stack me-1"></i>{{ lugar.precio|format_price_range }}</span>{% endif %}
-          </div>
-        </div>
-
-        <!-- GRID: Info + Sidebar -->
-        <div class="detail-grid">
-          
-          <!-- COLUMNA PRINCIPAL -->
-          <div class="detail-main">
-            
-            {% if lugar.descripcion %}
-            <div class="info-block">
-              <h3 class="block-title"><i class="bi bi-info-circle me-2"></i>{% trans "Descripción" %}</h3>
-              <p class="block-text">{{ lugar.descripcion }}</p>
-            </div>
-            {% endif %}
-
-            {% if lugar.takeout or lugar.dine_in or lugar.delivery or lugar.serves_breakfast or lugar.serves_lunch or lugar.serves_dinner or lugar.serves_beer or lugar.serves_wine or lugar.serves_cocktails or lugar.outdoor_seating or lugar.live_music or lugar.good_for_groups or lugar.good_for_children or lugar.allows_dogs or lugar.wheelchair_accessible_entrance or lugar.accepts_credit_cards or lugar.accepts_cash_only %}
-            <div class="info-block">
-              <h3 class="block-title"><i class="bi bi-stars me-2"></i>{% trans "Características" %}</h3>
-              <div class="features-grid">
-                {% if lugar.outdoor_seating %}<span class="feature-chip"><i class="bi bi-tree-fill"></i>{% trans "Terraza" %}</span>{% endif %}
-                {% if lugar.live_music %}<span class="feature-chip"><i class="bi bi-music-note-beamed"></i>{% trans "Música en Vivo" %}</span>{% endif %}
-                {% if lugar.dine_in %}<span class="feature-chip"><i class="bi bi-cup-straw"></i>{% trans "Comer en Local" %}</span>{% endif %}
-                {% if lugar.takeout %}<span class="feature-chip"><i class="bi bi-bag-check-fill"></i>{% trans "Para Llevar" %}</span>{% endif %}
-                {% if lugar.delivery %}<span class="feature-chip"><i class="bi bi-truck"></i>{% trans "Delivery" %}</span>{% endif %}
-                {% if lugar.serves_breakfast %}<span class="feature-chip"><i class="bi bi-sunrise-fill"></i>{% trans "Desayuno" %}</span>{% endif %}
-                {% if lugar.serves_lunch %}<span class="feature-chip"><i class="bi bi-sun-fill"></i>{% trans "Almuerzo" %}</span>{% endif %}
-                {% if lugar.serves_dinner %}<span class="feature-chip"><i class="bi bi-moon-stars-fill"></i>{% trans "Cena" %}</span>{% endif %}
-                {% if lugar.serves_beer %}<span class="feature-chip"><i class="bi bi-cup-fill"></i>{% trans "Cerveza" %}</span>{% endif %}
-                {% if lugar.serves_wine %}<span class="feature-chip"><i class="bi bi-cup-hot-fill"></i>{% trans "Vinos" %}</span>{% endif %}
-                {% if lugar.serves_cocktails %}<span class="feature-chip"><i class="bi bi-droplet-fill"></i>{% trans "Cócteles" %}</span>{% endif %}
-                {% if lugar.good_for_groups %}<span class="feature-chip"><i class="bi bi-people-fill"></i>{% trans "Para Grupos" %}</span>{% endif %}
-                {% if lugar.good_for_children %}<span class="feature-chip"><i class="bi bi-emoji-smile-fill"></i>{% trans "Niños Bienvenidos" %}</span>{% endif %}
-                {% if lugar.allows_dogs %}<span class="feature-chip highlight"><i class="bi bi-heart-fill"></i>{% trans "Pet Friendly" %}</span>{% endif %}
-                {% if lugar.wheelchair_accessible_entrance %}<span class="feature-chip"><i class="bi bi-universal-access"></i>{% trans "Accesible" %}</span>{% endif %}
-                {% if lugar.accepts_credit_cards %}<span class="feature-chip"><i class="bi bi-credit-card-fill"></i>{% trans "Tarjetas" %}</span>{% endif %}
-                {% if lugar.accepts_cash_only %}<span class="feature-chip"><i class="bi bi-cash-stack"></i>{% trans "Solo Efectivo" %}</span>{% endif %}
-              </div>
-            </div>
-            {% endif %}
-
-            {% if adsense_allowed %}
-              {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_DETAIL placement='detail' unit_key='top' exclude_auto=True %}
-            {% endif %}
-
-            <div class="info-block map-block" data-nosnippet data-ad-layout="-exclude">
-              <h3 class="block-title"><i class="bi bi-map-fill me-2"></i>{% trans "Ubicación" %}</h3>
-              <div id="mapa" class="map-container"></div>
-              {% if lugar.direccion %}<div class="map-address"><i class="bi bi-geo-alt-fill me-2"></i>{{ lugar.direccion }}</div>{% endif %}
-              </div>
-            </div>
-
-          <!-- SIDEBAR (excluir de Auto Ads) -->
-          <div class="detail-sidebar" data-nosnippet data-ad-layout="-exclude">
-            
-            <!-- Contacto -->
-            <div class="sidebar-block">
-              {% if lugar.telefono %}
-              <a href="tel:{{ lugar.telefono }}" class="contact-item">
-                <i class="bi bi-telephone-fill"></i>
-                <span>{{ lugar.telefono }}</span>
-              </a>
-              {% endif %}
-              {% if lugar.sitio_web %}
-              <a href="{{ lugar.sitio_web }}" target="_blank" class="contact-item">
-                <i class="bi bi-globe2"></i>
-                <span>{% trans "Visitar Web" %}</span>
-              </a>
-            {% endif %}
-            </div>
-
-            {% if horarios or lugar.horario_texto %}
-            <div class="sidebar-block">
-              <h4 class="sidebar-title"><i class="bi bi-clock me-2"></i>{% trans "Horarios" %}</h4>
-              <div class="schedule-list" id="scheduleList">
+      {% if horarios or lugar.horario_texto %}
+        <div class="place-sheet__hours">
+          <p class="place-sheet__label">
+            {% include "components/lucide_icon.html" with name="clock" size="14" %}
+            {% trans "Horarios" %}
+          </p>
+          <div class="schedule-list" id="scheduleList">
             {% if horarios %}
               {% for h in horarios %}
                 {% with linea=h.dia|add:": "|add:h.horario %}
                   <div class="schedule-row" data-linea="{{ linea }}">
-                      <span class="day-text">{% trans "Cargando..." %}</span>
-                      <span class="hours-text">...</span>
+                    <span class="day-text">{% trans "Cargando..." %}</span>
+                    <span class="hours-text">...</span>
                   </div>
                 {% endwith %}
               {% endfor %}
@@ -210,86 +175,100 @@
               {% for linea in lugar.horario_texto.splitlines %}
                 {% if linea and linea != 'None' and linea.strip %}
                   <div class="schedule-row" data-linea="{{ linea }}">
-                      <span class="day-text">{% trans "Cargando..." %}</span>
-                      <span class="hours-text">...</span>
+                    <span class="day-text">{% trans "Cargando..." %}</span>
+                    <span class="hours-text">...</span>
                   </div>
                 {% endif %}
               {% endfor %}
             {% endif %}
           </div>
         </div>
-            {% endif %}
-            
-            <!-- Acciones -->
-            <div class="sidebar-block actions-block">
-              {% if lugar.reviews %}
-              <a href="{% url 'explorer:reviews_lugar' lugar.slug %}" class="action-btn reviews"><i class="bi bi-chat-quote-fill me-2"></i>{% trans "Ver Reseñas" %}</a>
-              {% endif %}
-              {% if lugar.google_maps_uri %}
-              <a href="{{ lugar.google_maps_uri }}" target="_blank" class="action-btn primary"><i class="bi bi-google me-2"></i>{% trans "Google Maps" %}</a>
-              {% endif %}
-              {% if lugar.ubicacion %}
-              <button id="waze-btn" class="action-btn secondary">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="me-2"><path d="M20.5 12c0-4.418-3.582-8-8-8-4.163 0-7.598 3.188-7.973 7.268C3.6 11.093 3 11.982 3 13c0 1.657 1.343 3 3 3h1.25c.414 0 .75.336.75.75 0 1.379 1.121 2.5 2.5 2.5.96 0 1.792-.548 2.206-1.352.128-.245.387-.398.668-.398h1.126c1.287 0 2.5-.556 3.327-1.506.994-1.142 1.173-2.374 1.173-3.494z"/><circle cx="9.5" cy="10.5" r="1.5"/><circle cx="14.5" cy="10.5" r="1.5"/></svg>
-                {% trans "Waze" %}
-              </button>
-              {% endif %}
-              <!-- Botones de compartir -->
-              {% include 'components/share_buttons.html' with title=lugar.nombre url=request.build_absolute_uri %}
-            </div>
-      
-          </div>
+      {% endif %}
     </div>
 
+    {% if lugar.get_fotos|length > 1 %}
+      <h2 class="place-sheet__heading">{% trans "Destacados" %}</h2>
+      <div class="place-sheet__rail">
+        {% for foto in lugar.get_fotos %}
+          {% if not forloop.first %}
+            <button type="button" class="place-sheet__shot" data-img-src="{{ foto.imagen|media_url }}" data-bs-toggle="modal" data-bs-target="#imagenModal">
+              <img src="{{ foto.imagen_miniatura|default:foto.imagen_mediana|default:foto.imagen|media_url }}"
+                   alt="{{ lugar.nombre }}"
+                   loading="lazy">
+            </button>
+          {% endif %}
+        {% endfor %}
       </div>
+    {% endif %}
 
-      <!-- Lugares Relacionados -->
-      <div class="related-main-card mt-4">
-        {% if adsense_allowed %}
-          {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_DETAIL_BOTTOM|default:settings.ADSENSE_SLOT_DETAIL placement='detail_bottom' unit_key='bottom' exclude_auto=True %}
-        {% endif %}
-        <div class="related-header">
-          <h2 class="related-title">{% trans "Descubre más lugares" %}</h2>
-          <div class="related-tabs">
-            <button class="tab-btn active" data-target="cercanos">
-              <i class="bi bi-geo-alt me-1"></i>{% trans "Cercanos" %}
-        </button>
-            <button class="tab-btn" data-target="similares">
-              <i class="bi bi-collection me-1"></i>{% trans "Similares" %}
-        </button>
-            <button class="tab-btn" data-target="zona">
-              <i class="bi bi-map me-1"></i>{% trans "En" %} <span id="zona-name">{{ lugar.comuna.name|default:_("la zona") }}</span>
-        </button>
+    {% if lugar.descripcion %}
+      <p class="place-sheet__text">{{ lugar.descripcion }}</p>
+    {% endif %}
+
+    {% if lugar.takeout or lugar.dine_in or lugar.delivery or lugar.serves_breakfast or lugar.serves_lunch or lugar.serves_dinner or lugar.serves_beer or lugar.serves_wine or lugar.serves_cocktails or lugar.outdoor_seating or lugar.live_music or lugar.good_for_groups or lugar.good_for_children or lugar.allows_dogs or lugar.wheelchair_accessible_entrance or lugar.accepts_credit_cards or lugar.accepts_cash_only %}
+      <h2 class="place-sheet__heading">{% trans "Características" %}</h2>
+      <div class="place-sheet__chips">
+        {% if lugar.outdoor_seating %}<span class="feature-chip">{% trans "Terraza" %}</span>{% endif %}
+        {% if lugar.live_music %}<span class="feature-chip">{% trans "Música en vivo" %}</span>{% endif %}
+        {% if lugar.dine_in %}<span class="feature-chip">{% trans "Comer en el local" %}</span>{% endif %}
+        {% if lugar.takeout %}<span class="feature-chip">{% trans "Para llevar" %}</span>{% endif %}
+        {% if lugar.delivery %}<span class="feature-chip">{% trans "Domicilio" %}</span>{% endif %}
+        {% if lugar.serves_breakfast %}<span class="feature-chip">{% trans "Desayuno" %}</span>{% endif %}
+        {% if lugar.serves_lunch %}<span class="feature-chip">{% trans "Almuerzo" %}</span>{% endif %}
+        {% if lugar.serves_dinner %}<span class="feature-chip">{% trans "Cena" %}</span>{% endif %}
+        {% if lugar.serves_beer %}<span class="feature-chip">{% trans "Cerveza" %}</span>{% endif %}
+        {% if lugar.serves_wine %}<span class="feature-chip">{% trans "Vinos" %}</span>{% endif %}
+        {% if lugar.serves_cocktails %}<span class="feature-chip">{% trans "Cócteles" %}</span>{% endif %}
+        {% if lugar.good_for_groups %}<span class="feature-chip">{% trans "Para grupos" %}</span>{% endif %}
+        {% if lugar.good_for_children %}<span class="feature-chip">{% trans "Niños bienvenidos" %}</span>{% endif %}
+        {% if lugar.allows_dogs %}<span class="feature-chip feature-chip--accent">{% trans "Pet friendly" %}</span>{% endif %}
+        {% if lugar.wheelchair_accessible_entrance %}<span class="feature-chip">{% trans "Accesible" %}</span>{% endif %}
+        {% if lugar.accepts_credit_cards %}<span class="feature-chip">{% trans "Tarjetas" %}</span>{% endif %}
+        {% if lugar.accepts_cash_only %}<span class="feature-chip">{% trans "Solo efectivo" %}</span>{% endif %}
       </div>
-    </div>
+    {% endif %}
 
-        <!-- Contenedores -->
-        <div class="related-panel active" id="panel-cercanos">
-          <div class="related-grid" id="lugares-cercanos-container">
-            {% for i in "123" %}<div class="skeleton-card"></div>{% endfor %}
-    </div>
-          </div>
+    {% if lugar.reviews %}
+      <a class="place-sheet__reviews" href="{% url 'explorer:reviews_lugar' lugar.slug %}">{% trans "Ver reseñas" %}</a>
+    {% endif %}
 
-        <div class="related-panel" id="panel-similares">
-          <div class="related-grid" id="lugares-similares-container">
-            {% for lugar_relacionado in lugares_similares %}
-              {% include 'components/place_card_compact.html' with lugar=lugar_relacionado %}
-            {% empty %}
-              {% for i in "123" %}<div class="skeleton-card"></div>{% endfor %}
-            {% endfor %}
+    {% if adsense_allowed %}
+      {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_DETAIL placement='detail' unit_key='top' exclude_auto=True %}
+    {% endif %}
+
+    <div class="place-sheet__near">
+      {% if adsense_allowed %}
+        {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_DETAIL_BOTTOM|default:settings.ADSENSE_SLOT_DETAIL placement='detail_bottom' unit_key='bottom' exclude_auto=True %}
+      {% endif %}
+      <h2 class="place-sheet__heading">{% trans "Explorar cerca" %}</h2>
+      <div class="related-tabs">
+        <button class="tab-btn active" data-target="cercanos">{% trans "Cercanos" %}</button>
+        <button class="tab-btn" data-target="similares">{% trans "Similares" %}</button>
+        <button class="tab-btn" data-target="zona">{% trans "En" %} <span id="zona-name">{{ lugar.comuna.name|default:_("la zona") }}</span></button>
+      </div>
+      <div class="related-panel active" id="panel-cercanos">
+        <div class="related-grid" id="lugares-cercanos-container">
+          {% for i in "123" %}<div class="skeleton-card"></div>{% endfor %}
         </div>
       </div>
-
-        <div class="related-panel" id="panel-zona">
-          <div class="related-grid" id="lugares-zona-container">
+      <div class="related-panel" id="panel-similares">
+        <div class="related-grid" id="lugares-similares-container">
+          {% for lugar_relacionado in lugares_similares %}
+            {% include 'components/place_card_compact.html' with lugar=lugar_relacionado %}
+          {% empty %}
             {% for i in "123" %}<div class="skeleton-card"></div>{% endfor %}
-    </div>
-          </div>
+          {% endfor %}
         </div>
+      </div>
+      <div class="related-panel" id="panel-zona">
+        <div class="related-grid" id="lugares-zona-container">
+          {% for i in "123" %}<div class="skeleton-card"></div>{% endfor %}
+        </div>
+      </div>
+    </div>
 
-    </div>
-    </div>
-  </section>
+  </div>
+</section>
 
 <!-- Modal Galería -->
 <div class="modal fade" id="imagenModal" tabindex="-1" aria-hidden="true">
@@ -297,7 +276,7 @@
     <div class="modal-content bg-black border-0">
       <div class="modal-body position-relative p-0">
         <img id="imagenModalContent" src="" class="w-100" style="max-height:90vh;object-fit:contain;" alt="">
-        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+        <button type="button" class="place-modal__close" data-bs-dismiss="modal" aria-label="{% trans 'Cerrar' %}"></button>
         <button id="modalPrev" class="modal-nav-btn start"><i class="bi bi-chevron-left"></i></button>
         <button id="modalNext" class="modal-nav-btn end"><i class="bi bi-chevron-right"></i></button>
       </div>
@@ -308,71 +287,18 @@
 {% endblock %}
 
 {% block extra_js %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <script>
 const gettext = window.gettext || (s => s);
 
-  {% if lugar.ubicacion %}
-  const lat = {{ lugar.ubicacion.y|unlocalize }};
-  const lng = {{ lugar.ubicacion.x|unlocalize }};
-
-document.addEventListener("DOMContentLoaded", () => {
-  // Mapa - zoom 14 para vista más amplia del contexto
-  const map = L.map("mapa", { center: [lat, lng], zoom: 14, scrollWheelZoom: false });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '© CARTO | vivemedellin.co', maxZoom: 19
-  }).addTo(map);
-  
-  const icon = L.divIcon({
-    className: 'custom-marker',
-    html: '<div style="width:40px;height:40px;background:linear-gradient(135deg,#22c55e,#14b8a6);border-radius:50%;border:3px solid #fff;box-shadow:0 4px 15px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="bi bi-geo-alt-fill" style="color:#fff;font-size:18px;"></i></div>',
-    iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40]
-  });
-  
-  // Info del lugar para popup
-  const nombreLugar = '{{ lugar.nombre|escapejs }}';
-  const direccionLugar = '{{ lugar.direccion|default:""|escapejs }}';
-  const tipoLugar = '{{ lugar|place_type_label|escapejs }}';
-  
-  // Popup con info y opciones de navegación
-  const popupContent = `
-    <div class="map-popup">
-      <h4 class="popup-title">${nombreLugar}</h4>
-      <p class="popup-type"><i class="bi bi-tag-fill"></i> ${tipoLugar}</p>
-      ${direccionLugar ? `<p class="popup-address"><i class="bi bi-geo-alt"></i> ${direccionLugar}</p>` : ''}
-      <div class="popup-actions">
-        <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" class="popup-btn google">
-          <i class="bi bi-google"></i> Google Maps
-        </a>
-        <a href="https://waze.com/ul?ll=${lat},${lng}&navigate=yes" target="_blank" class="popup-btn waze">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 12c0-4.418-3.582-8-8-8-4.163 0-7.598 3.188-7.973 7.268C3.6 11.093 3 11.982 3 13c0 1.657 1.343 3 3 3h1.25c.414 0 .75.336.75.75 0 1.379 1.121 2.5 2.5 2.5.96 0 1.792-.548 2.206-1.352.128-.245.387-.398.668-.398h1.126c1.287 0 2.5-.556 3.327-1.506.994-1.142 1.173-2.374 1.173-3.494z"/></svg>
-          Waze
-        </a>
-      </div>
-    </div>
-  `;
-  
-  const marker = L.marker([lat, lng], {icon}).addTo(map);
-  marker.bindPopup(popupContent, { className: 'custom-popup', maxWidth: 280 });
-
-  // Waze
-  const wazeBtn = document.getElementById('waze-btn');
-  if (wazeBtn) {
-    wazeBtn.addEventListener('click', () => {
-      const fallback = `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
-      if (!navigator.geolocation) { window.open(fallback, '_blank'); return; }
-      navigator.geolocation.getCurrentPosition(
-        pos => window.open(`https://waze.com/ul?ll=${lat},${lng}&from=${pos.coords.latitude},${pos.coords.longitude}&navigate=yes`, '_blank'),
-        () => window.open(fallback, '_blank')
-      );
-    });
-  }
-});
-        {% endif %}
-
   document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById('place-share')?.addEventListener('click', async () => {
+    const payload = { title: document.title, url: window.location.href };
+    if (navigator.share) {
+      try { await navigator.share(payload); } catch (e) {}
+      return;
+    }
+    copyToClipboard();
+  });
   // Schedule
   const scheduleList = document.getElementById('scheduleList');
   if (scheduleList) {
@@ -565,7 +491,7 @@ function copyToClipboard() {
 /* ── PLACES DETAIL - Light Professional Theme ── */
 
 .detail-section {
-  background: #f5f7f4;
+  background: transparent;
   min-height: 100vh;
   padding: 1.5rem 0 4rem;
   overflow-x: hidden;
@@ -580,7 +506,7 @@ function copyToClipboard() {
 
 /* Navegación */
 .btn-back {
-  background: #11998e;
+  background: #0b1220;
   border: none;
   color: #fff;
   padding: 0.4rem 0.85rem;
@@ -592,9 +518,9 @@ function copyToClipboard() {
 }
 
 .btn-back:hover {
-  background: #0d8a7f;
+  background: #1a2438;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(17,153,142,0.3);
+  box-shadow: 0 4px 12px rgba(11, 18, 32, 0.16);
   color: #fff;
 }
 
@@ -782,8 +708,8 @@ function copyToClipboard() {
   align-items: center;
   gap: 0.375rem;
   padding: 0.4rem 0.75rem;
-  background: #f0fdfa;
-  border: 1px solid #99f6e4;
+  background: #f7f4ee;
+  border: 1px solid rgba(11, 18, 32, 0.12);
   border-radius: 999px;
   color: #374151;
   font-size: 0.8rem;
@@ -795,10 +721,10 @@ function copyToClipboard() {
 .meta-chip:hover {
   background: #dcfce7;
   border-color: #86efac;
-  color: #11998e;
+  color: #0b1220;
 }
 
-.meta-chip i { color: #11998e; }
+.meta-chip i { color: #0b1220; }
 
 /* GRID: Main + Sidebar */
 .detail-grid {
@@ -845,7 +771,7 @@ function copyToClipboard() {
   letter-spacing: 0.06em;
 }
 
-.block-title i { color: #11998e; }
+.block-title i { color: #0b1220; }
 
 .block-text {
   font-size: 0.9rem;
@@ -868,16 +794,16 @@ function copyToClipboard() {
   align-items: center;
   gap: 0.375rem;
   padding: 0.4rem 0.7rem;
-  background: #f0fdfa;
-  border: 1px solid #99f6e4;
+  background: #f7f4ee;
+  border: 1px solid rgba(11, 18, 32, 0.12);
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 500;
-  color: #11998e;
+  color: #0b1220;
 }
 
 .feature-chip i {
-  color: #11998e;
+  color: #0b1220;
   font-size: 0.8rem;
 }
 
@@ -906,7 +832,7 @@ function copyToClipboard() {
 }
 
 .map-container .leaflet-control-attribution a {
-  color: #11998e;
+  color: #0b1220;
   font-weight: 600;
 }
 
@@ -942,7 +868,7 @@ function copyToClipboard() {
 
 .popup-type {
   font-size: 0.8rem;
-  color: #11998e;
+  color: #0b1220;
   margin: 0 0 0.375rem;
   display: flex;
   align-items: center;
@@ -960,7 +886,7 @@ function copyToClipboard() {
 }
 
 .popup-address i { 
-  color: #11998e;
+  color: #0b1220;
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -985,12 +911,12 @@ function copyToClipboard() {
 }
 
 .popup-btn.google {
-  background: #11998e;
+  background: #0b1220;
   color: #fff;
 }
 
 .popup-btn.google:hover {
-  background: #0d8a7f;
+  background: #1a2438;
   transform: translateY(-1px);
   color: #fff;
 }
@@ -1020,7 +946,7 @@ function copyToClipboard() {
   align-items: center;
 }
 
-.map-address i { color: #11998e; }
+.map-address i { color: #0b1220; }
 
 /* Sidebar */
 .detail-sidebar {
@@ -1047,7 +973,7 @@ function copyToClipboard() {
   letter-spacing: 0.06em;
 }
 
-.sidebar-title i { color: #11998e; }
+.sidebar-title i { color: #0b1220; }
 
 /* Contact Items */
 .contact-item {
@@ -1066,12 +992,12 @@ function copyToClipboard() {
 .contact-item:last-child { margin-bottom: 0; }
 
 .contact-item:hover {
-  background: #f0fdfa;
+  background: #f7f4ee;
   border-color: #86efac;
 }
 
 .contact-item i {
-  color: #11998e;
+  color: #0b1220;
   font-size: 1rem;
   width: 20px;
   text-align: center;
@@ -1134,14 +1060,14 @@ function copyToClipboard() {
   }
   
 .action-btn.primary {
-  background: #11998e;
+  background: #0b1220;
   color: #fff;
 }
 
 .action-btn.primary:hover {
-  background: #0d8a7f;
+  background: #1a2438;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(17,153,142,0.3);
+  box-shadow: 0 6px 16px rgba(11, 18, 32, 0.16);
   color: #fff;
 }
 
@@ -1152,9 +1078,9 @@ function copyToClipboard() {
 }
 
 .action-btn.secondary:hover {
-  background: #f0fdfa;
+  background: #f7f4ee;
   border-color: #86efac;
-  color: #11998e;
+  color: #0b1220;
 }
 
 .action-btn.reviews {
@@ -1192,9 +1118,9 @@ function copyToClipboard() {
 }
 
 .share-btn:hover {
-  background: #f0fdfa;
+  background: #f7f4ee;
   border-color: #86efac;
-  color: #11998e;
+  color: #0b1220;
 }
   
 /* Lugares Relacionados */
@@ -1242,13 +1168,13 @@ function copyToClipboard() {
 }
 
 .tab-btn:hover {
-  background: #f0fdfa;
+  background: #f7f4ee;
   border-color: #86efac;
-  color: #11998e;
+  color: #0b1220;
 }
 
 .tab-btn.active {
-  background: #11998e;
+  background: #0b1220;
   border-color: transparent;
   color: #fff;
 }
@@ -1461,6 +1387,16 @@ function copyToClipboard() {
   .modal-nav-btn.end { right: 0.5rem; }
 }
 
+@media (max-width: 991px) {
+  .detail-section {
+    padding: 0.75rem 0 calc(var(--v4-nav-h, 68px) + 1.25rem + env(safe-area-inset-bottom, 0px));
+  }
+  .hero-carousel .carousel-inner,
+  .hero-carousel .carousel-item { height: 220px; }
+  .detail-main-card { border-radius: 18px; }
+  .detail-title { font-size: 1.45rem; }
+}
+
 /* Extra small: < 360px (iPhone SE, Galaxy Fold) */
 @media (max-width: 359px) {
   .detail-main-wrapper { padding: 0 0.25rem; }
@@ -1477,6 +1413,230 @@ function copyToClipboard() {
   .tab-btn { padding: 0.35rem 0.6rem; font-size: 0.7rem; }
   .sidebar-block { padding: 0.625rem; }
 }
+
+.place-modal__close {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  z-index: 3;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(11, 18, 32, 0.72);
+  color: #fff;
+}
+.place-modal__close::before,
+.place-modal__close::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 17px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+}
+.place-modal__close::before { transform: rotate(45deg); }
+.place-modal__close::after { transform: rotate(-45deg); }
+
+.place-sheet {
+  width: min(760px, calc(100% - 1.5rem));
+  margin: 0.35rem auto 0;
+}
+.detail-section {
+  padding-top: 0.65rem;
+  padding-bottom: calc(var(--v4-nav-h, 68px) + 1.5rem + env(safe-area-inset-bottom, 0px));
+}
+.place-sheet__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.7rem;
+}
+.place-sheet__back,
+.place-sheet__share {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+  border: 0;
+  background: transparent;
+  color: #0b1220;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.15rem;
+}
+.place-sheet__hero,
+.place-sheet__shot {
+  display: block;
+  border: 0;
+  padding: 0;
+  background: #e7e2d8;
+  overflow: hidden;
+  cursor: pointer;
+}
+.place-sheet__hero {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 18px;
+}
+.place-sheet__hero img,
+.place-sheet__shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.place-sheet__title {
+  margin: 0.85rem 0 0.3rem;
+  font-family: var(--v4-font-display, 'Bricolage Grotesque', system-ui, sans-serif);
+  font-size: 1.7rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+.place-sheet__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  color: #5c6574;
+  font-size: 0.92rem;
+}
+.place-sheet__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: #0b1220;
+  font-weight: 700;
+}
+.place-sheet__rating small { color: #5c6574; font-weight: 500; }
+.lucide-star { fill: #fbbc04; stroke: #fbbc04; }
+.place-sheet .lucide { display: block; flex: none; }
+.place-sheet__address {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin: 0.4rem 0 0;
+  color: #6b7285;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+.place-sheet__address a { color: inherit; }
+.place-sheet__card {
+  margin-top: 0.9rem;
+  background: #fff;
+  border: 1px solid rgba(11, 18, 32, 0.1);
+  border-radius: 18px;
+  padding: 0.2rem 0.85rem 0.85rem;
+}
+.place-sheet__phone {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.75rem 0.1rem;
+  border-bottom: 1px solid rgba(11, 18, 32, 0.08);
+  color: #0b1220;
+  font-weight: 700;
+}
+.place-sheet__label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.75rem 0 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8b909c;
+}
+.place-sheet__routes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+}
+.place-sheet__route {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 42px;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid rgba(11, 18, 32, 0.14);
+  border-radius: 12px;
+  background: #fff;
+  color: #0b1220;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.place-sheet__route--wide { grid-column: 1 / -1; }
+.place-sheet__card > .place-sheet__route--web {
+  display: flex;
+  width: 100%;
+  margin-top: 0.45rem;
+}
+.place-sheet .schedule-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.28rem 0;
+  font-size: 0.84rem;
+}
+.place-sheet .day-text { color: #0b1220; font-weight: 700; }
+.place-sheet .hours-text { color: #6b7285; }
+.place-sheet__heading {
+  margin: 1.15rem 0 0.55rem;
+  font-family: var(--v4-font-display, inherit);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.place-sheet__rail {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.place-sheet__rail::-webkit-scrollbar { display: none; }
+.place-sheet__shot {
+  flex: 0 0 168px;
+  height: 112px;
+  border-radius: 14px;
+  scroll-snap-align: start;
+}
+.place-sheet__text {
+  margin: 0.85rem 0 0;
+  color: #3a4254;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+.place-sheet__chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.place-sheet .feature-chip--accent {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #be123c;
+}
+.place-sheet__reviews {
+  display: inline-flex;
+  margin-top: 0.85rem;
+  font-weight: 700;
+  border-bottom: 2px solid var(--v4-lime, #c8f54a);
+}
+.place-sheet .related-tabs {
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  margin-bottom: 0.75rem;
+  scrollbar-width: none;
+}
+.place-sheet .tab-btn { flex: 0 0 auto; }
+.place-sheet .tab-btn:hover,
+.place-sheet .tab-btn.active {
+  border-color: transparent;
+}
+.place-sheet .tab-btn:hover { background: #f7f4ee; color: #0b1220; }
+.place-sheet .tab-btn.active { background: #0b1220; color: #fff; }
 </style>
 {% endblock %}
 {% endblock %}

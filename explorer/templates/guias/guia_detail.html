@@ -106,10 +106,10 @@
 
       <!-- CTA final -->
       <footer class="guia-footer">
-        <a href="{% url 'explorer:guias_index' %}" class="btn btn-outline-light rounded-pill px-4">
+        <a href="{% url 'explorer:guias_index' %}" class="btn guia-footer__btn rounded-pill px-4">
           <i class="bi bi-bookmark-star me-1"></i>{% trans "Más Guías" %}
         </a>
-        <a href="{% url 'explorer:lugares_list' %}" class="btn btn-back px-4">
+        <a href="{% url 'explorer:lugares_list' %}" class="btn guia-footer__btn guia-footer__btn--ink px-4">
           <i class="bi bi-map me-1"></i>{% trans "Explorar Todos" %}
         </a>
       </footer>
@@ -135,7 +135,8 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Tile layer oscuro que combina con el diseño
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap',
     maxZoom: 19,
   }).addTo(map);
 
@@ -193,9 +194,9 @@ document.addEventListener('DOMContentLoaded', function() {
    GUÍA DETALLE - Blog style
    ═══════════════════════════════════════════════════════════════════ */
 .guia-section {
-  background: var(--gradient-dark-bg);
-  min-height: 100vh;
+  background: transparent;
   overflow-x: hidden;
+  padding-bottom: 1rem;
 }
 
 .guia-nav {
@@ -218,13 +219,13 @@ document.addEventListener('DOMContentLoaded', function() {
   border-radius: 20px;
   overflow: hidden;
   margin-bottom: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--v4-line, rgba(11, 18, 32, 0.08));
 }
 
 #guia-map {
   width: 100%;
   height: 360px;
-  background: #1a1a2e;
+  background: var(--v4-paper-2, #ebe4d6);
 }
 
 /* Marcadores del mapa */
@@ -233,16 +234,16 @@ document.addEventListener('DOMContentLoaded', function() {
 .guia-marker-dot {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #11998e, #38ef7d);
+  background: var(--v4-lime, #c8f54a);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.75rem;
   font-weight: 800;
-  color: #03120a;
-  box-shadow: 0 3px 12px rgba(17, 153, 142, 0.5);
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: var(--v4-ink, #0b1220);
+  box-shadow: 0 3px 12px rgba(11, 18, 32, 0.18);
+  border: 2px solid #fff;
   transition: transform 0.2s;
 }
 
@@ -292,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
   flex-shrink: 0;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #11998e;
+  color: var(--v4-ink, #0b1220);
 }
 
 .gp-rating i { color: #fbbf24; font-size: 0.7rem; }
@@ -302,13 +303,15 @@ document.addEventListener('DOMContentLoaded', function() {
   text-align: center;
   margin-bottom: 2.5rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--v4-line, rgba(11, 18, 32, 0.08));
 }
 
 .guia-title {
+  font-family: var(--v4-font-display, 'Bricolage Grotesque', system-ui, sans-serif);
   font-size: 2.4rem;
   font-weight: 800;
-  color: #fff;
+  letter-spacing: -0.04em;
+  color: var(--v4-ink, #0b1220);
   margin: 0 0 1rem;
   line-height: 1.15;
   letter-spacing: -0.02em;
@@ -320,15 +323,15 @@ document.addEventListener('DOMContentLoaded', function() {
   flex-wrap: wrap;
   gap: 1.5rem;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--v4-muted, #6b7285);
   margin-bottom: 1.5rem;
 }
 
-.guia-meta i { color: #22c55e; }
+.guia-meta i { color: var(--v4-ink, #0b1220); }
 
 .guia-intro {
   font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #3a4254;
   line-height: 1.8;
   margin: 0 auto;
   max-width: 650px;
@@ -401,12 +404,12 @@ document.addEventListener('DOMContentLoaded', function() {
 .guia-entry-placeholder {
   width: 100%;
   height: 340px;
-  background: linear-gradient(135deg, rgba(17, 153, 142, 0.15), rgba(4, 20, 12, 0.8));
+  background: var(--v4-paper-2, #ebe4d6);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 3rem;
-  color: rgba(56, 239, 125, 0.2);
+  color: rgba(11, 18, 32, 0.28);
 }
 
 .guia-entry-number {
@@ -415,22 +418,22 @@ document.addEventListener('DOMContentLoaded', function() {
   left: 1rem;
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #11998e, #38ef7d);
+  background: var(--v4-lime, #c8f54a);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.9rem;
   font-weight: 800;
-  color: #03120a;
+  color: var(--v4-ink, #0b1220);
 }
 
 .guia-entry-rating {
   position: absolute;
   bottom: 1rem;
   right: 1rem;
-  background: #fff;
-  color: #11998e;
+  background: var(--v4-ink, #0b1220);
+  color: var(--v4-lime, #c8f54a);
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
   font-size: 0.8rem;
@@ -456,13 +459,15 @@ document.addEventListener('DOMContentLoaded', function() {
 .guia-entry-name {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--v4-ink, #0b1220);
+  font-family: var(--v4-font-display, 'Bricolage Grotesque', system-ui, sans-serif);
+  letter-spacing: -0.03em;
   text-decoration: none;
   line-height: 1.2;
   transition: color 0.2s;
 }
 
-.guia-entry-name:hover { color: #38ef7d; }
+.guia-entry-name:hover { color: var(--v4-ink, #0b1220); }
 
 .guia-entry-badge {
   padding: 0.2rem 0.65rem;
@@ -477,14 +482,14 @@ document.addEventListener('DOMContentLoaded', function() {
 .guia-entry-type {
   display: block;
   font-size: 0.85rem;
-  color: #22c55e;
+  color: var(--v4-muted, #6b7285);
   font-weight: 500;
   margin-bottom: 0.75rem;
 }
 
 .guia-entry-text {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #3a4254;
   line-height: 1.8;
   margin: 0 0 1rem;
 }
@@ -495,13 +500,14 @@ document.addEventListener('DOMContentLoaded', function() {
   gap: 0.35rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #38ef7d;
+  color: var(--v4-ink, #0b1220);
+  border-bottom: 2px solid var(--v4-lime, #c8f54a);
   text-decoration: none;
   transition: all 0.2s;
 }
 
 .guia-entry-cta:hover {
-  color: #fff;
+  color: var(--v4-ink, #0b1220);
   gap: 0.6rem;
 }
 
@@ -510,11 +516,25 @@ document.addEventListener('DOMContentLoaded', function() {
   text-align: center;
   padding-top: 2rem;
   margin-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--v4-line, rgba(11, 18, 32, 0.08));
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 0.75rem;
+}
+
+.guia-footer__btn {
+  border-radius: 999px;
+  font-weight: 700;
+  background: #fff;
+  color: var(--v4-ink, #0b1220);
+  border: 1px solid var(--v4-line, rgba(11, 18, 32, 0.12));
+}
+
+.guia-footer__btn--ink {
+  background: var(--v4-ink, #0b1220);
+  color: var(--v4-lime, #c8f54a);
+  border-color: var(--v4-ink, #0b1220);
 }
 
 /* ─── Responsive ─── */

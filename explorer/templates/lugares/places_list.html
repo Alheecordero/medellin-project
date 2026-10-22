@@ -27,6 +27,13 @@
 <!-- Schema.org JSON-LD para SEO -->
 {% include 'components/schema_org.html' with schema_type='list' lugares=lugares titulo_pagina=titulo_pagina descripcion_pagina=descripcion_pagina %}
 
+{% if modo_cerca %}
+<div class="cerca-map-screen" id="cerca-map-screen">
+  <div id="cerca-map" role="application" aria-label="{% trans 'Mapa de lugares cercanos' %}"></div>
+  <p class="cerca-map-chip" id="cerca-map-chip">{% trans "Cargando el mapa…" %}</p>
+</div>
+{% endif %}
+
 <section class="places-section">
   <div class="container py-5">
     <div class="places-main-wrapper">
@@ -51,6 +58,15 @@
           </p>
           <div id="cerca-status" class="cerca-status" hidden></div>
         </div>
+
+        <form class="places-search" id="places-search" action="{% url 'explorer:lugares_list' %}" method="get" role="search">
+          <label class="visually-hidden" for="places-q">{% trans "Buscar un lugar" %}</label>
+          <i class="bi bi-search" aria-hidden="true"></i>
+          <input id="places-q" name="q" type="search" enterkeyhint="search"
+                 value="{{ busqueda_actual }}"
+                 placeholder="{% trans 'Busca un bar, restaurante o café' %}"
+                 autocomplete="off">
+        </form>
 
         <!-- Filtros estilo HOME -->
         <div class="filtros-home-style">
@@ -219,30 +235,22 @@
 
           <!-- Paginación -->
           {% if is_paginated %}
-            <nav class="mt-5 d-flex justify-content-center">
-              <ul class="pagination">
-                {% if page_obj.has_previous %}
-                  <li class="page-item">
-                    <a class="page-link rounded-pill me-2" href="?page={{ page_obj.previous_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
-                      <i class="bi bi-chevron-left me-1"></i>{% trans "Anterior" %}
-                    </a>
-                  </li>
-                {% endif %}
-
-                <li class="page-item disabled">
-                  <span class="page-link border-0 bg-transparent text-muted">
-                    {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
-                  </span>
-                </li>
-
-                {% if page_obj.has_next %}
-                  <li class="page-item">
-                    <a class="page-link rounded-pill ms-2" href="?page={{ page_obj.next_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
-                      {% trans "Siguiente" %}<i class="bi bi-chevron-right ms-1"></i>
-                    </a>
-                  </li>
-                {% endif %}
-              </ul>
+            <nav class="places-pager" aria-label="{% trans 'Paginación' %}">
+              {% if page_obj.has_previous %}
+                <a class="places-pager__btn" href="?page={{ page_obj.previous_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
+                  <i class="bi bi-chevron-left" aria-hidden="true"></i> {% trans "Anterior" %}
+                </a>
+              {% else %}
+                <span class="places-pager__btn is-off">{% trans "Anterior" %}</span>
+              {% endif %}
+              <span class="places-pager__count">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+              {% if page_obj.has_next %}
+                <a class="places-pager__btn places-pager__btn--next" href="?page={{ page_obj.next_page_number }}{% if filtros_url %}&{{ filtros_url }}{% endif %}">
+                  {% trans "Siguiente" %} <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </a>
+              {% else %}
+                <span class="places-pager__btn places-pager__btn--next is-off">{% trans "Siguiente" %}</span>
+              {% endif %}
             </nav>
           {% endif %}
 
@@ -327,13 +335,36 @@
 
 
 .places-section {
-  background:
-    radial-gradient(circle at top left, rgba(17,153,142,0.08), transparent 34rem),
-    linear-gradient(180deg, #fbfcfa 0%, #f5f7f4 100%);
+  background: transparent;
   min-height: 100vh;
   padding: 2rem 0 4rem;
   overflow: visible;
 }
+
+.places-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 auto 0.85rem;
+  max-width: 36rem;
+  min-height: 44px;
+  padding: 0.2rem 0.9rem;
+  background: var(--v4-paper, #f7f4ee);
+  border: 1px solid rgba(11, 18, 32, 0.1);
+  border-radius: 999px;
+}
+.places-search i { color: #0b1220; font-size: 0.95rem; }
+.places-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #0b1220;
+  font: inherit;
+  font-size: 0.92rem;
+  outline: none;
+}
+.places-search input::placeholder { color: #8b909c; }
 
 .places-section .container { max-width: 1280px; }
 
@@ -349,12 +380,16 @@
 }
 
 /* Card Header */
+body.vibe-v4 .places-header-card,
 .places-header-card {
-  background: rgba(255,255,255,0.94);
+  background:
+    linear-gradient(180deg, rgba(11, 18, 32, 0.22) 0%, rgba(11, 18, 32, 0.4) 46%, rgba(11, 18, 32, 0.74) 100%),
+    url("{% static 'img/hero-medellin-960.webp' %}") center 38% / cover !important;
+  color: #fff;
   border-radius: 24px;
   padding: 2.25rem 1.5rem 1.5rem;
-  box-shadow: 0 18px 50px rgba(15,23,42,0.07);
-  border: 1px solid #e2ebe7;
+  box-shadow: none;
+  border: 0;
   position: relative;
   z-index: 60; /* above v4-bottom-nav (50) so filter dropdowns stay usable */
   margin-bottom: 1.5rem;
@@ -365,7 +400,8 @@
 .places-title {
   font-size: clamp(1.45rem, 6vw, 2rem);
   font-weight: 800;
-  color: #111827;
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(11, 18, 32, 0.55);
   position: relative;
   margin-bottom: 0.75rem;
   letter-spacing: -0.02em;
@@ -379,13 +415,13 @@
   transform: translateX(-50%);
   width: 60px;
   height: 3px;
-  background: #11998e;
+  background: var(--v4-lime, #c8f54a);
   border-radius: 2px;
 }
 
 .title-main {
-  color: #111827;
-  -webkit-text-fill-color: initial;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
   background: none;
 }
 
@@ -395,9 +431,14 @@
 /* Lead y estados vacíos */
 .places-lead,
 .places-header-card .lead {
-  color: #66736f;
+  color: rgba(255, 255, 255, 0.78);
   font-size: 0.98rem;
   margin-bottom: 0;
+}
+.places-header-card .cerca-status { color: #fff; }
+.places-header-card .places-search {
+  background: rgba(255, 255, 255, 0.94);
+  border-color: transparent;
 }
 .places-empty-icon { color: #9ca3af !important; }
 .places-empty-title { color: #111827; }
@@ -461,20 +502,113 @@
   margin-top: 0.85rem;
   font-size: 0.92rem;
   font-weight: 600;
-  color: #0f766e;
+  color: #0b1220;
 }
 .cerca-status--error { color: #b91c1c; }
 .cerca-status .btn { margin-top: 0.55rem; }
 
+body:has(.cerca-map-screen) .places-section { display: none; }
+
+.cerca-map-screen {
+  position: fixed;
+  z-index: 35;
+  top: var(--site-topbar-current-h, 64px);
+  left: 0;
+  right: 0;
+  bottom: calc(var(--v4-nav-h, 68px) + env(safe-area-inset-bottom, 0px));
+  background: var(--v4-paper, #f3efe6);
+}
+
+#cerca-map { width: 100%; height: 100%; }
+
+.cerca-map-chip {
+  position: absolute;
+  z-index: 500;
+  top: 0.75rem;
+  left: 0.75rem;
+  right: 0.75rem;
+  margin: 0;
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(247, 244, 238, 0.94);
+  color: var(--v4-ink, #0b1220);
+  font-size: 0.82rem;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(11, 18, 32, 0.12);
+  pointer-events: none;
+}
+
+.cerca-pin, .cerca-pin-user { background: transparent; border: 0; }
+.cerca-pin span,
+.cerca-pin-user span {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--v4-lime, #c8f54a);
+  border: 2px solid var(--v4-ink, #0b1220);
+  box-shadow: 0 2px 8px rgba(11, 18, 32, 0.35);
+}
+.cerca-pin-user span {
+  background: #7ec8ff;
+  width: 14px;
+  height: 14px;
+}
+
+.cerca-popup-wrap .leaflet-popup-content-wrapper {
+  border-radius: 16px;
+  padding: 0;
+  overflow: hidden;
+}
+.cerca-popup-wrap .leaflet-popup-content { margin: 0; width: 220px !important; }
+.cerca-popup,
+.cerca-popup strong,
+.cerca-popup em {
+  color: var(--v4-ink, #0b1220);
+  text-decoration: none;
+}
+.cerca-popup {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 0.55rem;
+}
+.cerca-popup img {
+  width: 72px;
+  height: 100%;
+  min-height: 72px;
+  object-fit: cover;
+}
+.cerca-popup__body { padding: 0.55rem 0.65rem 0.55rem 0; min-width: 0; }
+.cerca-popup strong {
+  display: block;
+  font-size: 0.92rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.cerca-popup small {
+  display: block;
+  color: var(--v4-muted, #6b7285);
+  font-size: 0.75rem;
+  margin-top: 0.15rem;
+}
+.cerca-popup em {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-style: normal;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-bottom: 2px solid var(--v4-lime, #c8f54a);
+}
+
 .btn-filtro-dropdown i {
-  color: #11998e;
+  color: #0b1220;
 }
 
 .btn-filtro-dropdown:hover,
 .btn-filtro-dropdown:focus {
-  background: #f0fdfa !important;
-  border-color: #99f6e4 !important;
-  color: #0f766e !important;
+  background: #f7f4ee !important;
+  border-color: rgba(11, 18, 32, 0.16) !important;
+  color: #0b1220 !important;
 }
 
 .dropdown-menu-filtros {
@@ -494,23 +628,23 @@
 
 .dropdown-item-filtro:hover,
 .dropdown-item-filtro:focus {
-  background: #f0fdfa;
-  color: #0f766e;
+  background: #f7f4ee;
+  color: #0b1220;
 }
 
 .dropdown-header {
-  color: #11998e;
+  color: #0b1220;
   font-weight: 800;
   letter-spacing: 0.02em;
 }
 
 /* Grid Container */
 .places-grid-card {
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 1.25rem;
-  box-shadow: 0 18px 45px rgba(15,23,42,0.06);
-  border: 1px solid #e2ebe7;
+  background: #fff;
+  border-radius: 20px;
+  padding: 0.45rem 0.9rem 0.7rem;
+  box-shadow: none;
+  border: 1px solid rgba(11, 18, 32, 0.08);
   position: relative;
   z-index: 1;
 }
@@ -531,8 +665,8 @@
 
 .places-grid .place-card:hover {
   transform: translateY(-2px);
-  border-color: #99f6e4;
-  box-shadow: 0 14px 30px rgba(17,153,142,0.11);
+  border-color: rgba(11, 18, 32, 0.16);
+  box-shadow: 0 14px 30px rgba(11, 18, 32, 0.08);
 }
 
 .places-grid .place-card__title {
@@ -563,9 +697,9 @@
 }
 
 .places-grid .place-card__badge--type {
-  background: #f0fdfa;
-  border-color: #99f6e4;
-  color: #0f766e;
+  background: #f7f4ee;
+  border-color: rgba(11, 18, 32, 0.16);
+  color: #0b1220;
 }
 
 .places-grid .place-card__meta,
@@ -587,11 +721,11 @@
   min-height: 34px;
   padding: 0.45rem 0.85rem;
   border-radius: 999px;
-  background: #11998e;
+  background: #0b1220;
   color: #fff;
   font-size: 0.78rem;
   font-weight: 800;
-  box-shadow: 0 8px 18px rgba(17,153,142,0.22);
+  box-shadow: none;
 }
 
 .places-grid .place-card__arrow i {
@@ -599,27 +733,9 @@
 }
 
 .places-grid .place-card:hover .place-card__arrow::before {
-  background: #0d8a7f;
+  background: #1a2438;
 }
 
-@media (min-width: 992px) {
-  .places-grid .place-card--horizontal {
-    grid-template-columns: 236px minmax(0, 1fr);
-    align-items: stretch;
-  }
-
-  .places-grid .place-card--horizontal .place-card__media img,
-  .places-grid .place-card--horizontal .place-card__placeholder {
-    height: 100%;
-    min-height: 178px;
-    max-height: 178px;
-    border-radius: 18px 0 0 18px;
-  }
-}
-
-@media (min-width: 992px) {
-  .places-grid-card { padding: 2rem 1.5rem; }
-}
 
 /* Empty state */
 .places-grid-card .text-white { color: #111827 !important; }
@@ -628,31 +744,31 @@
 /* Paginación */
 .pagination .page-link {
   border: 1px solid #d1d5db;
-  color: #11998e;
+  color: #0b1220;
   font-weight: 500;
   background: #fff;
 }
 
 .pagination .page-link:hover {
-  background: #f0fdfa;
-  border-color: #11998e;
-  color: #11998e;
+  background: #f7f4ee;
+  border-color: #0b1220;
+  color: #0b1220;
 }
 
 /* Estados de filtros */
 .btn-filtro-dropdown.selected {
-  background: #e6fffb !important;
-  border-color: #11998e !important;
-  color: #0f766e !important;
+  background: #f7f4ee !important;
+  border-color: #0b1220 !important;
+  color: #0b1220 !important;
 }
 
 .feature-option.active {
-  background: #f0fdfa;
+  background: #f7f4ee;
 }
 
 .feature-option.active .feature-check {
   display: inline-block !important;
-  color: #11998e;
+  color: #0b1220;
 }
 
 /* Loading */
@@ -661,69 +777,271 @@
   pointer-events: none;
 }
 
-/* Mobile */
-@media (max-width: 991px) {
-  .places-section { padding: 1.25rem 0 calc(var(--v4-nav-h, 68px) + 1.5rem + env(safe-area-inset-bottom, 0px)); }
-  .places-main-wrapper { padding: 0 0.5rem; }
+/* Lista en filas, igual en móvil y escritorio */
+  body.vibe-v4 .places-section,
+  .places-section {
+    background: transparent !important;
+    min-height: 100vh;
+    padding: 0.85rem 0 calc(var(--v4-nav-h, 68px) + 1rem + env(safe-area-inset-bottom, 0px));
+  }
+  .places-main-wrapper { padding: 0 0.65rem; }
+  body.vibe-v4 .places-header-card,
   .places-header-card {
-    padding: 1.35rem 0.9rem 1rem;
-    margin-bottom: 1.25rem;
+    padding: 0.95rem 0.85rem 0.8rem;
+    margin-bottom: 0.55rem;
     border-radius: 18px;
+    box-shadow: none;
+    background:
+      linear-gradient(180deg, rgba(11, 18, 32, 0.22) 0%, rgba(11, 18, 32, 0.4) 46%, rgba(11, 18, 32, 0.74) 100%),
+      url("{% static 'img/hero-medellin-960.webp' %}") center 38% / cover !important;
+    border: 0 !important;
+    color: #fff;
   }
-  .places-title { font-size: 1.75rem; }
+  .places-header-card .places-title,
+  .places-header-card .title-main {
+    color: #fff !important;
+    -webkit-text-fill-color: #fff;
+    text-shadow: 0 1px 10px rgba(11, 18, 32, 0.55);
+  }
+  .places-header-card .places-lead,
+  .places-header-card .lead {
+    color: rgba(255, 255, 255, 0.78) !important;
+  }
+  .places-header-card .text-center { margin-bottom: 0.45rem !important; }
+  .places-title {
+    font-family: var(--v4-font-display, 'Bricolage Grotesque', system-ui, sans-serif);
+    font-size: 1.35rem;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.35rem;
+  }
+  .places-title::after {
+    bottom: -6px;
+    width: 36px;
+    height: 3px;
+    background: var(--v4-lime, #c8f54a);
+  }
+  .places-lead,
+  .places-header-card .lead {
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
   .filtros-home-style {
-    padding: 0.75rem;
-    margin-top: 1rem;
-    border-radius: 16px;
+    padding: 0;
+    margin-top: 0.85rem;
+    border: 0;
+    background: transparent;
+    border-radius: 0;
   }
+  .filtros-home-style > .row {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: safe center !important;
+    gap: 0.4rem;
+    margin: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .filtros-home-style > .row::-webkit-scrollbar { display: none; }
+  .filtros-home-style > .row > [class*="col-"] {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: none;
+    padding: 0;
+  }
+  .places-header-card .btn-filtro-dropdown {
+    width: auto !important;
+    min-height: 38px;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.74rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .places-grid .adsense-inline-list { display: none !important; }
+  .places-header-card .btn-filtro-dropdown i { margin-right: 0.25rem !important; }
+
   .places-grid-card {
-    padding: 0.85rem;
-    border-radius: 18px;
+    background: #fff !important;
+    border: 1px solid rgba(11, 18, 32, 0.08) !important;
+    box-shadow: none;
+    padding: 0.25rem 0.75rem 0.35rem;
+    border-radius: 18px !important;
+  }
+  .places-grid { gap: 0; }
+
+  body.vibe-v4 .places-grid .place-card,
+  body.vibe-v4 .places-grid .place-card-wrapper {
+    border-radius: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  body.vibe-v4 .places-grid .place-card {
+    border-bottom: 1px solid rgba(11, 18, 32, 0.08) !important;
   }
 
   .places-grid .place-card {
-    border-radius: 16px;
-    min-height: auto;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    column-gap: 0.75rem;
+    row-gap: 0.05rem;
+    align-items: center;
+    min-height: 0;
+    padding: 0.7rem 0;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(11, 18, 32, 0.08);
+    box-shadow: none;
+    background: transparent;
+    transform: none;
   }
+  .places-grid .place-card:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: rgba(11, 18, 32, 0.08);
+  }
+  .places-grid .place-card::before { display: none; }
+  .places-grid .place-card__media,
+  .places-grid .place-card__body { display: contents; }
 
   .places-grid .place-card__img,
   .places-grid .place-card__placeholder {
-    height: 190px;
-    border-radius: 16px 16px 0 0;
+    grid-column: 1;
+    grid-row: 1 / span 4;
+    width: 72px;
+    height: 72px;
+    min-height: 72px;
+    max-height: 72px;
+    border-radius: 8px;
+    object-fit: cover;
+    align-self: center;
   }
-
-  .places-grid .place-card__body {
-    padding: 0.95rem;
+  .places-grid .place-card__media-overlay,
+  .places-grid .place-card__zone-glass,
+  .places-grid .place-card__distance,
+  .places-grid .place-card__footer,
+  .places-grid .place-card__arrow,
+  .places-grid .place-card__meta,
+  .places-grid .place-card__editorial,
+  .places-grid .place-card__badge--featured,
+  .places-grid .place-card__badge--exclusive,
+  .places-grid .place-card__badge--top-rated {
+    display: none;
   }
 
   .places-grid .place-card__title {
-    font-size: 1rem;
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-
-  .places-grid .place-card__arrow::before {
-    width: 100%;
-    justify-content: center;
+  .places-grid .place-card__rating {
+    grid-column: 2;
+    grid-row: 2;
+    position: static;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    background: none;
+    color: #6b7280;
+    box-shadow: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    justify-self: start;
   }
+  .places-grid .place-card__rating i { color: #e0a100; font-size: 0.72rem; }
+  .places-grid .place-card__badges {
+    grid-column: 2;
+    grid-row: 3;
+    margin: 0;
+  }
+  .places-grid .place-card__badge--type {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #6b7280;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+  .places-grid .place-card__badge--type i { display: none; }
+  .places-grid .place-card__address {
+    grid-column: 2;
+    grid-row: 4;
+    margin: 0;
+    font-size: 0.75rem;
+    color: #9aa0ab;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .places-grid .place-card__address i { display: none; }
 
   .places-header-card,
   .places-grid-card {
     overflow: visible;
   }
 
-  .pagination {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem;
+  .places-pager {
+    position: fixed;
+    z-index: 45;
+    left: 50%;
+    right: auto;
+    width: min(728px, calc(100% - 1.5rem));
+    transform: translateX(-50%);
+    bottom: calc(var(--v4-nav-h, 68px) + 0.4rem + env(safe-area-inset-bottom, 0px));
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem;
+    background: #fff;
+    border: 1px solid rgba(11, 18, 32, 0.1);
+    border-radius: 999px;
   }
-
-  .pagination .page-link {
-    margin: 0 !important;
+  .places-pager__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    min-height: 34px;
+    padding: 0 0.7rem;
+    border-radius: 999px;
+    background: #0b1220;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .places-pager__btn--next { justify-self: end; }
+  .places-pager__btn.is-off {
+    background: transparent;
+    color: #9aa0ab;
+  }
+  .places-pager__count {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #0b1220;
+    white-space: nowrap;
+  }
+  .places-grid-card { padding-bottom: 4.5rem; }
+@media (min-width: 992px) {
+  .places-pager {
+    bottom: calc(var(--v4-nav-h, 68px) + 1.15rem + env(safe-area-inset-bottom, 0px));
   }
 }
 </style>
 {% endblock %}
 
 {% block extra_js %}
+{% if modo_cerca %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endif %}
 <script>
 // Helper global para rango de precios (coherente con form_tags.format_price_range)
 function formatPriceRangeJs(raw) {
@@ -850,6 +1168,7 @@ $(document).ready(function() {
         tipoLabel: '{{ tipo_actual_label|default:"" }}',
         caracteristicas: {},
         pagina: 1,
+        q: '{{ busqueda_actual|escapejs }}',
         lat: _bootParams.get('lat') || '',
         lng: _bootParams.get('lng') || '',
         radio: _bootParams.get('radio') || '3'
@@ -1039,6 +1358,7 @@ $(document).ready(function() {
         const params = new URLSearchParams();
         if (filtros.area) params.append('area', filtros.area);
         if (filtros.tipo) params.append('tipo', filtros.tipo);
+        if (filtros.q) params.append('q', filtros.q);
         if (filtros.pagina > 1) params.append('page', filtros.pagina);
         if (filtros.lat && filtros.lng) {
             params.append('lat', filtros.lat);
@@ -1129,32 +1449,13 @@ $(document).ready(function() {
     }
     
     function generarPaginacionHtml(pag) {
-        let html = '<nav class="mt-5 d-flex justify-content-center"><ul class="pagination">';
-        
-        if (pag.tiene_anterior) {
-            html += `<li class="page-item">
-                <a class="page-link rounded-pill me-2 pagination-link" href="javascript:void(0)" data-page="${pag.pagina_anterior}">
-                    <i class="bi bi-chevron-left me-1"></i>${T.prev}
-                </a>
-            </li>`;
-        }
-        
-        html += `<li class="page-item disabled">
-            <span class="page-link border-0 bg-transparent text-muted">
-                ${pag.pagina_actual} / ${pag.total_paginas}
-            </span>
-        </li>`;
-        
-        if (pag.tiene_siguiente) {
-            html += `<li class="page-item">
-                <a class="page-link rounded-pill ms-2 pagination-link" href="javascript:void(0)" data-page="${pag.pagina_siguiente}">
-                    ${T.next}<i class="bi bi-chevron-right ms-1"></i>
-                </a>
-            </li>`;
-        }
-        
-        html += '</ul></nav>';
-        return html;
+        const prev = pag.tiene_anterior
+            ? `<a class="places-pager__btn pagination-link" href="javascript:void(0)" data-page="${pag.pagina_anterior}"><i class="bi bi-chevron-left" aria-hidden="true"></i> ${T.prev}</a>`
+            : `<span class="places-pager__btn is-off">${T.prev}</span>`;
+        const next = pag.tiene_siguiente
+            ? `<a class="places-pager__btn places-pager__btn--next pagination-link" href="javascript:void(0)" data-page="${pag.pagina_siguiente}">${T.next} <i class="bi bi-chevron-right" aria-hidden="true"></i></a>`
+            : `<span class="places-pager__btn places-pager__btn--next is-off">${T.next}</span>`;
+        return `<nav class="places-pager" aria-label="Paginación">${prev}<span class="places-pager__count">${pag.pagina_actual} / ${pag.total_paginas}</span>${next}</nav>`;
     }
     
     function actualizarTitulo(data) {
@@ -1165,6 +1466,22 @@ $(document).ready(function() {
     // ─────────────────────────────────────────────────────────────
     // EVENT: Paginación
     // ─────────────────────────────────────────────────────────────
+    $('#places-q').on('input', function() {
+        filtros.q = $(this).val().trim();
+        filtros.pagina = 1;
+        programarBusqueda();
+    });
+    $('#places-search').on('submit', function(e) {
+        e.preventDefault();
+        filtros.q = $('#places-q').val().trim();
+        filtros.pagina = 1;
+        ejecutarBusqueda();
+    });
+    if (window.location.hash === '#places-q') {
+        const input = document.getElementById('places-q');
+        if (input) input.focus();
+    }
+
     $(document).on('click', '.pagination-link', function(e) {
         e.preventDefault();
         filtros.pagina = $(this).data('page');
@@ -1188,158 +1505,132 @@ $(document).ready(function() {
     });
 
     // ═══════════════════════════════════════════════════════════════
-    // CERCA DE MÍ: ?cerca=1 → geolocalizar → ?lat=&lng=&radio=
+    // CERCA: mapa a pantalla completa. Pines cerca si hay ubicación
+    // dentro de las zonas; mapa general si no.
     // ═══════════════════════════════════════════════════════════════
     (function initCercaDeMi() {
-        const params = new URLSearchParams(window.location.search);
-        const wantsCerca = params.get('cerca') === '1' || params.get('cerca') === 'true';
-        const hasCoords = params.get('lat') && params.get('lng');
-        if (!wantsCerca || hasCoords) return;
+        const mapEl = document.getElementById('cerca-map');
+        if (!mapEl || typeof L === 'undefined') return;
 
-        const $status = $('#cerca-status');
-        const $lead = $('#places-lead');
-        const $grid = $('#places-grid-container');
+        const params = new URLSearchParams(window.location.search);
+        const chip = document.getElementById('cerca-map-chip');
         const NEAR_API = '{% url "explorer:lugares_cercanos_near_me" %}';
-        const T_NEAR = {
+        const T_MAP = {
             locating: '{% trans "Detectando tu ubicación…" %}',
             loading: '{% trans "Buscando lugares cerca de ti…" %}',
-            denied: '{% trans "No pudimos obtener tu ubicación. Activa el permiso de ubicación e inténtalo de nuevo." %}',
-            browseAll: '{% trans "Ver todos los lugares" %}',
-            unsupported: '{% trans "Tu navegador no soporta geolocalización." %}',
-            empty: '{% trans "No encontramos lugares en ese radio. Ampliando búsqueda…" %}',
-            error: '{% trans "Error al buscar lugares cercanos." %}',
-            found: '{% trans "lugares cerca de ti" %}',
-            retry: '{% trans "Reintentar" %}'
+            general: '{% trans "Mapa de las zonas que cubrimos." %}',
+            denied: '{% trans "Sin ubicación: mapa de las zonas que cubrimos." %}',
+            error: '{% trans "No se pudo cargar el mapa." %}',
+            view: '{% trans "Ver lugar" %}'
         };
 
-        function showStatus(msg, isError) {
-            $status.prop('hidden', false)
-                .toggleClass('cerca-status--error', !!isError)
-                .html(msg);
+        const map = L.map(mapEl, { zoomControl: false }).setView([6.2476, -75.5658], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap',
+            maxZoom: 19
+        }).addTo(map);
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        const pins = L.layerGroup().addTo(map);
+
+        function setChip(text) { if (chip) chip.textContent = text; }
+        function esc(value) {
+            return String(value || '').replace(/[&<>"']/g, function(ch) {
+                return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+            });
         }
-
-        function setLoading(on) {
-            $grid.toggleClass('loading', !!on);
+        function distanceLabel(lugar) {
+            if (lugar.distancia_label) return lugar.distancia_label;
+            const km = Number(lugar.distancia);
+            if (!km) return '';
+            return km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km';
         }
-
-        // Estado inicial visible (no dejar la lista genérica debajo)
-        showStatus('<i class="bi bi-geo-alt"></i> ' + T_NEAR.locating, false);
-        
-        function renderNearResults(data, radioKm) {
-            const lugares = data.lugares || [];
-            const total = data.total || lugares.length;
-            $('#places-title-main').text('{% trans "Cerca de ti" %}');
-            $lead.text(data.mensaje || (total + ' ' + T_NEAR.found));
-            showStatus(
-                '<i class="bi bi-geo-alt-fill"></i> ' +
-                (data.filtros_aplicados && data.filtros_aplicados.radio_display
-                    ? data.filtros_aplicados.radio_display
-                    : (radioKm + ' km')),
-                false
-            );
-
-            if (!lugares.length) {
-                $grid.html(`
-                    <div class="text-center py-5">
-                        <i class="bi bi-geo display-1 mb-3 places-empty-icon"></i>
-                        <h3 class="places-empty-title">${T_NEAR.empty}</h3>
-                        <button type="button" class="btn btn-gradient-green rounded-pill px-4" id="cerca-retry-btn">${T_NEAR.retry}</button>
-                    </div>`);
-                $('#cerca-retry-btn').on('click', function() { locateAndSearch(5); });
-                return;
-            }
-
-            let html = '<div class="places-grid">';
-            lugares.forEach(function(lugar) {
-                // Normalizar distancia para la card
-                if (lugar.distancia != null && lugar.distancia_km == null) {
-                    lugar.distancia_km = lugar.distancia;
-                }
-                html += generarPlaceCardHtml(lugar, {
-                    viewDetails: T.viewDetails,
-                    featured: T.featured,
-                    exclusive: T.exclusive,
-                    top: T.top
+        function popupHtml(lugar) {
+            const img = lugar.imagen
+                ? '<img src="' + esc(lugar.imagen) + '" alt="">'
+                : '<img alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">';
+            const bits = [lugar.tipo, distanceLabel(lugar)].filter(Boolean).map(esc).join(' · ');
+            const rating = lugar.rating ? esc(Number(lugar.rating).toFixed(1)) : '';
+            const meta = [rating, bits].filter(Boolean).join(' · ');
+            return '<a class="cerca-popup" href="' + esc(lugar.url || '#') + '">' + img +
+                '<div class="cerca-popup__body"><strong>' + esc(lugar.nombre) + '</strong>' +
+                '<small>' + meta + '</small><em>' + T_MAP.view + '</em></div></a>';
+        }
+        function plot(lugares, bounds, user) {
+            pins.clearLayers();
+            const points = [];
+            (lugares || []).forEach(function(lugar) {
+                if (lugar.lat == null || lugar.lng == null) return;
+                const marker = L.marker([lugar.lat, lugar.lng], {
+                    icon: L.divIcon({
+                        className: 'cerca-pin',
+                        html: '<span></span>',
+                        iconSize: [16, 16],
+                        iconAnchor: [8, 8]
+                    })
                 });
+                marker.bindPopup(popupHtml(lugar), { className: 'cerca-popup-wrap', maxWidth: 260 });
+                marker.addTo(pins);
+                points.push([lugar.lat, lugar.lng]);
             });
-            html += '</div>';
-            $grid.html(html);
-        }
-
-        function fetchNearby(lat, lng, radioKm) {
-            setLoading(true);
-            showStatus('<i class="bi bi-arrow-repeat"></i> ' + T_NEAR.loading, false);
-            $.ajax({
-                url: NEAR_API,
-                type: 'GET',
-                data: { lat: lat, lng: lng, radio: radioKm },
-                success: function(resp) {
-                    setLoading(false);
-                    if (resp.success === false || resp.error) {
-                        showStatus(resp.error || T_NEAR.error, true);
-                        return;
-                    }
-                    // Si no hay resultados con radio chico, ampliar una vez
-                    if ((!resp.lugares || !resp.lugares.length) && radioKm < 5) {
-                        showStatus(T_NEAR.empty, false);
-                        fetchNearby(lat, lng, 5);
-                        return;
-                    }
-                    // Actualizar URL con coords (sin recargar) para compartir / back
-                    const next = new URLSearchParams(window.location.search);
-                    next.delete('cerca');
-                    next.set('lat', String(lat));
-                    next.set('lng', String(lng));
-                    next.set('radio', String(radioKm));
-                    window.history.replaceState({}, '', window.location.pathname + '?' + next.toString());
-                    filtros.lat = String(lat);
-                    filtros.lng = String(lng);
-                    filtros.radio = String(radioKm);
-                    renderNearResults(resp, radioKm);
-                },
-                error: function() {
-                    setLoading(false);
-                    showStatus(T_NEAR.error, true);
-                }
-            });
-        }
-
-        function locateAndSearch(radioKm) {
-            if (!navigator.geolocation) {
-                showStatus(T_NEAR.unsupported, true);
-                return;
+            if (user) {
+                L.marker(user, {
+                    icon: L.divIcon({
+                        className: 'cerca-pin-user',
+                        html: '<span></span>',
+                        iconSize: [14, 14],
+                        iconAnchor: [7, 7]
+                    })
+                }).addTo(map);
+                points.push(user);
             }
-            showStatus('<i class="bi bi-geo-alt"></i> ' + T_NEAR.locating, false);
-            setLoading(true);
+            if (bounds && bounds.lat_min != null) {
+                map.fitBounds([[bounds.lat_min, bounds.lng_min], [bounds.lat_max, bounds.lng_max]], { padding: [28, 28] });
+            } else if (points.length) {
+                map.fitBounds(points, { padding: [40, 40], maxZoom: 15 });
+            }
+            setTimeout(function() { map.invalidateSize(); }, 180);
+        }
+        function loadGeneral(message) {
+            setChip(message || T_MAP.general);
+            $.getJSON(NEAR_API, { general: 1 })
+                .done(function(resp) {
+                    plot(resp.lugares || [], resp.bounds, null);
+                    setChip(resp.mensaje || message || T_MAP.general);
+                })
+                .fail(function() { setChip(T_MAP.error); });
+        }
+        function loadNearby(lat, lng) {
+            setChip(T_MAP.loading);
+            $.getJSON(NEAR_API, { lat: lat, lng: lng, radio: 3 })
+                .done(function(resp) {
+                    if (!resp || resp.success === false || resp.modo === 'general') {
+                        plot((resp && resp.lugares) || [], resp && resp.bounds, null);
+                        setChip((resp && resp.mensaje) || T_MAP.general);
+                        return;
+                    }
+                    plot(resp.lugares || [], null, [lat, lng]);
+                    setChip(resp.mensaje || T_MAP.loading);
+                })
+                .fail(function() { loadGeneral(T_MAP.error); });
+        }
+
+        const lat = parseFloat(params.get('lat'));
+        const lng = parseFloat(params.get('lng'));
+        if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+            loadNearby(lat, lng);
+        } else if (!navigator.geolocation) {
+            loadGeneral(T_MAP.denied);
+        } else {
+            setChip(T_MAP.locating);
             navigator.geolocation.getCurrentPosition(
-                function(pos) {
-                    fetchNearby(pos.coords.latitude, pos.coords.longitude, radioKm || 3);
-                },
-                function(err) {
-                    setLoading(false);
-                    $status.prop('hidden', true).empty();
-                    $lead.text('');
-                    $grid.html(
-                        '<div class="text-center py-5">' +
-                        '<i class="bi bi-geo-alt display-4 mb-3 places-empty-icon"></i>' +
-                        '<h3 class="places-empty-title">' + T_NEAR.denied + '</h3>' +
-                        '<div class="d-flex flex-wrap gap-2 justify-content-center mt-3">' +
-                        '<a class="btn btn-sm btn-outline-secondary rounded-pill px-3" href="{% url "explorer:lugares_list" %}">' + T_NEAR.browseAll + '</a>' +
-                        '<button type="button" class="btn btn-sm btn-gradient-green rounded-pill px-3" id="cerca-retry-btn">' + T_NEAR.retry + '</button>' +
-                        '</div></div>'
-                    );
-                    $('#cerca-retry-btn').on('click', function() {
-                      $grid.html('<div class="text-center py-5 cerca-loading-panel"><div class="spinner-border text-success mb-3"></div><h3 class="places-empty-title">' + T_NEAR.loading + '</h3></div>');
-                      locateAndSearch(3);
-                    });
-                },
-                { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
+                function(pos) { loadNearby(pos.coords.latitude, pos.coords.longitude); },
+                function() { loadGeneral(T_MAP.denied); },
+                { enableHighAccuracy: true, timeout: 8000, maximumAge: 120000 }
             );
         }
-
-        locateAndSearch(3);
+        setTimeout(function() { map.invalidateSize(); }, 300);
     })();
-    
+
     function sincronizarUI() {
         // Área
         $('#area-label').text(filtros.area ? filtros.areaName : T.selectArea);

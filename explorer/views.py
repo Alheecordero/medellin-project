@@ -1637,6 +1637,10 @@ def places_filter_ajax(request):
             Q(rating__gte=2.0) | Q(rating__isnull=True)
         )
         
+        q = (request.GET.get('q') or '').strip()
+        if q:
+            qs = qs.filter(nombre__icontains=q)
+
         # Filtrar por área
         region_info = None
         if area_slug:
@@ -1810,6 +1814,74 @@ def places_filter_ajax(request):
         }, status=500)
 
 
+def _lugar_para_mapa(lugar, distancia_km=None):
+    """Ficha corta para un pin del mapa Cerca."""
+    if not getattr(lugar, "ubicacion", None):
+        return None
+    fotos = list(lugar.fotos.all())
+    primera_foto = fotos[0] if fotos else None
+    if distancia_km is None and getattr(lugar, "distancia_metros", None):
+        try:
+            distancia_km = round(float(lugar.distancia_metros.km), 2)
+        except (TypeError, ValueError, AttributeError):
+            distancia_km = None
+    if distancia_km is not None and distancia_km < 1:
+        distancia_label = f"{int(round(distancia_km * 1000))} m"
+    elif distancia_km is not None:
+        distancia_label = f"{distancia_km:.1f} km"
+    else:
+        distancia_label = ""
+    return {
+        "nombre": lugar.nombre,
+        "slug": lugar.slug,
+        "lat": lugar.ubicacion.y,
+        "lng": lugar.ubicacion.x,
+        "rating": lugar.rating or 0.0,
+        "total_reviews": lugar.total_reviews or 0,
+        "tipo": get_localized_place_type(lugar),
+        **get_optimized_image_urls(primera_foto, "thumb"),
+        "url": reverse("explorer:lugares_detail", kwargs={"slug": lugar.slug}) if lugar.slug else None,
+        "distancia": distancia_km,
+        "distancia_label": distancia_label,
+        "direccion": lugar.direccion or "",
+    }
+
+
+def _lugares_mapa_general(limit=40):
+    """Lugares con foto dentro de las zonas de trabajo, para cuando no hay ubicación útil."""
+    from django.contrib.gis.geos import Polygon
+    from explorer.utils.vive_areas import SCAN_AREAS
+
+    lng_min = min(area["lng_min"] for area in SCAN_AREAS.values())
+    lat_min = min(area["lat_min"] for area in SCAN_AREAS.values())
+    lng_max = max(area["lng_max"] for area in SCAN_AREAS.values())
+    lat_max = max(area["lat_max"] for area in SCAN_AREAS.values())
+    envelope = Polygon.from_bbox((lng_min, lat_min, lng_max, lat_max))
+    envelope.srid = 4326
+    qs = (
+        Places.objects.filter(
+            tiene_fotos=True,
+            ubicacion__isnull=False,
+            ubicacion__intersects=envelope,
+        )
+        .exclude(tipo__in=TIPOS_EXCLUIDOS)
+        .filter(Q(rating__gte=4.0) | Q(es_destacado=True))
+        .prefetch_related("fotos")
+        .order_by("-es_destacado", "-weighted_rating", "-rating")[:limit]
+    )
+    lugares = []
+    for lugar in qs:
+        payload = _lugar_para_mapa(lugar)
+        if payload:
+            lugares.append(payload)
+    return lugares, {
+        "lat_min": lat_min,
+        "lat_max": lat_max,
+        "lng_min": lng_min,
+        "lng_max": lng_max,
+    }
+
+
 @require_GET
 @rate_limit(requests_per_minute=30, key_prefix='near_me')
 def lugares_cercanos_ajax_view(request):
@@ -1819,6 +1891,7 @@ def lugares_cercanos_ajax_view(request):
     from django.contrib.gis.measure import D  # Para distancias
     from django.db import models
     from django.db.models import functions
+    from explorer.utils.vive_areas import point_in_scan_areas
     
     # Obtener coordenadas
     lat = request.GET.get('lat')
@@ -1829,22 +1902,35 @@ def lugares_cercanos_ajax_view(request):
     tipo = request.GET.get('tipo', '').strip()
     caracteristica = request.GET.get('caracteristica', '').strip()
     
-    if not lat or not lng:
+    quiere_general = request.GET.get("general") == "1" or not lat or not lng
+
+    def respuesta_general(fuera=False):
+        lugares, bounds = _lugares_mapa_general()
+        if fuera:
+            mensaje = _("Estás fuera de nuestras zonas. Este es el mapa de Medellín y alrededores.")
+        else:
+            mensaje = _("Mapa de ViveMedellín: lugares en las zonas que cubrimos.")
         return JsonResponse({
-            'error': 'Se requieren las coordenadas de latitud y longitud'
-        }, status=400)
-    
+            "success": True,
+            "modo": "general",
+            "fuera": fuera,
+            "total": len(lugares),
+            "lugares": lugares,
+            "bounds": bounds,
+            "mensaje": mensaje,
+        })
+
+    if quiere_general:
+        return respuesta_general(fuera=False)
+
     try:
         # Convertir a float y validar
         lat = float(lat)
         lng = float(lng)
         radio = float(radio)
-        
-        # Validar rango de coordenadas (aproximado para Medellín)
-        if not (5.0 <= lat <= 7.0) or not (-76.0 <= lng <= -74.0):
-            return JsonResponse({
-                'error': 'Las coordenadas parecen estar fuera del área de Medellín'
-            }, status=400)
+
+        if not point_in_scan_areas(lat, lng):
+            return respuesta_general(fuera=True)
         
         # Crear punto de ubicación del usuario
         user_location = Point(lng, lat, srid=4326)
@@ -1938,6 +2024,8 @@ def lugares_cercanos_ajax_view(request):
                 'es_exclusivo': lugar.es_exclusivo,
                 # URL resuelta por Django según idioma actual
                 'url': reverse('explorer:lugares_detail', kwargs={'slug': lugar.slug}) if lugar.slug else None,
+                'lat': lugar.ubicacion.y if lugar.ubicacion else None,
+                'lng': lugar.ubicacion.x if lugar.ubicacion else None,
                 'distancia': round(lugar.distancia_metros.km, 2) if hasattr(lugar, 'distancia_metros') and lugar.distancia_metros else None,
                 'direccion': lugar.direccion
             })
@@ -2041,6 +2129,8 @@ def lugares_cercanos_ajax_view(request):
 
         return JsonResponse({
             'success': True,
+            'modo': 'cerca',
+            'fuera': False,
             'total': count,
             'lugares': resultados,
             'filtros_aplicados': filtros_aplicados,

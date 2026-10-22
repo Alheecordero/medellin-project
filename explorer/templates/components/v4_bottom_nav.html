@@ -1,4 +1,5 @@
 {% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 {% with url_name=request.resolver_match.url_name|default:"" %}
 <nav class="v4-bottom-nav" aria-label="{% trans 'Navegación principal' %}">
   <a href="{% url 'explorer:home' %}" class="{% if url_name == 'home' %}active{% endif %}">
@@ -6,7 +7,7 @@
     <span>{% trans "Inicio" %}</span>
   </a>
   {% if url_name == 'lugares_list' and request.GET.cerca or url_name == 'lugares_list' and request.GET.lat %}
-  <a href="{% url 'explorer:lugares_list' %}">
+  <a href="{% url 'explorer:lugares_list' %}#places-q" data-v4-search>
     <i class="bi bi-search"></i>
     <span>{% trans "Buscar" %}</span>
   </a>
@@ -15,12 +16,12 @@
     <span>{% trans "Cerca" %}</span>
   </a>
   {% else %}
-  <a href="{% url 'explorer:lugares_list' %}" class="{% if url_name == 'lugares_list' or url_name == 'lugares_detail' %}active{% endif %}">
+  <a href="{% url 'explorer:lugares_list' %}#places-q" data-v4-search class="{% if url_name == 'lugares_list' or url_name == 'lugares_detail' %}active{% endif %}">
     <i class="bi bi-search"></i>
     <span>{% trans "Buscar" %}</span>
   </a>
   <a href="{% url 'explorer:lugares_list' %}?cerca=1">
-    <i class="bi bi-geo-alt-fill"></i>
+    <i class="bi bi-geo-alt"></i>
     <span>{% trans "Cerca" %}</span>
   </a>
   {% endif %}
@@ -28,9 +29,66 @@
     <i class="bi bi-journal-richtext"></i>
     <span>{% trans "Guías" %}</span>
   </a>
-  <a href="{% url 'explorer:about_es' %}" class="{% if 'about' in url_name %}active{% endif %}">
-    <i class="bi bi-heart"></i>
+  <button type="button" id="v4-more-open" aria-expanded="false" aria-controls="v4-more-sheet" class="{% if 'about' in url_name or url_name == 'contact' or url_name == 'privacy_policy' or url_name == 'terms' %}active{% endif %}">
+    <i class="bi bi-grid"></i>
     <span>{% trans "Más" %}</span>
-  </a>
+  </button>
 </nav>
+
+<div class="v4-more-sheet" id="v4-more-sheet" hidden>
+  <button type="button" class="v4-more-sheet__backdrop" data-v4-close aria-label="{% trans 'Cerrar' %}"></button>
+  <div class="v4-more-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="v4-more-title">
+    <div class="v4-more-sheet__head">
+      <strong id="v4-more-title">{% trans "Más" %}</strong>
+      <button type="button" data-v4-close aria-label="{% trans 'Cerrar' %}">×</button>
+    </div>
+    <p class="v4-more-sheet__label">{% trans "Explorar" %}</p>
+    <a href="{% url 'explorer:lugares_list' %}?tipo=restaurant">{% trans "Restaurantes" %}</a>
+    <a href="{% url 'explorer:lugares_list' %}?tipo=bar">{% trans "Bares" %}</a>
+    <a href="{% url 'explorer:lugares_list' %}?tipo=cafe">{% trans "Cafés" %}</a>
+    <a href="{% url 'explorer:lugares_list' %}?tipo=night_club">{% trans "Vida nocturna" %}</a>
+    <a href="{% url 'explorer:lugares_list' %}?live_music=true">{% trans "Música en vivo" %}</a>
+    <a href="{% url 'explorer:lugares_list' %}?outdoor_seating=true">{% trans "Con terraza" %}</a>
+    <p class="v4-more-sheet__label">{% trans "Empresa" %}</p>
+    {% if LANGUAGE_CODE|slice:":2" == 'en' %}
+    <a href="{% url 'explorer:about' %}">{% trans "Nosotros" %}</a>
+    {% else %}
+    <a href="{% url 'explorer:about_es' %}">{% trans "Nosotros" %}</a>
+    {% endif %}
+    <a href="{% url 'explorer:contact' %}">{% trans "Contacto" %}</a>
+    <a href="{% url 'explorer:privacy_policy' %}">{% trans "Privacidad" %}</a>
+    <a href="{% url 'explorer:terms' %}">{% trans "Términos" %}</a>
+  </div>
+</div>
+<script>
+(function () {
+  var root = document.getElementById('v4-more-sheet');
+  var openBtn = document.getElementById('v4-more-open');
+  if (root && openBtn) {
+    var wasActive = openBtn.classList.contains('active');
+    function setOpen(on) {
+      root.hidden = !on;
+      openBtn.setAttribute('aria-expanded', on ? 'true' : 'false');
+      openBtn.classList.toggle('active', on || wasActive);
+    }
+    openBtn.addEventListener('click', function () { setOpen(root.hidden); });
+    root.addEventListener('click', function (e) {
+      if (e.target.closest('[data-v4-close]') || e.target.closest('.v4-more-sheet__panel a')) setOpen(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setOpen(false);
+    });
+  }
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest('[data-v4-search]');
+    var input = document.getElementById('places-q');
+    if (!link || !input) return;
+    if (link.pathname === window.location.pathname) {
+      e.preventDefault();
+      input.focus();
+      input.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  });
+})();
+</script>
 {% endwith %}

@@ -85,9 +85,7 @@
 {% block extra_css %}
 <style>
 .places-section {
-  background:
-    radial-gradient(circle at top left, rgba(17,153,142,0.08), transparent 34rem),
-    linear-gradient(180deg, #fbfcfa 0%, #f5f7f4 100%);
+  background: transparent;
   min-height: 100vh;
   padding: 2rem 0 4rem;
   overflow: visible;
@@ -116,12 +114,12 @@
   transform: translateX(-50%);
   width: 60px;
   height: 3px;
-  background: #11998e;
+  background: #0b1220;
   border-radius: 2px;
 }
 .title-main { color: #111827; }
 .places-lead { color: #66736f; font-size: 0.98rem; }
-.semantic-query { font-weight: 600; color: #11998e; }
+.semantic-query { font-weight: 600; color: #0b1220; }
 .places-empty-icon { color: #9ca3af !important; }
 .places-empty-title { color: #111827; }
 .places-empty-text { color: #6b7280; }
@@ -143,8 +141,8 @@
 }
 .places-grid .place-card:hover {
   transform: translateY(-2px);
-  border-color: #99f6e4;
-  box-shadow: 0 14px 30px rgba(17,153,142,0.11);
+  border-color: rgba(11, 18, 32, 0.12);
+  box-shadow: 0 14px 30px rgba(11, 18, 32, 0.08);
 }
 .places-grid .place-card__title {
   color: #13201d;
@@ -158,7 +156,7 @@
   min-height: 34px;
   padding: 0.45rem 0.85rem;
   border-radius: 999px;
-  background: #11998e;
+  background: #0b1220;
   color: #fff;
   font-size: 0.82rem;
   font-weight: 700;
