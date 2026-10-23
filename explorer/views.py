@@ -1037,7 +1037,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
     def get_queryset(self):
         """Queryset optimizado específicamente para vista de detalle."""
         return Places.objects.filter(tiene_fotos=True).prefetch_related(
-            Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura')[:5], to_attr='cached_fotos'),
+            Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura').order_by('id')[:24], to_attr='cached_fotos'),
             Prefetch('tags', to_attr='cached_tags')
         )
     
@@ -1057,7 +1057,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         # Google puede descubrirlos sin depender de JavaScript; AJAX completa
         # después las tres secciones sin penalizar demasiado el tiempo inicial.
         context['lugares_cercanos'] = []
-        context['lugares_similares'] = self._get_lugares_similares(lugar, limit=3)
+        context['lugares_similares'] = self._get_lugares_similares(lugar, limit=6)
         context['lugares_misma_comuna'] = []
         context['breadcrumbs'] = [
             {'name': _('Inicio'), 'url': reverse('explorer:home')},
@@ -1124,7 +1124,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         - Priorizando destacados y mejor rating
         """
         comuna_id = getattr(lugar, "comuna_osm_id", None)
-        cache_key = f"related_similares_{lugar.id}_{comuna_id}_{limit}"
+        cache_key = f"related_similares_{lugar.id}_{comuna_id}_{limit}_v2"
         result = cache.get(cache_key)
         
         if result is None:
@@ -1151,13 +1151,16 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
                     "slug",
                     "tipo",
                     "rating",
+                    "total_reviews",
+                    "direccion",
+                    "precio",
                     "es_destacado",
                     "es_exclusivo",
                 )
                 .prefetch_related(
                     Prefetch(
                         "fotos",
-                        queryset=Foto.objects.only("imagen")[:1],
+                        queryset=Foto.objects.only("imagen", "imagen_mediana", "imagen_miniatura")[:1],
                         to_attr="cached_fotos",
                     )
                 )

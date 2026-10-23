@@ -21,8 +21,10 @@
     <meta name="ICBM" content="6.2442, -75.5812">
     
     <!-- Favicons & PWA -->
+    <link rel="icon" href="{% static 'favicon.ico' %}?v={{ STATIC_BUST }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}?v={{ STATIC_BUST }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'favicon-96x96.png' %}?v={{ STATIC_BUST }}">
     <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}?v={{ STATIC_BUST }}">
-    <link rel="alternate icon" type="image/png" sizes="96x96" href="{% static 'favicon-96x96.png' %}?v={{ STATIC_BUST }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}?v={{ STATIC_BUST }}">
     <link rel="manifest" href="{% static 'site.webmanifest' %}?v={{ STATIC_BUST }}">
     

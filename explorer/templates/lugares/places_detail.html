@@ -243,13 +243,15 @@
       {% if adsense_allowed %}
         {% include 'components/adsense_fixed_unit.html' with slot=settings.ADSENSE_SLOT_DETAIL_BOTTOM|default:settings.ADSENSE_SLOT_DETAIL placement='detail_bottom' unit_key='bottom' exclude_auto=True %}
       {% endif %}
-      <h2 class="place-sheet__heading">{% trans "Explorar cerca" %}</h2>
-      {% if lugar.ubicacion %}
-        {% with lat=lugar.ubicacion.y|unlocalize lng=lugar.ubicacion.x|unlocalize %}
-        <div class="place-near-map-wrap">
-          <div class="place-near-map" id="place-near-map" data-lat="{{ lat }}" data-lng="{{ lng }}" role="application" aria-label="{% trans 'Mapa de lugares cercanos' %}"></div>
+      {% if lugares_similares %}
+        <h2 class="place-sheet__heading">{% trans "Similares" %}</h2>
+        <div class="places-grid-card place-similares">
+          <div class="places-grid">
+            {% for similar in lugares_similares %}
+              {% include 'components/place_card.html' with lugar=similar card_variant='horizontal' hide_price=True %}
+            {% endfor %}
+          </div>
         </div>
-        {% endwith %}
       {% endif %}
       <div class="place-explore">
         {% with tipo_label=lugar|place_type_label %}
@@ -308,10 +310,6 @@
 {% endblock %}
 
 {% block extra_js %}
-{% if lugar.ubicacion %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-{% endif %}
 <script>
 const gettext = window.gettext || (s => s);
 
@@ -369,114 +367,6 @@ const gettext = window.gettext || (s => s);
 function copyToClipboard() {
   navigator.clipboard.writeText(window.location.href).then(() => alert('{% trans "¡Enlace copiado!"|escapejs %}'));
 }
-</script>
-
-<script>
-// Progressive Loading
-  document.addEventListener("DOMContentLoaded", () => {
-  const slug = '{{ lugar.slug }}';
-  const lang = '{{ LANGUAGE_CODE|default:"es" }}';
-  const prefix = lang === 'es' ? '' : '/en';
-  const nearMapEl = document.getElementById('place-near-map');
-  let nearMap = null;
-  let nearPins = null;
-
-  function esc(value) {
-    return String(value || '').replace(/[&<>"']/g, function(ch) {
-      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
-    });
-  }
-
-  function pinIcon(mark, here) {
-    return L.divIcon({
-      className: here ? 'near-pin near-pin--here' : 'near-pin',
-      html: '<span>' + mark + '</span>',
-      iconSize: [36, 36],
-      iconAnchor: [18, 18],
-      popupAnchor: [0, -18]
-    });
-  }
-
-  function pinCard(p) {
-    const img = p.imagen
-      ? '<img src="' + esc(p.imagen) + '" alt="">'
-      : '<span class="near-pin-card__photo"></span>';
-    const rating = typeof p.rating === 'number' ? p.rating.toFixed(1) : '';
-    const reviews = p.total_reviews ? '<small>(' + esc(p.total_reviews) + ')</small>' : '';
-    const rate = rating ? '<span class="near-pin-card__rate">★ ' + esc(rating) + reviews + '</span>' : '';
-    const away = (typeof p.distancia_m === 'number')
-      ? (p.distancia_m < 1000 ? p.distancia_m + ' m' : (p.distancia_m / 1000).toFixed(1) + ' km')
-      : dist(p.distancia_km || p.distancia);
-    const meta = [p.tipo, away].filter(Boolean).map(esc).join(' · ');
-    const addr = p.direccion ? '<span class="near-pin-card__addr">' + esc(p.direccion) + '</span>' : '';
-    return '<a class="near-pin-card" href="' + esc(p.url || '#') + '">' + img +
-      '<span class="near-pin-card__body"><strong>' + esc(p.nombre) + '</strong>' +
-      rate + (meta ? '<small>' + meta + '</small>' : '') + addr +
-      '<em>{% trans "Ver lugar" %}</em></span></a>';
-  }
-
-  if (nearMapEl && window.L) {
-    const here = [parseFloat(nearMapEl.dataset.lat), parseFloat(nearMapEl.dataset.lng)];
-    nearMap = L.map(nearMapEl, { zoomControl: false, scrollWheelZoom: false, zoomSnap: 0, zoomDelta: 1 }).setView(here, 16);
-    nearMap.attributionControl.setPrefix('<a href="https://vivemedellin.net">vivemedellin.net</a>');
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19
-    }).addTo(nearMap);
-    L.control.zoom({ position: 'bottomright' }).addTo(nearMap);
-    L.marker(here, { icon: pinIcon('●', true), zIndexOffset: 500 }).addTo(nearMap);
-    nearPins = L.layerGroup().addTo(nearMap);
-    setTimeout(function() { nearMap.invalidateSize(); }, 200);
-  }
-
-  function plotNear(lugares) {
-    if (!nearMap || !nearPins) return;
-    nearPins.clearLayers();
-    const here = [parseFloat(nearMapEl.dataset.lat), parseFloat(nearMapEl.dataset.lng)];
-    const points = [here];
-    (lugares || []).forEach(function(p) {
-      if (p.lat == null || p.lng == null) return;
-      const marker = L.marker([p.lat, p.lng], {
-        icon: pinIcon(p.emoji || '🍽️', false)
-      });
-      marker.bindPopup(pinCard(p), { className: 'near-pin-popup', maxWidth: 248, autoPanPadding: [12, 12] });
-      marker.addTo(nearPins);
-      points.push([p.lat, p.lng]);
-    });
-    const frameNear = function() {
-      nearMap.invalidateSize({ pan: false, animate: false });
-      if (points.length === 1) {
-        nearMap.setView(points[0], 17, { animate: false });
-        return;
-      }
-      nearMap.fitBounds(points, {
-        paddingTopLeft: [28, 28],
-        paddingBottomRight: [28, 36],
-        maxZoom: 19,
-        animate: false
-      });
-    };
-    frameNear();
-    setTimeout(frameNear, 240);
-  }
-
-  function dist(km) {
-    if (!km) return '';
-    const d = Number(km);
-    if (isNaN(d)) return '';
-    return d < 1 ? `${Math.round(d * 1000)} m` : `${d.toFixed(1)} km`;
-  }
-
-  setTimeout(async () => {
-    try {
-      const res = await fetch(`${prefix}/api/lugares/${slug}/cercanos/`);
-      const data = await res.json();
-      plotNear(data.lugares || []);
-    } catch (e) {
-      console.error(e);
-    }
-  }, 300);
-});
 </script>
 
 {% block extra_css %}
@@ -1725,96 +1615,140 @@ body.vibe-v4 .modal-backdrop.show { opacity: 0.92; }
 .place-sheet .tab-btn:hover { background: #f7f4ee; color: #0b1220; }
 .place-sheet .tab-btn.active { background: #0b1220; color: #fff; }
 
-.place-near-map-wrap {
-  position: relative;
-  margin: 0 0 0.85rem;
-}
-.place-near-map {
-  height: 280px;
-  border-radius: 18px;
-  border: 1px solid rgba(11, 18, 32, 0.1);
-  background: #e7e2d8;
-}
-.place-near-map .leaflet-container { border-radius: 18px; font-family: inherit; }
-.place-near-map .leaflet-control-attribution {
-  background: rgba(247, 244, 238, 0.92);
-  color: #0b1220;
-  font-size: 10px;
-}
-.place-near-map .leaflet-control-attribution a {
-  color: #0b1220;
-  font-weight: 750;
-}
-.near-pin { background: transparent; border: 0; }
-.near-pin span {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
+.place-sheet .place-similares {
   background: #fff;
-  border: 2px solid #0b1220;
-  box-shadow: 0 2px 8px rgba(11, 18, 32, 0.28);
-  font-size: 16px;
-  line-height: 1;
+  border: 1px solid rgba(11, 18, 32, 0.08);
+  border-radius: 18px;
+  padding: 0.15rem 0.85rem 0.2rem;
+  box-shadow: none;
 }
-.near-pin--here span { background: #c8f54a; font-size: 14px; }
-.near-pin-popup .leaflet-popup-content-wrapper {
-  border-radius: 16px;
-  padding: 0;
-  overflow: hidden;
-}
-.near-pin-popup .leaflet-popup-content { margin: 0; width: 232px !important; }
-.near-pin-popup .leaflet-popup-tip { background: #fff; }
-.near-pin-card {
-  display: block;
-  color: #0b1220;
+.place-sheet .places-grid { display: flex; flex-direction: column; gap: 0; }
+body.vibe-v4 .place-sheet .places-grid .place-card,
+body.vibe-v4 .place-sheet .places-grid .place-card-wrapper,
+.place-sheet .places-grid .place-card,
+.place-sheet .places-grid .place-card-wrapper {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  column-gap: 0.75rem;
+  align-items: center;
+  min-height: 0;
+  margin: 0;
+  padding: 0.7rem 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid rgba(11, 18, 32, 0.08) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none;
   text-decoration: none;
+  color: inherit;
 }
-.near-pin-card img,
-.near-pin-card__photo {
-  display: block;
-  width: 100%;
-  height: 104px;
+.place-sheet .places-grid .place-card-wrapper {
+  display: contents !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+.place-sheet .places-grid .place-card-wrapper:last-child .place-card {
+  border-bottom: 0 !important;
+}
+.place-sheet .places-grid .place-card:hover {
+  transform: none;
+  box-shadow: none !important;
+}
+.place-sheet .places-grid .place-card::before { display: none; }
+.place-sheet .places-grid .place-card__media,
+.place-sheet .places-grid .place-card__body,
+.place-sheet .places-grid .place-card--horizontal .place-card__media,
+.place-sheet .places-grid .place-card--horizontal .place-card__body {
+  display: contents !important;
+  padding: 0 !important;
+  aspect-ratio: auto !important;
+  height: auto !important;
+  max-height: none !important;
+}
+.place-sheet .places-grid .place-card__img,
+.place-sheet .places-grid .place-card__placeholder,
+.place-sheet .places-grid .place-card--horizontal .place-card__media img,
+.place-sheet .places-grid .place-card--horizontal .place-card__placeholder {
+  grid-column: 1;
+  grid-row: 1 / span 4;
+  width: 72px !important;
+  height: 72px !important;
+  min-height: 72px !important;
+  max-height: 72px !important;
+  border-radius: 8px !important;
   object-fit: cover;
-  background: #e7e2d8;
+  align-self: center;
 }
-.near-pin-card__body {
-  display: block;
-  padding: 0.55rem 0.7rem 0.65rem;
+.place-sheet .places-grid .place-card__media-overlay,
+.place-sheet .places-grid .place-card__zone-glass,
+.place-sheet .places-grid .place-card__distance,
+.place-sheet .places-grid .place-card__footer,
+.place-sheet .places-grid .place-card__arrow,
+.place-sheet .places-grid .place-card__meta,
+.place-sheet .places-grid .place-card__editorial,
+.place-sheet .places-grid .place-card__badge--featured,
+.place-sheet .places-grid .place-card__badge--exclusive,
+.place-sheet .places-grid .place-card__badge--top-rated {
+  display: none !important;
 }
-.near-pin-card strong {
-  display: block;
-  font-size: 0.95rem;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-}
-.near-pin-card__rate,
-.near-pin-card small,
-.near-pin-card__addr {
-  display: block;
-  margin-top: 0.16rem;
-  font-size: 0.75rem;
-}
-.near-pin-card__rate { font-weight: 750; }
-.near-pin-card__rate small { display: inline; margin-left: 0.2rem; }
-.near-pin-card__rate small,
-.near-pin-card small,
-.near-pin-card__addr { color: #6b7285; font-weight: 600; }
-.near-pin-card__addr {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+.place-sheet .places-grid .place-card__title {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  background: none;
+  -webkit-text-fill-color: #0b1220;
+  color: #0b1220;
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
-.near-pin-card em {
-  display: inline-block;
-  margin-top: 0.4rem;
-  font-style: normal;
+.place-sheet .places-grid .place-card__rating {
+  grid-column: 2;
+  grid-row: 2;
+  position: static;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  background: none;
+  color: #6b7280;
+  box-shadow: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  justify-self: start;
+}
+.place-sheet .places-grid .place-card__rating i { color: #e0a100; font-size: 0.72rem; }
+.place-sheet .places-grid .place-card__badges {
+  grid-column: 2;
+  grid-row: 3;
+  margin: 0;
+  gap: 0.35rem;
+}
+.place-sheet .places-grid .place-card__badge--type {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: #6b7280;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+.place-sheet .places-grid .place-card__badge--type i { display: none; }
+.place-sheet .places-grid .place-card__address {
+  grid-column: 2;
+  grid-row: 4;
+  margin: 0;
   font-size: 0.75rem;
-  font-weight: 750;
-  border-bottom: 2px solid #c8f54a;
+  color: #9aa0ab;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+.place-sheet .places-grid .place-card__address i { display: none; }
 </style>
 {% endblock %}
 {% endblock %}
