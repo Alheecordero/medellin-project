@@ -29,7 +29,7 @@
             <div class="guia-card-img">
               {% with cover=guia.get_cover_image %}
               {% if cover %}
-                <img src="{{ cover }}" alt="{{ guia.titulo }}" loading="lazy">
+                <img src="{{ cover }}" alt="{{ guia.titulo_i18n }}" loading="lazy">
               {% else %}
                 <div class="guia-card-placeholder"><i class="bi bi-bookmark-star"></i></div>
               {% endif %}

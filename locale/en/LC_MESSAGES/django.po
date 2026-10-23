@@ -2874,6 +2874,237 @@ msgstr ""
 "Personal recommendations from a local. The best places in Medellín organized"
 " by area, theme and experience."
 
+msgid "Restaurantes, bares, cafés y más en Medellín"
+msgstr "Restaurants, bars, cafés and more in Medellín"
+
+msgid "La ciudad, en tu bolsillo"
+msgstr "The city, in your pocket"
+
+msgid ""
+"Planes reales para comer, tomar y salir. Sin ruido. Sin mapas interminables."
+msgstr "Real plans to eat, drink and go out. No noise. No endless maps."
+
+msgid "Ver el mapa"
+msgstr "See the map"
+
+msgid "¿Qué se te antoja?"
+msgstr "What are you in the mood for?"
+
+msgid "Estado de ánimo"
+msgstr "Mood"
+
+msgid "¿Qué buscas hoy?"
+msgstr "What are you looking for today?"
+
+msgid "Comer"
+msgstr "Eat"
+
+msgid "Tomar"
+msgstr "Drink"
+
+msgid "Salir"
+msgstr "Go out"
+
+msgid "Café"
+msgstr "Coffee"
+
+msgid "Rooftop"
+msgstr "Rooftop"
+
+msgid "En vivo"
+msgstr "Live"
+
+msgid "Ahora mismo"
+msgstr "Right now"
+
+msgid "Imperdibles cerca"
+msgstr "Don't miss nearby"
+
+msgid "Barrios"
+msgstr "Neighborhoods"
+
+msgid "Elige tu zona"
+msgstr "Pick your area"
+
+msgid "Fotos de Wikimedia Commons"
+msgstr "Photos from Wikimedia Commons"
+
+msgid "Curaduría"
+msgstr "Picks"
+
+msgid "Planes que enganchan"
+msgstr "Plans worth taking"
+
+msgid "Primera cita en Laureles"
+msgstr "First date in Laureles"
+
+msgid "Ver ruta"
+msgstr "See the route"
+
+msgid "Noche"
+msgstr "Night"
+
+msgid "Rooftops con vista al valle"
+msgstr "Rooftops over the valley"
+
+msgid "Local"
+msgstr "Local"
+
+msgid "Donde van los paisas"
+msgstr "Where locals go"
+
+msgid "Guías locales"
+msgstr "Local guides"
+
+msgid "Mapa de Medellín"
+msgstr "Map of Medellín"
+
+msgid "Mapa"
+msgstr "Map"
+
+msgid "Obteniendo tu ubicación…"
+msgstr "Getting your location…"
+
+msgid "Si estás en Medellín, el mapa se centra en ti. Si no, ves la ciudad."
+msgstr ""
+"If you are in Medellín, the map centers on you. If not, you see the city."
+
+msgid "Buscar un lugar"
+msgstr "Search for a place"
+
+msgid "Busca un bar, restaurante o café"
+msgstr "Search for a bar, restaurant or café"
+
+msgid "Buscando cerca de ti"
+msgstr "Searching near you"
+
+msgid "Necesitamos tu ubicación para ordenar por distancia."
+msgstr "We need your location to sort by distance."
+
+msgid "Paginación"
+msgstr "Pagination"
+
+msgid "Mapa de Medellín. Viendo si estás en la ciudad…"
+msgstr "Map of Medellín. Checking if you are in the city…"
+
+msgid "A tu alrededor…"
+msgstr "Around you…"
+
+msgid "Toca una zona para ver sus lugares."
+msgstr "Tap an area to see its places."
+
+msgid "Abriendo la zona…"
+msgstr "Opening the area…"
+
+msgid "No se pudo cargar el mapa."
+msgstr "The map could not be loaded."
+
+msgid "Todas"
+msgstr "All"
+
+msgid "Destacados"
+msgstr "Highlights"
+
+msgid "Cómo llegar"
+msgstr "How to get there"
+
+msgid "A pie"
+msgstr "On foot"
+
+msgid "Transporte"
+msgstr "Transit"
+
+msgid "En carro"
+msgstr "By car"
+
+msgid "Comer en el local"
+msgstr "Dine in"
+
+msgid "Para llevar"
+msgstr "Takeout"
+
+msgid "Domicilio"
+msgstr "Delivery"
+
+msgid "Para grupos"
+msgstr "Good for groups"
+
+msgid "Niños bienvenidos"
+msgstr "Kids welcome"
+
+msgid "Solo efectivo"
+msgstr "Cash only"
+
+msgid "Ver reseñas"
+msgstr "See reviews"
+
+msgid "Explorar cerca"
+msgstr "Explore nearby"
+
+msgid "Mapa de lugares cercanos"
+msgstr "Map of nearby places"
+
+msgid "¿Es tu restaurante?"
+msgstr "Is this your restaurant?"
+
+msgid "¿Es tu café?"
+msgstr "Is this your café?"
+
+msgid "¿Es tu bar?"
+msgstr "Is this your bar?"
+
+msgid "¿Es tu negocio?"
+msgstr "Is this your place?"
+
+msgid ""
+"Envíanos la carta — una foto, un PDF o un enlace — y la publicamos en esta "
+"página."
+msgstr ""
+"Send us the menu — a photo, a PDF or a link — and we will publish it on this"
+" page."
+
+msgid ""
+"Envíanos la información — una foto, un PDF o un enlace — y la publicamos en "
+"esta página."
+msgstr ""
+"Send us the details — a photo, a PDF or a link — and we will publish them on"
+" this page."
+
+msgid "Más"
+msgstr "More"
+
+msgid "Ver detalle"
+msgstr "View details"
+
+msgid "Buscar lugares…"
+msgstr "Search places…"
+
+msgid "Abrir búsqueda"
+msgstr "Open search"
+
+msgid "Más %(tipo)s cerca"
+msgstr "More %(tipo)s nearby"
+
+msgid "%(tipo)s en %(zona)s"
+msgstr "%(tipo)s in %(zona)s"
+
+msgid "%(tipo)s en Medellín"
+msgstr "%(tipo)s in Medellín"
+
+msgid "%(count)s lugar en %(zona)s"
+msgid_plural "%(count)s lugares en %(zona)s"
+msgstr[0] "%(count)s place in %(zona)s"
+msgstr[1] "%(count)s places in %(zona)s"
+
+msgid "Sitio web"
+msgstr "Website"
+
+msgid "Guías"
+msgstr "Guides"
+
+msgid "¡Enlace copiado!"
+msgstr "Link copied!"
+
 #~ msgid "ViveMedellín - Tu Guía de la Ciudad"
 #~ msgstr "ViveMedellín - Your City Guide"
 
@@ -3017,9 +3248,6 @@ msgstr ""
 #~ msgstr ""
 #~ "We show a selection of featured reviews to offer a balanced view of visitor "
 #~ "experiences."
-
-#~ msgid "Sitio web"
-#~ msgstr "Website"
 
 #~ msgid "No especificado"
 #~ msgstr "Not specified"
@@ -3414,9 +3642,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Discover 7,000+ places in Medellín: bars, restaurants, rooftops and clubs. "
 #~ "Google ratings, hours and exact location."
-
-#~ msgid "Guías"
-#~ msgstr "Guides"
 
 #~ msgid "mejores lugares"
 #~ msgstr "best places"

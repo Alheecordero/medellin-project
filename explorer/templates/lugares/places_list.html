@@ -31,6 +31,7 @@
 <div class="cerca-map-screen" id="cerca-map-screen">
   <div id="cerca-map" role="application" aria-label="{% trans 'Mapa de Medellín' %}"></div>
   <p class="cerca-map-chip" id="cerca-map-chip">{% trans "Mapa de Medellín" %}</p>
+  <div class="cerca-map-areas" id="cerca-map-areas" hidden></div>
 </div>
 {% endif %}
 
@@ -520,6 +521,15 @@ body:has(.cerca-map-screen) .places-section { display: none; }
 }
 
 #cerca-map { width: 100%; height: 100%; }
+#cerca-map .leaflet-control-attribution {
+  background: rgba(247, 244, 238, 0.92);
+  color: #0b1220;
+  font-size: 11px;
+}
+#cerca-map .leaflet-control-attribution a {
+  color: #0b1220;
+  font-weight: 750;
+}
 
 .cerca-map-chip {
   position: absolute;
@@ -537,6 +547,46 @@ body:has(.cerca-map-screen) .places-section { display: none; }
   box-shadow: 0 8px 24px rgba(11, 18, 32, 0.12);
   pointer-events: none;
 }
+
+.cerca-map-areas {
+  position: absolute;
+  z-index: 500;
+  left: 0;
+  right: 0;
+  bottom: 0.65rem;
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding: 0 3.2rem 0.1rem 0.75rem;
+  scrollbar-width: none;
+}
+.cerca-map-areas::-webkit-scrollbar { display: none; }
+.cerca-map-area {
+  flex: 0 0 auto;
+  border: 1px solid #0b1220;
+  background: rgba(247, 244, 238, 0.94);
+  color: #0b1220;
+  border-radius: 999px;
+  padding: 0.42rem 0.72rem;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+.cerca-map-area.is-on { background: #c8f54a; }
+.cerca-area-label,
+.cerca-area-tip {
+  background: rgba(247, 244, 238, 0.94);
+  border: 1px solid #0b1220;
+  color: #0b1220;
+  font-weight: 750;
+  font-size: 11px;
+  line-height: 1.2;
+  border-radius: 999px;
+  padding: 2px 7px;
+  box-shadow: none;
+}
+.cerca-area-label { pointer-events: none; }
+.cerca-area-label.leaflet-tooltip-center::before,
+.cerca-area-tip.leaflet-tooltip-center::before { display: none; }
 
 .cerca-pin, .cerca-pin-user { background: transparent; border: 0; }
 .cerca-pin span,
@@ -562,43 +612,52 @@ body:has(.cerca-map-screen) .places-section { display: none; }
   padding: 0;
   overflow: hidden;
 }
-.cerca-popup-wrap .leaflet-popup-content { margin: 0; width: 220px !important; }
+.cerca-popup-wrap .leaflet-popup-content { margin: 0; width: 240px !important; }
 .cerca-popup,
 .cerca-popup strong,
 .cerca-popup em {
   color: var(--v4-ink, #0b1220);
   text-decoration: none;
 }
-.cerca-popup {
-  display: grid;
-  grid-template-columns: 72px 1fr;
-  gap: 0.55rem;
-}
+.cerca-popup { display: block; }
 .cerca-popup img {
-  width: 72px;
-  height: 100%;
-  min-height: 72px;
+  display: block;
+  width: 100%;
+  height: 112px;
   object-fit: cover;
+  background: #e7e2d8;
 }
-.cerca-popup__body { padding: 0.55rem 0.65rem 0.55rem 0; min-width: 0; }
+.cerca-popup__body { display: block; padding: 0.6rem 0.75rem 0.7rem; min-width: 0; }
 .cerca-popup strong {
   display: block;
-  font-size: 0.92rem;
+  font-size: 0.98rem;
   line-height: 1.15;
   letter-spacing: -0.02em;
 }
-.cerca-popup small {
+.cerca-popup__rate,
+.cerca-popup small,
+.cerca-popup__addr {
   display: block;
-  color: var(--v4-muted, #6b7285);
+  margin-top: 0.16rem;
   font-size: 0.75rem;
-  margin-top: 0.15rem;
+}
+.cerca-popup__rate { font-weight: 750; }
+.cerca-popup__rate small { display: inline; margin-left: 0.2rem; }
+.cerca-popup__rate small,
+.cerca-popup small,
+.cerca-popup__addr { color: var(--v4-muted, #6b7285); font-weight: 600; }
+.cerca-popup__addr {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .cerca-popup em {
   display: inline-block;
-  margin-top: 0.35rem;
+  margin-top: 0.4rem;
   font-style: normal;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 750;
   border-bottom: 2px solid var(--v4-lime, #c8f54a);
 }
 
@@ -1007,50 +1066,51 @@ body:has(.cerca-map-screen) .places-section { display: none; }
     position: fixed;
     z-index: 45;
     left: 50%;
-    right: auto;
-    width: min(728px, calc(100% - 1.5rem));
+    bottom: calc(var(--v4-nav-h, 68px) + 0.35rem + env(safe-area-inset-bottom, 0px));
+    width: max-content;
+    max-width: calc(100% - 2rem);
     transform: translateX(-50%);
-    bottom: calc(var(--v4-nav-h, 68px) + 0.4rem + env(safe-area-inset-bottom, 0px));
-    margin: 0;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    display: flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem;
-    background: #fff;
+    gap: 0.05rem;
+    margin: 0;
+    padding: 0.12rem 0.15rem;
+    background: rgba(247, 244, 238, 0.92);
     border: 1px solid rgba(11, 18, 32, 0.1);
     border-radius: 999px;
+    box-shadow: 0 8px 18px rgba(11, 18, 32, 0.08);
+    backdrop-filter: blur(8px);
   }
   .places-pager__btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.2rem;
-    min-height: 34px;
-    padding: 0 0.7rem;
+    gap: 0.12rem;
+    min-height: 30px;
+    padding: 0 0.5rem;
     border-radius: 999px;
-    background: #0b1220;
-    color: #fff;
-    font-size: 0.78rem;
-    font-weight: 700;
+    background: transparent;
+    color: #0b1220;
+    font-size: 0.74rem;
+    font-weight: 650;
     text-decoration: none;
   }
-  .places-pager__btn--next { justify-self: end; }
+  .places-pager__btn:hover { background: rgba(11, 18, 32, 0.06); }
   .places-pager__btn.is-off {
     background: transparent;
-    color: #9aa0ab;
+    color: #b0b6c0;
   }
   .places-pager__count {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: #0b1220;
+    font-size: 0.72rem;
+    font-weight: 650;
+    color: rgba(11, 18, 32, 0.55);
+    padding: 0 0.2rem;
     white-space: nowrap;
   }
-  .places-grid-card { padding-bottom: 4.5rem; }
+  .places-grid-card { padding-bottom: 3.25rem; }
 @media (min-width: 992px) {
   .places-pager {
-    width: min(1000px, calc(100% - 2rem));
-    bottom: calc(var(--v4-nav-h, 68px) + 1.15rem + env(safe-area-inset-bottom, 0px));
+    bottom: calc(var(--v4-nav-h, 68px) + 1.35rem + env(safe-area-inset-bottom, 0px));
   }
 }
 </style>
@@ -1206,7 +1266,9 @@ $(document).ready(function() {
         featured: '{% trans "Destacado" %}',
         exclusive: '{% trans "Exclusivo" %}',
         prev: '{% trans "Anterior" %}',
-        next: '{% trans "Siguiente" %}'
+        next: '{% trans "Siguiente" %}',
+        pagination: '{% trans "Paginación" %}',
+        ad: '{% trans "Publicidad" %}'
     };
 
     // Slots AdSense para mantener anuncios también en resultados AJAX
@@ -1221,7 +1283,7 @@ $(document).ready(function() {
         const id = `ads-fixed-${placement}-${slot}-${unitKey}`;
         return `
             <div class="adsense-fixed-unit my-4 ${extraClass}" data-nosnippet data-ad-layout="-exclude">
-                <div class="adsense-fixed-label text-center mb-2">Publicidad</div>
+                <div class="adsense-fixed-label text-center mb-2">${T.ad}</div>
                 <ins class="adsbygoogle adsense-manual"
                      id="${id}"
                      style="display:block"
@@ -1474,7 +1536,7 @@ $(document).ready(function() {
         const next = pag.tiene_siguiente
             ? `<a class="places-pager__btn places-pager__btn--next pagination-link" href="javascript:void(0)" data-page="${pag.pagina_siguiente}">${T.next} <i class="bi bi-chevron-right" aria-hidden="true"></i></a>`
             : `<span class="places-pager__btn places-pager__btn--next is-off">${T.next}</span>`;
-        return `<nav class="places-pager" aria-label="Paginación">${prev}<span class="places-pager__count">${pag.pagina_actual} / ${pag.total_paginas}</span>${next}</nav>`;
+        return `<nav class="places-pager" aria-label="${T.pagination}">${prev}<span class="places-pager__count">${pag.pagina_actual} / ${pag.total_paginas}</span>${next}</nav>`;
     }
     
     function actualizarTitulo(data) {
@@ -1537,18 +1599,23 @@ $(document).ready(function() {
         const T_MAP = {
             locating: '{% trans "Mapa de Medellín. Viendo si estás en la ciudad…" %}',
             loading: '{% trans "A tu alrededor…" %}',
-            city: '{% trans "Mapa de Medellín. Lugares con mejor nota en la ciudad." %}',
+            areas: '{% trans "Toca una zona para ver sus lugares." %}',
+            opening: '{% trans "Abriendo la zona…" %}',
             error: '{% trans "No se pudo cargar el mapa." %}',
             view: '{% trans "Ver lugar" %}'
         };
         const POS_KEY = 'vm-mapa-pos';
+        const rail = document.getElementById('cerca-map-areas');
+        const T_ALL = '{% trans "Todas" %}';
 
-        const map = L.map(mapEl, { zoomControl: false }).setView([6.2476, -75.5658], 12);
+        const map = L.map(mapEl, { zoomControl: false, zoomSnap: 0, zoomDelta: 1 }).setView([6.2476, -75.5658], 12);
+        map.attributionControl.setPrefix('<a href="https://vivemedellin.net">vivemedellin.net</a>');
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap',
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             maxZoom: 19
         }).addTo(map);
         L.control.zoom({ position: 'bottomright' }).addTo(map);
+        const areasLayer = L.layerGroup().addTo(map);
         const pins = L.layerGroup().addTo(map);
 
         function setChip(text) { if (chip) chip.textContent = text; }
@@ -1567,14 +1634,95 @@ $(document).ready(function() {
             const img = lugar.imagen
                 ? '<img src="' + esc(lugar.imagen) + '" alt="">'
                 : '<img alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">';
+            const rating = lugar.rating ? Number(lugar.rating).toFixed(1) : '';
+            const reviews = lugar.total_reviews ? '<small>(' + esc(lugar.total_reviews) + ')</small>' : '';
+            const rate = rating ? '<span class="cerca-popup__rate">★ ' + esc(rating) + reviews + '</span>' : '';
             const bits = [lugar.tipo, distanceLabel(lugar)].filter(Boolean).map(esc).join(' · ');
-            const rating = lugar.rating ? esc(Number(lugar.rating).toFixed(1)) : '';
-            const meta = [rating, bits].filter(Boolean).join(' · ');
+            const addr = lugar.direccion ? '<span class="cerca-popup__addr">' + esc(lugar.direccion) + '</span>' : '';
             return '<a class="cerca-popup" href="' + esc(lugar.url || '#') + '">' + img +
                 '<div class="cerca-popup__body"><strong>' + esc(lugar.nombre) + '</strong>' +
-                '<small>' + meta + '</small><em>' + T_MAP.view + '</em></div></a>';
+                rate + (bits ? '<small>' + bits + '</small>' : '') + addr +
+                '<em>' + T_MAP.view + '</em></div></a>';
         }
-        function plot(lugares, bounds, user) {
+        let lastFrame = null;
+        function frame(latlngs, opts) {
+            const pts = (latlngs || []).filter(function(p) {
+                return p && p.length === 2 && isFinite(p[0]) && isFinite(p[1]);
+            });
+            if (!pts.length) return;
+            const top = (opts && opts.top) || 84;
+            const bottom = (opts && opts.bottom) || 64;
+            const maxZoom = (opts && opts.maxZoom) || 17;
+            map.invalidateSize({ pan: false, animate: false });
+            if (pts.length === 1) {
+                map.setView(pts[0], maxZoom, { animate: false });
+                return;
+            }
+            map.fitBounds(pts, {
+                paddingTopLeft: [36, top],
+                paddingBottomRight: [48, bottom],
+                maxZoom: maxZoom,
+                animate: false
+            });
+        }
+        function frameSoon(latlngs, opts) {
+            lastFrame = { latlngs: latlngs, opts: opts || {} };
+            frame(lastFrame.latlngs, lastFrame.opts);
+            setTimeout(function() {
+                if (lastFrame) frame(lastFrame.latlngs, lastFrame.opts);
+            }, 320);
+        }
+        function cornersOf(bounds) {
+            if (!bounds || bounds.lat_min == null) return [];
+            return [[bounds.lat_min, bounds.lng_min], [bounds.lat_max, bounds.lng_max]];
+        }
+        function areaStyle(active, index) {
+            return {
+                color: '#0b1220',
+                weight: active ? 2.5 : 1.4,
+                fillColor: active ? '#c8f54a' : (index % 2 ? '#c8f54a' : '#f7f4ee'),
+                fillOpacity: active ? 0.62 : 0.42
+            };
+        }
+        function syncLabels() {
+            areasLayer.eachLayer(function(group) {
+                if (!group._areaName || !group.eachLayer) return;
+                group.eachLayer(function(path) {
+                    if (!path.getBounds) return;
+                    const box = path.getBounds();
+                    if (!box || !box.isValid()) return;
+                    const nw = map.latLngToContainerPoint(box.getNorthWest());
+                    const se = map.latLngToContainerPoint(box.getSouthEast());
+                    const wide = Math.abs(se.x - nw.x) >= 78 && Math.abs(se.y - nw.y) >= 32;
+                    if (path.getTooltip()) path.unbindTooltip();
+                    path.bindTooltip(group._areaName, {
+                        permanent: wide,
+                        direction: 'center',
+                        opacity: 1,
+                        className: wide ? 'cerca-area-label' : 'cerca-area-tip'
+                    });
+                });
+            });
+        }
+        function paintAreas(activeSlug) {
+            areasLayer.eachLayer(function(group) {
+                group.setStyle(areaStyle(group._areaSlug === activeSlug, group._areaIndex || 0));
+            });
+        }
+        function drawAreas(areas) {
+            areasLayer.clearLayers();
+            (areas || []).forEach(function(area, index) {
+                if (!area.geojson) return;
+                const group = L.geoJSON(area.geojson, { style: areaStyle(false, index) });
+                group._areaSlug = area.slug;
+                group._areaName = area.name;
+                group._areaIndex = index;
+                group.on('click', function() { loadArea(area.slug); });
+                group.addTo(areasLayer);
+            });
+            syncLabels();
+        }
+        function plot(lugares, bounds, user, maxZoom) {
             pins.clearLayers();
             const points = [];
             (lugares || []).forEach(function(lugar) {
@@ -1587,7 +1735,7 @@ $(document).ready(function() {
                         iconAnchor: [20, 20]
                     })
                 });
-                marker.bindPopup(popupHtml(lugar), { className: 'cerca-popup-wrap', maxWidth: 260 });
+                marker.bindPopup(popupHtml(lugar), { className: 'cerca-popup-wrap', maxWidth: 260, autoPanPadding: [16, 16] });
                 marker.addTo(pins);
                 points.push([lugar.lat, lugar.lng]);
             });
@@ -1602,14 +1750,15 @@ $(document).ready(function() {
                 }).addTo(pins);
                 points.push(user);
             }
-            if (bounds && bounds.lat_min != null) {
-                map.fitBounds([[bounds.lat_min, bounds.lng_min], [bounds.lat_max, bounds.lng_max]], { padding: [28, 28] });
-            } else if (points.length) {
-                map.fitBounds(points, { padding: [40, 40], maxZoom: 15 });
-            }
-            setTimeout(function() { map.invalidateSize(); }, 180);
+            const focus = points.length ? points : cornersOf(bounds);
+            frameSoon(focus, {
+                maxZoom: maxZoom || 17,
+                top: 84,
+                bottom: (rail && !rail.hidden) ? 96 : 64
+            });
         }
         let mapReq = 0;
+        let areasReady = null;
         function readPos() {
             try {
                 const data = JSON.parse(sessionStorage.getItem(POS_KEY) || 'null');
@@ -1624,33 +1773,112 @@ $(document).ready(function() {
                 }));
             } catch (e) {}
         }
-        function showCity(resp) {
-            plot((resp && resp.lugares) || [], resp && resp.bounds, null);
-            setChip((resp && resp.mensaje) || T_MAP.city);
+        function boundsFrom(areas) {
+            let latMin = null, latMax = null, lngMin = null, lngMax = null;
+            (areas || []).forEach(function(area) {
+                const coords = [];
+                (function walk(node) {
+                    if (!node || !node.length) return;
+                    if (typeof node[0] === 'number') { coords.push(node); return; }
+                    node.forEach(walk);
+                })(area.geojson && area.geojson.coordinates);
+                coords.forEach(function(pair) {
+                    latMin = latMin == null ? pair[1] : Math.min(latMin, pair[1]);
+                    latMax = latMax == null ? pair[1] : Math.max(latMax, pair[1]);
+                    lngMin = lngMin == null ? pair[0] : Math.min(lngMin, pair[0]);
+                    lngMax = lngMax == null ? pair[0] : Math.max(lngMax, pair[0]);
+                });
+            });
+            if (latMin == null) return null;
+            return { lat_min: latMin, lat_max: latMax, lng_min: lngMin, lng_max: lngMax };
+        }
+        function renderRail(activeSlug) {
+            const areas = (areasReady && areasReady.areas) || [];
+            if (!rail) return;
+            rail.hidden = !areas.length;
+            rail.innerHTML = '';
+            if (activeSlug) {
+                const all = document.createElement('button');
+                all.type = 'button';
+                all.className = 'cerca-map-area';
+                all.textContent = T_ALL;
+                all.addEventListener('click', function() {
+                    mapReq += 1;
+                    showAreas(areasReady);
+                });
+                rail.appendChild(all);
+            }
+            areas.forEach(function(area) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'cerca-map-area' + (area.slug === activeSlug ? ' is-on' : '');
+                btn.textContent = area.name;
+                btn.addEventListener('click', function() { loadArea(area.slug); });
+                rail.appendChild(btn);
+            });
+            const on = rail.querySelector('.is-on');
+            if (on && on.scrollIntoView) on.scrollIntoView({ inline: 'center', block: 'nearest' });
+        }
+        function showAreas(resp) {
+            areasReady = resp || areasReady;
+            pins.clearLayers();
+            const areas = (areasReady && areasReady.areas) || [];
+            drawAreas(areas);
+            const valle = areas.filter(function(area) { return area.grupo !== 'oriente'; });
+            frameSoon(cornersOf(boundsFrom(valle.length ? valle : areas) || (areasReady && areasReady.bounds)), {
+                maxZoom: 14,
+                top: 84,
+                bottom: 96
+            });
+            setChip((areasReady && areasReady.mensaje) || T_MAP.areas);
+            renderRail(null);
+            setTimeout(syncLabels, 280);
         }
         function loadGeneral() {
             const id = ++mapReq;
             $.getJSON(NEAR_API, { general: 1 })
-                .done(function(resp) { if (id === mapReq) showCity(resp); })
+                .done(function(resp) { if (id === mapReq) showAreas(resp); })
+                .fail(function() { if (id === mapReq) setChip(T_MAP.error); });
+        }
+        function loadArea(slug) {
+            const id = ++mapReq;
+            setChip(T_MAP.opening);
+            paintAreas(slug);
+            $.getJSON(NEAR_API, { area: slug })
+                .done(function(resp) {
+                    if (id !== mapReq) return;
+                    if (!resp || resp.success === false) {
+                        setChip(T_MAP.error);
+                        return;
+                    }
+                    setChip(resp.mensaje || T_MAP.opening);
+                    renderRail(resp.slug || slug);
+                    plot(resp.lugares || [], resp.bounds, null, 17);
+                })
                 .fail(function() { if (id === mapReq) setChip(T_MAP.error); });
         }
         function loadNearby(lat, lng) {
             const id = ++mapReq;
             setChip(T_MAP.loading);
-            $.getJSON(NEAR_API, { lat: lat, lng: lng, radio: 3 })
+            const cercaQuery = { lat: lat, lng: lng, radio: 3 };
+            if (params.get('tipo')) cercaQuery.tipo = params.get('tipo');
+            $.getJSON(NEAR_API, cercaQuery)
                 .done(function(resp) {
                     if (id !== mapReq) return;
                     const enCiudad = !!(resp && resp.en_ciudad && resp.modo === 'cerca');
                     savePos(lat, lng, enCiudad);
                     if (!enCiudad) {
-                        showCity(resp);
+                        showAreas(resp);
                         return;
                     }
-                    plot(resp.lugares || [], null, [lat, lng]);
+                    areasLayer.clearLayers();
+                    if (rail) { rail.hidden = true; rail.innerHTML = ''; }
+                    plot(resp.lugares || [], null, [lat, lng], 17);
                     setChip(resp.mensaje || T_MAP.loading);
                 })
                 .fail(function() { if (id === mapReq) loadGeneral(); });
         }
+        map.on('zoomend', syncLabels);
         function pedirUbicacion() {
             if (!navigator.geolocation) return;
             navigator.geolocation.getCurrentPosition(

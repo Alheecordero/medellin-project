@@ -249,6 +249,40 @@ class SearchMixin:
         ).order_by('-rank')
 
 
+# Fotos de la zona, no de un local. Todas son archivos de Wikimedia Commons
+# (dominio público o Creative Commons). La miniatura la sirve su CDN.
+FOTOS_ZONAS_PUBLICAS = {
+    "el-poblado": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Barrio_El_Poblado._El_Poblado_neighborhood.jpg/960px-Barrio_El_Poblado._El_Poblado_neighborhood.jpg",
+    "laureles-estadio": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Estadio_Atanasio_Girardot_2024.jpg/960px-Estadio_Atanasio_Girardot_2024.jpg",
+    "aranjuez": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Aranjuez%2C_Medell%C3%ADn%2C_Antioquia%2C_Colombia_-_panoramio.jpg/960px-Aranjuez%2C_Medell%C3%ADn%2C_Antioquia%2C_Colombia_-_panoramio.jpg",
+    "belen": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/17/Bel%C3%A9n%2C_Medell%C3%ADn_en_las_horas_de_la_ma%C3%B1ana_2025.jpg/960px-Bel%C3%A9n%2C_Medell%C3%ADn_en_las_horas_de_la_ma%C3%B1ana_2025.jpg",
+    "buenos-aires": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Cl%C3%ADnica_Sagrado_Coraz%C3%B3n_-_medell%C3%ADn.JPG/960px-Cl%C3%ADnica_Sagrado_Coraz%C3%B3n_-_medell%C3%ADn.JPG",
+    "castilla": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/CASTILLA%2C_MEDELLIN_-_panoramio.jpg/960px-CASTILLA%2C_MEDELLIN_-_panoramio.jpg",
+    "doce-de-octubre": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Cerro_Picacho-Medellin.jpg/960px-Cerro_Picacho-Medellin.jpg",
+    "guayabal": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/2018_Medell%C3%ADn_Avenida_Guayabal_a_la_altura_de_la_calle_14.jpg/960px-2018_Medell%C3%ADn_Avenida_Guayabal_a_la_altura_de_la_calle_14.jpg",
+    "la-america": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/La_Am%C3%A9rica%2C_Medell%C3%ADn%2C_Colombia.jpg/960px-La_Am%C3%A9rica%2C_Medell%C3%ADn%2C_Colombia.jpg",
+    "la-candelaria": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/Medell%C3%ADn%2C_Plaza_Botero%2C_2023-07_CN-01.jpg/960px-Medell%C3%ADn%2C_Plaza_Botero%2C_2023-07_CN-01.jpg",
+    "manrique": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Empieza_a_llover_en_Medellin_desde_la_45_Manrique_-_panoramio.jpg/960px-Empieza_a_llover_en_Medellin_desde_la_45_Manrique_-_panoramio.jpg",
+    "popular": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Vista_a%C3%A9rea_del_Barrio_La_Avanzada%2C_Comuna_1_-_Popular%2C_Medell%C3%ADn.jpg/960px-Vista_a%C3%A9rea_del_Barrio_La_Avanzada%2C_Comuna_1_-_Popular%2C_Medell%C3%ADn.jpg",
+    "robledo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f3/Medell%C3%ADn%2C_Robledo%2C_2023-07_CN-02.jpg/960px-Medell%C3%ADn%2C_Robledo%2C_2023-07_CN-02.jpg",
+    "san-javier": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Comuna_13_San_Javier%2C_Medell%C3%ADn%2C_abril_de_2017.jpg/960px-Comuna_13_San_Javier%2C_Medell%C3%ADn%2C_abril_de_2017.jpg",
+    "santa-cruz": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Barrio_Santo_Domingo_Savio.JPG/960px-Barrio_Santo_Domingo_Savio.JPG",
+    "villa-hermosa": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/2018_Medell%C3%ADn_barrio_Villa_Turbay_-_L%C3%ADnea_H_del_Metrocable_entre_las_estaciones_Las_Torres_y_Villa_Sierra.jpg/960px-2018_Medell%C3%ADn_barrio_Villa_Turbay_-_L%C3%ADnea_H_del_Metrocable_entre_las_estaciones_Las_Torres_y_Villa_Sierra.jpg",
+    "envigado": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Envigado_above.jpg/960px-Envigado_above.jpg",
+    "guatape": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/Calle_de_Guatap%C3%A9%2C_Antioquia.jpg/960px-Calle_de_Guatap%C3%A9%2C_Antioquia.jpg",
+    "itagui": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/CAMI-Itagui.JPG/960px-CAMI-Itagui.JPG",
+    "la-estrella": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/Vista_en_perspectiva_de_la_Estaci%C3%B3n_del_Ferrocarril_La_Tablaza._La_Estrella_%28Antioquia%29._Colombia.JPG/960px-Vista_en_perspectiva_de_la_Estaci%C3%B3n_del_Ferrocarril_La_Tablaza._La_Estrella_%28Antioquia%29._Colombia.JPG",
+    "rionegro": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0a/Concatedral_de_San_Nicol%C3%A1s_el_Magno_de_Rionegro_-_exterior_3.jpg/960px-Concatedral_de_San_Nicol%C3%A1s_el_Magno_de_Rionegro_-_exterior_3.jpg",
+    "sabaneta": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Sabaneta_parque_central.jpg",
+}
+
+
+def _asignar_fotos_zonas(regiones):
+    """Foto pública de cada zona. Si no hay una, la tarjeta queda sin imagen de local."""
+    for region in regiones or []:
+        region.foto = FOTOS_ZONAS_PUBLICAS.get(region.slug) or ""
+
+
 # ────────────────────────────────────────────────────────────────────────
 # Vistas Principales
 # ────────────────────────────────────────────────────────────────────────
@@ -461,6 +495,7 @@ class HomeView(TemplateView):
 
         comunas_medellin_chips = comunas_medellin
         otras_regiones_chips = otras_regiones
+        _asignar_fotos_zonas(regiones_areas)
         
         # 2. TIPOS - Lista completa (antes estaba recortada y por eso no veías todo)
         # home.html espera estructura: [{name, icon, color, subcategorias:[{value,name}]}]
@@ -1059,7 +1094,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         if not lugar.ubicacion:
             return []
             
-        cache_key = f"nearby_optimized_{lugar.id}_{distance}_{limit}_v2"
+        cache_key = f"nearby_optimized_{lugar.id}_{distance}_{limit}_v3"
         result = cache.get(cache_key)
         
         if result is None:
@@ -1069,7 +1104,8 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
             ).exclude(
                 id=lugar.id
             ).only(
-                'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo', 'comuna_osm_id', 'ubicacion'
+                'id', 'nombre', 'slug', 'tipo', 'rating', 'total_reviews', 'direccion',
+                'es_destacado', 'es_exclusivo', 'comuna_osm_id', 'ubicacion'
             ).prefetch_related(
                 Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura')[:1], to_attr='cached_fotos')
             ).annotate(
@@ -1897,54 +1933,104 @@ def _lugar_para_mapa(lugar, distancia_km=None):
     }
 
 
-def _bounds_valle():
-    """Caja del Valle de Aburrá, sin el oriente turístico."""
-    from explorer.utils.vive_areas import SCAN_AREAS, SCAN_AREAS_VALLE
+def _geojson_simple(geom):
+    """Polígono más liviano para dibujar el mapa, sin perder la forma."""
+    simple = geom.simplify(0.0007, preserve_topology=True)
+    if getattr(simple, "empty", False) or not getattr(simple, "num_coords", 0):
+        simple = geom
+    data = json.loads(simple.geojson)
 
-    areas = [SCAN_AREAS[name] for name in SCAN_AREAS_VALLE if name in SCAN_AREAS]
-    return {
-        "lat_min": min(area["lat_min"] for area in areas),
-        "lat_max": max(area["lat_max"] for area in areas),
-        "lng_min": min(area["lng_min"] for area in areas),
-        "lng_max": max(area["lng_max"] for area in areas),
-    }
+    def walk(coords):
+        if not coords:
+            return coords
+        if isinstance(coords[0], (int, float)):
+            return [round(float(coords[0]), 5), round(float(coords[1]), 5)]
+        return [walk(item) for item in coords]
+
+    data["coordinates"] = walk(data["coordinates"])
+    return data
 
 
-def _lugares_mapa_general(limit=36):
-    """Mapa de la ciudad para quien no está en Medellín: buena nota y pines repartidos."""
-    from django.contrib.gis.geos import Polygon
-
-    bounds = _bounds_valle()
-    envelope = Polygon.from_bbox(
-        (bounds["lng_min"], bounds["lat_min"], bounds["lng_max"], bounds["lat_max"])
+def _areas_para_mapa():
+    """Polígonos de las zonas con lugares. Sin pines: se cargan al elegir una zona."""
+    cached = cache.get("mapa_areas_v2")
+    if cached:
+        return cached
+    ids = Places.objects.filter(tiene_fotos=True).values_list("comuna_osm_id", flat=True).distinct()
+    regiones = list(
+        RegionOSM.objects.filter(
+            osm_id__in=ids,
+            name__isnull=False,
+            geom_4326__isnull=False,
+        ).exclude(slug__isnull=True).exclude(slug="")
     )
-    envelope.srid = 4326
+    conteos = {
+        row["comuna_osm_id"]: row["n"]
+        for row in (
+            Places.objects.filter(
+                tiene_fotos=True,
+                comuna_osm_id__in=[region.osm_id for region in regiones],
+            )
+            .exclude(tipo__in=TIPOS_EXCLUIDOS)
+            .values("comuna_osm_id")
+            .annotate(n=Count("id"))
+        )
+    }
+    areas = []
+    lat_min = lat_max = lng_min = lng_max = None
+    for region in regiones:
+        extent = region.geom_4326.extent
+        lng0, lat0, lng1, lat1 = extent
+        lat_min = lat0 if lat_min is None else min(lat_min, lat0)
+        lat_max = lat1 if lat_max is None else max(lat_max, lat1)
+        lng_min = lng0 if lng_min is None else min(lng_min, lng0)
+        lng_max = lng1 if lng_max is None else max(lng_max, lng1)
+        areas.append({
+            "slug": region.slug,
+            "name": region.name,
+            "nivel": region.admin_level or "",
+            "grupo": "valle" if region.geom_4326.centroid.x < -75.45 else "oriente",
+            "total": conteos.get(region.osm_id, 0),
+            "geojson": _geojson_simple(region.geom_4326),
+        })
+    areas.sort(key=lambda area: area["name"])
+    payload = {
+        "areas": areas,
+        "bounds": {
+            "lat_min": lat_min,
+            "lat_max": lat_max,
+            "lng_min": lng_min,
+            "lng_max": lng_max,
+        },
+    }
+    cache.set("mapa_areas_v2", payload, 3600)
+    return payload
+
+
+def _lugares_de_area(slug, limit=24):
+    """Lugares de una zona, solo cuando alguien la abre."""
+    region = RegionOSM.objects.filter(slug=slug, geom_4326__isnull=False).first()
+    if not region:
+        return None
     qs = (
         Places.objects.filter(
             tiene_fotos=True,
             ubicacion__isnull=False,
-            ubicacion__intersects=envelope,
-            rating__gte=4.3,
-            total_reviews__gte=20,
+            comuna_osm_id=region.osm_id,
         )
         .exclude(tipo__in=TIPOS_EXCLUIDOS)
+        .filter(Q(rating__gte=3.5) | Q(rating__isnull=True))
         .prefetch_related("fotos")
-        .order_by("-weighted_rating", "-total_reviews", "-rating")[:180]
+        .order_by("-weighted_rating", "-total_reviews", "-rating")[:limit]
     )
     lugares = []
-    celdas = set()
     for lugar in qs:
-        celda = (round(lugar.ubicacion.y, 2), round(lugar.ubicacion.x, 2))
-        if celda in celdas:
-            continue
         payload = _lugar_para_mapa(lugar)
-        if not payload:
-            continue
-        celdas.add(celda)
-        lugares.append(payload)
-        if len(lugares) >= limit:
-            break
-    return lugares, bounds
+        if payload:
+            lugares.append(payload)
+    lng0, lat0, lng1, lat1 = region.geom_4326.extent
+    bounds = {"lat_min": lat0, "lat_max": lat1, "lng_min": lng0, "lng_max": lng1}
+    return region, lugares, bounds
 
 
 @require_GET
@@ -1968,20 +2054,47 @@ def lugares_cercanos_ajax_view(request):
     caracteristica = request.GET.get('caracteristica', '').strip()
     
     quiere_general = request.GET.get("general") == "1" or not lat or not lng
+    area_slug = (request.GET.get("area") or "").strip()
 
     def respuesta_general(fuera=False):
-        lugares, bounds = _lugares_mapa_general()
-        mensaje = _("Mapa de Medellín. Lugares con mejor nota en la ciudad.")
+        payload = _areas_para_mapa()
         return JsonResponse({
             "success": True,
-            "modo": "ciudad",
+            "modo": "areas",
             "fuera": fuera,
             "en_ciudad": False,
-            "total": len(lugares),
+            "total": len(payload["areas"]),
+            "areas": payload["areas"],
+            "lugares": [],
+            "bounds": payload["bounds"],
+            "mensaje": _("Toca una zona para ver sus lugares."),
+        })
+
+    def respuesta_area(slug):
+        encontrado = _lugares_de_area(slug)
+        if not encontrado:
+            return JsonResponse({"success": False, "error": _("Zona no encontrada")}, status=404)
+        region, lugares, bounds = encontrado
+        count = len(lugares)
+        return JsonResponse({
+            "success": True,
+            "modo": "area",
+            "fuera": True,
+            "en_ciudad": False,
+            "zona": region.name,
+            "slug": region.slug,
+            "total": count,
             "lugares": lugares,
             "bounds": bounds,
-            "mensaje": mensaje,
+            "mensaje": ngettext(
+                "%(count)s lugar en %(zona)s",
+                "%(count)s lugares en %(zona)s",
+                count,
+            ) % {"count": count, "zona": region.name},
         })
+
+    if area_slug:
+        return respuesta_area(area_slug)
 
     if quiere_general:
         return respuesta_general(fuera=False)
@@ -2137,7 +2250,7 @@ def lugares_cercanos_ajax_view(request):
         # Construir información de filtros aplicados
         filtros_aplicados = {
             'tipo': tipo if tipo else None,
-            'tipo_label': tipo_labels.get(tipo, None) if tipo else None,
+            'tipo_label': tipo_labels.get(tipo) or (get_localized_place_type_from_code(tipo) if tipo else None),
             'caracteristica': caracteristica if caracteristica else None,
             'caracteristica_label': caracteristica_labels.get(caracteristica, None) if caracteristica else None,
             'radio_km': radio,
@@ -2246,8 +2359,10 @@ def lugares_cercanos_ajax(request, slug):
         for lugar_cercano in lugares_cercanos:
             # Calcular distancia en km
             distancia_km = None
+            distancia_m = None
             if hasattr(lugar_cercano, 'distancia_metros') and lugar_cercano.distancia_metros:
-                distancia_km = round(lugar_cercano.distancia_metros.km, 2)
+                distancia_m = int(round(lugar_cercano.distancia_metros.m))
+                distancia_km = round(distancia_m / 1000, 3)
             
             foto = lugar_cercano.cached_fotos[0] if lugar_cercano.cached_fotos else None
             data.append({
@@ -2255,13 +2370,18 @@ def lugares_cercanos_ajax(request, slug):
                 'nombre': lugar_cercano.nombre,
                 'slug': lugar_cercano.slug,
                 'tipo': get_localized_place_type(lugar_cercano),
+                'emoji': _emoji_lugar(lugar_cercano),
                 'rating': lugar_cercano.rating,
                 'total_reviews': lugar_cercano.total_reviews or 0,
                 'es_destacado': lugar_cercano.es_destacado,
                 'es_exclusivo': lugar_cercano.es_exclusivo,
+                'direccion': lugar_cercano.direccion or '',
+                'lat': lugar_cercano.ubicacion.y if lugar_cercano.ubicacion else None,
+                'lng': lugar_cercano.ubicacion.x if lugar_cercano.ubicacion else None,
                 **get_optimized_image_urls(foto, 'thumb'),
                 'url': reverse('explorer:lugares_detail', args=[lugar_cercano.slug]) if lugar_cercano.slug else None,
                 'distancia_km': distancia_km,
+                'distancia_m': distancia_m,
             })
         
         return JsonResponse({'lugares': data})

@@ -813,6 +813,22 @@ body.vibe-v4 h1 {
     flex: 0 0 280px;
     scroll-snap-align: start;
     min-height: 168px;
+    background: #1c2430;
+  }
+
+  .home-page--v4 .v4-zone::before {
+    background-image: var(--zone-photo);
+    background-size: cover;
+    background-position: center;
+  }
+
+  .home-page--v4 .v4-zone-credit {
+    display: block;
+    margin-top: 0.2rem;
+    color: rgba(11, 18, 32, 0.45);
+    font-size: 0.68rem;
+    font-weight: 650;
+    text-decoration: none;
   }
 
   .home-page--v4 .v4-zone:first-child {

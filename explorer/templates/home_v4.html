@@ -144,18 +144,17 @@
         <div>
           <span class="v4-kicker">{% trans "Barrios" %}</span>
           <h2 class="v4-section__title">{% trans "Elige tu zona" %}</h2>
+          <a class="v4-zone-credit" href="https://commons.wikimedia.org/" rel="noopener noreferrer">{% trans "Fotos de Wikimedia Commons" %}</a>
         </div>
       </div>
       <div class="v4-zones">
         {% for area in comunas_chips %}
-        {% cycle '1' '2' '3' as zone_tone silent %}
-        <a class="v4-zone v4-zone--{{ zone_tone }}" href="{% url 'explorer:lugares_por_comuna' area.slug %}">
+        <a class="v4-zone" {% if area.foto %}style="--zone-photo: url('{{ area.foto }}')"{% endif %} href="{% url 'explorer:lugares_por_comuna' area.slug %}">
           <span class="v4-zone__name">{{ area.name }}</span>
         </a>
         {% endfor %}
         {% for area in otras_regiones_chips %}
-        {% cycle '1' '2' '3' as zone_tone silent %}
-        <a class="v4-zone v4-zone--{{ zone_tone }}" href="{% url 'explorer:lugares_por_comuna' area.slug %}">
+        <a class="v4-zone" {% if area.foto %}style="--zone-photo: url('{{ area.foto }}')"{% endif %} href="{% url 'explorer:lugares_por_comuna' area.slug %}">
           <span class="v4-zone__name">{{ area.name }}</span>
         </a>
         {% endfor %}
