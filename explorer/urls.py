@@ -50,4 +50,5 @@ urlpatterns = [
     path('politica-de-privacidad/', views.privacy_policy, name='privacy_policy'),
     path('terminos-y-condiciones/', views.terms, name='terms'),
     path('contacto/', views.contact, name='contact'),
+    path('newsletter/suscribir/', views.newsletter_subscribe, name='newsletter_subscribe'),
 ]

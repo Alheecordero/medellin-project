@@ -3126,6 +3126,34 @@ msgstr "South"
 msgid "Oriente"
 msgstr "East"
 
+msgid "Tips de Medellín"
+msgstr "Insider Medellín tips"
+
+msgid "Recomendaciones locales, rincones y planes. Una vez al mes. Sin spam."
+msgstr ""
+"Local recs, hidden gems, and exclusive deals — once a month. No spam, ever."
+
+msgid "Correo"
+msgstr "Email"
+
+msgid "tu@email.com"
+msgstr "your@email.com"
+
+msgid "Listo. Una vez al mes, sin spam."
+msgstr "Done. Once a month, no spam."
+
+msgid "Ese correo ya está en la lista."
+msgstr "That email is already on the list."
+
+msgid "Escribe un correo válido."
+msgstr "Enter a valid email."
+
+msgid "No se pudo guardar. Inténtalo de nuevo."
+msgstr "Couldn't save that. Try again."
+
+msgid "Suscribirme"
+msgstr "Subscribe"
+
 #~ msgid "ViveMedellín - Tu Guía de la Ciudad"
 #~ msgstr "ViveMedellín - Your City Guide"
 

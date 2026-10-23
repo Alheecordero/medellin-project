@@ -1483,3 +1483,77 @@ body.vibe-v4 .adsense-fixed-unit--global { margin-bottom: 5.5rem; }
 @media (prefers-reduced-motion: reduce) {
   .v4-gallery__track { transition: none; }
 }
+
+.v4-section--tips { padding-top: 0.2rem; }
+.v4-tips {
+  background: #fff;
+  border: 1px solid rgba(11, 18, 32, 0.08);
+  border-radius: 18px;
+  padding: 1rem 1rem 0.85rem;
+}
+.v4-tips__title {
+  margin: 0;
+  font-family: var(--v4-font-display, inherit);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.v4-tips p {
+  margin: 0.35rem 0 0;
+  color: var(--v4-muted, #6b7285);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+.v4-tips__row {
+  display: flex;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+.v4-tips__label,
+.v4-tips__trap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.v4-tips input[type="email"] {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  border: 1px solid rgba(11, 18, 32, 0.12);
+  border-radius: 999px;
+  background: var(--v4-paper, #f7f4ee);
+  color: var(--v4-ink, #0b1220);
+  padding: 0 0.95rem;
+  font: inherit;
+  font-size: 0.92rem;
+}
+.v4-tips button {
+  flex: none;
+  height: 46px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--v4-ink, #0b1220);
+  color: var(--v4-lime, #c8f54a);
+  padding: 0 1rem;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+.v4-tips button:disabled { opacity: 0.55; cursor: wait; }
+.v4-tips__msg {
+  min-height: 1.1em;
+  margin-top: 0.55rem !important;
+  color: var(--v4-ink, #0b1220) !important;
+  font-weight: 650;
+}
+@media (max-width: 420px) {
+  .v4-tips__row { flex-direction: column; }
+  .v4-tips button { width: 100%; }
+}

@@ -2864,6 +2864,44 @@ def contact(request):
     return render(request, 'legal/contact.html')
 
 
+@require_POST
+@rate_limit(requests_per_minute=8, key_prefix='newsletter')
+def newsletter_subscribe(request):
+    """Guarda un correo para el envío mensual. Sin correo de confirmación."""
+    from .models import NewsletterSubscription
+
+    if (request.POST.get('company') or '').strip():
+        return JsonResponse({'ok': True, 'message': _('Listo. Una vez al mes, sin spam.')})
+
+    email = (request.POST.get('email') or '').strip().lower()
+    try:
+        validate_email(email)
+    except ValidationError:
+        return JsonResponse({'ok': False, 'message': _('Escribe un correo válido.')}, status=400)
+
+    ip = get_client_ip(request)
+    agent = (request.META.get('HTTP_USER_AGENT') or '')[:400]
+    sub, created = NewsletterSubscription.objects.get_or_create(
+        email=email,
+        defaults={
+            'fuente': 'home',
+            'ip_address': ip,
+            'user_agent': agent,
+            'confirmado': True,
+            'fecha_confirmacion': timezone.now(),
+        },
+    )
+    if created:
+        return JsonResponse({'ok': True, 'message': _('Listo. Una vez al mes, sin spam.')})
+    if not sub.activo:
+        sub.activo = True
+        sub.confirmado = True
+        sub.fecha_confirmacion = sub.fecha_confirmacion or timezone.now()
+        sub.fuente = 'home'
+        sub.save(update_fields=['activo', 'confirmado', 'fecha_confirmacion', 'fuente'])
+    return JsonResponse({'ok': True, 'message': _('Ese correo ya está en la lista.')})
+
+
 # ────────────────────────────────────────────────────────────────────────
 # Guías Curadas
 # ────────────────────────────────────────────────────────────────────────
