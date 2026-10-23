@@ -367,7 +367,7 @@ class HomeView(TemplateView):
         de lugares de alta calidad (rating alto + popularidad).
         """
         lang = (get_language() or "es").lower()
-        pool_key = f"home_lugares_imperdibles_pool_v3_{lang}"
+        pool_key = f"home_lugares_imperdibles_pool_v4_{lang}"
         imperdibles_pool = cache.get(pool_key)
 
         if imperdibles_pool is None:
@@ -379,7 +379,10 @@ class HomeView(TemplateView):
                 )
                 .exclude(slug__exact="")
                 .exclude(rating__isnull=True)
-                .only("nombre", "slug", "tipo", "rating", "total_reviews", "es_destacado", "show_in_home")
+                .only(
+                    "nombre", "slug", "tipo", "rating", "total_reviews",
+                    "es_destacado", "show_in_home", "comuna_osm_id",
+                )
                 .prefetch_related(
                     Prefetch(
                         "fotos",
@@ -406,11 +409,17 @@ class HomeView(TemplateView):
 
                 foto = lugar.cached_fotos[0] if getattr(lugar, "cached_fotos", None) else lugar.fotos.first()
                 image_data = get_optimized_image_urls(foto, "thumb")
+                zona = ""
+                comuna = lugar.comuna
+                if comuna is not None:
+                    zona = getattr(comuna, "name", "") or ""
                 imperdibles_pool.append({
                     "nombre": lugar.nombre,
                     "slug": lugar.slug,
                     "tipo": get_localized_place_type(lugar),
                     "rating": round(float(lugar.rating or 0), 1),
+                    "total_reviews": lugar.total_reviews or 0,
+                    "zona": zona,
                     "imagen": image_data.get("imagen"),
                     "imagen_full": image_data.get("imagen_full"),
                 })
@@ -450,9 +459,8 @@ class HomeView(TemplateView):
         comunas_medellin = [r for r in regiones_areas if getattr(r, "admin_level", None) == "8"]
         otras_regiones = [r for r in regiones_areas if getattr(r, "admin_level", None) != "8"]
 
-        # Selección para chips (evita una nube enorme en mobile)
-        comunas_medellin_chips = comunas_medellin[:18]
-        otras_regiones_chips = otras_regiones[:10]
+        comunas_medellin_chips = comunas_medellin
+        otras_regiones_chips = otras_regiones
         
         # 2. TIPOS - Lista completa (antes estaba recortada y por eso no veías todo)
         # home.html espera estructura: [{name, icon, color, subcategorias:[{value,name}]}]
@@ -1814,6 +1822,47 @@ def places_filter_ajax(request):
         }, status=500)
 
 
+def _emoji_lugar(lugar):
+    """Icono del pin, al estilo de las categorías de MenuRadar."""
+    code = (getattr(lugar, "tipo", None) or "").lower()
+    tokens = re.findall(r"[a-z0-9]+", code)
+    exacto = {
+        "bar": "🍸",
+        "pub": "🍸",
+        "wine": "🍷",
+        "cafe": "☕",
+        "cafeteria": "☕",
+        "coffee": "☕",
+        "bakery": "🥐",
+        "night": "🌙",
+        "nightclub": "🌙",
+        "pizza": "🍕",
+        "pizzeria": "🍕",
+        "burger": "🍔",
+        "hamburger": "🍔",
+        "sushi": "🍣",
+        "kebab": "🥙",
+        "chicken": "🍗",
+        "rooftop": "🌆",
+        "karaoke": "🎵",
+    }
+    prefijos = (
+        ("pizza", "🍕"),
+        ("hamburg", "🍔"),
+        ("burger", "🍔"),
+        ("sushi", "🍣"),
+        ("coffee", "☕"),
+        ("kebab", "🥙"),
+    )
+    for token in tokens:
+        if token in exacto:
+            return exacto[token]
+        for prefijo, emoji in prefijos:
+            if token.startswith(prefijo):
+                return emoji
+    return "🍽️"
+
+
 def _lugar_para_mapa(lugar, distancia_km=None):
     """Ficha corta para un pin del mapa Cerca."""
     if not getattr(lugar, "ubicacion", None):
@@ -1839,6 +1888,7 @@ def _lugar_para_mapa(lugar, distancia_km=None):
         "rating": lugar.rating or 0.0,
         "total_reviews": lugar.total_reviews or 0,
         "tipo": get_localized_place_type(lugar),
+        "emoji": _emoji_lugar(lugar),
         **get_optimized_image_urls(primera_foto, "thumb"),
         "url": reverse("explorer:lugares_detail", kwargs={"slug": lugar.slug}) if lugar.slug else None,
         "distancia": distancia_km,
@@ -1847,39 +1897,54 @@ def _lugar_para_mapa(lugar, distancia_km=None):
     }
 
 
-def _lugares_mapa_general(limit=40):
-    """Lugares con foto dentro de las zonas de trabajo, para cuando no hay ubicación útil."""
-    from django.contrib.gis.geos import Polygon
-    from explorer.utils.vive_areas import SCAN_AREAS
+def _bounds_valle():
+    """Caja del Valle de Aburrá, sin el oriente turístico."""
+    from explorer.utils.vive_areas import SCAN_AREAS, SCAN_AREAS_VALLE
 
-    lng_min = min(area["lng_min"] for area in SCAN_AREAS.values())
-    lat_min = min(area["lat_min"] for area in SCAN_AREAS.values())
-    lng_max = max(area["lng_max"] for area in SCAN_AREAS.values())
-    lat_max = max(area["lat_max"] for area in SCAN_AREAS.values())
-    envelope = Polygon.from_bbox((lng_min, lat_min, lng_max, lat_max))
+    areas = [SCAN_AREAS[name] for name in SCAN_AREAS_VALLE if name in SCAN_AREAS]
+    return {
+        "lat_min": min(area["lat_min"] for area in areas),
+        "lat_max": max(area["lat_max"] for area in areas),
+        "lng_min": min(area["lng_min"] for area in areas),
+        "lng_max": max(area["lng_max"] for area in areas),
+    }
+
+
+def _lugares_mapa_general(limit=36):
+    """Mapa de la ciudad para quien no está en Medellín: buena nota y pines repartidos."""
+    from django.contrib.gis.geos import Polygon
+
+    bounds = _bounds_valle()
+    envelope = Polygon.from_bbox(
+        (bounds["lng_min"], bounds["lat_min"], bounds["lng_max"], bounds["lat_max"])
+    )
     envelope.srid = 4326
     qs = (
         Places.objects.filter(
             tiene_fotos=True,
             ubicacion__isnull=False,
             ubicacion__intersects=envelope,
+            rating__gte=4.3,
+            total_reviews__gte=20,
         )
         .exclude(tipo__in=TIPOS_EXCLUIDOS)
-        .filter(Q(rating__gte=4.0) | Q(es_destacado=True))
         .prefetch_related("fotos")
-        .order_by("-es_destacado", "-weighted_rating", "-rating")[:limit]
+        .order_by("-weighted_rating", "-total_reviews", "-rating")[:180]
     )
     lugares = []
+    celdas = set()
     for lugar in qs:
+        celda = (round(lugar.ubicacion.y, 2), round(lugar.ubicacion.x, 2))
+        if celda in celdas:
+            continue
         payload = _lugar_para_mapa(lugar)
-        if payload:
-            lugares.append(payload)
-    return lugares, {
-        "lat_min": lat_min,
-        "lat_max": lat_max,
-        "lng_min": lng_min,
-        "lng_max": lng_max,
-    }
+        if not payload:
+            continue
+        celdas.add(celda)
+        lugares.append(payload)
+        if len(lugares) >= limit:
+            break
+    return lugares, bounds
 
 
 @require_GET
@@ -1906,14 +1971,12 @@ def lugares_cercanos_ajax_view(request):
 
     def respuesta_general(fuera=False):
         lugares, bounds = _lugares_mapa_general()
-        if fuera:
-            mensaje = _("Estás fuera de nuestras zonas. Este es el mapa de Medellín y alrededores.")
-        else:
-            mensaje = _("Mapa de ViveMedellín: lugares en las zonas que cubrimos.")
+        mensaje = _("Mapa de Medellín. Lugares con mejor nota en la ciudad.")
         return JsonResponse({
             "success": True,
-            "modo": "general",
+            "modo": "ciudad",
             "fuera": fuera,
+            "en_ciudad": False,
             "total": len(lugares),
             "lugares": lugares,
             "bounds": bounds,
@@ -2019,6 +2082,7 @@ def lugares_cercanos_ajax_view(request):
                 'rating': lugar.rating or 0.0,
                 'total_reviews': lugar.total_reviews or 0,
                 'tipo': get_localized_place_type(lugar),
+                'emoji': _emoji_lugar(lugar),
                 **get_optimized_image_urls(primera_foto, 'thumb'),
                 'es_destacado': lugar.es_destacado,
                 'es_exclusivo': lugar.es_exclusivo,
@@ -2131,6 +2195,7 @@ def lugares_cercanos_ajax_view(request):
             'success': True,
             'modo': 'cerca',
             'fuera': False,
+            'en_ciudad': True,
             'total': count,
             'lugares': resultados,
             'filtros_aplicados': filtros_aplicados,

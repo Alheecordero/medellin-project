@@ -49,7 +49,7 @@
       <p class="v4-hero__lead">{% trans "Planes reales para comer, tomar y salir. Sin ruido. Sin mapas interminables." %}</p>
       <div class="v4-cta-row v4-hero__actions">
         <a class="v4-btn v4-btn--primary" href="{% url 'explorer:lugares_list' %}?cerca=1">
-          <i class="bi bi-geo-alt-fill"></i> {% trans "Cerca de mí ahora" %}
+          <i class="bi bi-map"></i> {% trans "Ver el mapa" %}
         </a>
         <a class="v4-btn v4-btn--ghost" href="{% url 'explorer:lugares_list' %}">
           <i class="bi bi-compass"></i> {% trans "¿Qué se te antoja?" %}
@@ -58,7 +58,7 @@
     </div>
   </section>
 
-  <section class="v4-section">
+  <section class="v4-section v4-section--moods">
     <div class="v4-container">
       <div class="v4-section__head">
         <div>
@@ -68,27 +68,27 @@
       </div>
       <div class="v4-moods">
         <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=restaurant">
-          <span class="v4-mood__icon"><i class="bi bi-egg-fried"></i></span>
+          <span class="v4-mood__icon" aria-hidden="true">🍽️</span>
           <span class="v4-mood__label">{% trans "Comer" %}</span>
         </a>
         <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=bar">
-          <span class="v4-mood__icon"><i class="bi bi-cup-straw"></i></span>
+          <span class="v4-mood__icon" aria-hidden="true">🍸</span>
           <span class="v4-mood__label">{% trans "Tomar" %}</span>
         </a>
         <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=night_club">
-          <span class="v4-mood__icon"><i class="bi bi-moon-stars"></i></span>
+          <span class="v4-mood__icon" aria-hidden="true">🌙</span>
           <span class="v4-mood__label">{% trans "Salir" %}</span>
         </a>
         <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=cafe">
-          <span class="v4-mood__icon"><i class="bi bi-cup-hot"></i></span>
+          <span class="v4-mood__icon" aria-hidden="true">☕</span>
           <span class="v4-mood__label">{% trans "Café" %}</span>
         </a>
         <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?q=rooftop">
-          <span class="v4-mood__icon"><i class="bi bi-building"></i></span>
+          <span class="v4-mood__icon" aria-hidden="true">🌆</span>
           <span class="v4-mood__label">{% trans "Rooftop" %}</span>
         </a>
         <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?q=en+vivo">
-          <span class="v4-mood__icon"><i class="bi bi-music-note-beamed"></i></span>
+          <span class="v4-mood__icon" aria-hidden="true">🎵</span>
           <span class="v4-mood__label">{% trans "En vivo" %}</span>
         </a>
       </div>
@@ -117,7 +117,7 @@
             <img src="{% static 'img/placeholder.jpg' %}" alt="" loading="lazy">
             {% endif %}
             {% if lugar.rating %}
-            <span class="v4-place__rating"><i class="bi bi-star-fill"></i> {{ lugar.rating }}</span>
+            <span class="v4-place__rating"><i class="bi bi-star-fill"></i> {{ lugar.rating }}{% if lugar.total_reviews %} <span class="v4-place__reviews">({{ lugar.total_reviews }})</span>{% endif %}</span>
             {% endif %}
           </div>
           <div class="v4-place__body">
@@ -125,6 +125,9 @@
             <div class="v4-place__meta">
               {% if lugar.tipo %}<span>{{ lugar.tipo }}</span>{% endif %}
             </div>
+            {% if lugar.zona %}
+            <p class="v4-place__zone"><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ lugar.zona }}</p>
+            {% endif %}
           </div>
         </a>
         {% endfor %}
@@ -144,8 +147,15 @@
         </div>
       </div>
       <div class="v4-zones">
-        {% for area in comunas_chips|slice:":3" %}
-        <a class="v4-zone v4-zone--{{ forloop.counter }}" href="{% url 'explorer:lugares_por_comuna' area.slug %}">
+        {% for area in comunas_chips %}
+        {% cycle '1' '2' '3' as zone_tone silent %}
+        <a class="v4-zone v4-zone--{{ zone_tone }}" href="{% url 'explorer:lugares_por_comuna' area.slug %}">
+          <span class="v4-zone__name">{{ area.name }}</span>
+        </a>
+        {% endfor %}
+        {% for area in otras_regiones_chips %}
+        {% cycle '1' '2' '3' as zone_tone silent %}
+        <a class="v4-zone v4-zone--{{ zone_tone }}" href="{% url 'explorer:lugares_por_comuna' area.slug %}">
           <span class="v4-zone__name">{{ area.name }}</span>
         </a>
         {% endfor %}
@@ -155,7 +165,7 @@
   {% endif %}
   {% endwith %}
 
-  <section class="v4-section" style="padding-bottom:2rem;">
+  <section class="v4-section v4-section--guides">
     <div class="v4-container">
       <div class="v4-section__head">
         <div>

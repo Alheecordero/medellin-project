@@ -29,13 +29,13 @@
 
 {% if modo_cerca %}
 <div class="cerca-map-screen" id="cerca-map-screen">
-  <div id="cerca-map" role="application" aria-label="{% trans 'Mapa de lugares cercanos' %}"></div>
-  <p class="cerca-map-chip" id="cerca-map-chip">{% trans "Cargando el mapa…" %}</p>
+  <div id="cerca-map" role="application" aria-label="{% trans 'Mapa de Medellín' %}"></div>
+  <p class="cerca-map-chip" id="cerca-map-chip">{% trans "Mapa de Medellín" %}</p>
 </div>
 {% endif %}
 
 <section class="places-section">
-  <div class="container py-5">
+  <div class="container">
     <div class="places-main-wrapper">
 
       <!-- Card Superior: Navegación + Título + Filtros -->
@@ -43,7 +43,7 @@
         <!-- Título -->
         <div class="text-center mb-4">
           <h1 class="places-title fw-bold">
-            <span class="title-main" id="places-title-main">{% if modo_cerca %}{% trans "Cerca de ti" %}{% else %}{{ titulo_pagina }}{% endif %}</span>
+            <span class="title-main" id="places-title-main">{% if modo_cerca %}{% trans "Mapa" %}{% else %}{{ titulo_pagina }}{% endif %}</span>
           </h1>
           <p class="lead places-lead" id="places-lead">
             {% if cerca_pendiente %}
@@ -51,7 +51,7 @@
               <span class="visually-hidden">{% trans "Obteniendo tu ubicación…" %}</span>
             
             {% elif modo_cerca %}
-              {% trans "Lugares ordenados por distancia a tu ubicación." %}
+              {% trans "Si estás en Medellín, el mapa se centra en ti. Si no, ves la ciudad." %}
             {% else %}
               {{ descripcion_pagina }}
             {% endif %}
@@ -541,18 +541,20 @@ body:has(.cerca-map-screen) .places-section { display: none; }
 .cerca-pin, .cerca-pin-user { background: transparent; border: 0; }
 .cerca-pin span,
 .cerca-pin-user span {
-  display: block;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--v4-lime, #c8f54a);
-  border: 2px solid var(--v4-ink, #0b1220);
-  box-shadow: 0 2px 8px rgba(11, 18, 32, 0.35);
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: #fff;
+  border: 2px solid #0b1220;
+  box-shadow: 0 2px 8px rgba(11, 18, 32, 0.28);
+  font-size: 18px;
+  line-height: 1;
 }
 .cerca-pin-user span {
-  background: #7ec8ff;
-  width: 14px;
-  height: 14px;
+  background: #c8f54a;
+  font-size: 16px;
 }
 
 .cerca-popup-wrap .leaflet-popup-content-wrapper {
@@ -782,7 +784,7 @@ body:has(.cerca-map-screen) .places-section { display: none; }
   .places-section {
     background: transparent !important;
     min-height: 100vh;
-    padding: 0.85rem 0 calc(var(--v4-nav-h, 68px) + 1rem + env(safe-area-inset-bottom, 0px));
+    padding: 0.4rem 0 calc(var(--v4-nav-h, 68px) + 1rem + env(safe-area-inset-bottom, 0px));
   }
   .places-main-wrapper { padding: 0 0.65rem; }
   body.vibe-v4 .places-header-card,
@@ -904,16 +906,32 @@ body:has(.cerca-map-screen) .places-section { display: none; }
   .places-grid .place-card__body { display: contents; }
 
   .places-grid .place-card__img,
-  .places-grid .place-card__placeholder {
+  .places-grid .place-card__placeholder,
+  .places-grid .place-card--horizontal .place-card__media img,
+  .places-grid .place-card--horizontal .place-card__placeholder {
     grid-column: 1;
     grid-row: 1 / span 4;
-    width: 72px;
-    height: 72px;
-    min-height: 72px;
-    max-height: 72px;
-    border-radius: 8px;
+    width: 72px !important;
+    height: 72px !important;
+    min-height: 72px !important;
+    max-height: 72px !important;
+    border-radius: 8px !important;
     object-fit: cover;
     align-self: center;
+  }
+  .places-grid .place-card--horizontal {
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+    align-items: center !important;
+  }
+  .places-grid .place-card--horizontal .place-card__media {
+    display: contents !important;
+    aspect-ratio: auto !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+  .places-grid .place-card--horizontal .place-card__body {
+    display: contents !important;
+    padding: 0 !important;
   }
   .places-grid .place-card__media-overlay,
   .places-grid .place-card__zone-glass,
@@ -1031,6 +1049,7 @@ body:has(.cerca-map-screen) .places-section { display: none; }
   .places-grid-card { padding-bottom: 4.5rem; }
 @media (min-width: 992px) {
   .places-pager {
+    width: min(1000px, calc(100% - 2rem));
     bottom: calc(var(--v4-nav-h, 68px) + 1.15rem + env(safe-area-inset-bottom, 0px));
   }
 }
@@ -1516,13 +1535,13 @@ $(document).ready(function() {
         const chip = document.getElementById('cerca-map-chip');
         const NEAR_API = '{% url "explorer:lugares_cercanos_near_me" %}';
         const T_MAP = {
-            locating: '{% trans "Detectando tu ubicación…" %}',
-            loading: '{% trans "Buscando lugares cerca de ti…" %}',
-            general: '{% trans "Mapa de las zonas que cubrimos." %}',
-            denied: '{% trans "Sin ubicación: mapa de las zonas que cubrimos." %}',
+            locating: '{% trans "Mapa de Medellín. Viendo si estás en la ciudad…" %}',
+            loading: '{% trans "A tu alrededor…" %}',
+            city: '{% trans "Mapa de Medellín. Lugares con mejor nota en la ciudad." %}',
             error: '{% trans "No se pudo cargar el mapa." %}',
             view: '{% trans "Ver lugar" %}'
         };
+        const POS_KEY = 'vm-mapa-pos';
 
         const map = L.map(mapEl, { zoomControl: false }).setView([6.2476, -75.5658], 12);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1563,9 +1582,9 @@ $(document).ready(function() {
                 const marker = L.marker([lugar.lat, lugar.lng], {
                     icon: L.divIcon({
                         className: 'cerca-pin',
-                        html: '<span></span>',
-                        iconSize: [16, 16],
-                        iconAnchor: [8, 8]
+                        html: '<span>' + (lugar.emoji || '🍽️') + '</span>',
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 20]
                     })
                 });
                 marker.bindPopup(popupHtml(lugar), { className: 'cerca-popup-wrap', maxWidth: 260 });
@@ -1576,11 +1595,11 @@ $(document).ready(function() {
                 L.marker(user, {
                     icon: L.divIcon({
                         className: 'cerca-pin-user',
-                        html: '<span></span>',
-                        iconSize: [14, 14],
-                        iconAnchor: [7, 7]
+                        html: '<span>📍</span>',
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 20]
                     })
-                }).addTo(map);
+                }).addTo(pins);
                 points.push(user);
             }
             if (bounds && bounds.lat_min != null) {
@@ -1590,43 +1609,68 @@ $(document).ready(function() {
             }
             setTimeout(function() { map.invalidateSize(); }, 180);
         }
-        function loadGeneral(message) {
-            setChip(message || T_MAP.general);
+        let mapReq = 0;
+        function readPos() {
+            try {
+                const data = JSON.parse(sessionStorage.getItem(POS_KEY) || 'null');
+                if (!data || Date.now() - data.ts > 30 * 60 * 1000) return null;
+                return data;
+            } catch (e) { return null; }
+        }
+        function savePos(lat, lng, enCiudad) {
+            try {
+                sessionStorage.setItem(POS_KEY, JSON.stringify({
+                    lat: lat, lng: lng, enCiudad: !!enCiudad, ts: Date.now()
+                }));
+            } catch (e) {}
+        }
+        function showCity(resp) {
+            plot((resp && resp.lugares) || [], resp && resp.bounds, null);
+            setChip((resp && resp.mensaje) || T_MAP.city);
+        }
+        function loadGeneral() {
+            const id = ++mapReq;
             $.getJSON(NEAR_API, { general: 1 })
-                .done(function(resp) {
-                    plot(resp.lugares || [], resp.bounds, null);
-                    setChip(resp.mensaje || message || T_MAP.general);
-                })
-                .fail(function() { setChip(T_MAP.error); });
+                .done(function(resp) { if (id === mapReq) showCity(resp); })
+                .fail(function() { if (id === mapReq) setChip(T_MAP.error); });
         }
         function loadNearby(lat, lng) {
+            const id = ++mapReq;
             setChip(T_MAP.loading);
             $.getJSON(NEAR_API, { lat: lat, lng: lng, radio: 3 })
                 .done(function(resp) {
-                    if (!resp || resp.success === false || resp.modo === 'general') {
-                        plot((resp && resp.lugares) || [], resp && resp.bounds, null);
-                        setChip((resp && resp.mensaje) || T_MAP.general);
+                    if (id !== mapReq) return;
+                    const enCiudad = !!(resp && resp.en_ciudad && resp.modo === 'cerca');
+                    savePos(lat, lng, enCiudad);
+                    if (!enCiudad) {
+                        showCity(resp);
                         return;
                     }
                     plot(resp.lugares || [], null, [lat, lng]);
                     setChip(resp.mensaje || T_MAP.loading);
                 })
-                .fail(function() { loadGeneral(T_MAP.error); });
+                .fail(function() { if (id === mapReq) loadGeneral(); });
+        }
+        function pedirUbicacion() {
+            if (!navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition(
+                function(pos) { loadNearby(pos.coords.latitude, pos.coords.longitude); },
+                function() {},
+                { enableHighAccuracy: true, timeout: 8000, maximumAge: 120000 }
+            );
         }
 
         const lat = parseFloat(params.get('lat'));
         const lng = parseFloat(params.get('lng'));
+        const saved = readPos();
         if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
             loadNearby(lat, lng);
-        } else if (!navigator.geolocation) {
-            loadGeneral(T_MAP.denied);
+        } else if (saved && saved.enCiudad) {
+            loadNearby(saved.lat, saved.lng);
         } else {
             setChip(T_MAP.locating);
-            navigator.geolocation.getCurrentPosition(
-                function(pos) { loadNearby(pos.coords.latitude, pos.coords.longitude); },
-                function() { loadGeneral(T_MAP.denied); },
-                { enableHighAccuracy: true, timeout: 8000, maximumAge: 120000 }
-            );
+            loadGeneral();
+            pedirUbicacion();
         }
         setTimeout(function() { map.invalidateSize(); }, 300);
     })();
