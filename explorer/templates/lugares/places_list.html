@@ -587,6 +587,40 @@ body:has(.cerca-map-screen) .places-section { display: none; }
 .cerca-area-label { pointer-events: none; }
 .cerca-area-label.leaflet-tooltip-center::before,
 .cerca-area-tip.leaflet-tooltip-center::before { display: none; }
+#cerca-map path.cerca-zone {
+  cursor: pointer;
+  fill: #f4efe6 !important;
+  fill-opacity: 0.72 !important;
+  stroke: #0b1220 !important;
+  stroke-width: 1.6px !important;
+  transition: fill 0.35s ease, fill-opacity 0.4s ease, stroke-width 0.35s ease;
+}
+#cerca-map path.cerca-zone.is-hot {
+  fill: #e4f6a0 !important;
+  fill-opacity: 0.88 !important;
+}
+#cerca-map path.cerca-zone.is-dim { fill-opacity: 0.28 !important; }
+#cerca-map path.cerca-zone.is-picked {
+  fill: #c8f54a !important;
+  fill-opacity: 0.9 !important;
+  stroke-width: 2.8px !important;
+}
+#cerca-map path.cerca-zone.is-enter { fill-opacity: 0 !important; }
+.cerca-group-label { background: transparent !important; border: 0 !important; }
+.cerca-group-label span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  background: #0b1220;
+  color: #f7f4ee;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  box-shadow: 0 8px 18px rgba(11, 18, 32, 0.18);
+}
 
 .cerca-pin, .cerca-pin-user { background: transparent; border: 0; }
 .cerca-pin span,
@@ -1623,13 +1657,27 @@ $(document).ready(function() {
             locating: '{% trans "Mapa de Medellín. Viendo si estás en la ciudad…" %}',
             loading: '{% trans "A tu alrededor…" %}',
             areas: '{% trans "Toca una zona para ver sus lugares." %}',
+            choose: '{% trans "Elige una zona." %}',
+            barrio: '{% trans "Elige un barrio." %}',
             opening: '{% trans "Abriendo la zona…" %}',
             error: '{% trans "No se pudo cargar el mapa." %}',
             view: '{% trans "Ver lugar" %}'
         };
         const POS_KEY = 'vm-mapa-pos';
         const rail = document.getElementById('cerca-map-areas');
-        const T_ALL = '{% trans "Todas" %}';
+        const T_ALL = '{% trans "Volver" %}';
+        const MACROS = [
+            { id: 'poblado', name: '{% trans "El Poblado" %}', slugs: ['el-poblado'] },
+            { id: 'laureles', name: '{% trans "Laureles" %}', slugs: ['laureles-estadio', 'la-america', 'san-javier'] },
+            { id: 'centro', name: '{% trans "Centro" %}', slugs: ['la-candelaria', 'buenos-aires', 'villa-hermosa'] },
+            { id: 'norte', name: '{% trans "Norte" %}', slugs: ['aranjuez', 'castilla', 'doce-de-octubre', 'manrique', 'popular', 'santa-cruz', 'robledo'] },
+            { id: 'sur', name: '{% trans "Sur" %}', slugs: ['belen', 'guayabal', 'envigado', 'itagui', 'sabaneta', 'la-estrella'] },
+            { id: 'oriente', name: '{% trans "Oriente" %}', slugs: ['guatape', 'rionegro'] }
+        ];
+        let viewMode = 'grupos';
+        let groupId = null;
+        let activeSlug = null;
+        let flyToken = 0;
 
         const map = L.map(mapEl, { zoomControl: false, zoomSnap: 0, zoomDelta: 1 }).setView([6.2476, -75.5658], 12);
         map.attributionControl.setPrefix('<a href="https://vivemedellin.net">vivemedellin.net</a>');
@@ -1676,38 +1724,103 @@ $(document).ready(function() {
             const top = (opts && opts.top) || 84;
             const bottom = (opts && opts.bottom) || 64;
             const maxZoom = (opts && opts.maxZoom) || 17;
+            const motion = !!(opts && opts.animate);
             map.invalidateSize({ pan: false, animate: false });
-            if (pts.length === 1) {
-                map.setView(pts[0], maxZoom, { animate: false });
-                return;
-            }
-            map.fitBounds(pts, {
+            const fit = {
                 paddingTopLeft: [36, top],
                 paddingBottomRight: [48, bottom],
-                maxZoom: maxZoom,
-                animate: false
-            });
+                maxZoom: maxZoom
+            };
+            if (pts.length === 1) {
+                if (motion) map.flyTo(pts[0], maxZoom, { duration: 0.7 });
+                else map.setView(pts[0], maxZoom, { animate: false });
+                return;
+            }
+            if (motion) map.flyToBounds(pts, Object.assign({ duration: 0.72 }, fit));
+            else map.fitBounds(pts, Object.assign({ animate: false }, fit));
         }
         function frameSoon(latlngs, opts) {
             lastFrame = { latlngs: latlngs, opts: opts || {} };
             frame(lastFrame.latlngs, lastFrame.opts);
+            if (opts && opts.animate) return;
             setTimeout(function() {
                 if (lastFrame) frame(lastFrame.latlngs, lastFrame.opts);
             }, 320);
+        }
+        function flyTo(latlngs, opts, done) {
+            const token = ++flyToken;
+            lastFrame = null;
+            let finished = false;
+            function finish() {
+                if (finished || token !== flyToken) return;
+                finished = true;
+                map.off('moveend', finish);
+                if (done) done();
+            }
+            map.on('moveend', finish);
+            frame(latlngs, Object.assign({ animate: true }, opts || {}));
+            setTimeout(finish, 1000);
         }
         function cornersOf(bounds) {
             if (!bounds || bounds.lat_min == null) return [];
             return [[bounds.lat_min, bounds.lng_min], [bounds.lat_max, bounds.lng_max]];
         }
-        function areaStyle(active, index) {
-            return {
-                color: '#0b1220',
-                weight: active ? 2.5 : 1.4,
-                fillColor: active ? '#c8f54a' : (index % 2 ? '#c8f54a' : '#f7f4ee'),
-                fillOpacity: active ? 0.62 : 0.42
-            };
+        function zoneStyle() {
+            return { color: '#0b1220', weight: 1.6, fillColor: '#f4efe6', fillOpacity: 0.55 };
+        }
+        function markPaths(layer, className) {
+            if (!layer.eachLayer) return;
+            layer.eachLayer(function(path) {
+                const el = path.getElement && path.getElement();
+                if (!el) return;
+                el.classList.add('cerca-zone');
+                if (className) el.classList.add(className);
+            });
+        }
+        function paintPaths(matchId) {
+            areasLayer.eachLayer(function(layer) {
+                const key = layer._groupId || layer._areaSlug;
+                if (!key || !layer.eachLayer) return;
+                const on = key === matchId || (layer._memberSlugs || []).indexOf(matchId) !== -1;
+                layer.eachLayer(function(path) {
+                    const el = path.getElement && path.getElement();
+                    if (!el) return;
+                    el.classList.toggle('is-picked', !!matchId && on);
+                    el.classList.toggle('is-dim', !!matchId && !on);
+                    el.classList.remove('is-hot');
+                });
+            });
+        }
+        function hoverPaths(matchId) {
+            areasLayer.eachLayer(function(layer) {
+                const key = layer._groupId || layer._areaSlug;
+                if (!key || !layer.eachLayer) return;
+                layer.eachLayer(function(path) {
+                    const el = path.getElement && path.getElement();
+                    if (!el || el.classList.contains('is-picked')) return;
+                    el.classList.toggle('is-hot', !!matchId && key === matchId);
+                });
+            });
+        }
+        function macroGroups() {
+            const bySlug = {};
+            ((areasReady && areasReady.areas) || []).forEach(function(area) { bySlug[area.slug] = area; });
+            const used = {};
+            const groups = MACROS.map(function(macro) {
+                const members = macro.slugs.map(function(slug) { return bySlug[slug]; }).filter(Boolean);
+                members.forEach(function(area) { used[area.slug] = true; });
+                return { id: macro.id, name: macro.name, members: members };
+            }).filter(function(group) { return group.members.length; });
+            ((areasReady && areasReady.areas) || []).forEach(function(area) {
+                if (!used[area.slug]) groups.push({ id: area.slug, name: area.name, members: [area] });
+            });
+            return groups;
+        }
+        function currentGroup() {
+            return macroGroups().filter(function(group) { return group.id === groupId; })[0] || null;
         }
         function syncLabels() {
+            const placed = [];
             areasLayer.eachLayer(function(group) {
                 if (!group._areaName || !group.eachLayer) return;
                 group.eachLayer(function(path) {
@@ -1716,36 +1829,95 @@ $(document).ready(function() {
                     if (!box || !box.isValid()) return;
                     const nw = map.latLngToContainerPoint(box.getNorthWest());
                     const se = map.latLngToContainerPoint(box.getSouthEast());
-                    const wide = Math.abs(se.x - nw.x) >= 78 && Math.abs(se.y - nw.y) >= 32;
+                    const center = map.latLngToContainerPoint(box.getCenter());
+                    const minW = viewMode === 'zonas' ? 46 : 78;
+                    const minH = viewMode === 'zonas' ? 20 : 32;
+                    const wide = Math.abs(se.x - nw.x) >= minW && Math.abs(se.y - nw.y) >= minH;
+                    const crowded = wide && placed.some(function(point) {
+                        return Math.hypot(point.x - center.x, point.y - center.y) < 56;
+                    });
+                    if (wide && !crowded) placed.push(center);
                     if (path.getTooltip()) path.unbindTooltip();
                     path.bindTooltip(group._areaName, {
-                        permanent: wide,
+                        permanent: wide && !crowded,
                         direction: 'center',
                         opacity: 1,
-                        className: wide ? 'cerca-area-label' : 'cerca-area-tip'
+                        className: (wide && !crowded) ? 'cerca-area-label' : 'cerca-area-tip'
                     });
                 });
             });
         }
-        function paintAreas(activeSlug) {
-            areasLayer.eachLayer(function(group) {
-                group.setStyle(areaStyle(group._areaSlug === activeSlug, group._areaIndex || 0));
-            });
+        function addZone(geojson, meta, onClick) {
+            if (!geojson) return null;
+            const layer = L.geoJSON(geojson, { style: zoneStyle() });
+            layer._groupId = meta.groupId || null;
+            layer._areaSlug = meta.slug || null;
+            layer._areaName = meta.name || null;
+            layer._memberSlugs = meta.memberSlugs || [];
+            layer.on('click', onClick);
+            layer.on('mouseover', function() { hoverPaths(meta.hoverId); });
+            layer.on('mouseout', function() { hoverPaths(null); });
+            layer.addTo(areasLayer);
+            markPaths(layer, meta.enter ? 'is-enter' : '');
+            return layer;
         }
-        function drawAreas(areas) {
+        function placeGroupLabel(group, layer) {
+            const box = layer.getBounds();
+            if (!box || !box.isValid()) return;
+            const marker = L.marker(box.getCenter(), {
+                keyboard: false,
+                icon: L.divIcon({
+                    className: 'cerca-group-label',
+                    html: '<span>' + esc(group.name) + '</span>',
+                    iconSize: [140, 28],
+                    iconAnchor: [70, 14]
+                })
+            });
+            marker._isLabel = true;
+            marker.on('click', function() { pickGroup(group.id); });
+            marker.addTo(areasLayer);
+        }
+        function drawOverview() {
             areasLayer.clearLayers();
-            (areas || []).forEach(function(area, index) {
-                if (!area.geojson) return;
-                const group = L.geoJSON(area.geojson, { style: areaStyle(false, index) });
-                group._areaSlug = area.slug;
-                group._areaName = area.name;
-                group._areaIndex = index;
-                group.on('click', function() { loadArea(area.slug); });
-                group.addTo(areasLayer);
+            macroGroups().forEach(function(group) {
+                if (group.id === 'oriente') return;
+                const collection = {
+                    type: 'FeatureCollection',
+                    features: group.members.filter(function(area) { return area.geojson; }).map(function(area) {
+                        return { type: 'Feature', properties: {}, geometry: area.geojson };
+                    })
+                };
+                if (!collection.features.length) return;
+                const layer = addZone(collection, {
+                    groupId: group.id,
+                    hoverId: group.id,
+                    memberSlugs: group.members.map(function(area) { return area.slug; })
+                }, function() { pickGroup(group.id); });
+                if (layer) placeGroupLabel(group, layer);
             });
-            syncLabels();
         }
-        function plot(lugares, bounds, user, maxZoom) {
+        function drawMembers(group) {
+            areasLayer.clearLayers();
+            group.members.forEach(function(area) {
+                addZone(area.geojson, {
+                    slug: area.slug,
+                    name: area.name,
+                    hoverId: area.slug,
+                    enter: true
+                }, function() { loadArea(area.slug); });
+            });
+            requestAnimationFrame(function() {
+                areasLayer.eachLayer(function(layer) {
+                    if (!layer.eachLayer) return;
+                    layer.eachLayer(function(path) {
+                        const el = path.getElement && path.getElement();
+                        if (el) el.classList.remove('is-enter');
+                    });
+                });
+                syncLabels();
+            });
+        }
+        function plot(lugares, bounds, user, maxZoom, animate) {
             pins.clearLayers();
             const points = [];
             (lugares || []).forEach(function(lugar) {
@@ -1777,7 +1949,8 @@ $(document).ready(function() {
             frameSoon(focus, {
                 maxZoom: maxZoom || 17,
                 top: 84,
-                bottom: (rail && !rail.hidden) ? 96 : 64
+                bottom: (rail && !rail.hidden) ? 96 : 64,
+                animate: !!animate
             });
         }
         let mapReq = 0;
@@ -1815,47 +1988,93 @@ $(document).ready(function() {
             if (latMin == null) return null;
             return { lat_min: latMin, lat_max: latMax, lng_min: lngMin, lng_max: lngMax };
         }
-        function renderRail(activeSlug) {
-            const areas = (areasReady && areasReady.areas) || [];
+        function renderRail() {
+            const groups = macroGroups();
             if (!rail) return;
-            rail.hidden = !areas.length;
+            rail.hidden = !groups.length;
             rail.innerHTML = '';
-            if (activeSlug) {
-                const all = document.createElement('button');
-                all.type = 'button';
-                all.className = 'cerca-map-area';
-                all.textContent = T_ALL;
-                all.addEventListener('click', function() {
-                    mapReq += 1;
-                    showAreas(areasReady);
+            const items = viewMode === 'grupos'
+                ? groups.map(function(group) { return { id: group.id, name: group.name, group: true }; })
+                : (currentGroup() ? currentGroup().members : []).map(function(area) {
+                    return { id: area.slug, name: area.name, group: false };
                 });
-                rail.appendChild(all);
+            if (viewMode !== 'grupos') {
+                const back = document.createElement('button');
+                back.type = 'button';
+                back.className = 'cerca-map-area';
+                back.textContent = T_ALL;
+                back.addEventListener('click', goBack);
+                rail.appendChild(back);
             }
-            areas.forEach(function(area) {
+            items.forEach(function(item) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'cerca-map-area' + (area.slug === activeSlug ? ' is-on' : '');
-                btn.textContent = area.name;
-                btn.addEventListener('click', function() { loadArea(area.slug); });
+                const on = item.group ? item.id === groupId : item.id === activeSlug;
+                btn.className = 'cerca-map-area' + (on ? ' is-on' : '');
+                btn.textContent = item.name;
+                btn.addEventListener('click', function() {
+                    if (item.group) pickGroup(item.id);
+                    else loadArea(item.id);
+                });
                 rail.appendChild(btn);
             });
-            const on = rail.querySelector('.is-on');
-            if (on && on.scrollIntoView) on.scrollIntoView({ inline: 'center', block: 'nearest' });
+            const selected = rail.querySelector('.is-on');
+            if (selected && selected.scrollIntoView) selected.scrollIntoView({ inline: 'center', block: 'nearest' });
+        }
+        function showGroups() {
+            flyToken += 1;
+            viewMode = 'grupos';
+            groupId = null;
+            activeSlug = null;
+            pins.clearLayers();
+            drawOverview();
+            const valley = macroGroups().filter(function(group) { return group.id !== 'oriente'; });
+            const members = [];
+            valley.forEach(function(group) { group.members.forEach(function(area) { members.push(area); }); });
+            frameSoon(cornersOf(boundsFrom(members)), { maxZoom: 14, top: 84, bottom: 96 });
+            setChip(T_MAP.choose);
+            renderRail();
         }
         function showAreas(resp) {
             areasReady = resp || areasReady;
-            pins.clearLayers();
-            const areas = (areasReady && areasReady.areas) || [];
-            drawAreas(areas);
-            const valle = areas.filter(function(area) { return area.grupo !== 'oriente'; });
-            frameSoon(cornersOf(boundsFrom(valle.length ? valle : areas) || (areasReady && areasReady.bounds)), {
-                maxZoom: 14,
-                top: 84,
-                bottom: 96
+            showGroups();
+        }
+        function pickGroup(id) {
+            const group = macroGroups().filter(function(item) { return item.id === id; })[0];
+            if (!group) return;
+            groupId = id;
+            activeSlug = null;
+            if (group.members.length === 1) {
+                paintPaths(id);
+                loadArea(group.members[0].slug);
+                return;
+            }
+            viewMode = 'zonas';
+            paintPaths(id);
+            setChip(group.name + '. ' + T_MAP.barrio);
+            renderRail();
+            flyTo(cornersOf(boundsFrom(group.members)), { maxZoom: 14, top: 84, bottom: 96 }, function() {
+                if (groupId !== id || viewMode !== 'zonas') return;
+                drawMembers(group);
             });
-            setChip((areasReady && areasReady.mensaje) || T_MAP.areas);
-            renderRail(null);
-            setTimeout(syncLabels, 280);
+        }
+        function goBack() {
+            const group = currentGroup();
+            if (viewMode === 'lugares' && group && group.members.length > 1) {
+                mapReq += 1;
+                pins.clearLayers();
+                activeSlug = null;
+                viewMode = 'zonas';
+                paintPaths(group.id);
+                setChip(group.name + '. ' + T_MAP.barrio);
+                renderRail();
+                flyTo(cornersOf(boundsFrom(group.members)), { maxZoom: 14, top: 84, bottom: 96 }, function() {
+                    if (viewMode !== 'zonas' || groupId !== group.id) return;
+                    drawMembers(group);
+                });
+                return;
+            }
+            showGroups();
         }
         function loadGeneral() {
             const id = ++mapReq;
@@ -1865,8 +2084,15 @@ $(document).ready(function() {
         }
         function loadArea(slug) {
             const id = ++mapReq;
+            const group = macroGroups().filter(function(item) {
+                return item.members.some(function(area) { return area.slug === slug; });
+            })[0];
+            if (group) groupId = group.id;
+            activeSlug = slug;
+            viewMode = 'lugares';
             setChip(T_MAP.opening);
-            paintAreas(slug);
+            paintPaths(slug);
+            renderRail();
             $.getJSON(NEAR_API, { area: slug })
                 .done(function(resp) {
                     if (id !== mapReq) return;
@@ -1875,8 +2101,8 @@ $(document).ready(function() {
                         return;
                     }
                     setChip(resp.mensaje || T_MAP.opening);
-                    renderRail(resp.slug || slug);
-                    plot(resp.lugares || [], resp.bounds, null, 17);
+                    renderRail();
+                    plot(resp.lugares || [], resp.bounds, null, 17, true);
                 })
                 .fail(function() { if (id === mapReq) setChip(T_MAP.error); });
         }

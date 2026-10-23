@@ -3108,6 +3108,24 @@ msgstr "Link copied!"
 msgid "Área"
 msgstr "Area"
 
+msgid "Elige una zona."
+msgstr "Pick an area."
+
+msgid "Elige un barrio."
+msgstr "Pick a neighborhood."
+
+msgid "Centro"
+msgstr "Center"
+
+msgid "Norte"
+msgstr "North"
+
+msgid "Sur"
+msgstr "South"
+
+msgid "Oriente"
+msgstr "East"
+
 #~ msgid "ViveMedellín - Tu Guía de la Ciudad"
 #~ msgstr "ViveMedellín - Your City Guide"
 
