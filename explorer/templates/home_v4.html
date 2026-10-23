@@ -67,30 +67,60 @@
         </div>
       </div>
       <div class="v4-moods">
-        <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=restaurant">
-          <span class="v4-mood__icon" aria-hidden="true">🍽️</span>
-          <span class="v4-mood__label">{% trans "Comer" %}</span>
-        </a>
-        <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=bar">
-          <span class="v4-mood__icon" aria-hidden="true">🍸</span>
-          <span class="v4-mood__label">{% trans "Tomar" %}</span>
-        </a>
-        <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=night_club">
-          <span class="v4-mood__icon" aria-hidden="true">🌙</span>
-          <span class="v4-mood__label">{% trans "Salir" %}</span>
-        </a>
-        <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=cafe">
-          <span class="v4-mood__icon" aria-hidden="true">☕</span>
-          <span class="v4-mood__label">{% trans "Café" %}</span>
-        </a>
-        <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?q=rooftop">
-          <span class="v4-mood__icon" aria-hidden="true">🌆</span>
-          <span class="v4-mood__label">{% trans "Rooftop" %}</span>
-        </a>
-        <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?q=en+vivo">
-          <span class="v4-mood__icon" aria-hidden="true">🎵</span>
-          <span class="v4-mood__label">{% trans "En vivo" %}</span>
-        </a>
+        <div class="v4-moods__track">
+          <div class="v4-moods__set">
+            <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=restaurant">
+              <span class="v4-mood__icon" aria-hidden="true">🍽️</span>
+              <span class="v4-mood__label">{% trans "Comer" %}</span>
+            </a>
+            <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=bar">
+              <span class="v4-mood__icon" aria-hidden="true">🍸</span>
+              <span class="v4-mood__label">{% trans "Tomar" %}</span>
+            </a>
+            <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=night_club">
+              <span class="v4-mood__icon" aria-hidden="true">🌙</span>
+              <span class="v4-mood__label">{% trans "Salir" %}</span>
+            </a>
+            <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?tipo=cafe">
+              <span class="v4-mood__icon" aria-hidden="true">☕</span>
+              <span class="v4-mood__label">{% trans "Café" %}</span>
+            </a>
+            <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?q=rooftop">
+              <span class="v4-mood__icon" aria-hidden="true">🌆</span>
+              <span class="v4-mood__label">{% trans "Rooftop" %}</span>
+            </a>
+            <a class="v4-mood" href="{% url 'explorer:lugares_list' %}?q=en+vivo">
+              <span class="v4-mood__icon" aria-hidden="true">🎵</span>
+              <span class="v4-mood__label">{% trans "En vivo" %}</span>
+            </a>
+          </div>
+          <div class="v4-moods__set" aria-hidden="true">
+            <a class="v4-mood" tabindex="-1" href="{% url 'explorer:lugares_list' %}?tipo=restaurant">
+              <span class="v4-mood__icon" aria-hidden="true">🍽️</span>
+              <span class="v4-mood__label">{% trans "Comer" %}</span>
+            </a>
+            <a class="v4-mood" tabindex="-1" href="{% url 'explorer:lugares_list' %}?tipo=bar">
+              <span class="v4-mood__icon" aria-hidden="true">🍸</span>
+              <span class="v4-mood__label">{% trans "Tomar" %}</span>
+            </a>
+            <a class="v4-mood" tabindex="-1" href="{% url 'explorer:lugares_list' %}?tipo=night_club">
+              <span class="v4-mood__icon" aria-hidden="true">🌙</span>
+              <span class="v4-mood__label">{% trans "Salir" %}</span>
+            </a>
+            <a class="v4-mood" tabindex="-1" href="{% url 'explorer:lugares_list' %}?tipo=cafe">
+              <span class="v4-mood__icon" aria-hidden="true">☕</span>
+              <span class="v4-mood__label">{% trans "Café" %}</span>
+            </a>
+            <a class="v4-mood" tabindex="-1" href="{% url 'explorer:lugares_list' %}?q=rooftop">
+              <span class="v4-mood__icon" aria-hidden="true">🌆</span>
+              <span class="v4-mood__label">{% trans "Rooftop" %}</span>
+            </a>
+            <a class="v4-mood" tabindex="-1" href="{% url 'explorer:lugares_list' %}?q=en+vivo">
+              <span class="v4-mood__icon" aria-hidden="true">🎵</span>
+              <span class="v4-mood__label">{% trans "En vivo" %}</span>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>

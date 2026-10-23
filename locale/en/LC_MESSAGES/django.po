@@ -3105,6 +3105,9 @@ msgstr "Guides"
 msgid "¡Enlace copiado!"
 msgstr "Link copied!"
 
+msgid "Área"
+msgstr "Area"
+
 #~ msgid "ViveMedellín - Tu Guía de la Ciudad"
 #~ msgstr "ViveMedellín - Your City Guide"
 
