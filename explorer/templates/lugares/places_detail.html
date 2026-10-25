@@ -106,6 +106,9 @@
         <a href="{% url 'explorer:lugares_por_comuna' lugar.comuna.slug %}">{{ lugar.comuna.name }}</a>
       </p>
     {% endif %}
+    {% for nota in notas_guia %}
+      <p class="place-sheet__note">{{ nota }}</p>
+    {% endfor %}
 
     {% if lugar.get_fotos|length > 1 %}
       <h2 class="place-sheet__heading">{% trans "Destacados" %}</h2>
@@ -1581,6 +1584,12 @@ body.vibe-v4 .modal-backdrop.show { opacity: 0.92; }
     aspect-ratio: auto;
     height: 148px;
   }
+}
+.place-sheet__note {
+  margin: 0.65rem 0 0;
+  color: #3a4254;
+  font-size: 1rem;
+  line-height: 1.45;
 }
 .place-sheet__text {
   margin: 0.85rem 0 0;

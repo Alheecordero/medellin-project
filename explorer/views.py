@@ -1084,8 +1084,30 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
             'lugares_comuna': reverse('explorer:lugares_comuna_ajax_slug', kwargs={'slug': lugar.slug}),
         }
         context['adsense_allowed'] = adsense_allowed_for_place(lugar)
+        context['notas_guia'] = self._notas_guia(lugar)
         
         return context
+
+    def _notas_guia(self, lugar):
+        """Frases cortas de las guías publicadas que incluyen este lugar."""
+        from .models import CuratedGuideItem
+
+        notas = []
+        vistas = set()
+        items = (
+            CuratedGuideItem.objects
+            .filter(lugar=lugar, guia__publicado=True)
+            .exclude(comentario='')
+            .select_related('guia')
+            .order_by('guia__orden', 'posicion')
+        )
+        for item in items:
+            texto = (item.comentario_i18n or '').strip()
+            if not texto or texto in vistas:
+                continue
+            vistas.add(texto)
+            notas.append(texto)
+        return notas
     
     def _get_lugares_cercanos(self, lugar, distance=500, limit=3):
         """Obtener lugares cercanos con caché y optimización geoespacial."""

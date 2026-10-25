@@ -1522,16 +1522,23 @@ body.vibe-v4 .adsense-fixed-unit--global { margin-bottom: 5.5rem; }
   border: 0;
 }
 .v4-tips input[type="email"] {
-  flex: 1;
+  flex: 1 1 auto;
+  align-self: stretch;
   min-width: 0;
+  width: 100%;
   height: 46px;
+  min-height: 46px;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
   border: 1px solid rgba(11, 18, 32, 0.12);
   border-radius: 999px;
   background: var(--v4-paper, #f7f4ee);
   color: var(--v4-ink, #0b1220);
   padding: 0 0.95rem;
   font: inherit;
-  font-size: 0.92rem;
+  font-size: 1rem;
+  line-height: 1.2;
 }
 .v4-tips button {
   flex: none;
@@ -1553,7 +1560,16 @@ body.vibe-v4 .adsense-fixed-unit--global { margin-bottom: 5.5rem; }
   color: var(--v4-ink, #0b1220) !important;
   font-weight: 650;
 }
-@media (max-width: 420px) {
-  .v4-tips__row { flex-direction: column; }
-  .v4-tips button { width: 100%; }
+@media (max-width: 430px) {
+  .v4-tips__row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .v4-tips input[type="email"],
+  .v4-tips button {
+    flex: none;
+    width: 100%;
+    height: 46px;
+    min-height: 46px;
+  }
 }

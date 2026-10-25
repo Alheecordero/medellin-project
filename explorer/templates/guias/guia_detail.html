@@ -127,63 +127,79 @@ document.addEventListener('DOMContentLoaded', function() {
   const markers = {{ markers_json|safe }};
   if (!markers.length) return;
 
-  // Mapa con estilo oscuro
+  const placePattern = "{% url 'explorer:lugares_detail' 'slugtoken' %}";
+
+  function esc(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function(ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+
+  const pinHtml = '<svg viewBox="0 0 32 42" width="32" height="42" aria-hidden="true"><path d="M16 41s12-13.2 12-22A12 12 0 1 0 4 19c0 8.8 12 22 12 22z" fill="#0b1220"/><circle cx="16" cy="18" r="5.2" fill="#c8f54a"/></svg>';
+
   const map = L.map('guia-map', {
     zoomControl: false,
-    attributionControl: false,
     scrollWheelZoom: false,
   });
 
-  // Tile layer oscuro que combina con el diseño
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap',
     maxZoom: 19,
   }).addTo(map);
-
-  // Zoom control arriba a la derecha
+  map.attributionControl.setPrefix(false);
   L.control.zoom({ position: 'topright' }).addTo(map);
 
   const bounds = [];
-
   markers.forEach(function(m) {
-    // Marcador circular personalizado con número
-    const icon = L.divIcon({
-      className: 'guia-marker',
-      html: '<div class="guia-marker-dot">#' + m.posicion + '</div>',
-      iconSize: [36, 36],
-      iconAnchor: [18, 18],
-      popupAnchor: [0, -22],
-    });
-
-    const marker = L.marker([m.lat, m.lng], { icon: icon }).addTo(map);
+    const marker = L.marker([m.lat, m.lng], {
+      icon: L.divIcon({
+        className: 'guia-pin',
+        html: pinHtml,
+        iconSize: [32, 42],
+        iconAnchor: [16, 40],
+        popupAnchor: [0, -36],
+      }),
+      title: m.nombre,
+      zIndexOffset: 100,
+    }).addTo(map);
     bounds.push([m.lat, m.lng]);
 
-    // Popup con imagen y nombre
-    const ratingHtml = m.rating ? '<span class="gp-rating"><i class="bi bi-star-fill"></i> ' + m.rating.toFixed(1) + '</span>' : '';
-    const imgHtml = m.imagen ? '<img src="' + m.imagen + '" alt="' + m.nombre + '" class="gp-img">' : '';
-
+    const ratingHtml = m.rating
+      ? '<span class="gp-rating"><i class="bi bi-star-fill"></i> ' + Number(m.rating).toFixed(1) + '</span>'
+      : '';
+    const imgHtml = m.imagen
+      ? '<img src="' + esc(m.imagen) + '" alt="" class="gp-img">'
+      : '';
     marker.bindPopup(
-      '<a href="/lugar/' + m.slug + '/" class="guia-popup">' +
+      '<a href="' + placePattern.replace('slugtoken', encodeURIComponent(m.slug)) + '" class="guia-popup">' +
         imgHtml +
         '<div class="gp-body">' +
-          '<strong class="gp-name">' + m.nombre + '</strong>' +
+          '<strong class="gp-name">' + esc(m.nombre) + '</strong>' +
           ratingHtml +
         '</div>' +
       '</a>',
-      { className: 'guia-popup-wrapper', minWidth: 200, maxWidth: 260 }
+      { className: 'guia-popup-wrapper', minWidth: 200, maxWidth: 260, autoPanPadding: [16, 16] }
     );
   });
 
-  // Ajustar vista a todos los marcadores
+  const lats = bounds.map(function(p) { return p[0]; });
+  const lngs = bounds.map(function(p) { return p[1]; });
+  const spread = Math.max(
+    Math.max.apply(null, lats) - Math.min.apply(null, lats),
+    Math.max.apply(null, lngs) - Math.min.apply(null, lngs)
+  );
+  const maxZoom = spread > 0.15 ? 13 : spread > 0.04 ? 15 : 17;
+
   if (bounds.length > 1) {
-    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+    map.fitBounds(bounds, { paddingTopLeft: [48, 64], paddingBottomRight: [48, 28], maxZoom: maxZoom });
   } else {
-    map.setView(bounds[0], 15);
+    map.setView(bounds[0], 17);
   }
 
-  // Habilitar scroll zoom solo al hacer click en el mapa
   map.on('click', function() { map.scrollWheelZoom.enable(); });
   map.on('mouseout', function() { map.scrollWheelZoom.disable(); });
+  window.addEventListener('resize', function() { map.invalidateSize(); });
+  setTimeout(function() { map.invalidateSize(); }, 150);
 });
 </script>
 {% endblock %}
@@ -224,30 +240,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
 #guia-map {
   width: 100%;
-  height: 360px;
+  height: clamp(420px, 62vh, 560px);
   background: var(--v4-paper-2, #ebe4d6);
 }
 
-/* Marcadores del mapa */
-.guia-marker { background: none !important; border: none !important; }
-
-.guia-marker-dot {
-  width: 36px;
-  height: 36px;
-  background: var(--v4-lime, #c8f54a);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 800;
+.guia-map-container .leaflet-control-zoom {
+  border: 0;
+  box-shadow: none;
+}
+.guia-map-container .leaflet-control-zoom a {
+  width: 32px;
+  height: 32px;
+  line-height: 30px;
+  border: 1px solid rgba(11, 18, 32, 0.12) !important;
+  border-radius: 10px !important;
+  background: #fff;
   color: var(--v4-ink, #0b1220);
-  box-shadow: 0 3px 12px rgba(11, 18, 32, 0.18);
-  border: 2px solid #fff;
-  transition: transform 0.2s;
+}
+.guia-map-container .leaflet-control-zoom a + a { margin-top: 6px; }
+.guia-map-container .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.82);
+  font-size: 10px;
+  line-height: 1.2;
 }
 
-.guia-marker-dot:hover { transform: scale(1.15); }
+.guia-pin { background: none !important; border: none !important; }
+.guia-pin svg {
+  display: block;
+  filter: drop-shadow(0 2px 3px rgba(11, 18, 32, 0.28));
+}
 
 /* Popup del mapa */
 .guia-popup-wrapper .leaflet-popup-content-wrapper {
@@ -539,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
-  #guia-map { height: 280px; }
+  #guia-map { height: clamp(380px, 58vh, 480px); }
   .guia-map-container { border-radius: 16px; }
   .guia-title { font-size: 1.8rem; }
   .guia-intro { font-size: 1rem; }
@@ -550,9 +571,8 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 @media (max-width: 576px) {
-  #guia-map { height: 240px; }
+  #guia-map { height: clamp(340px, 52vh, 420px); }
   .guia-map-container { border-radius: 12px; }
-  .guia-marker-dot { width: 30px; height: 30px; font-size: 0.65rem; border-radius: 8px; }
   .guia-title { font-size: 1.5rem; }
   .guia-intro { font-size: 0.9rem; }
   .guia-header { margin-bottom: 2rem; padding-bottom: 1.5rem; }
@@ -576,7 +596,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 @media (max-width: 359px) {
-  #guia-map { height: 200px; }
+  #guia-map { height: 320px; }
   .guia-title { font-size: 1.3rem; }
   .guia-entry-img .carousel-inner,
   .guia-entry-img .carousel-item { height: 170px; }
