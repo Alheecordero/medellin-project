@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription, CuratedGuide, CuratedGuideItem, PendingPlace, GooglePlaceId, GooglePlaceDetails, PlaceDiscoveryRun, PlaceDiscoveryTask
+from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription, CuratedGuide, CuratedGuideItem, PendingPlace, GooglePlaceId, GooglePlaceDetails, PlaceDiscoveryRun, PlaceDiscoveryTask, PlacePartnerMenu, PlacePartnerDish
 import json
 
 
@@ -36,7 +36,7 @@ class PlacesAdmin(gis_admin.GISModelAdmin):
     }
     list_display = ('nombre', 'tipo', 'google_match_status', 'direccion', 'rating', 'total_reviews', 'comuna', 'es_destacado', 'es_exclusivo', 'tiene_fotos_icon', 'get_tags')
     search_fields = ('nombre', 'direccion', 'tags__name', 'place_id')
-    list_filter = ('tipo', 'google_match_status', 'comuna_osm_id', 'es_destacado', 'es_exclusivo', 'tiene_fotos')
+    list_filter = ('tipo', 'google_match_status', 'comuna_osm_id', 'es_destacado', 'es_exclusivo', 'tiene_fotos', 'solo_en_guia')
     prepopulated_fields = {'slug': ('nombre',)}
     readonly_fields = ('fecha_creacion', 'fecha_actualizacion', 'tiene_fotos')
     fieldsets = (
@@ -271,7 +271,7 @@ class CuratedGuideItemInline(admin.TabularInline):
     model = CuratedGuideItem
     extra = 1
     autocomplete_fields = ['lugar']
-    fields = ('posicion', 'lugar', 'lugar_preview', 'destacado', 'destacado_en', 'comentario', 'comentario_en')
+    fields = ('posicion', 'lugar', 'lugar_preview', 'destacado', 'destacado_en', 'comentario', 'comentario_en', 'como_llegar', 'advertencia')
     readonly_fields = ('lugar_preview',)
     ordering = ('posicion',)
 
@@ -306,7 +306,7 @@ class CuratedGuideAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Español', {
-            'fields': ('titulo', 'slug', 'descripcion', 'imagen_cover')
+            'fields': ('titulo', 'slug', 'descripcion', 'como_recorrer', 'imagen_cover')
         }),
         ('English Translation', {
             'classes': ('collapse',),
@@ -493,6 +493,22 @@ class PlaceDiscoveryTaskAdmin(admin.ModelAdmin):
     def reencolar(self, request, queryset):
         updated = queryset.update(status="pending", error_message="")
         self.message_user(request, f"{updated} tareas reencoladas.")
+
+
+class PlacePartnerDishInline(admin.TabularInline):
+    model = PlacePartnerDish
+    extra = 0
+    fields = ("position", "section", "name", "price_text", "is_available")
+    ordering = ("position",)
+
+
+@admin.register(PlacePartnerMenu)
+class PlacePartnerMenuAdmin(admin.ModelAdmin):
+    list_display = ("lugar", "platform", "item_count", "updated_at")
+    list_filter = ("platform",)
+    search_fields = ("lugar__nombre", "lugar__place_id", "store_name")
+    raw_id_fields = ("lugar",)
+    inlines = [PlacePartnerDishInline]
 
 
 # Personalización del título del admin

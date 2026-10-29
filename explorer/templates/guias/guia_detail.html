@@ -41,6 +41,9 @@
           <span><i class="bi bi-list-ol"></i> {{ items|length }} {% trans "lugares" %}</span>
         </div>
         <p class="guia-intro">{{ guia.descripcion_i18n }}</p>
+        {% if guia.como_recorrer %}
+          <p class="guia-intro">{{ guia.como_recorrer }}</p>
+        {% endif %}
       </header>
 
       <!-- Lugares -->
@@ -94,6 +97,12 @@
 
           {% if item.comentario_i18n %}
           <p class="guia-entry-text">{{ item.comentario_i18n }}</p>
+          {% endif %}
+          {% if item.como_llegar %}
+          <p class="guia-entry-text">{{ item.como_llegar }}</p>
+          {% endif %}
+          {% if item.advertencia %}
+          <p class="guia-entry-text">{{ item.advertencia }}</p>
           {% endif %}
 
           <a href="{% url 'explorer:lugares_detail' item.lugar.slug %}" class="guia-entry-cta">

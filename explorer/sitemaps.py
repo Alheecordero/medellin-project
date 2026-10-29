@@ -42,7 +42,7 @@ class PlacesSitemap(Sitemap):
             tiene_fotos=True,
             slug__isnull=False,
             embedding__isnull=False,
-        ).exclude(
+        ).para_buscador().exclude(
             slug=""
         ).exclude(
             slug__regex=r'^-?\d+$'  # slugs basura: -1, 1, 338, etc.

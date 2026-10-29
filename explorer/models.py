@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.core.cache import cache
 from django.db import models
-from django.db.models import Index
+from django.db.models import Index, Q
 from django.contrib.postgres.indexes import GistIndex
 from django.urls import reverse
 from django.utils.text import slugify
@@ -113,11 +113,37 @@ PLACE_TYPE_CHOICES = (
 # QuerySets & Managers
 # ────────────────────────────────────────────────────────────────
 
+# Paradas de guía que no son un restaurante. No entran al buscador.
+TIPOS_FUERA_DEL_BUSCADOR = (
+    "shopping_mall",
+    "park",
+    "city_park",
+    "national_park",
+    "dog_park",
+    "plaza",
+    "botanical_garden",
+    "community_center",
+    "hiking_area",
+    "amusement_park",
+)
+
+
 class PlacesQuerySet(models.QuerySet):
     """QuerySet con extensiones comunes para Places."""
 
     def with_fotos(self):
         return self.prefetch_related("fotos")
+
+    def para_buscador(self):
+        """El buscador principal: sin malls, UVAs ni fichas que solo viven en una guía."""
+        return self.exclude(solo_en_guia=True).exclude(
+            tipo__in=TIPOS_FUERA_DEL_BUSCADOR
+        ).exclude(
+            Q(nombre__istartswith="UVA ")
+            | Q(nombre__istartswith="UVA de")
+            | Q(nombre__icontains="Centro Comercial")
+            | Q(nombre__icontains="Parque Comercial")
+        )
 
 
 class PlacesManager(models.Manager):
@@ -200,6 +226,11 @@ class Places(models.Model):
 
     # Campos de organización y filtrado
     tiene_fotos = models.BooleanField(default=False, help_text="Indica si el lugar tiene fotos asociadas")
+    solo_en_guia = models.BooleanField(
+        default=False,
+        db_index=True,
+        help_text="Parada de guía (mall, UVA, parque). No sale en el buscador. Un restaurante dentro de una guía sigue buscable.",
+    )
     es_destacado = models.BooleanField(default=False, help_text="Lugares con mejor rating y más reviews")
     es_exclusivo = models.BooleanField(default=False, help_text="Lugares especiales o VIP")
     show_in_home = models.BooleanField(default=False, db_index=True, help_text="Mostrar en página de inicio para máximo rendimiento")
@@ -1055,6 +1086,11 @@ class CuratedGuide(models.Model):
     slug = models.SlugField(max_length=220, unique=True, blank=True, help_text="Se genera automáticamente del título")
     descripcion = models.TextField(help_text="Descripción en español")
     descripcion_en = models.TextField(blank=True, help_text="Description in English (dejar vacío = usa español)")
+    como_recorrer = models.TextField(
+        blank=True,
+        default="",
+        help_text="Cómo hacer el recorrido, en español",
+    )
     imagen_cover = models.URLField(
         max_length=500, blank=True,
         help_text="URL de imagen de portada (opcional). Si vacío, usa la foto del lugar #1"
@@ -1152,6 +1188,18 @@ class CuratedGuideItem(models.Model):
         blank=True,
         help_text="Your recommendation in English (dejar vacío = usa español)"
     )
+    como_llegar = models.CharField(
+        max_length=300,
+        blank=True,
+        default="",
+        help_text="Cómo llegar a esta parada",
+    )
+    advertencia = models.CharField(
+        max_length=300,
+        blank=True,
+        default="",
+        help_text="Aviso corto: horario, seguridad, día de visita",
+    )
     destacado = models.CharField(
         max_length=50, blank=True,
         help_text="Badge en español: 'Mi favorito', 'Mejor terraza'"
@@ -1183,6 +1231,95 @@ class CuratedGuideItem(models.Model):
     @property
     def destacado_i18n(self):
         return self._get_translated(self.destacado, self.destacado_en)
+
+
+# ────────────────────────────────────────────────────────────────
+# Cartas de Rappi / DiDi (un lugar, la carta más completa)
+# ────────────────────────────────────────────────────────────────
+
+class PlacePartnerMenu(models.Model):
+    """Carta de un partner, unida a un lugar que ya está en Places."""
+
+    PLATFORM_CHOICES = (
+        ("rappi", "Rappi"),
+        ("didi", "DiDi Food"),
+        ("ifood", "iFood"),
+        ("ubereats", "Uber Eats"),
+    )
+
+    lugar = models.OneToOneField(
+        Places, on_delete=models.CASCADE, related_name="carta"
+    )
+    platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES)
+    source_url = models.URLField(max_length=1000, blank=True, default="")
+    external_id = models.CharField(max_length=80, blank=True, default="")
+    store_name = models.CharField(max_length=300, blank=True, default="")
+    address = models.TextField(blank=True, default="")
+    partner_urls = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="Todas las URLs de pedido, incluida la que no se escogió",
+    )
+    item_count = models.PositiveIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Carta de partner"
+        verbose_name_plural = "Cartas de partner"
+
+    def __str__(self):
+        return f"{self.get_platform_display()} · {self.lugar.nombre}"
+
+    def enlaces_pedido(self):
+        """Etiqueta y URL para cada sitio donde se puede pedir."""
+        seen = set()
+        links = []
+        for url in list(self.partner_urls or []) + [self.source_url]:
+            if not url or url in seen:
+                continue
+            seen.add(url)
+            host = url.lower()
+            if "rappi" in host:
+                label = "Pedir en Rappi"
+            elif "didi" in host:
+                label = "Pedir en DiDi"
+            elif "ifood" in host:
+                label = "Pedir en iFood"
+            elif "uber" in host:
+                label = "Pedir en Uber Eats"
+            else:
+                label = "Pedir"
+            links.append({"label": label, "url": url})
+        return links
+
+
+class PlacePartnerDish(models.Model):
+    """Un plato. La foto queda como URL del partner, sin descargarla."""
+
+    carta = models.ForeignKey(
+        PlacePartnerMenu, on_delete=models.CASCADE, related_name="platos"
+    )
+    external_id = models.CharField(max_length=80, blank=True, default="")
+    name = models.CharField(max_length=300)
+    description = models.TextField(blank=True, default="")
+    price = models.PositiveIntegerField(null=True, blank=True)
+    price_text = models.CharField(max_length=40, blank=True, default="")
+    original_price_text = models.CharField(max_length=40, blank=True, default="")
+    image_url = models.URLField(max_length=1000, blank=True, default="")
+    section = models.CharField(max_length=200, blank=True, default="")
+    is_available = models.BooleanField(default=True)
+    position = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Plato"
+        verbose_name_plural = "Platos"
+        ordering = ["position"]
+        indexes = [
+            models.Index(fields=["carta", "position"], name="explorer_partnerdish_pos"),
+        ]
+
+    def __str__(self):
+        return self.name
 
 
 # ────────────────────────────────────────────────────────────────

@@ -207,6 +207,45 @@
       {% endif %}
     </div>
 
+    {% if carta %}
+      <h2 class="place-sheet__heading">{% trans "Carta" %}</h2>
+      <div class="place-menu">
+        {% if carta.enlaces_pedido %}
+          <div class="place-menu__links">
+            {% for enlace in carta.enlaces_pedido %}
+              <a class="place-menu__order" href="{{ enlace.url }}" target="_blank" rel="noopener noreferrer">{{ enlace.label }}</a>
+            {% endfor %}
+          </div>
+        {% endif %}
+        {% for seccion in carta_secciones %}
+          <details class="place-menu__section" {% if forloop.first %}open{% endif %}>
+            <summary>
+              <span>{% if seccion.nombre %}{{ seccion.nombre }}{% else %}{% trans "Carta" %}{% endif %}</span>
+              <small>{{ seccion.platos|length }}</small>
+            </summary>
+            <ul class="place-menu__items">
+              {% for plato in seccion.platos %}
+                <li class="place-menu__item{% if plato.image_url %} place-menu__item--photo{% endif %}{% if not plato.is_available %} place-menu__item--off{% endif %}">
+                  {% if plato.image_url %}
+                    <img src="{{ plato.image_url }}" alt="" loading="lazy" width="64" height="64">
+                  {% endif %}
+                  <div>
+                    <p class="place-menu__name">{{ plato.name }}</p>
+                    {% if plato.description %}
+                      <p class="place-menu__desc">{{ plato.description }}</p>
+                    {% endif %}
+                  </div>
+                  {% if plato.price_text %}
+                    <span class="place-menu__price">{{ plato.price_text }}</span>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </details>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     {% if lugar.descripcion %}
       <p class="place-sheet__text">{{ lugar.descripcion }}</p>
     {% endif %}
@@ -1529,6 +1568,59 @@ function copyToClipboard() {
   color: #0b1220;
   font-weight: 750;
 }
+.place-menu { margin-top: 0.35rem; }
+.place-menu__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.7rem;
+}
+.place-menu__order {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  background: #0b1220;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.place-menu__section {
+  border-top: 1px solid rgba(11, 18, 32, 0.08);
+  padding: 0.35rem 0;
+}
+.place-menu__section summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.45rem 0;
+  cursor: pointer;
+  font-weight: 700;
+  list-style: none;
+}
+.place-menu__section summary::-webkit-details-marker { display: none; }
+.place-menu__section summary small { color: #8b909c; font-weight: 600; }
+.place-menu__items { list-style: none; margin: 0; padding: 0 0 0.4rem; }
+.place-menu__item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.55rem 0;
+}
+.place-menu__item--photo { grid-template-columns: auto 1fr auto; }
+.place-menu__item img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #f3f4f6;
+}
+.place-menu__name { margin: 0; font-weight: 700; line-height: 1.25; }
+.place-menu__desc { margin: 0.15rem 0 0; color: #6b7285; font-size: 0.85rem; line-height: 1.35; }
+.place-menu__price { font-weight: 700; white-space: nowrap; }
+.place-menu__item--off { opacity: 0.55; }
 .place-sheet__heading {
   margin: 1.15rem 0 0.55rem;
   font-family: var(--v4-font-display, inherit);

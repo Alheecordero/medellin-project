@@ -214,7 +214,7 @@ class BasePlacesMixin:
             tipo__in=TIPOS_EXCLUIDOS
         ).filter(
             Q(rating__gte=2.0) | Q(rating__isnull=True)
-        ).prefetch_related(
+        ).para_buscador().prefetch_related(
             Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura')[:3], to_attr='cached_fotos'),
             Prefetch('tags', to_attr='cached_tags')
         )
@@ -410,7 +410,7 @@ class HomeView(TemplateView):
                     tiene_fotos=True,
                     slug__isnull=False,
                     rating__gte=4.4,
-                )
+                ).para_buscador()
                 .exclude(slug__exact="")
                 .exclude(rating__isnull=True)
                 .only(
@@ -609,7 +609,7 @@ class PlacesListView(ListView):
             tipo__in=TIPOS_EXCLUIDOS
         ).filter(
             Q(rating__gte=2.0) | Q(rating__isnull=True)
-        ).prefetch_related('fotos').order_by('-es_destacado', '-weighted_rating', '-rating', 'nombre')
+        ).para_buscador().prefetch_related('fotos').order_by('-es_destacado', '-weighted_rating', '-rating', 'nombre')
 
         # Búsqueda por nombre
         q = self.request.GET.get("q")
@@ -1085,8 +1085,30 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         }
         context['adsense_allowed'] = adsense_allowed_for_place(lugar)
         context['notas_guia'] = self._notas_guia(lugar)
+        context['carta'], context['carta_secciones'] = self._carta(lugar)
         
         return context
+
+    def _carta(self, lugar):
+        """Carta del partner y platos agrupados por sección."""
+        from .models import PlacePartnerMenu
+
+        carta = (
+            PlacePartnerMenu.objects.filter(lugar=lugar)
+            .prefetch_related("platos")
+            .first()
+        )
+        if carta is None:
+            return None, []
+        secciones = []
+        actual = None
+        for plato in carta.platos.all():
+            nombre = plato.section or ""
+            if actual is None or actual["nombre"] != nombre:
+                actual = {"nombre": nombre, "platos": []}
+                secciones.append(actual)
+            actual["platos"].append(plato)
+        return carta, secciones
 
     def _notas_guia(self, lugar):
         """Frases cortas de las guías publicadas que incluyen este lugar."""
@@ -1123,7 +1145,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
             result = list(Places.objects.filter(
                 tiene_fotos=True,
                 ubicacion__distance_lte=(lugar.ubicacion, distance)
-            ).exclude(
+            ).para_buscador().exclude(
                 id=lugar.id
             ).only(
                 'id', 'nombre', 'slug', 'tipo', 'rating', 'total_reviews', 'direccion',
@@ -1161,7 +1183,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
 
             # Opcional: usar tags para afinar, pero siempre dentro del mismo tipo/zona
             tags = list(lugar.tags.values_list('id', flat=True)[:5])  # Máx 5 tags
-            qs = Places.objects.filter(**base_filter).exclude(id=lugar.id)
+            qs = Places.objects.filter(**base_filter).para_buscador().exclude(id=lugar.id)
 
             if tags:
                 qs = qs.filter(tags__id__in=tags).distinct()
@@ -1192,7 +1214,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
             result = fetch_related(qs)
             if not result and tags:
                 # No dejar una ficha aislada si sus tags son demasiado específicos.
-                fallback_qs = Places.objects.filter(**base_filter).exclude(id=lugar.id)
+                fallback_qs = Places.objects.filter(**base_filter).para_buscador().exclude(id=lugar.id)
                 result = fetch_related(fallback_qs)
             
             cache.set(cache_key, result, 3600)  # 1 hora de caché
@@ -1211,7 +1233,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
             result = list(Places.objects.filter(
                 tiene_fotos=True,
                 comuna_osm_id=lugar.comuna_osm_id
-            ).exclude(
+            ).para_buscador().exclude(
                 id=lugar.id
             ).only(
                 'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo'
@@ -1437,7 +1459,7 @@ def lugares_por_comuna(request, comuna_slug):
             qs = Places.objects.filter(
                 tiene_fotos=True,
                 comuna_osm_id=region.osm_id
-            ).prefetch_related('fotos').order_by('-es_destacado', '-weighted_rating', '-rating', 'nombre')
+            ).para_buscador().prefetch_related('fotos').order_by('-es_destacado', '-weighted_rating', '-rating', 'nombre')
             
             # Aplicar filtros adicionales de la URL
             q = self.request.GET.get("q")
@@ -1604,7 +1626,7 @@ def filtros_ajax_view(request):
             tipo__in=TIPOS_EXCLUIDOS
         ).filter(
             Q(rating__gte=2.0) | Q(rating__isnull=True)
-        )
+        ).para_buscador()
         
         # Aplicar filtros
         if area_id != 'all':
@@ -1704,7 +1726,7 @@ def places_filter_ajax(request):
             tipo__in=TIPOS_EXCLUIDOS
         ).filter(
             Q(rating__gte=2.0) | Q(rating__isnull=True)
-        )
+        ).para_buscador()
         
         q = (request.GET.get('q') or '').strip()
         if q:
@@ -2147,7 +2169,7 @@ def lugares_cercanos_ajax_view(request):
             tipo__in=TIPOS_EXCLUIDOS
         ).filter(
             Q(rating__gte=2.0) | Q(rating__isnull=True)
-        )
+        ).para_buscador()
         
         # Aplicar filtro de tipo si existe
         if tipo:
@@ -2519,6 +2541,7 @@ def semantic_search_ajax(request):
 		.filter(tiene_fotos=True, embedding__isnull=False)
 		.exclude(tipo__in=TIPOS_EXCLUIDOS)  # Excluir tipos irrelevantes
 		.filter(Q(rating__gte=2.0) | Q(rating__isnull=True))  # Excluir ratings muy bajos
+		.para_buscador()
 		.order_by('-score')
 		.prefetch_related('fotos')
 	)[:top_k]
