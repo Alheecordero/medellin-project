@@ -18,9 +18,7 @@
 {% endwith %}
 {% endblock %}
 
-{% block meta_description %}
-{% firstof lugar.descripcion lugar.summary as descripcion_seo %}{{ lugar.nombre }}{% if lugar.rating %}, {{ lugar.rating|floatformat:1 }}/5{% endif %} - {{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if descripcion_seo %} {{ descripcion_seo|truncatechars:110 }}{% elif lugar.direccion %} {{ lugar.direccion|truncatechars:80 }}{% endif %}
-{% endblock %}
+{% block meta_description %}{% firstof lugar.descripcion lugar.summary as descripcion_seo %}{{ lugar.nombre }}{% if lugar.rating %}, {{ lugar.rating|floatformat:1 }}/5{% endif %} - {{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if descripcion_seo %} {{ descripcion_seo|truncatechars:110 }}{% elif lugar.direccion %} {{ lugar.direccion|direccion_corta|truncatechars:80 }}{% endif %}{% endblock %}
 
 {% block meta_keywords %}
 {{ lugar.nombre }}, {{ lugar|place_type_label }} Medellín, {{ lugar|place_type_label }} {% if lugar.comuna %}{{ lugar.comuna.name }}{% endif %}, {% trans "mejores" %} {{ lugar|place_type_label|lower }}s Medellín{% if lugar.outdoor_seating %}, {% trans "terraza" %}{% endif %}{% if lugar.live_music %}, {% trans "música en vivo" %}{% endif %}{% if lugar.delivery %}, delivery{% endif %}

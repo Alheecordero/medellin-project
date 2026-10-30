@@ -128,6 +128,18 @@ TIPOS_FUERA_DEL_BUSCADOR = (
 )
 
 
+def _fuera_del_buscador():
+    """Malls, UVAs y fichas que solo viven en una guía."""
+    return (
+        Q(solo_en_guia=True)
+        | Q(tipo__in=TIPOS_FUERA_DEL_BUSCADOR)
+        | Q(nombre__istartswith="UVA ")
+        | Q(nombre__istartswith="UVA de")
+        | Q(nombre__icontains="Centro Comercial")
+        | Q(nombre__icontains="Parque Comercial")
+    )
+
+
 class PlacesQuerySet(models.QuerySet):
     """QuerySet con extensiones comunes para Places."""
 
@@ -136,19 +148,31 @@ class PlacesQuerySet(models.QuerySet):
 
     def para_buscador(self):
         """El buscador principal: sin malls, UVAs ni fichas que solo viven en una guía."""
-        return self.exclude(solo_en_guia=True).exclude(
-            tipo__in=TIPOS_FUERA_DEL_BUSCADOR
-        ).exclude(
-            Q(nombre__istartswith="UVA ")
-            | Q(nombre__istartswith="UVA de")
-            | Q(nombre__icontains="Centro Comercial")
-            | Q(nombre__icontains="Parque Comercial")
-        )
+        return self.exclude(_fuera_del_buscador())
+
+    def indexables(self):
+        """Fichas que mandamos a Google (sitemap).
+
+        Con fotos y algo que Maps no tiene: carta, rating ≥ 4 con ≥ 50 reseñas,
+        o un lugar en una guía publicada (malls y UVAs entran solo por la guía).
+        """
+        calidad = Q(carta__isnull=False) | Q(rating__gte=4.0, total_reviews__gte=50)
+        en_guia = Q(en_guias__guia__publicado=True)
+        return self.filter(
+            tiene_fotos=True, slug__isnull=False
+        ).exclude(slug="").exclude(
+            slug__regex=r'^-?\d+$'  # slugs basura: -1, 1, 338, etc.
+        ).filter(
+            (~_fuera_del_buscador() & calidad) | en_guia
+        ).distinct()
 
 
 class PlacesManager(models.Manager):
     def get_queryset(self):
         return PlacesQuerySet(self.model, using=self._db).with_fotos()
+
+    def indexables(self):
+        return self.get_queryset().indexables()
 
 
 # ────────────────────────────────────────────────────────────────

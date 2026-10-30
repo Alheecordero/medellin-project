@@ -105,6 +105,25 @@ def translate_url_to(context, language_code):
         # Fallback: quitar /en/
         return (path_sin_en if path_sin_en else '/') + query
 
+@register.filter(name='direccion_corta')
+def direccion_corta(value: str | None) -> str:
+    """
+    Quita partes repetidas y el sufijo de departamento/país de una dirección de Maps.
+    "Cra. 51 # 90-17, Aranjuez, Medellín, Aranjuez, Medellín, Antioquia, Colombia"
+    → "Cra. 51 # 90-17, Aranjuez, Medellín"
+    """
+    if not value:
+        return ''
+    partes, vistas = [], set()
+    for parte in str(value).split(','):
+        parte = parte.strip()
+        clave = parte.casefold()
+        if not parte or clave in vistas or clave in {'antioquia', 'colombia'}:
+            continue
+        vistas.add(clave)
+        partes.append(parte)
+    return ', '.join(partes)
+
 @register.filter(name='add_class')
 def add_class(field, css_class):
     return field.as_widget(attrs={'class': css_class})

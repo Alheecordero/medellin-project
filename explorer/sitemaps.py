@@ -30,28 +30,15 @@ class PlacesSitemap(Sitemap):
     Django automáticamente pagina si hay más URLs que el límite.
     El orden prioriza lugares destacados y con mejor rating primero.
 
-    Criterios alineados con PlaceDetailView + señales mínimas de calidad para
-    no saturar el crawl budget de Google (evita thin pages sin rating ni reviews).
+    Solo fichas indexables (ver PlacesQuerySet.indexables): el resto sigue
+    publicado pero no se anuncia, para no gastar el crawl budget en thin pages.
     """
     changefreq = "weekly"
     priority = 0.8
     limit = 5000  # Límite por página de sitemap para mejor rendimiento
 
     def items(self):
-        return Places.objects.filter(
-            tiene_fotos=True,
-            slug__isnull=False,
-            embedding__isnull=False,
-        ).para_buscador().exclude(
-            slug=""
-        ).exclude(
-            slug__regex=r'^-?\d+$'  # slugs basura: -1, 1, 338, etc.
-        ).filter(
-            Q(rating__gte=3.0)
-            | Q(total_reviews__gte=5)
-            | Q(es_destacado=True)
-            | Q(show_in_home=True)
-        ).only(
+        return Places.objects.indexables().only(
             'slug', 'es_destacado', 'rating', 'id', 'fecha_actualizacion'
         ).order_by("-es_destacado", "-rating", "-id")
 

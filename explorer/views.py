@@ -1216,7 +1216,17 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
                 # No dejar una ficha aislada si sus tags son demasiado específicos.
                 fallback_qs = Places.objects.filter(**base_filter).para_buscador().exclude(id=lugar.id)
                 result = fetch_related(fallback_qs)
-            
+            if not result and comuna_id:
+                # Tipo raro en su zona: otros lugares de la misma comuna, luego
+                # el mismo tipo en toda la ciudad.
+                for filtro in ({"comuna_osm_id": comuna_id}, {"tipo": lugar.tipo}):
+                    result = fetch_related(
+                        Places.objects.filter(tiene_fotos=True, **filtro)
+                        .para_buscador().exclude(id=lugar.id)
+                    )
+                    if result:
+                        break
+
             cache.set(cache_key, result, 3600)  # 1 hora de caché
         
         return result
