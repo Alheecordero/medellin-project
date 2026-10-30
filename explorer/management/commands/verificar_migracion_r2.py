@@ -21,7 +21,7 @@ from django.core.management.base import BaseCommand
 from django.db.models import Q
 
 from explorer.models import CuratedGuide, Foto
-from explorer.utils.media_urls import GCS_PUBLIC_PREFIX
+from explorer.utils.media_urls import GCS_PUBLIC_PREFIX, public_media_domain
 
 
 class Command(BaseCommand):
@@ -39,7 +39,8 @@ class Command(BaseCommand):
         parser.add_argument("--min-success-pct", type=float, default=99.5, help="%% mínimo HTTP OK para corte")
 
     def handle(self, *args, **options):
-        public_base = getattr(settings, "R2_PUBLIC_BASE_URL", "https://img.vivemedellin.co").rstrip("/")
+        public_base = getattr(settings, "R2_PUBLIC_BASE_URL", "https://img.vivemedellin.net").rstrip("/")
+        self.public_host = public_media_domain(public_base)
         sample_n = options["sample"]
         workers = max(1, options["workers"])
         min_pct = options["min_success_pct"]
@@ -116,9 +117,9 @@ class Command(BaseCommand):
             + Foto.objects.filter(imagen_mediana__contains="storage.googleapis.com").count()
         )
         r2_all3 = Foto.objects.filter(
-            imagen__contains="img.vivemedellin.co",
-            imagen_miniatura__contains="img.vivemedellin.co",
-            imagen_mediana__contains="img.vivemedellin.co",
+            imagen__contains=self.public_host,
+            imagen_miniatura__contains=self.public_host,
+            imagen_mediana__contains=self.public_host,
         ).count()
         guides_gcs = CuratedGuide.objects.filter(imagen_cover__contains="storage.googleapis.com").count()
 
@@ -140,7 +141,7 @@ class Command(BaseCommand):
         urls: list[str] = []
         for im, mini, med in qs:
             for u in (im, mini, med):
-                if u and "img.vivemedellin.co" in u:
+                if u and self.public_host in u:
                     urls.append(u)
         if not urls:
             return {"tested": 0, "ok": 0, "fail": 0, "pct": 0.0, "fail_examples": []}

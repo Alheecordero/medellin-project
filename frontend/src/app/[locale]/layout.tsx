@@ -87,7 +87,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={locale} className={`${inter.variable} ${jakarta.variable}`}>
       <head>
-        <link rel="dns-prefetch" href="https://img.vivemedellin.co" />
+        <link rel="dns-prefetch" href="https://img.vivemedellin.net" />
       </head>
       <body className="flex min-h-screen flex-col">
         <NextIntlClientProvider>

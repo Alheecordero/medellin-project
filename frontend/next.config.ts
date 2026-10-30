@@ -5,13 +5,13 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const djangoOrigin = process.env.DJANGO_API_ORIGIN || "http://127.0.0.1:8000";
 
-/** Hostname del CDN de imágenes (R2). El default de settings.py es .co, pero base.html preconecta a .net. */
+/** Hostname del CDN de imágenes (R2). */
 function cdnHostname(): string {
-  const base = process.env.NEXT_PUBLIC_R2_PUBLIC_BASE_URL || "https://img.vivemedellin.co";
+  const base = process.env.NEXT_PUBLIC_R2_PUBLIC_BASE_URL || "https://img.vivemedellin.net";
   try {
     return new URL(base).hostname;
   } catch {
-    return "img.vivemedellin.co";
+    return "img.vivemedellin.net";
   }
 }
 
@@ -44,7 +44,6 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: cdnHostname() },
       { protocol: "https", hostname: "img.vivemedellin.net" },
-      { protocol: "https", hostname: "img.vivemedellin.co" },
       { protocol: "https", hostname: "*.r2.dev" },
       { protocol: "https", hostname: "*.r2.cloudflarestorage.com" },
       { protocol: "https", hostname: "storage.googleapis.com", pathname: "/vivemedellin-bucket/**" },

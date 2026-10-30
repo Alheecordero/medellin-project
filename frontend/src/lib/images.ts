@@ -5,7 +5,7 @@
 const GCS_MARKER = "googleapis.com/vivemedellin-bucket/";
 
 const CDN_BASE = (
-  process.env.NEXT_PUBLIC_R2_PUBLIC_BASE_URL || "https://img.vivemedellin.co"
+  process.env.NEXT_PUBLIC_R2_PUBLIC_BASE_URL || "https://img.vivemedellin.net"
 ).replace(/\/$/, "");
 
 export function canonicalImageUrl(url: string | null | undefined): string | null {

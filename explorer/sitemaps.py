@@ -1,6 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from django.db.models import Q
+from django.db.models import Max, Q
 from explorer.models import CuratedGuide, Places, RegionOSM
 
 
@@ -58,6 +58,10 @@ class PlacesSitemap(Sitemap):
     def lastmod(self, obj):
         return obj.fecha_actualizacion if hasattr(obj, 'fecha_actualizacion') else None
 
+    def get_latest_lastmod(self):
+        # El índice lo pide por sección; el de Django recorre todas las fichas en Python.
+        return self.items().aggregate(latest=Max("fecha_actualizacion"))["latest"]
+
 
 class ComunasSitemap(Sitemap):
     """Sitemap para páginas de comunas/regiones."""
@@ -97,6 +101,9 @@ class GuidesSitemap(Sitemap):
 
     def lastmod(self, obj):
         return obj.fecha_actualizacion
+
+    def get_latest_lastmod(self):
+        return self.items().aggregate(latest=Max("fecha_actualizacion"))["latest"]
 
 
 class GuidesSitemapEN(GuidesSitemap):

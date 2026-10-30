@@ -12,5 +12,5 @@ GEO_BLOCK_COUNTRIES=(
 WAF_RULE_DESCRIPTION='ViveMedellín: block non-target countries'
 WAF_EXPRESSION='(not cf.client.bot.verified_bot and ip.geoip.country in {"CN" "RU" "KP" "IR" "BY" "SY" "CU" "VE" "PK" "BD" "NG" "EG" "ID" "VN" "PH" "MM" "KZ" "UZ" "TM" "TJ" "KG" "AF" "IQ" "YE" "LY" "SD" "SO" "ET" "ZW"})'
 
-DEFAULT_ZONE_NAME='vivemedellin.co'
+DEFAULT_ZONE_NAME='vivemedellin.net'
 NGINX_GEO_INCLUDE='/etc/nginx/vivemedellin-geo-block.conf'

@@ -15,7 +15,7 @@ from explorer.utils.media_urls import GCS_PUBLIC_PREFIX, gcs_url_to_public
 
 
 class Command(BaseCommand):
-    help = "Convierte URLs storage.googleapis.com → R2 (img.vivemedellin.co)."
+    help = "Convierte URLs storage.googleapis.com → R2 (img.vivemedellin.net)."
 
     def add_arguments(self, parser):
         parser.add_argument("--dry-run", action="store_true")
@@ -25,7 +25,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         public_base = (
             getattr(settings, "R2_PUBLIC_BASE_URL", None)
-            or getattr(settings, "MEDIA_PUBLIC_BASE_URL", "https://img.vivemedellin.co/")
+            or getattr(settings, "MEDIA_PUBLIC_BASE_URL", "https://img.vivemedellin.net/")
         ).rstrip("/")
         batch_size = options["batch_size"]
         dry_run = options["dry_run"]

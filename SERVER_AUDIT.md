@@ -33,8 +33,8 @@
 
 ### 7) Nginx
 - VirtualHost:
-  - `server_name` = `vivemedellin.co` y `www.vivemedellin.co`.
-  - `listen 80` → redirección 301 a `https://$host$request_uri`.
+  - `server_name` = `vivemedellin.net` y `www.vivemedellin.net`.
+  - `listen 80` → redirección 301 a `https://vivemedellin.net$request_uri`.
   - `listen 443 ssl` con certificados de Let’s Encrypt.
 
 ### 8) Gunicorn (systemd)

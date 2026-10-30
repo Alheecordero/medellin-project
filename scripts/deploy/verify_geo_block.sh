@@ -2,8 +2,10 @@
 # Comprueba bloqueo geo en origen (Nginx + header CF-IPCountry simulado).
 set -euo pipefail
 
-HOST="${GEO_TEST_HOST:-www.vivemedellin.co}"
-BASE="${GEO_TEST_URL:-http://127.0.0.1/}"
+HOST="${GEO_TEST_HOST:-vivemedellin.net}"
+BASE="${GEO_TEST_URL:-https://$HOST/}"
+# El 80 solo redirige a https; el geobloqueo vive en el bloque 443 de este servidor.
+RESOLVE=(--resolve "$HOST:443:127.0.0.1")
 
 pass=0
 fail=0
@@ -12,7 +14,7 @@ check_code() {
   local name="$1" expected="$2"
   shift 2
   local code
-  code=$(curl -sS -o /dev/null -w '%{http_code}' "$@" || echo 000)
+  code=$(curl -sS -o /dev/null -w '%{http_code}' "${RESOLVE[@]}" "$@" || echo 000)
   if [[ "$code" == "$expected" ]]; then
     echo "OK  $name → HTTP $code"
     pass=$((pass + 1))
@@ -31,7 +33,7 @@ check_one_of() {
     shift
   done
   local code
-  code=$(curl -sS -o /dev/null -w '%{http_code}' "$@" || echo 000)
+  code=$(curl -sS -o /dev/null -w '%{http_code}' "${RESOLVE[@]}" "$@" || echo 000)
   local ok=0
   for e in "${expected[@]}"; do
     if [[ "$code" == "$e" ]]; then

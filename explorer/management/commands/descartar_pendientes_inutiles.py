@@ -5,7 +5,7 @@ Excluir los que ya tenemos y descartar los que no nos sirven.
 2. Del resto: los que no nos sirven (tipo no útil o tipo excluido) → marcar 'skipped'.
 3. El resto siguen 'pending' para procesar después.
 
-Así la cola solo tiene lugares nuevos y útiles para vivemedellin.co.
+Así la cola solo tiene lugares nuevos y útiles para vivemedellin.net.
 
 Uso:
   python manage.py descartar_pendientes_inutiles --dry-run   # Solo muestra

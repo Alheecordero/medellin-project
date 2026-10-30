@@ -45,7 +45,7 @@ INCLUDED_TYPES = [
     "dessert_shop", "confectionery", "pastry_shop", "cake_shop", "candy_store",
 ]  # Sin "market": mercados/ferias no son establecimiento de comida preparada
 
-# Tipos que NUNCA queremos en vivemedellin.co (máx 50 para la API en excludedTypes)
+# Tipos que NUNCA queremos en vivemedellin.net (máx 50 para la API en excludedTypes)
 EXCLUDED_TYPES = [
     "hospital", "doctor", "dentist", "pharmacy",
     "gas_station", "car_wash", "car_repair", "parking",

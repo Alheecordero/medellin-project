@@ -111,9 +111,9 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG')
 
 # Añade la IP de tu servidor y tu dominio a esta lista
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default='127.0.0.1,localhost,vivemedellin.net,www.vivemedellin.net,vivemedellin.co,www.vivemedellin.co')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default='127.0.0.1,localhost,vivemedellin.net,www.vivemedellin.net')
 # Confiar en estos orígenes para CSRF cuando se usa HTTPS tras proxy (Nginx)
-CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default='https://vivemedellin.net,https://www.vivemedellin.net,https://vivemedellin.co,https://www.vivemedellin.co')
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default='https://vivemedellin.net,https://www.vivemedellin.net')
 # Respetar cabeceras de proxy para host y esquema
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -366,7 +366,7 @@ R2_BUCKET = env("R2_BUCKET", None)
 R2_ACCESS_KEY_ID = env("R2_ACCESS_KEY_ID", None)
 R2_SECRET_ACCESS_KEY = env("R2_SECRET_ACCESS_KEY", None)
 R2_ENDPOINT_URL = env("R2_ENDPOINT_URL", None)
-R2_PUBLIC_BASE_URL = env("R2_PUBLIC_BASE_URL", "https://img.vivemedellin.co").rstrip("/")
+R2_PUBLIC_BASE_URL = env("R2_PUBLIC_BASE_URL", "https://img.vivemedellin.net").rstrip("/")
 
 # URL base para construir/enlazar media en templates y management commands
 MEDIA_PUBLIC_BASE_URL = R2_PUBLIC_BASE_URL + "/"
@@ -388,6 +388,8 @@ if USE_R2:
     AWS_S3_ADDRESSING_STYLE = "path"
     AWS_S3_CUSTOM_DOMAIN = public_media_domain(R2_PUBLIC_BASE_URL)
     AWS_S3_URL_PROTOCOL = "https"
+    # Sin immutable: algunas rutas (p. ej. images/<place_id>/02.jpg) se reescriben con el mismo nombre.
+    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "public, max-age=2592000"}
 
     STORAGES = {
         "default": {
