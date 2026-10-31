@@ -112,7 +112,6 @@ def place_detail_api(request, slug):
         lugar = (
             Places.objects.filter(tiene_fotos=True, slug=slug)
             .prefetch_related("fotos", "tags")
-            .select_related("comuna")
             .get()
         )
     except Places.DoesNotExist as exc:

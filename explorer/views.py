@@ -13,6 +13,8 @@ from django.http import Http404, HttpResponsePermanentRedirect, JsonResponse
 from django.utils import timezone
 import json
 import ipaddress
+import logging
+import math
 import random
 from pgvector.django import CosineDistance
 from django.views import View
@@ -32,6 +34,8 @@ import urllib.parse
 import os
 
 from .models import Places, Foto, RegionOSM, Tag, PLACE_TYPE_CHOICES
+
+logger = logging.getLogger(__name__)
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -79,13 +83,30 @@ def adsense_allowed_for_search_query(query):
 # ────────────────────────────────────────────────────────────────────────
 
 def get_client_ip(request):
-    """Obtiene la IP real del cliente (incluso tras proxy)."""
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0].strip()
-    else:
-        ip = request.META.get('REMOTE_ADDR', '127.0.0.1')
-    return ip
+    """IP del cliente, o None si no hay una válida.
+
+    El tráfico entra por Cloudflare, que fija CF-Connecting-IP. X-Forwarded-For no sirve:
+    el primer valor lo pone el cliente y nginx no lo limpia.
+    """
+    for clave in ('HTTP_CF_CONNECTING_IP', 'REMOTE_ADDR'):
+        try:
+            return str(ipaddress.ip_address((request.META.get(clave) or '').strip()))
+        except ValueError:
+            continue
+    return None
+
+
+def _entero(valor, minimo=None, maximo=None):
+    """int del parámetro, o None si no es un entero; acotado si se pasan límites."""
+    try:
+        numero = int(valor)
+    except (TypeError, ValueError):
+        return None
+    if minimo is not None:
+        numero = max(minimo, numero)
+    if maximo is not None:
+        numero = min(maximo, numero)
+    return numero
 
 
 def rate_limit(requests_per_minute=30, key_prefix='rl'):
@@ -98,7 +119,7 @@ def rate_limit(requests_per_minute=30, key_prefix='rl'):
     """
     def decorator(view_func):
         def wrapper(request, *args, **kwargs):
-            ip = get_client_ip(request)
+            ip = get_client_ip(request) or 'sin-ip'
             cache_key = f"{key_prefix}:{ip}"
             
             # Obtener contador actual
@@ -674,14 +695,14 @@ class PlacesListView(ListView):
             
         # Filtro por área (slug AJAX) o comuna (osm_id SSR)
         area_slug = (self.request.GET.get('area') or '').strip()
-        comuna = self.request.GET.get('comuna')
+        comuna = _entero(self.request.GET.get('comuna'))
         if area_slug:
             try:
                 region = RegionOSM.objects.get(slug=area_slug)
                 qs = qs.filter(comuna_osm_id=region.osm_id)
             except RegionOSM.DoesNotExist:
                 pass
-        elif comuna:
+        elif comuna is not None:
             qs = qs.filter(comuna_osm_id=comuna)
             
         # Filtros especiales de características
@@ -911,7 +932,7 @@ class PlacesListView(ListView):
                 comuna_info = RegionOSM.objects.get(slug=area_actual)
             except RegionOSM.DoesNotExist:
                 pass
-        if comuna_info is None and comuna_actual:
+        if comuna_info is None and _entero(comuna_actual) is not None:
             try:
                 comuna_info = RegionOSM.objects.get(osm_id=comuna_actual)
             except RegionOSM.DoesNotExist:
@@ -1721,7 +1742,11 @@ def filtros_ajax_view(request):
         return JsonResponse({
             'error': _('Se requieren área y categoría. La característica es opcional.')
         }, status=400)
-    
+    if area_id != 'all':
+        area_id = _entero(area_id)
+    if area_id is None or (caracteristica and caracteristica not in ('all', *FILTROS_ESPECIALES)):
+        return JsonResponse({'error': _('Parámetros no válidos')}, status=400)
+
     try:
         # Construir queryset base - excluir tipos irrelevantes y ratings muy bajos
         qs = Places.objects.filter(tiene_fotos=True).exclude(
@@ -1785,10 +1810,9 @@ def filtros_ajax_view(request):
             }
         })
         
-    except Exception as e:
-        return JsonResponse({
-            'error': _('Error en la búsqueda: %(err)s') % {'err': str(e)}
-        }, status=500)
+    except Exception:
+        logger.exception("Error en la búsqueda AJAX")
+        return JsonResponse({'error': _('Error en la búsqueda')}, status=500)
 
 
 @require_GET
@@ -2001,10 +2025,9 @@ def places_filter_ajax(request):
             }
         })
         
-    except Exception as e:
-        return JsonResponse({
-            'error': _('Error en la búsqueda: %(err)s') % {'err': str(e)}
-        }, status=500)
+    except Exception:
+        logger.exception("Error en la búsqueda AJAX")
+        return JsonResponse({'error': _('Error en la búsqueda')}, status=500)
 
 
 def _emoji_lugar(lugar):
@@ -2253,6 +2276,9 @@ def lugares_cercanos_ajax_view(request):
         lat = float(lat)
         lng = float(lng)
         radio = float(radio)
+        if not math.isfinite(lat + lng + radio):
+            raise ValueError
+        radio = max(0.5, min(radio, 15))
 
         if not point_in_scan_areas(lat, lng):
             return respuesta_general(fuera=True)
@@ -2473,24 +2499,14 @@ def lugares_cercanos_ajax_view(request):
         return JsonResponse({
             'error': _('Las coordenadas proporcionadas no son válidas')
         }, status=400)
-    except Exception as e:
-        return JsonResponse({
-            'error': _('Error al buscar lugares cercanos: %(err)s') % {'err': str(e)}
-        }, status=500)
+    except Exception:
+        logger.exception("Error en lugares cercanos")
+        return JsonResponse({'error': _('Error en la búsqueda')}, status=500)
 
 
 # ────────────────────────────────────────────────────────────────────────
 # Newsletter Views
 # ────────────────────────────────────────────────────────────────────────
-
-def get_client_ip(request):
-    """Obtiene la IP real del cliente."""
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
 
 @require_GET
 def lugares_cercanos_ajax(request, slug):
@@ -2535,8 +2551,9 @@ def lugares_cercanos_ajax(request, slug):
         
         return JsonResponse({'lugares': data})
     
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+    except Exception:
+        logger.exception("Error en lugares relacionados")
+        return JsonResponse({'error': _('Error en la búsqueda')}, status=500)
 
 
 @require_GET  
@@ -2569,8 +2586,9 @@ def lugares_similares_ajax(request, slug):
         
         return JsonResponse({'lugares': data})
     
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+    except Exception:
+        logger.exception("Error en lugares relacionados")
+        return JsonResponse({'error': _('Error en la búsqueda')}, status=500)
 
 
 @require_GET
@@ -2603,8 +2621,9 @@ def lugares_comuna_ajax(request, slug):
         
         return JsonResponse({'lugares': data, 'comuna_nombre': lugar.comuna.name if hasattr(lugar, 'comuna') and lugar.comuna else 'esta zona'})
     
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500) 
+    except Exception:
+        logger.exception("Error en lugares relacionados")
+        return JsonResponse({'error': _('Error en la búsqueda')}, status=500) 
 
 
 def _build_genai_client():
@@ -2620,7 +2639,7 @@ def semantic_search_ajax(request):
 	from google.genai import types as vertex_types
 
 	query = request.GET.get('q', '').strip()
-	top_k = int(request.GET.get('top', '12') or 12)
+	top_k = _entero(request.GET.get('top'), 1, 50) or 12
 	if not query:
 		return JsonResponse({'success': False, 'error': _('Parámetro q requerido')}, status=400)
 	try:
@@ -2634,8 +2653,9 @@ def semantic_search_ajax(request):
 			)
 		)
 		query_embedding = result.embeddings[0].values
-	except Exception as e:
-		return JsonResponse({'success': False, 'error': f'Error generando embedding: {e}'}, status=500)
+	except Exception:
+		logger.exception("Error generando embedding")
+		return JsonResponse({'success': False, 'error': _('Error en la búsqueda')}, status=500)
 
 	qs = (
 		Places.objects
@@ -2724,8 +2744,9 @@ class SemanticSearchView(View):
                             "telefono": getattr(l, "telefono", None),
                             "sitio_web": getattr(l, "sitio_web", None),
                         })
-            except Exception as e:
-                error = str(e)
+            except Exception:
+                logger.exception("Error en la búsqueda semántica")
+                error = _('Error en la búsqueda')
                 lugares = []
 
         if as_json:
@@ -2899,15 +2920,17 @@ def translate_review_api(request):
         payload = _json.loads(request.body.decode("utf-8")) if request.body else {}
     except Exception:
         payload = {}
+    if not isinstance(payload, dict):
+        payload = {}
 
-    text = _normalize_review_text(payload.get("text") or "")
-    target = (payload.get("target") or "en").strip().lower()
+    text = _normalize_review_text(str(payload.get("text") or ""))
+    target = str(payload.get("target") or "en").strip().lower()
 
     if not text:
         return JsonResponse({"success": False, "error": _("Texto vacío")}, status=400)
 
     # Rate limit básico por IP (20 solicitudes / 60s)
-    ip = request.META.get("REMOTE_ADDR", "")
+    ip = get_client_ip(request) or ""
     rl_key = _rate_limit_key(ip)
     window = 60
     limit = 20
@@ -3023,6 +3046,8 @@ def newsletter_subscribe(request):
 
     email = (request.POST.get('email') or '').strip().lower()
     try:
+        if len(email) > NewsletterSubscription._meta.get_field('email').max_length:
+            raise ValidationError('largo')
         validate_email(email)
     except ValidationError:
         return JsonResponse({'ok': False, 'message': _('Escribe un correo válido.')}, status=400)

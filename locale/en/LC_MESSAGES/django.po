@@ -3237,6 +3237,10 @@ msgstr "What people say on Google"
 msgid "Carta"
 msgstr "Menu"
 
+#: explorer/views.py
+msgid "Parámetros no válidos"
+msgstr "Invalid parameters"
+
 #~ msgid "ViveMedellín - Tu Guía de la Ciudad"
 #~ msgstr "ViveMedellín - Your City Guide"
 
