@@ -39,7 +39,7 @@ class PlacesSitemap(Sitemap):
 
     def items(self):
         return Places.objects.indexables().only(
-            'slug', 'es_destacado', 'rating', 'id', 'fecha_actualizacion'
+            'slug', 'es_destacado', 'rating', 'id', 'fecha_actualizacion', 'contenido_actualizado'
         ).order_by("-es_destacado", "-rating", "-id")
 
     def location(self, obj):
@@ -56,11 +56,11 @@ class PlacesSitemap(Sitemap):
         return 0.7
 
     def lastmod(self, obj):
-        return obj.fecha_actualizacion if hasattr(obj, 'fecha_actualizacion') else None
+        return obj.contenido_actualizado or obj.fecha_actualizacion
 
     def get_latest_lastmod(self):
         # El índice lo pide por sección; el de Django recorre todas las fichas en Python.
-        return self.items().aggregate(latest=Max("fecha_actualizacion"))["latest"]
+        return self.items().aggregate(latest=Max("contenido_actualizado"))["latest"]
 
 
 class ComunasSitemap(Sitemap):

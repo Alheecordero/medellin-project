@@ -44,7 +44,7 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "{% if lugar.tipo == 'restaurant' %}Restaurant{% elif lugar.tipo == 'bar' or lugar.tipo == 'sports_bar' %}BarOrPub{% elif lugar.tipo == 'night_club' %}NightClub{% elif lugar.tipo == 'cafe' or lugar.tipo == 'coffee_shop' %}CafeOrCoffeeShop{% elif lugar.tipo == 'bakery' %}Bakery{% elif lugar.tipo == 'museum' %}Museum{% elif lugar.tipo == 'art_gallery' %}ArtGallery{% elif lugar.tipo == 'tourist_attraction' %}TouristAttraction{% else %}LocalBusiness{% endif %}",
+  "@type": "{{ lugar.schema_org_type }}",
   "@id": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}#business",
   "name": "{{ lugar.nombre|escapejs }}",
   "url": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}",
@@ -99,8 +99,8 @@
       "@type": "ListItem",
       "position": {{ forloop.counter }},
       "item": {
-        "@type": "LocalBusiness",
-        "name": "{{ lugar.nombre }}",
+        "@type": "{{ lugar.schema_org_type }}",
+        "name": "{{ lugar.nombre|escapejs }}",
         "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'explorer:lugares_detail' lugar.slug %}"{% if lugar.rating %},
         "aggregateRating": {
           "@type": "AggregateRating",

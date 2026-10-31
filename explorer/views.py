@@ -393,7 +393,16 @@ class HomeView(TemplateView):
         
         context['comuna_con_lugares'] = comuna_con_lugares
         context['lugares_imperdibles'] = self._get_lugares_imperdibles()
+        context['guias_home'] = self._get_guias_home()
         return context
+
+    def _get_guias_home(self):
+        from .models import CuratedGuide
+        return list(
+            CuratedGuide.objects.filter(publicado=True)
+            .select_related("zona")
+            .order_by("orden", "-fecha_creacion")
+        )
 
     def _get_lugares_imperdibles(self):
         """
@@ -591,6 +600,14 @@ class HomeView(TemplateView):
             'categorias_reales': categorias_reales,
             'etiquetas_especiales': etiquetas_especiales,
         }
+
+
+def _paginas_rastreables(actual, total):
+    """Saltos cortos y largos para que cualquier página quede a pocos clics de la primera."""
+    paginas = {1, total, actual}
+    for salto in (1, 2, 10, 50, 100):
+        paginas.update((actual - salto, actual + salto))
+    return sorted(p for p in paginas if 1 <= p <= total)
 
 
 class PlacesListView(ListView):
@@ -1008,7 +1025,19 @@ class PlacesListView(ListView):
         filtros_query = self.request.GET.copy()
         filtros_query.pop("page", None)
 
+        # Solo el listado sin filtros se pagina como páginas indexables con canonical propio;
+        # los filtros siguen noindex para no abrir combinaciones infinitas al rastreo.
+        page_obj = context.get("page_obj")
+        solo_paginacion = bool(context.get("is_paginated")) and not filtros_query
+        pagina_indexable = solo_paginacion and page_obj.number > 1
+
         context.update({
+            "pagina_indexable": pagina_indexable,
+            "pagina_query": f"?page={page_obj.number}" if pagina_indexable else "",
+            "paginas_rastreables": (
+                _paginas_rastreables(page_obj.number, page_obj.paginator.num_pages)
+                if solo_paginacion else []
+            ),
             "busqueda_actual": busqueda_actual,
             "tipo_actual": tipo_actual,
             "tipo_actual_label": tipo_actual_label,

@@ -126,6 +126,50 @@
     </article>
   </div>
 </section>
+
+{% with base_url=request.scheme|add:"://"|add:request.get_host page_url=request.scheme|add:"://"|add:request.get_host|add:request.path %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": "{{ page_url }}#article",
+      "headline": "{{ guia.titulo_i18n|escapejs }}",
+      "description": "{{ guia.descripcion_i18n|truncatechars:300|escapejs }}",
+      "inLanguage": "{{ LANGUAGE_CODE }}",
+      "datePublished": "{{ guia.fecha_creacion|date:'c' }}",
+      "dateModified": "{{ guia.fecha_actualizacion|date:'c' }}",
+      {% with cover=guia.get_cover_image %}{% if cover %}"image": "{{ cover|media_url|ensure_absolute_url:request }}",{% endif %}{% endwith %}
+      "author": {"@type": "Organization", "name": "ViveMedellín", "url": "{{ base_url }}/"},
+      "publisher": {
+        "@type": "Organization",
+        "name": "ViveMedellín",
+        "logo": {"@type": "ImageObject", "url": "{{ base_url }}{% static 'img/og-image.jpg' %}"}
+      },
+      "mainEntityOfPage": "{{ page_url }}",
+      "about": {"@id": "{{ page_url }}#lugares"}
+    },
+    {
+      "@type": "ItemList",
+      "@id": "{{ page_url }}#lugares",
+      "name": "{{ guia.titulo_i18n|escapejs }}",
+      "numberOfItems": {{ items|length }},
+      "itemListOrder": "https://schema.org/ItemListOrderAscending",
+      "itemListElement": [
+        {% for item in items %}{
+          "@type": "ListItem",
+          "position": {{ forloop.counter }},
+          "name": "{{ item.lugar.nombre|escapejs }}",
+          "url": "{{ base_url }}{% url 'explorer:lugares_detail' item.lugar.slug %}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }
+  ]
+}
+</script>
+{% endwith %}
 {% endblock %}
 
 {% block extra_js %}

@@ -152,9 +152,9 @@
       })();
     </script>
 
-    <!-- Canonical estable, sin query string -->
+    <!-- Canonical estable, sin query string (salvo ?page=N del listado sin filtros) -->
     {% if request %}
-      <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+      <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{{ pagina_query }}">
       {# Hreflang por url_name. NUNCA publicar /place/ sin /en/ (bug histórico GSC). #}
       {% if request.resolver_match %}
       {% with host=request.get_host scheme=request.scheme un=request.resolver_match.url_name %}
@@ -168,13 +168,13 @@
             <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/place/{{ lugar.slug }}/" />
             <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugar/{{ lugar.slug }}/" />
           {% elif un == "lugares_por_comuna" and region_actual %}
-            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugares/{{ region_actual.slug }}/" />
-            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/places/{{ region_actual.slug }}/" />
-            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugares/{{ region_actual.slug }}/" />
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugares/{{ region_actual.slug }}/{{ pagina_query }}" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/places/{{ region_actual.slug }}/{{ pagina_query }}" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugares/{{ region_actual.slug }}/{{ pagina_query }}" />
           {% elif un == "lugares_list" %}
-            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugares/" />
-            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/places/" />
-            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugares/" />
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugares/{{ pagina_query }}" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/places/{{ pagina_query }}" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugares/{{ pagina_query }}" />
           {% elif un == "guia_detail" and guia %}
             <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
             <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/{{ guia.slug }}/" />
@@ -202,13 +202,13 @@
             <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/place/{{ lugar.slug }}/" />
             <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugar/{{ lugar.slug }}/" />
           {% elif un == "lugares_por_comuna" and region_actual %}
-            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugares/{{ region_actual.slug }}/" />
-            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/places/{{ region_actual.slug }}/" />
-            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugares/{{ region_actual.slug }}/" />
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugares/{{ region_actual.slug }}/{{ pagina_query }}" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/places/{{ region_actual.slug }}/{{ pagina_query }}" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugares/{{ region_actual.slug }}/{{ pagina_query }}" />
           {% elif un == "lugares_list" %}
-            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugares/" />
-            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/places/" />
-            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugares/" />
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/lugares/{{ pagina_query }}" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/places/{{ pagina_query }}" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/lugares/{{ pagina_query }}" />
           {% elif un == "guia_detail" and guia %}
             <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
             <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/{{ guia.slug }}/" />

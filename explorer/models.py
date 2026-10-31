@@ -7,6 +7,8 @@ from django.contrib.gis.db import models as gis_models
 from django.core.cache import cache
 from django.db import models
 from django.db.models import Index, Q
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.contrib.postgres.indexes import GistIndex
 from django.urls import reverse
 from django.utils.text import slugify
@@ -179,6 +181,40 @@ class PlacesManager(models.Manager):
 # Modelos principales
 # ────────────────────────────────────────────────────────────────
 
+# Tipos de Google Places → schema.org. Los *_restaurant que no estén aquí son Restaurant.
+SCHEMA_ORG_TYPES = {
+    "fast_food_restaurant": "FastFoodRestaurant",
+    "bar": "BarOrPub",
+    "pub": "BarOrPub",
+    "sports_bar": "BarOrPub",
+    "bar_and_grill": "BarOrPub",
+    "wine_bar": "BarOrPub",
+    "cocktail_bar": "BarOrPub",
+    "night_club": "NightClub",
+    "cafe": "CafeOrCoffeeShop",
+    "coffee_shop": "CafeOrCoffeeShop",
+    "cafeteria": "CafeOrCoffeeShop",
+    "cat_cafe": "CafeOrCoffeeShop",
+    "dog_cafe": "CafeOrCoffeeShop",
+    "bakery": "Bakery",
+    "ice_cream_shop": "IceCreamShop",
+    "meal_takeaway": "FoodEstablishment",
+    "meal_delivery": "FoodEstablishment",
+    "food_court": "FoodEstablishment",
+    "sandwich_shop": "FoodEstablishment",
+    "dessert_shop": "FoodEstablishment",
+    "acai_shop": "FoodEstablishment",
+    "museum": "Museum",
+    "art_gallery": "ArtGallery",
+    "tourist_attraction": "TouristAttraction",
+    "observation_deck": "TouristAttraction",
+    "historical_landmark": "LandmarksOrHistoricalBuildings",
+    "event_venue": "EventVenue",
+    "karaoke": "EntertainmentBusiness",
+    "amusement_center": "EntertainmentBusiness",
+}
+
+
 class Tag(TagBase):
     """Modelo personalizado para las etiquetas."""
     class Meta:
@@ -332,10 +368,21 @@ class Places(models.Model):
 
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
+    contenido_actualizado = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Último cambio visible en la ficha (lastmod del sitemap). Rating y reseñas no lo mueven.",
+    )
 
     slug = models.SlugField(max_length=255, unique=True, blank=True, null=True, db_index=True)
 
     objects = PlacesManager()
+
+    # Rating, número de reseñas y textos de reseñas cambian casi a diario y no cuentan como contenido.
+    CAMPOS_CONTENIDO = (
+        "nombre", "tipo", "direccion", "descripcion", "horario_texto", "horario_json",
+        "sitio_web", "telefono", "precio", "tiene_fotos",
+    )
 
     class Meta:
         ordering = ["-weighted_rating", "-rating", "nombre"]
@@ -349,7 +396,33 @@ class Places(models.Model):
     # Métodos utilitarios
     # ───────────────────────────────────────────────
 
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance = super().from_db(db, field_names, values)
+        instance._contenido_cargado = instance._firma_contenido()
+        return instance
+
+    def _firma_contenido(self):
+        # Solo campos ya cargados: leer uno diferido aquí dispararía una consulta por fila.
+        return {f: self.__dict__[f] for f in self.CAMPOS_CONTENIDO if f in self.__dict__}
+
+    def _contenido_cambio(self, campos):
+        cargado = getattr(self, "_contenido_cargado", None)
+        if cargado is None:
+            return True
+        actual = self._firma_contenido()
+        return any(f in actual and actual[f] != cargado.get(f, actual[f]) for f in campos)
+
     def save(self, *args, **kwargs):
+        update_fields = kwargs.get("update_fields")
+        campos = self.CAMPOS_CONTENIDO if update_fields is None else [
+            f for f in self.CAMPOS_CONTENIDO if f in update_fields
+        ]
+        if self._contenido_cambio(campos):
+            self.contenido_actualizado = timezone.now()
+            if update_fields is not None:
+                kwargs["update_fields"] = {*update_fields, "contenido_actualizado"}
+
         # Generar slug único si no existe
         if not self.slug:
             base = slugify(self.nombre) or uuid4().hex[:8]
@@ -362,6 +435,7 @@ class Places(models.Model):
             self.slug = slug_candidate
 
         super().save(*args, **kwargs)
+        self._contenido_cargado = self._firma_contenido()
 
         # Invalidar caché relacionado (solo si el backend lo soporta)
         try:
@@ -377,6 +451,16 @@ class Places(models.Model):
     # URL canónico
     def get_absolute_url(self):
         return reverse("explorer:lugares_detail", kwargs={"slug": self.slug})
+
+    @property
+    def schema_org_type(self):
+        """Tipo de schema.org para el JSON-LD de la ficha."""
+        tipo = self.tipo or ""
+        if tipo in SCHEMA_ORG_TYPES:
+            return SCHEMA_ORG_TYPES[tipo]
+        if tipo == "restaurant" or tipo.endswith("_restaurant") or tipo == "steak_house":
+            return "Restaurant"
+        return "LocalBusiness"
 
     # Propiedades dinámicas
     @property
@@ -1378,3 +1462,20 @@ class PendingPlace(models.Model):
     def __str__(self):
         icon = {'pending': '⏳', 'processed': '✅', 'failed': '❌', 'skipped': '🚫'}.get(self.status, '?')
         return f"{icon} {self.nombre or self.place_id}"
+
+
+# ────────────────────────────────────────────────────────────────
+# Fotos y cartas nuevas también son contenido visible de la ficha
+# ────────────────────────────────────────────────────────────────
+
+@receiver(post_save, sender=Foto)
+def _foto_nueva_actualiza_ficha(sender, instance, created, **kwargs):
+    if created and instance.lugar_id:
+        Places._base_manager.filter(pk=instance.lugar_id).update(contenido_actualizado=timezone.now())
+
+
+@receiver(post_save, sender=PlacePartnerMenu)
+def _carta_nueva_actualiza_ficha(sender, instance, created, **kwargs):
+    # update_or_create guarda la carta en cada importación: solo cuenta la primera vez.
+    if created:
+        Places._base_manager.filter(pk=instance.lugar_id).update(contenido_actualizado=timezone.now())

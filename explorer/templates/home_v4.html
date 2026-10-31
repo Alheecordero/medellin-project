@@ -164,6 +164,7 @@
   {% endif %}
   {% endwith %}
 
+  {% if guias_home %}
   <section class="v4-section v4-section--guides">
     <div class="v4-container">
       <div class="v4-section__head">
@@ -174,24 +175,17 @@
         <a class="v4-section__link" href="{% url 'explorer:guias_index' %}">{% trans "Guías" %}</a>
       </div>
       <div class="v4-rail">
-        <a class="v4-guide" href="{% url 'explorer:lugares_list' %}?q=laureles">
-          <span class="v4-guide__tag">{% trans "Sábado" %}</span>
-          <h3 class="v4-guide__title">{% trans "Primera cita en Laureles" %}</h3>
+        {% for guia in guias_home %}
+        <a class="v4-guide" href="{{ guia.get_absolute_url }}" style="{% cycle '' 'background:#17324d' 'background:#3b1d18' %}">
+          <span class="v4-guide__tag">{% if guia.zona %}{{ guia.zona.name }}{% else %}{{ guia.get_categoria_display }}{% endif %}</span>
+          <h3 class="v4-guide__title">{{ guia.titulo_i18n }}</h3>
           <span class="v4-guide__cta">{% trans "Ver ruta" %} →</span>
         </a>
-        <a class="v4-guide" href="{% url 'explorer:lugares_list' %}?q=rooftop" style="background:#17324d">
-          <span class="v4-guide__tag">{% trans "Noche" %}</span>
-          <h3 class="v4-guide__title">{% trans "Rooftops con vista al valle" %}</h3>
-          <span class="v4-guide__cta">{% trans "Ver ruta" %} →</span>
-        </a>
-        <a class="v4-guide" href="{% url 'explorer:guias_index' %}" style="background:#3b1d18">
-          <span class="v4-guide__tag">{% trans "Local" %}</span>
-          <h3 class="v4-guide__title">{% trans "Donde van los paisas" %}</h3>
-          <span class="v4-guide__cta">{% trans "Ver ruta" %} →</span>
-        </a>
+        {% endfor %}
       </div>
     </div>
   </section>
+  {% endif %}
 
   <section class="v4-section v4-section--tips">
     <div class="v4-container">

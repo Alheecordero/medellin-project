@@ -7,7 +7,7 @@
 
 {# El listado controla sus propios tres anuncios para evitar duplicar el global. #}
 {% block global_ad %}{% endblock %}
-{% block meta_robots %}{% if busqueda_actual or request.GET.page %}noindex, follow, max-image-preview:large{% else %}index, follow, max-image-preview:large, max-snippet:-1{% endif %}{% endblock %}
+{% block meta_robots %}{% if pagina_indexable %}index, follow, max-image-preview:large, max-snippet:-1{% elif busqueda_actual or request.GET.page %}noindex, follow, max-image-preview:large{% else %}index, follow, max-image-preview:large, max-snippet:-1{% endif %}{% endblock %}
 
 {% block title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
 
@@ -253,6 +253,19 @@
                 <span class="places-pager__btn places-pager__btn--next is-off">{% trans "Siguiente" %}</span>
               {% endif %}
             </nav>
+            {% if paginas_rastreables %}
+              <nav class="places-pages" aria-label="{% trans 'Ir a la página' %}">
+                {% for numero in paginas_rastreables %}
+                  {% if numero == page_obj.number %}
+                    <span class="places-pages__item is-current" aria-current="page">{{ numero }}</span>
+                  {% elif numero == 1 %}
+                    <a class="places-pages__item" href="{{ request.path }}">1</a>
+                  {% else %}
+                    <a class="places-pages__item" href="?page={{ numero }}">{{ numero }}</a>
+                  {% endif %}
+                {% endfor %}
+              </nav>
+            {% endif %}
           {% endif %}
 
         {% else %}
@@ -1165,6 +1178,25 @@ body:has(.cerca-map-screen) .places-section { display: none; }
     white-space: nowrap;
   }
   .places-grid-card { padding-bottom: 3.25rem; }
+  .places-pages {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+    margin: 1.25rem 0 0;
+  }
+  .places-pages__item {
+    min-width: 2rem;
+    padding: 0.2rem 0.45rem;
+    border-radius: 999px;
+    color: rgba(11, 18, 32, 0.6);
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+  }
+  .places-pages__item:hover { background: rgba(11, 18, 32, 0.06); color: #0b1220; }
+  .places-pages__item.is-current { background: #0b1220; color: #fff; }
 @media (min-width: 992px) {
   .places-pager {
     bottom: calc(var(--v4-nav-h, 68px) + 1.35rem + env(safe-area-inset-bottom, 0px));

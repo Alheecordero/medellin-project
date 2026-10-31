@@ -6,6 +6,9 @@
 {# Las reseñas usan dos anuncios propios; no duplica el anuncio global. #}
 {% block global_ad %}{% endblock %}
 
+{# Repite contenido de la ficha: que Google indexe la ficha, no esta subpágina. #}
+{% block meta_robots %}noindex, follow, max-image-preview:large{% endblock %}
+
 {% block title %}{% trans "Reseñas de" %} {{ lugar.nombre }} | ViveMedellín{% endblock %}
 
 {% block meta_description %}
