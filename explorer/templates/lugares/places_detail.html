@@ -18,6 +18,8 @@
 {% endwith %}
 {% endblock %}
 
+{% block meta_robots %}{% if es_indexable %}index, follow, max-image-preview:large, max-snippet:-1{% else %}noindex, follow, max-image-preview:large{% endif %}{% endblock %}
+
 {% block meta_description %}{% firstof lugar.descripcion lugar.summary as descripcion_seo %}{{ lugar.nombre }}{% if lugar.rating %}, {{ lugar.rating|floatformat:1 }}/5{% endif %} - {{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if descripcion_seo %} {{ descripcion_seo|truncatechars:110 }}{% elif lugar.direccion %} {{ lugar.direccion|direccion_corta|truncatechars:80 }}{% endif %}{% endblock %}
 
 {% block meta_keywords %}

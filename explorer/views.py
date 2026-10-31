@@ -9,7 +9,7 @@ from django.db.models.functions import Rank
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponsePermanentRedirect, JsonResponse
 from django.utils import timezone
 import json
 import ipaddress
@@ -610,13 +610,45 @@ def _paginas_rastreables(actual, total):
     return sorted(p for p in paginas if 1 <= p <= total)
 
 
+FILTROS_ESPECIALES = (
+    'delivery', 'takeout', 'dine_in', 'outdoor_seating', 'live_music',
+    'allows_dogs', 'good_for_groups', 'good_for_children', 'serves_cocktails',
+    'serves_wine', 'serves_coffee', 'serves_dessert',
+    'wheelchair_accessible_entrance', 'accepts_credit_cards',
+)
+PARAMETROS_LISTA = {'page', 'q', 'tipo', 'area', 'comuna', 'lat', 'lng', 'radio', 'cerca', *FILTROS_ESPECIALES}
+
+
+def _query_limpia(get):
+    """Solo los parámetros que la lista entiende, sin vacíos.
+
+    Los bots que no decodifican &amp; piden ?page=2&amp;q=… y cada visita
+    alargaba la URL: era una trampa de rastreo infinita.
+    """
+    limpia = get.copy()
+    limpia.clear()
+    for clave in get.keys():
+        nombre = re.sub(r"^(amp;)+", "", clave)
+        valores = [v for v in get.getlist(clave) if v.strip()]
+        if nombre in PARAMETROS_LISTA and valores and nombre not in limpia:
+            limpia[nombre] = valores[0]
+    return limpia
+
+
 class PlacesListView(ListView):
     """Lista paginada de lugares - SIMPLIFICADA PARA QUE FUNCIONE."""
     template_name = "lugares/places_list.html"
     model = Places
     context_object_name = "lugares"
     paginate_by = 24
-    
+
+    def get(self, request, *args, **kwargs):
+        limpia = _query_limpia(request.GET)
+        if limpia.urlencode() != request.GET.urlencode():
+            destino = request.path + (f"?{limpia.urlencode()}" if limpia else "")
+            return HttpResponsePermanentRedirect(destino)
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         """Obtiene y filtra lugares según parámetros de búsqueda."""
         # Queryset base: con fotos, sin tipos irrelevantes, rating decente
@@ -1076,6 +1108,9 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         
         # 🚀 PROGRESSIVE LOADING: Solo cargar info esencial inicialmente
         
+        # Misma regla que el sitemap: lo que no mandamos a Google lleva noindex.
+        context['es_indexable'] = Places.objects.indexables().filter(pk=lugar.pk).exists()
+
         # Características del lugar (muy rápido - sin DB)
         context['caracteristicas'] = self._get_caracteristicas(lugar)
         

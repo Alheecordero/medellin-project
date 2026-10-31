@@ -155,15 +155,27 @@ class PlacesQuerySet(models.QuerySet):
     def indexables(self):
         """Fichas que mandamos a Google (sitemap).
 
-        Con fotos y algo que Maps no tiene: carta, rating ≥ 4 con ≥ 50 reseñas,
-        o un lugar en una guía publicada (malls y UVAs entran solo por la guía).
+        Con fotos y algo que Maps no tiene: carta (solo comida, café o noche y sin
+        rating malo), rating ≥ 4 con ≥ 50 reseñas, o un lugar en una guía publicada
+        (malls y UVAs entran solo por la guía). Nunca los cerrados para siempre.
         """
-        calidad = Q(carta__isnull=False) | Q(rating__gte=4.0, total_reviews__gte=50)
+        from explorer.utils.place_classify import _CAFE, _FOOD, _NIGHT
+
+        con_carta = Q(carta__isnull=False, tipo__in=_FOOD | _CAFE | _NIGHT) & (
+            Q(rating__isnull=True) | Q(rating__gte=3.5)
+        )
+        calidad = con_carta | Q(rating__gte=4.0, total_reviews__gte=50)
         en_guia = Q(en_guias__guia__publicado=True)
+        # Maps no rellena business_status en el scrape: el cierre viene en la categoría.
+        cerrado = GooglePlaceDetails.objects.filter(place_id=models.OuterRef("place_id")).filter(
+            Q(category__istartswith="Cerrado") | Q(business_status="CLOSED_PERMANENTLY")
+        )
         return self.filter(
             tiene_fotos=True, slug__isnull=False
         ).exclude(slug="").exclude(
             slug__regex=r'^-?\d+$'  # slugs basura: -1, 1, 338, etc.
+        ).exclude(tipo="otros").exclude(
+            models.Exists(cerrado)
         ).filter(
             (~_fuera_del_buscador() & calidad) | en_guia
         ).distinct()
