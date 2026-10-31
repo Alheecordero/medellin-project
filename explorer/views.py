@@ -1319,7 +1319,7 @@ class PlaceDetailView(FichaRetiradaMixin, DetailView, BasePlacesMixin):
         - Priorizando destacados y mejor rating
         """
         comuna_id = getattr(lugar, "comuna_osm_id", None)
-        cache_key = f"related_similares_{lugar.id}_{comuna_id}_{limit}_v2"
+        cache_key = f"related_similares_{lugar.id}_{comuna_id}_{limit}_v3"
         result = cache.get(cache_key)
         
         if result is None:
@@ -1361,6 +1361,17 @@ class PlaceDetailView(FichaRetiradaMixin, DetailView, BasePlacesMixin):
                 )
                 .order_by("-es_destacado", "-weighted_rating", "-rating")[:limit]
                 )
+
+            # Qué hacer no está en el buscador: sus similares son de su misma categoría (otro
+            # tour, otro museo), primero los de la zona. Si no, salían restaurantes.
+            categoria = next((tipos for tipos in QUE_HACER.values() if lugar.tipo in tipos), None)
+            if categoria:
+                misma = Places.objects.filter(tiene_fotos=True, tipo__in=categoria).exclude(id=lugar.id)
+                result = fetch_related(misma.filter(comuna_osm_id=comuna_id)) if comuna_id else []
+                if len(result) < limit:
+                    result += fetch_related(misma.exclude(id__in=[l.id for l in result]))[: limit - len(result)]
+                cache.set(cache_key, result, 3600)
+                return result
 
             result = fetch_related(qs)
             if not result and tags:

@@ -5,7 +5,8 @@ la ciudad, y su tipo principal no sirve (sale "sitio turístico" o "punto de int
 eso la lista es de nombres revisados a mano el 31 oct 2026: solo operadores de tours para
 quien visita Medellín. Aun así cada una pasa la misma vara de calidad del índice.
 
-Si una ya está publicada (Graffitour) solo le cambia el tipo. No llama a la API de Google ni
+Si una ya está publicada (Graffitour) solo le cambia el tipo. Con --retirar despublica las de
+FUERA (tiene_fotos=False: dan 404 y salen de todo); no borra la ficha. No llama a la API de Google ni
 descarga fotos. No borra nada.
 
   python manage.py publicar_tours --dry-run
@@ -27,32 +28,32 @@ from explorer.models import GooglePlaceDetails, PendingPlace, Places, RegionOSM
 TIPO = "tour_agency"
 RATING_MIN = 4.5
 RESENAS_MIN = 50  # la vara de Qué hacer: con menos no sale en la página ni en el sitemap
+# Revisadas en su web: venden viajes fuera de Medellín (Europa, Cancún, San Andrés, Capurganá,
+# paquetes nacionales), no tours en la ciudad. Se publicaron el 31 oct y se retiraron ese día.
+FUERA = (
+    "corazon-viajero", "suroeste-travel", "discovering-colombia-medellin",
+    "club-de-los-perdidos", "mari-andariega", "rutas-y-aventuras",
+)
 AGENCIAS = {
     _norm(n)
     for n in (
         "Tours Guatape SAS",
         "Turismo en Medellin",
         "Aquatour Guatapé SAS",
-        "Discovering Colombia Medellín",
-        "Rutas y Aventuras",
         "Graffitour SAG TOUR MEDELLIN",
         "Fly Colombia City Tour",
         "Operadora Turística Detour",
         "Comuna 13 - Graffiti tour Viajeros MAC",
-        "Corazon Viajero",
         "Rutas ON - El placer de rodar.",
         "Transporte & Turismo Medellin",
         "Super Tours Medellin",
         "Servicio de lanchas y helicóptero guatape",
-        "Suroeste Travel",
         "¡Graffitour comuna 13 Medellín!",
         "Movilcsent tours",
         "Tours by Locals Medellín",
         "Maoke Travel",
         "KOORA TRIP. (antes eramos Outdoors Guatape) W",
         "JJ NÁUTICA SAS - JJ EXPERIENCES",
-        "Mari Andariega",
-        "Club De Los Perdidos",
         "Guatapé Water Sports",
         "Carriquí Walking Tours",
         "YoAndoConNando | Local Concierge | Personal D",
@@ -102,8 +103,15 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--dry-run", action="store_true")
+        parser.add_argument("--retirar", action="store_true", help="despublica las de FUERA")
 
     def handle(self, *args, **options):
+        if options["retirar"]:
+            qs = Places._base_manager.filter(slug__in=FUERA, tiene_fotos=True)
+            self.stdout.write(f"a retirar: {', '.join(qs.values_list('slug', flat=True)) or 'ninguna'}")
+            if not options["dry_run"]:
+                self.stdout.write(f"retiradas {qs.update(tiene_fotos=False)}")
+            return
         elegidas, descartes = elegir()
         publicadas = {
             p.place_id: p for p in Places._base_manager.filter(place_id__in=[d.place_id for d in elegidas])
