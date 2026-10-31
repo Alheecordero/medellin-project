@@ -107,7 +107,7 @@
       </p>
     {% endif %}
     {% for nota in notas_guia %}
-      <p class="place-sheet__note">{{ nota }}</p>
+      <p class="place-sheet__note">{% if nota.texto %}{{ nota.texto }} {% endif %}<a href="{{ nota.url }}">{% blocktrans with guia=nota.guia %}En la guía «{{ guia }}»{% endblocktrans %}</a></p>
     {% endfor %}
 
     {% if lugar.get_fotos|length > 1 %}
@@ -173,7 +173,7 @@
         </a>
       {% endif %}
 
-      {% if horarios or lugar.horario_texto %}
+      {% if horario_filas %}
         <div class="place-sheet__hours">
           <button type="button" class="place-sheet__hours-toggle" id="hours-toggle" aria-expanded="false" aria-controls="scheduleList">
             <span class="place-sheet__label">
@@ -183,25 +183,12 @@
             <span class="place-sheet__hours-chevron" aria-hidden="true"></span>
           </button>
           <div class="schedule-list" id="scheduleList" hidden>
-            {% if horarios %}
-              {% for h in horarios %}
-                {% with linea=h.dia|add:": "|add:h.horario %}
-                  <div class="schedule-row" data-linea="{{ linea }}">
-                    <span class="day-text">{% trans "Cargando..." %}</span>
-                    <span class="hours-text">...</span>
-                  </div>
-                {% endwith %}
-              {% endfor %}
-            {% elif lugar.horario_texto %}
-              {% for linea in lugar.horario_texto.splitlines %}
-                {% if linea and linea != 'None' and linea.strip %}
-                  <div class="schedule-row" data-linea="{{ linea }}">
-                    <span class="day-text">{% trans "Cargando..." %}</span>
-                    <span class="hours-text">...</span>
-                  </div>
-                {% endif %}
-              {% endfor %}
-            {% endif %}
+            {% for fila in horario_filas %}
+              <div class="schedule-row">
+                <span class="day-text">{{ fila.dia }}</span>
+                <span class="hours-text">{{ fila.horas }}</span>
+              </div>
+            {% endfor %}
           </div>
         </div>
       {% endif %}
@@ -307,6 +294,10 @@
           {% elif not lugar.ubicacion %}
             <a class="place-explore__link" href="{% url 'explorer:lugares_list' %}?tipo={{ lugar.tipo }}">{% blocktrans with tipo=tipo_label %}{{ tipo }} en Medellín{% endblocktrans %}</a>
           {% endif %}
+          {% if lugar.comuna %}
+            <a class="place-explore__link" href="{% url 'explorer:lugares_por_comuna' lugar.comuna.slug %}">{% blocktrans with zona=lugar.comuna.name %}Lugares en {{ zona }}{% endblocktrans %}</a>
+          {% endif %}
+          <a class="place-explore__link" href="{% url 'explorer:guias_index' %}">{% trans "Guías de Medellín" %}</a>
         {% endwith %}
         <div class="place-claim">
           <p class="place-claim__title">
@@ -364,30 +355,6 @@ const gettext = window.gettext || (s => s);
     }
     copyToClipboard();
   });
-  // Schedule
-  const scheduleList = document.getElementById('scheduleList');
-  if (scheduleList) {
-    const items = Array.from(scheduleList.querySelectorAll('.schedule-row'));
-    const dayOrder = {'lunes':1,'monday':1,'martes':2,'tuesday':2,'miércoles':3,'miercoles':3,'wednesday':3,'jueves':4,'thursday':4,'viernes':5,'friday':5,'sábado':6,'sabado':6,'saturday':6,'domingo':7,'sunday':7};
-    const dayTr = {'lunes':'{% trans "Lunes" %}','martes':'{% trans "Martes" %}','miércoles':'{% trans "Miércoles" %}','miercoles':'{% trans "Miércoles" %}','jueves':'{% trans "Jueves" %}','viernes':'{% trans "Viernes" %}','sábado':'{% trans "Sábado" %}','sabado':'{% trans "Sábado" %}','domingo':'{% trans "Domingo" %}','monday':'{% trans "Lunes" %}','tuesday':'{% trans "Martes" %}','wednesday':'{% trans "Miércoles" %}','thursday':'{% trans "Jueves" %}','friday':'{% trans "Viernes" %}','saturday':'{% trans "Sábado" %}','sunday':'{% trans "Domingo" %}'};
-    items.forEach(item => {
-      const linea = item.dataset.linea;
-      if (linea) {
-        const parts = linea.split(':');
-        if (parts.length >= 2) {
-          const day = parts[0].trim().toLowerCase();
-          const hours = linea.substring(linea.indexOf(':') + 1).trim();
-          item.querySelector('.day-text').textContent = dayTr[day] || parts[0].trim();
-          item.querySelector('.hours-text').textContent = hours.replace(/cerrado/ig, '{% trans "Cerrado" %}');
-          item.dataset.order = dayOrder[day] || 999;
-        }
-      }
-    });
-    items.sort((a, b) => (parseInt(a.dataset.order) || 999) - (parseInt(b.dataset.order) || 999));
-    scheduleList.innerHTML = '';
-    items.forEach(i => scheduleList.appendChild(i));
-  }
-
   document.getElementById('hours-toggle')?.addEventListener('click', (event) => {
     const button = event.currentTarget;
     const list = document.getElementById('scheduleList');

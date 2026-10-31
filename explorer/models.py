@@ -1482,7 +1482,9 @@ class PendingPlace(models.Model):
 
 @receiver(post_save, sender=Foto)
 def _foto_nueva_actualiza_ficha(sender, instance, created, **kwargs):
-    if created and instance.lugar_id:
+    # Solo la primera foto cambia lo que se ve: el enriquecimiento añade fotos a diario
+    # y movía el lastmod de miles de fichas sin cambio real.
+    if created and instance.lugar_id and not Foto.objects.filter(lugar_id=instance.lugar_id).exclude(pk=instance.pk).exists():
         Places._base_manager.filter(pk=instance.lugar_id).update(contenido_actualizado=timezone.now())
 
 

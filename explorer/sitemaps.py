@@ -1,7 +1,16 @@
+from datetime import datetime, timezone as dt_timezone
+
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 from django.db.models import Max, Q
 from explorer.models import CuratedGuide, Places, RegionOSM
+
+# vivemedellin.net existe desde el 9 ago 2026: una fecha anterior no es creíble para Google.
+LANZAMIENTO = datetime(2026, 8, 9, tzinfo=dt_timezone.utc)
+
+
+def _desde_lanzamiento(fecha):
+    return max(fecha, LANZAMIENTO) if fecha else None
 
 
 class StaticViewSitemap(Sitemap):
@@ -56,11 +65,11 @@ class PlacesSitemap(Sitemap):
         return 0.7
 
     def lastmod(self, obj):
-        return obj.contenido_actualizado or obj.fecha_actualizacion
+        return _desde_lanzamiento(obj.contenido_actualizado or obj.fecha_actualizacion)
 
     def get_latest_lastmod(self):
         # El índice lo pide por sección; el de Django recorre todas las fichas en Python.
-        return self.items().aggregate(latest=Max("contenido_actualizado"))["latest"]
+        return _desde_lanzamiento(self.items().aggregate(latest=Max("contenido_actualizado"))["latest"])
 
 
 class ComunasSitemap(Sitemap):

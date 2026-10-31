@@ -724,6 +724,8 @@
 }
 </style>
 
+{# Deja la cookie csrftoken para el botón de traducir (la ficha y la home ya no la ponen). #}
+<div hidden>{% csrf_token %}</div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Animación simple

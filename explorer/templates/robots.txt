@@ -19,8 +19,6 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /en/api/
 Disallow: /i18n/
-Disallow: /jsi18n/
-Disallow: /en/jsi18n/
 Disallow: /__debug__/
 Disallow: /local/
 Disallow: /static/admin/

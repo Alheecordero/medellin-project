@@ -190,7 +190,6 @@
   <section class="v4-section v4-section--tips">
     <div class="v4-container">
       <form class="v4-tips" method="post" action="{% url 'explorer:newsletter_subscribe' %}" novalidate data-error="{% trans 'No se pudo guardar. Inténtalo de nuevo.' %}">
-        {% csrf_token %}
         <div class="v4-tips__copy">
           <h2 class="v4-tips__title">{% trans "Tips de Medellín" %} <span aria-hidden="true">✨</span></h2>
           <p>{% trans "Recomendaciones locales, rincones y planes. Una vez al mes. Sin spam." %}</p>

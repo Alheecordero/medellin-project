@@ -72,6 +72,7 @@
     "reviewCount": {{ lugar.total_reviews }}
   },{% endif %}
   {% if lugar.precio %}"priceRange": "{{ lugar.precio|format_price_range|escapejs }}",{% endif %}
+  {% if horario_schema %}"openingHoursSpecification": {{ horario_schema|safe }},{% endif %}
   "currenciesAccepted": "COP",
   "paymentAccepted": "{% if lugar.accepts_credit_cards %}Credit Card, {% endif %}Cash",
   {% if lugar.serves_cocktails or lugar.serves_wine or lugar.serves_beer %}"servesCuisine": "{% if lugar.serves_cocktails %}Cocktails{% endif %}{% if lugar.serves_wine %}, Wine{% endif %}{% if lugar.serves_beer %}, Beer{% endif %}",{% endif %}

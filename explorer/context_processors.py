@@ -1,3 +1,6 @@
+import time
+from pathlib import Path
+
 from .models import RegionOSM
 from django.core.cache import cache
 from django.utils.text import slugify
@@ -39,9 +42,25 @@ def comunas_context_optimized(request):
     )
     return {'comunas': comunas}
 
+def _version_estaticos():
+    """Commit desplegado (o hora de arranque): cambia en cada deploy, no cada minuto."""
+    git = Path(settings.BASE_DIR) / '.git'
+    try:
+        head = (git / 'HEAD').read_text().strip()
+        if head.startswith('ref: '):
+            head = (git / head[5:]).read_text().strip()
+        return head[:10]
+    except OSError:
+        return str(int(time.time()))
+
+
+STATIC_BUST = _version_estaticos()
+
+
 def settings_context(request):
     """Context processor para hacer settings específicas disponibles en templates"""
     return {
+        'STATIC_BUST': STATIC_BUST,
         'adsense_allowed': True,
         'vibe_v4': getattr(settings, 'VIBE_V4', False),
         'settings': {

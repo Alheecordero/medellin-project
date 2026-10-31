@@ -17,6 +17,7 @@ import random
 from pgvector.django import CosineDistance
 from django.views import View
 from django.utils.translation import gettext as _, ngettext, get_language
+from explorer.utils.horarios import filas_horario, opening_hours_spec
 from explorer.utils.media_urls import resolve_media_url
 from explorer.utils.types import get_localized_place_type, get_localized_place_type_from_code
 from django.conf import settings
@@ -1114,8 +1115,12 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         # Características del lugar (muy rápido - sin DB)
         context['caracteristicas'] = self._get_caracteristicas(lugar)
         
-        # Horarios formateados (muy rápido - solo procesamiento)
-        context['horarios'] = self._format_horarios(lugar)
+        # Horario pintado en el servidor (Google no espera al JavaScript) y en el JSON-LD
+        horarios = self._format_horarios(lugar)
+        texto = "\n".join(f"{h['dia']}: {h['horario']}" for h in horarios) or lugar.horario_texto
+        context['horario_filas'] = filas_horario(texto)
+        spec = opening_hours_spec(context['horario_filas'])
+        context['horario_schema'] = json.dumps(spec, ensure_ascii=False) if spec else ''
         
         # Renderizar una muestra de enlaces relacionados en el HTML inicial.
         # Google puede descubrirlos sin depender de JavaScript; AJAX completa
@@ -1175,7 +1180,10 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         return carta, secciones
 
     def _notas_guia(self, lugar):
-        """Frases cortas de las guías publicadas que incluyen este lugar."""
+        """Guías publicadas que incluyen este lugar, con su frase y el enlace.
+
+        Google llega a las guías desde las fichas: el enlace va en HTML.
+        """
         from .models import CuratedGuideItem
 
         notas = []
@@ -1183,16 +1191,18 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         items = (
             CuratedGuideItem.objects
             .filter(lugar=lugar, guia__publicado=True)
-            .exclude(comentario='')
             .select_related('guia')
             .order_by('guia__orden', 'posicion')
         )
         for item in items:
-            texto = (item.comentario_i18n or '').strip()
-            if not texto or texto in vistas:
+            if item.guia_id in vistas:
                 continue
-            vistas.add(texto)
-            notas.append(texto)
+            vistas.add(item.guia_id)
+            notas.append({
+                'texto': (item.comentario_i18n or '').strip(),
+                'guia': item.guia.titulo_i18n,
+                'url': item.guia.get_absolute_url(),
+            })
         return notas
     
     def _get_lugares_cercanos(self, lugar, distance=500, limit=3):
@@ -2983,6 +2993,7 @@ def contact(request):
     return render(request, 'legal/contact.html')
 
 
+@csrf_exempt  # La home no lleva csrf_token para poder cachearse; solo guarda un correo y tiene rate limit.
 @require_POST
 @rate_limit(requests_per_minute=8, key_prefix='newsletter')
 def newsletter_subscribe(request):
