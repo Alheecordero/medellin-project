@@ -305,12 +305,15 @@
       {% endif %}
       <div class="place-explore">
         {% with tipo_label=lugar|place_type_label %}
-          {% if lugar.ubicacion %}
+          {% if categoria_que_hacer %}
+            <a class="place-explore__link" href="{% url 'explorer:que_hacer_categoria' categoria_que_hacer.slug %}">{% blocktrans with categoria=categoria_que_hacer.titulo %}{{ categoria }} en Medellín{% endblocktrans %}</a>
+            <a class="place-explore__link" href="{% url 'explorer:que_hacer' %}">{% trans "Qué hacer en Medellín" %}</a>
+          {% elif lugar.ubicacion %}
             {% with lat=lugar.ubicacion.y|unlocalize lng=lugar.ubicacion.x|unlocalize %}
             <a class="place-explore__link" rel="nofollow" href="{% url 'explorer:lugares_list' %}?cerca=1&lat={{ lat }}&lng={{ lng }}&tipo={{ lugar.tipo }}">{% blocktrans with tipo=tipo_label %}Más {{ tipo }} cerca{% endblocktrans %}</a>
             {% endwith %}
           {% endif %}
-          {% if lugar.comuna %}
+          {% if lugar.comuna and not categoria_que_hacer %}
             <a class="place-explore__link" href="{% url 'explorer:lugares_por_comuna' lugar.comuna.slug %}?tipo={{ lugar.tipo }}">{% blocktrans with tipo=tipo_label zona=lugar.comuna.name %}{{ tipo }} en {{ zona }}{% endblocktrans %}</a>
           {% elif not lugar.ubicacion %}
             <a class="place-explore__link" href="{% url 'explorer:lugares_list' %}?tipo={{ lugar.tipo }}">{% blocktrans with tipo=tipo_label %}{{ tipo }} en Medellín{% endblocktrans %}</a>

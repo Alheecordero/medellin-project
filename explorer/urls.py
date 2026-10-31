@@ -41,6 +41,8 @@ urlpatterns = [
     # ────────────────────────────────────────────────────────────────────────
     # Guías Curadas
     # ────────────────────────────────────────────────────────────────────────
+    path(pgettext_lazy('url', 'que-hacer/'), views.que_hacer, name='que_hacer'),
+    path(pgettext_lazy('url', 'que-hacer/<slug:categoria>/'), views.que_hacer_categoria, name='que_hacer_categoria'),
     path(pgettext_lazy('url', 'guias/'), views.guias_index, name='guias_index'),
     path(pgettext_lazy('url', 'guias/centros-comerciales/'), views.centros_comerciales, name='centros_comerciales'),
     path(pgettext_lazy('url', 'guias/centros-comerciales/<slug:slug>/'), views.centro_comercial_detail, name='centro_comercial_detail'),

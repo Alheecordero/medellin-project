@@ -49,6 +49,7 @@
     <a href="{% url 'explorer:lugares_list' %}?tipo=night_club">{% trans "Vida nocturna" %}</a>
     <a href="{% url 'explorer:lugares_list' %}?live_music=true">{% trans "Música en vivo" %}</a>
     <a href="{% url 'explorer:lugares_list' %}?outdoor_seating=true">{% trans "Con terraza" %}</a>
+    <a href="{% url 'explorer:que_hacer' %}">{% trans "Qué hacer" %}</a>
     <p class="v4-more-sheet__label">{% trans "Empresa" %}</p>
     {% if LANGUAGE_CODE|slice:":2" == 'en' %}
     <a href="{% url 'explorer:about' %}">{% trans "Nosotros" %}</a>

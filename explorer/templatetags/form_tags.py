@@ -44,6 +44,9 @@ def translate_url_to(context, language_code):
             (r'^/busqueda-semantica/', '/en/semantic-search/'),
             # Reviews con slug (con ñ URL-encoded o no)
             (r'^/lugar/([^/]+)/rese[ñ%C3%B1]as/$', r'/en/place/\1/reviews/'),
+            # Qué hacer
+            (r'^/que-hacer/([^/]+)/$', r'/en/things-to-do/\1/'),
+            (r'^/que-hacer/$', '/en/things-to-do/'),
             # Centros comerciales (antes que las guías)
             (r'^/guias/centros-comerciales/([^/]+)/$', r'/en/guides/malls/\1/'),
             (r'^/guias/centros-comerciales/$', '/en/guides/malls/'),
@@ -87,6 +90,9 @@ def translate_url_to(context, language_code):
             (r'^/semantic-search/', '/busqueda-semantica/'),
             # Reviews con slug
             (r'^/place/([^/]+)/reviews/$', r'/lugar/\1/reseñas/'),
+            # Qué hacer
+            (r'^/things-to-do/([^/]+)/$', r'/que-hacer/\1/'),
+            (r'^/things-to-do/$', '/que-hacer/'),
             # Centros comerciales (antes que las guías)
             (r'^/guides/malls/([^/]+)/$', r'/guias/centros-comerciales/\1/'),
             (r'^/guides/malls/$', '/guias/centros-comerciales/'),

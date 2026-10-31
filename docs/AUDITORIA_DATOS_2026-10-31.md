@@ -121,3 +121,17 @@ Todas las fichas se crearon en 2025 salvo las 500 del lote de octubre de 2026.
 - `import_medellin_enrich` ya no pisa el horario semanal con el estado del momento (bug 6 de la
   auditoría de bugs).
 - Pendiente de tu decisión: los 4.813 registros sin fotos. No se borra nada sin tu confirmación.
+
+**Qué hacer hecho en código (31 oct, sin desplegar).**
+- Tipos nuevos en `PLACE_TYPE_CHOICES` (museo, parque, iglesia, estadio, teatro…; migración 0043
+  solo de estado) y `QUE_HACER` con cuatro categorías: lugares emblemáticos, museos y cultura,
+  parques y naturaleza, miradores. Salen del buscador de comida y entran al índice por su propia
+  regla (rating ≥ 4 con 50+ reseñas).
+- Comando `publicar_que_hacer`: 252 lugares elegidos de las fichas de Maps (74 emblemáticos, 80 de
+  museos y cultura, 74 de parques y naturaleza, 24 miradores). Mínimo de reseñas por tipo (parques
+  1.000, iglesias 1.500, museos 100…), rating 4,3+, 3+ fotos, dentro de una de nuestras zonas, sin
+  repetidos y sin lo que Maps clasifica mal (gimnasios, canchas, oficinas, un centro comercial…).
+- Páginas `/que-hacer/` y `/que-hacer/<categoría>/` (`/en/things-to-do/…`), en el menú superior,
+  en "Más" y en Guías. La ficha de un museo o un parque enlaza a su categoría en vez del buscador.
+- Quedan para después: guías editoriales con este material (Comuna 13, museos, miradores) y el
+  bloque de agencias de tours.

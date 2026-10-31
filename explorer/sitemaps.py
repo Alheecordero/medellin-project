@@ -4,7 +4,7 @@ from datetime import datetime, timezone as dt_timezone
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 from django.db.models import Max, Q
-from explorer.models import CentroComercial, CuratedGuide, Places, RegionOSM
+from explorer.models import QUE_HACER, CentroComercial, CuratedGuide, Places, RegionOSM
 
 # vivemedellin.net existe desde el 9 ago 2026: una fecha anterior no es creíble para Google.
 LANZAMIENTO = datetime(2026, 8, 9, tzinfo=dt_timezone.utc)
@@ -129,6 +129,25 @@ class GuidesSitemapEN(GuidesSitemap):
 
     def location(self, obj):
         return f"/en/guides/{obj.slug}/"
+
+
+class QueHacerSitemap(Sitemap):
+    """Índice de Qué hacer y sus categorías."""
+    changefreq = "weekly"
+    priority = 0.7
+
+    def items(self):
+        return [None, *QUE_HACER]
+
+    def location(self, categoria):
+        if categoria is None:
+            return reverse("explorer:que_hacer")
+        return reverse("explorer:que_hacer_categoria", args=[categoria])
+
+
+class QueHacerSitemapEN(QueHacerSitemap):
+    def location(self, categoria):
+        return f"/en/things-to-do/{categoria}/" if categoria else "/en/things-to-do/"
 
 
 class CentrosComercialesSitemap(Sitemap):

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
+{% block meta_description %}{{ descripcion_pagina }}{% endblock %}
+{% block og_title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
+{% block og_description %}{{ descripcion_pagina }}{% endblock %}
+{% block og_image %}{% with foto=portada.get_primera_foto %}{% if foto %}{{ foto.imagen_mediana|default:foto.imagen }}{% else %}{{ block.super }}{% endif %}{% endwith %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/guias.css' %}?v={{ STATIC_BUST }}">
+{% include 'components/schema_org.html' with schema_type='list' lugares=lugares titulo_pagina=titulo_pagina descripcion_pagina=descripcion_pagina %}
+{% endblock %}
+
+{% block content %}
+<div class="gx">
+
+  <header class="gx-cover">
+    {% with foto=portada.get_primera_foto %}{% if foto %}<img src="{{ foto.imagen_mediana|default:foto.imagen }}" alt="" fetchpriority="high">{% endif %}{% endwith %}
+    <div class="gx-cover-body">
+      <p class="gx-kicker">ViveMedellín · {% trans "Qué hacer" %}</p>
+      <h1 class="gx-title">{{ titulo_pagina }}</h1>
+    </div>
+  </header>
+
+  <div class="gx-hero gx-hero--tras-portada">
+    <p class="gx-lead">{{ descripcion_pagina }}</p>
+    <ul class="gx-stats">
+      <li><strong>{{ total_lugares }}</strong>{% trans "planes" %}</li>
+      {% for categoria in categorias %}<li><strong>{{ categoria.total }}</strong>{{ categoria.titulo|lower }}</li>{% endfor %}
+    </ul>
+  </div>
+
+  <nav class="gx-nav" aria-label="{% trans 'Categorías' %}">
+    {% for categoria in categorias %}
+      <a class="gx-pill" href="#{{ categoria.slug }}">{{ categoria.titulo }} <small>{{ categoria.total }}</small></a>
+    {% endfor %}
+    <a class="gx-pill" href="{% url 'explorer:guias_index' %}#escapadas">{% trans "Escapadas" %}</a>
+  </nav>
+
+  {% for categoria in categorias %}
+  <section class="gx-block" id="{{ categoria.slug }}">
+    <div class="gx-block-head">
+      <div>
+        <h2 class="gx-h2">{{ categoria.titulo }} <small>{{ categoria.total }}</small></h2>
+        <p class="gx-block-lead">{{ categoria.descripcion }}</p>
+      </div>
+      <a class="gx-more" href="{% url 'explorer:que_hacer_categoria' categoria.slug %}">{% blocktrans count n=categoria.total %}Ver {{ n }}{% plural %}Ver los {{ n }}{% endblocktrans %} →</a>
+    </div>
+    <div class="gx-places">
+      {% for lugar in categoria.lugares %}{% include "guias/_lugar_card.html" %}{% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+
+  <section class="gx-block gx-band">
+    <div class="gx-block-head">
+      <div>
+        <h2 class="gx-h2">{% trans "¿Y después?" %}</h2>
+        <p class="gx-block-lead">{% trans "Dónde comer cerca, guías por zona y escapadas de un día." %}</p>
+      </div>
+    </div>
+    <p class="gx-actions">
+      <a class="gx-btn" href="{% url 'explorer:guias_index' %}">{% trans "Ver las guías" %} →</a>
+      <a class="gx-btn gx-btn--line" href="{% url 'explorer:lugares_list' %}">{% trans "Dónde comer" %}</a>
+    </p>
+  </section>
+
+</div>
+{% endblock %}

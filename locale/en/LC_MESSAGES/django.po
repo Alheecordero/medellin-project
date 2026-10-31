@@ -3531,6 +3531,157 @@ msgstr "%(nombre)s has closed permanently."
 msgid "Según Google Maps, este lugar cerró de forma permanente. Te dejamos opciones cerca."
 msgstr "According to Google Maps, this place has closed permanently. Here are some options nearby."
 
+#: explorer/que_hacer
+#, python-format
+msgid "%(categoria)s en Medellín"
+msgstr "%(categoria)s in Medellín"
+
+#: explorer/que_hacer
+msgid "Categoría no encontrada"
+msgstr "Category not found"
+
+#: explorer/que_hacer
+msgid "Categorías"
+msgstr "Categories"
+
+#: explorer/que_hacer
+msgid "Dónde comer"
+msgstr "Where to eat"
+
+#: explorer/que_hacer
+msgid "Dónde comer cerca, guías por zona y escapadas de un día."
+msgstr "Where to eat nearby, area guides and day trips."
+
+#: explorer/que_hacer
+msgid "Las mejores vistas del valle de Aburrá."
+msgstr "The best views of the Aburrá Valley."
+
+#: explorer/que_hacer
+msgid "Lugares emblemáticos"
+msgstr "Landmarks"
+
+#: explorer/que_hacer
+msgid "Miradores"
+msgstr "Viewpoints"
+
+#: explorer/que_hacer
+msgid "Museos y cultura"
+msgstr "Museums and culture"
+
+#: explorer/que_hacer
+msgid "Museos, teatros, galerías y casas de la cultura."
+msgstr "Museums, theaters, galleries and cultural centers."
+
+#: explorer/que_hacer
+msgid "Otras categorías"
+msgstr "Other categories"
+
+#: explorer/que_hacer
+msgid "Parques y naturaleza"
+msgstr "Parks and nature"
+
+#: explorer/que_hacer
+msgid "Parques, cerros, ecoparques y planes al aire libre."
+msgstr "Parks, hills, eco-parks and outdoor plans."
+
+#: explorer/que_hacer
+msgid "Plazas, monumentos, iglesias y los sitios que nadie se pierde."
+msgstr "Squares, monuments, churches and the places nobody misses."
+
+#: explorer/que_hacer
+msgid "Qué hacer"
+msgstr "Things to do"
+
+#: explorer/que_hacer
+msgid "Qué hacer en Medellín"
+msgstr "Things to do in Medellín"
+
+#: explorer/que_hacer
+msgid "Ver las guías"
+msgstr "See the guides"
+
+#: explorer/que_hacer
+#, python-format
+msgid "en %(zona)s"
+msgstr "in %(zona)s"
+
+#: explorer/que_hacer
+msgid "planes"
+msgstr "things to do"
+
+#: explorer/que_hacer
+msgid "¿Y después?"
+msgstr "What's next?"
+
+#: explorer/que_hacer
+#, python-format
+msgid "Los planes mejor valorados de Medellín y sus alrededores: %(n)s museos, parques, miradores y lugares emblemáticos, con fotos, horarios y cómo llegar."
+msgstr "The best rated things to do in and around Medellín: %(n)s museums, parks, viewpoints and landmarks, with photos, opening hours and directions."
+
+#: explorer/que_hacer
+msgid "Parque de diversiones"
+msgstr "Amusement park"
+
+#: explorer/que_hacer
+msgid "Galería de arte"
+msgstr "Art gallery"
+
+#: explorer/que_hacer
+msgid "Jardín botánico"
+msgstr "Botanical garden"
+
+#: explorer/que_hacer
+msgid "Iglesia"
+msgstr "Church"
+
+#: explorer/que_hacer
+msgid "Sendero"
+msgstr "Trail"
+
+#: explorer/que_hacer
+msgid "Museo"
+msgstr "Museum"
+
+#: explorer/que_hacer
+msgid "Parque"
+msgstr "Park"
+
+#: explorer/que_hacer
+msgid "Teatro"
+msgstr "Theater"
+
+#: explorer/que_hacer
+msgid "Estadio"
+msgstr "Stadium"
+
+#: explorer/que_hacer
+msgid "Atracción turística"
+msgstr "Tourist attraction"
+
+#: explorer/que_hacer
+#, python-format
+msgid "%(n)s lugar de %(categoria)s en Medellín y alrededores. %(desc)s"
+msgid_plural "%(n)s lugares de %(categoria)s en Medellín y alrededores. %(desc)s"
+msgstr[0] "%(n)s %(categoria)s place in and around Medellín. %(desc)s"
+msgstr[1] "%(n)s %(categoria)s places in and around Medellín. %(desc)s"
+
+#: explorer/que_hacer
+#, python-format
+msgid "Ver %(n)s"
+msgid_plural "Ver los %(n)s"
+msgstr[0] "See %(n)s"
+msgstr[1] "See all %(n)s"
+
+#: explorer/urls.py
+msgctxt "url"
+msgid "que-hacer/"
+msgstr "things-to-do/"
+
+#: explorer/urls.py
+msgctxt "url"
+msgid "que-hacer/<slug:categoria>/"
+msgstr "things-to-do/<slug:categoria>/"
+
 #~ msgid "ViveMedellín - Tu Guía de la Ciudad"
 #~ msgstr "ViveMedellín - Your City Guide"
 

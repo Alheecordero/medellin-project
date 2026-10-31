@@ -178,6 +178,14 @@
             <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
             <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/{{ guia.slug }}/" />
             <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
+          {% elif un == "que_hacer" %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/que-hacer/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/things-to-do/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/que-hacer/" />
+          {% elif un == "que_hacer_categoria" and categoria %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/que-hacer/{{ categoria.slug }}/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/things-to-do/{{ categoria.slug }}/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/que-hacer/{{ categoria.slug }}/" />
           {% elif un == "centro_comercial_detail" and centro %}
             <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/centros-comerciales/{{ centro.slug }}/" />
             <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/malls/{{ centro.slug }}/" />
@@ -220,6 +228,14 @@
             <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
             <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/{{ guia.slug }}/" />
             <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
+          {% elif un == "que_hacer" %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/que-hacer/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/things-to-do/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/que-hacer/" />
+          {% elif un == "que_hacer_categoria" and categoria %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/que-hacer/{{ categoria.slug }}/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/things-to-do/{{ categoria.slug }}/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/que-hacer/{{ categoria.slug }}/" />
           {% elif un == "centro_comercial_detail" and centro %}
             <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/centros-comerciales/{{ centro.slug }}/" />
             <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/malls/{{ centro.slug }}/" />

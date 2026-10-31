@@ -25,6 +25,14 @@
          class="site-topbar__link {% if 'lugares' in request.resolver_match.url_name|default:'' or 'places' in request.resolver_match.url_name|default:'' %}active{% endif %}">
         {% trans "Explorar" %}
       </a>
+      <a href="{% url 'explorer:que_hacer' %}"
+         class="site-topbar__link {% if 'que_hacer' in request.resolver_match.url_name|default:'' %}active{% endif %}">
+        {% trans "Qué hacer" %}
+      </a>
+      <a href="{% url 'explorer:guias_index' %}"
+         class="site-topbar__link {% if 'guia' in request.resolver_match.url_name|default:'' or 'centro' in request.resolver_match.url_name|default:'' %}active{% endif %}">
+        {% trans "Guías" %}
+      </a>
       {% if LANGUAGE_CODE|slice:":2" == 'en' %}
         <a href="{% url 'explorer:about' %}"
            class="site-topbar__link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">
@@ -77,6 +85,14 @@
     <a href="{% url 'explorer:lugares_list' %}"
        class="site-topbar__mobile-link {% if 'lugares' in request.resolver_match.url_name|default:'' or 'places' in request.resolver_match.url_name|default:'' %}active{% endif %}">
       {% trans "Explorar" %}
+    </a>
+    <a href="{% url 'explorer:que_hacer' %}"
+       class="site-topbar__mobile-link {% if 'que_hacer' in request.resolver_match.url_name|default:'' %}active{% endif %}">
+      {% trans "Qué hacer" %}
+    </a>
+    <a href="{% url 'explorer:guias_index' %}"
+       class="site-topbar__mobile-link {% if 'guia' in request.resolver_match.url_name|default:'' or 'centro' in request.resolver_match.url_name|default:'' %}active{% endif %}">
+      {% trans "Guías" %}
     </a>
     {% if LANGUAGE_CODE|slice:":2" == 'en' %}
       <a href="{% url 'explorer:about' %}"

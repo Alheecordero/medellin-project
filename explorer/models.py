@@ -109,14 +109,34 @@ PLACE_TYPE_CHOICES = (
     ("vietnamese_restaurant", "Restaurante vietnamita"),
     ("wellness_center", "Centro de bienestar"),
     ("wine_bar", "Bar de vinos"),
+    # Qué hacer (ver QUE_HACER)
+    ("amusement_park", "Parque de diversiones"),
+    ("art_gallery", "Galería de arte"),
+    ("botanical_garden", "Jardín botánico"),
+    ("church", "Iglesia"),
+    ("hiking_area", "Sendero"),
+    ("museum", "Museo"),
+    ("park", "Parque"),
+    ("performing_arts_theater", "Teatro"),
+    ("stadium", "Estadio"),
+    ("tourist_attraction", "Atracción turística"),
     ("otros", "Otros"),
 )
 # ────────────────────────────────────────────────────────────────
 # QuerySets & Managers
 # ────────────────────────────────────────────────────────────────
 
-# Paradas de guía que no son un restaurante. No entran al buscador.
-TIPOS_FUERA_DEL_BUSCADOR = (
+# Sección "Qué hacer": categoría (slug de la URL) → tipos de Places. El orden es el de la página.
+QUE_HACER = {
+    "lugares-emblematicos": ("tourist_attraction", "historical_landmark", "stadium", "church"),
+    "museos-y-cultura": ("museum", "art_gallery", "cultural_center", "performing_arts_theater"),
+    "parques-y-naturaleza": ("park", "hiking_area", "botanical_garden", "amusement_park"),
+    "miradores": ("observation_deck",),
+}
+TIPOS_QUE_HACER = tuple(t for tipos in QUE_HACER.values() for t in tipos)
+
+# Paradas de guía que no son un restaurante. No entran al buscador (Qué hacer tiene el suyo).
+TIPOS_FUERA_DEL_BUSCADOR = TIPOS_QUE_HACER + (
     "shopping_mall",
     "park",
     "city_park",
@@ -163,7 +183,8 @@ class PlacesQuerySet(models.QuerySet):
 
         Con fotos y algo que Maps no tiene: carta (solo comida, café o noche y sin
         rating malo), rating ≥ 4 con ≥ 50 reseñas, o un lugar en una guía publicada
-        (malls y UVAs entran solo por la guía). Nunca los cerrados para siempre.
+        (malls y UVAs entran solo por la guía). Los de Qué hacer, con rating ≥ 4 y
+        ≥ 50 reseñas. Nunca los cerrados para siempre.
         """
         from explorer.utils.place_classify import _CAFE, _FOOD, _NIGHT
 
@@ -172,6 +193,7 @@ class PlacesQuerySet(models.QuerySet):
         )
         calidad = con_carta | Q(rating__gte=4.0, total_reviews__gte=50)
         en_guia = Q(en_guias__guia__publicado=True)
+        que_hacer = Q(tipo__in=TIPOS_QUE_HACER, rating__gte=4.0, total_reviews__gte=50)
         # Maps no rellena business_status en el scrape: el cierre viene en la categoría.
         cerrado = GooglePlaceDetails.objects.filter(place_id=models.OuterRef("place_id")).filter(
             Q(category__istartswith="Cerrado") | Q(business_status="CLOSED_PERMANENTLY")
@@ -183,7 +205,7 @@ class PlacesQuerySet(models.QuerySet):
         ).exclude(tipo="otros").exclude(
             models.Exists(cerrado)
         ).filter(
-            (~_fuera_del_buscador() & calidad) | en_guia
+            (~_fuera_del_buscador() & calidad) | en_guia | que_hacer
         ).distinct()
 
 
@@ -239,6 +261,13 @@ SCHEMA_ORG_TYPES = {
     "event_venue": "EventVenue",
     "karaoke": "EntertainmentBusiness",
     "amusement_center": "EntertainmentBusiness",
+    "amusement_park": "AmusementPark",
+    "park": "Park",
+    "hiking_area": "Park",
+    "botanical_garden": "Park",
+    "church": "Church",
+    "stadium": "StadiumOrArena",
+    "performing_arts_theater": "PerformingArtsTheater",
 }
 
 

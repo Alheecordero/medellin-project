@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
+{% block meta_description %}{{ descripcion_pagina|truncatechars:160 }}{% endblock %}
+{% block og_title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
+{% block og_description %}{{ descripcion_pagina|truncatechars:160 }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/guias.css' %}?v={{ STATIC_BUST }}">
+{% include 'components/schema_org.html' with schema_type='list' lugares=lugares titulo_pagina=titulo_pagina descripcion_pagina=descripcion_pagina %}
+{% endblock %}
+
+{% block content %}
+<div class="gx">
+
+  <header class="gx-hero">
+    <ol class="gx-crumbs">
+      <li><a href="{% url 'explorer:que_hacer' %}">{% trans "Qué hacer" %}</a></li>
+      <li>{{ categoria.titulo }}</li>
+    </ol>
+    <h1 class="gx-title">{{ titulo_pagina }}</h1>
+    <p class="gx-lead">{{ categoria.descripcion }}</p>
+    {% if zonas %}
+    <ul class="gx-stats">
+      <li><strong>{{ lugares|length }}</strong>{% trans "lugares" %}</li>
+      {% for zona, n in zonas|slice:":3" %}<li><strong>{{ n }}</strong>{% blocktrans %}en {{ zona }}{% endblocktrans %}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </header>
+
+  <nav class="gx-nav" aria-label="{% trans 'Otras categorías' %}">
+    {% for otra in otras %}
+      <a class="gx-pill" href="{% url 'explorer:que_hacer_categoria' otra.slug %}">{{ otra.titulo }}</a>
+    {% endfor %}
+  </nav>
+
+  <section class="gx-section">
+    <div class="gx-places">
+      {% for lugar in lugares %}{% include "guias/_lugar_card.html" %}{% endfor %}
+    </div>
+  </section>
+
+</div>
+{% endblock %}

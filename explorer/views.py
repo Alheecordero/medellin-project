@@ -34,7 +34,7 @@ import urllib.request
 import urllib.parse
 import os
 
-from .models import Places, Foto, RegionOSM, Tag, PLACE_TYPE_CHOICES, TIPOS_FUERA_DEL_BUSCADOR
+from .models import Places, Foto, RegionOSM, Tag, PLACE_TYPE_CHOICES, QUE_HACER, TIPOS_FUERA_DEL_BUSCADOR, TIPOS_QUE_HACER
 
 logger = logging.getLogger(__name__)
 
@@ -1221,6 +1221,11 @@ class PlaceDetailView(FichaRetiradaMixin, DetailView, BasePlacesMixin):
         context['price_range_schema'] = f"COP {rango[0]:,}–{rango[1]:,}".replace(',', '.') if rango else ''
         centro = lugar.centro_comercial
         context['centro_comercial'] = centro if centro is not None and centro.es_publicado else None
+        # Un museo o un parque no está en el buscador de comida: sus enlaces van a Qué hacer.
+        context['categoria_que_hacer'] = next(
+            ({'slug': slug, 'titulo': titulo} for slug, titulo, _desc in _categorias_que_hacer() if lugar.tipo in QUE_HACER[slug]),
+            None,
+        )
 
         return context
 
@@ -3227,6 +3232,96 @@ def guia_detail(request, slug):
         'descripcion_pagina': guia.descripcion,
     }
     return render(request, 'guias/guia_detail.html', context)
+
+
+# ────────────────────────────────────────────────────────────────────────
+# Qué hacer
+# ────────────────────────────────────────────────────────────────────────
+
+LUGARES_POR_CATEGORIA_EN_HUB = 8
+
+
+def _categorias_que_hacer():
+    """(slug, título, descripción) en el orden de QUE_HACER."""
+    textos = {
+        'lugares-emblematicos': (_('Lugares emblemáticos'), _('Plazas, monumentos, iglesias y los sitios que nadie se pierde.')),
+        'museos-y-cultura': (_('Museos y cultura'), _('Museos, teatros, galerías y casas de la cultura.')),
+        'parques-y-naturaleza': (_('Parques y naturaleza'), _('Parques, cerros, ecoparques y planes al aire libre.')),
+        'miradores': (_('Miradores'), _('Las mejores vistas del valle de Aburrá.')),
+    }
+    return tuple((slug, *textos[slug]) for slug in QUE_HACER)
+
+
+def _lugares_que_hacer(tipos):
+    """Lugares de Qué hacer con la misma vara que el sitemap: rating ≥ 4 con 50+ reseñas."""
+    fotos = Prefetch(
+        'fotos',
+        queryset=Foto.objects.only('lugar_id', 'imagen', 'imagen_mediana', 'imagen_miniatura').order_by('id'),
+        to_attr='cached_fotos',
+    )
+    return (
+        Places.objects.filter(tiene_fotos=True, tipo__in=tipos, rating__gte=4.0, total_reviews__gte=50)
+        .prefetch_related(None)
+        .prefetch_related(fotos)
+        .order_by(F('weighted_rating').desc(nulls_last=True), F('total_reviews').desc(nulls_last=True), 'nombre')
+    )
+
+
+@require_GET
+def que_hacer(request):
+    """Índice de Qué hacer: los mejores de cada categoría."""
+    categorias = []
+    total = 0
+    for slug, titulo, descripcion in _categorias_que_hacer():
+        qs = _lugares_que_hacer(QUE_HACER[slug])
+        n = qs.count()
+        total += n
+        if n:
+            categorias.append({
+                'slug': slug, 'titulo': titulo, 'descripcion': descripcion, 'total': n,
+                'lugares': list(qs[:LUGARES_POR_CATEGORIA_EN_HUB]),
+            })
+    destacados = [c['lugares'][0] for c in categorias if c['lugares']]
+    context = {
+        'categorias': categorias,
+        'total_lugares': total,
+        'lugares': [l for c in categorias for l in c['lugares']],
+        'portada': destacados[0] if destacados else None,
+        'titulo_pagina': _('Qué hacer en Medellín'),
+        'descripcion_pagina': _(
+            'Los planes mejor valorados de Medellín y sus alrededores: %(n)s museos, parques, miradores y '
+            'lugares emblemáticos, con fotos, horarios y cómo llegar.'
+        ) % {'n': total},
+    }
+    return render(request, 'que_hacer/que_hacer.html', context)
+
+
+@require_GET
+def que_hacer_categoria(request, categoria):
+    """Todos los lugares de una categoría de Qué hacer."""
+    categorias = _categorias_que_hacer()
+    actual = next((c for c in categorias if c[0] == categoria), None)
+    if actual is None:
+        raise Http404(_('Categoría no encontrada'))
+    slug, titulo, descripcion = actual
+    lugares = list(_lugares_que_hacer(QUE_HACER[slug]))
+    por_zona = {}
+    for lugar in lugares:
+        if lugar.comuna:
+            por_zona[lugar.comuna.name] = por_zona.get(lugar.comuna.name, 0) + 1
+    context = {
+        'categoria': {'slug': slug, 'titulo': titulo, 'descripcion': descripcion},
+        'otras': [{'slug': c[0], 'titulo': c[1]} for c in categorias if c[0] != slug],
+        'lugares': lugares,
+        'zonas': sorted(por_zona.items(), key=lambda kv: (-kv[1], kv[0]))[:8],
+        'titulo_pagina': _('%(categoria)s en Medellín') % {'categoria': titulo},
+        'descripcion_pagina': ngettext(
+            '%(n)s lugar de %(categoria)s en Medellín y alrededores. %(desc)s',
+            '%(n)s lugares de %(categoria)s en Medellín y alrededores. %(desc)s',
+            len(lugares),
+        ) % {'n': len(lugares), 'categoria': titulo.lower(), 'desc': descripcion},
+    }
+    return render(request, 'que_hacer/categoria.html', context)
 
 
 # ────────────────────────────────────────────────────────────────────────

@@ -5,7 +5,7 @@ from django.views.i18n import JavaScriptCatalog
 from django.contrib.sitemaps.views import index as sitemap_index, sitemap
 from django.views.generic import RedirectView, TemplateView
 from explorer.sitemaps import (
-    CentrosComercialesSitemap, CentrosComercialesSitemapEN,
+    CentrosComercialesSitemap, CentrosComercialesSitemapEN, QueHacerSitemap, QueHacerSitemapEN,
     ComunasSitemap, ComunasSitemapEN, GuidesSitemap, GuidesSitemapEN,
     PlacesSitemap, PlacesSitemapEN, StaticViewSitemap, StaticViewSitemapEN,
 )
@@ -26,6 +26,8 @@ sitemaps = {
     'guides-en': GuidesSitemapEN,
     'malls': CentrosComercialesSitemap,
     'malls-en': CentrosComercialesSitemapEN,
+    'que-hacer': QueHacerSitemap,
+    'que-hacer-en': QueHacerSitemapEN,
 }
 
 urlpatterns = [

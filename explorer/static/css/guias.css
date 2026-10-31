@@ -486,6 +486,9 @@
 }
 
 .gx-band-foot { margin: 1.5rem 0 0; }
+.gx-band .gx-actions { margin: 0; }
+.gx-band .gx-btn--line { color: #fff !important; border-color: rgba(255, 255, 255, 0.35); }
+.gx-hero--tras-portada { padding-top: 1.25rem; }
 
 /* ── Página de un centro comercial ────────────────────────── */
 
