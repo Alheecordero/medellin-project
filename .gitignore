@@ -1,6 +1,7 @@
 # Archivos de entorno de Python / virtualenv
 /med/
 /.venv/
+/Medellin/med/
 /staticfiles/
 __pycache__/
 *.pyc
@@ -12,6 +13,7 @@ __pycache__/
 .env.tmp
 .server_env.tmp
 settings_dev.py
+settings_local.py
 *.sqlite3
 
 # Excepción: .env.example SÍ debe versionarse (es referencia)
@@ -33,5 +35,6 @@ Thumbs.db
 *-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].json
 *-credentials.json
 /vertex.json
+/service_account.json
 frontend/node_modules/
 frontend/.next/
