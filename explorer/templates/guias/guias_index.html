@@ -33,6 +33,7 @@
     {% if zonas %}<a class="gx-pill" href="#por-zona">{% trans "Por zona" %} <small>{{ zonas|length }}</small></a>{% endif %}
     {% if centros %}<a class="gx-pill" href="#centros-comerciales">{% trans "Centros comerciales" %} <small>{{ total_centros }}</small></a>{% endif %}
     {% if escapadas %}<a class="gx-pill" href="#escapadas">{% trans "Escapadas" %} <small>{{ escapadas|length }}</small></a>{% endif %}
+    <a class="gx-pill" href="{% url 'explorer:que_hacer_categoria' 'tours-y-excursiones' %}">{% trans "Tours y excursiones" %} →</a>
     <a class="gx-pill" href="{% url 'explorer:que_hacer' %}">{% trans "Qué hacer" %} →</a>
   </nav>
   {% endif %}

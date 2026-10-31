@@ -20,7 +20,7 @@ from pgvector.django import CosineDistance
 from django.views import View
 from django.utils.translation import gettext as _, gettext_lazy as _lazy, ngettext, get_language
 from explorer.utils.horarios import filas_horario, opening_hours_spec
-from explorer.utils.ficha import _lista, citas_resenas, menu_schema, pesos, rango_precios, resumen, secciones_destacadas
+from explorer.utils.ficha import _lista, citas_resenas, menu_schema, pesos, quitar_precios_imposibles, rango_precios, resumen, secciones_destacadas
 from django.utils.formats import number_format
 from explorer.utils.media_urls import resolve_media_url
 from explorer.utils.types import get_localized_place_type, get_localized_place_type_from_code
@@ -34,7 +34,7 @@ import urllib.request
 import urllib.parse
 import os
 
-from .models import Places, Foto, RegionOSM, Tag, PLACE_TYPE_CHOICES, QUE_HACER, TIPOS_FUERA_DEL_BUSCADOR, TIPOS_QUE_HACER
+from .models import Places, Foto, GooglePlaceDetails, RegionOSM, Tag, PLACE_TYPE_CHOICES, QUE_HACER, TIPOS_FUERA_DEL_BUSCADOR, TIPOS_QUE_HACER
 
 logger = logging.getLogger(__name__)
 
@@ -239,7 +239,7 @@ class BasePlacesMixin:
         ).filter(
             Q(rating__gte=2.0) | Q(rating__isnull=True)
         ).para_buscador().prefetch_related(
-            Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura')[:3], to_attr='cached_fotos'),
+            Prefetch('fotos', queryset=Foto.objects.only('lugar_id', 'imagen', 'imagen_mediana', 'imagen_miniatura')[:3], to_attr='cached_fotos'),
             Prefetch('tags', to_attr='cached_tags')
         )
 
@@ -453,7 +453,7 @@ class HomeView(TemplateView):
                 .prefetch_related(
                     Prefetch(
                         "fotos",
-                        queryset=Foto.objects.only("imagen", "imagen_mediana", "imagen_miniatura")[:1],
+                        queryset=Foto.objects.only("lugar_id", "imagen", "imagen_mediana", "imagen_miniatura")[:1],
                         to_attr="cached_fotos",
                     )
                 )
@@ -1146,7 +1146,7 @@ class PlaceDetailView(FichaRetiradaMixin, DetailView, BasePlacesMixin):
     def get_queryset(self):
         """Queryset optimizado específicamente para vista de detalle."""
         return Places.objects.filter(tiene_fotos=True).prefetch_related(
-            Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura').order_by('id')[:24], to_attr='cached_fotos'),
+            Prefetch('fotos', queryset=Foto.objects.only('lugar_id', 'imagen', 'imagen_mediana', 'imagen_miniatura').order_by('id')[:24], to_attr='cached_fotos'),
             Prefetch('tags', to_attr='cached_tags')
         )
     
@@ -1226,6 +1226,11 @@ class PlaceDetailView(FichaRetiradaMixin, DetailView, BasePlacesMixin):
             ({'slug': slug, 'titulo': titulo} for slug, titulo, _desc in _categorias_que_hacer() if lugar.tipo in QUE_HACER[slug]),
             None,
         )
+        # Maps no rellena business_status en el scrape: el cierre viene en la categoría.
+        context['cerrado_temporal'] = bool(lugar.place_id) and GooglePlaceDetails.objects.filter(
+            Q(category__istartswith='Cerrado temporalmente') | Q(business_status='CLOSED_TEMPORARILY'),
+            place_id=lugar.place_id,
+        ).exists()
 
         return context
 
@@ -1248,6 +1253,7 @@ class PlaceDetailView(FichaRetiradaMixin, DetailView, BasePlacesMixin):
                 actual = {"nombre": nombre, "platos": []}
                 secciones.append(actual)
             actual["platos"].append(plato)
+        quitar_precios_imposibles(secciones)
         return carta, secciones
 
     def _notas_guia(self, lugar):
@@ -1296,7 +1302,7 @@ class PlaceDetailView(FichaRetiradaMixin, DetailView, BasePlacesMixin):
                 'id', 'nombre', 'slug', 'tipo', 'rating', 'total_reviews', 'direccion',
                 'es_destacado', 'es_exclusivo', 'comuna_osm_id', 'ubicacion'
             ).prefetch_related(
-                Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura')[:1], to_attr='cached_fotos')
+                Prefetch('fotos', queryset=Foto.objects.only('lugar_id', 'imagen', 'imagen_mediana', 'imagen_miniatura')[:1], to_attr='cached_fotos')
             ).annotate(
                 distancia_metros=GeoDistance('ubicacion', lugar.ubicacion)
             ).order_by('distancia_metros', '-es_destacado', '-weighted_rating', '-rating')[:limit])
@@ -1349,7 +1355,7 @@ class PlaceDetailView(FichaRetiradaMixin, DetailView, BasePlacesMixin):
                 .prefetch_related(
                     Prefetch(
                         "fotos",
-                        queryset=Foto.objects.only("imagen", "imagen_mediana", "imagen_miniatura")[:1],
+                        queryset=Foto.objects.only("lugar_id", "imagen", "imagen_mediana", "imagen_miniatura")[:1],
                         to_attr="cached_fotos",
                     )
                 )
@@ -1393,7 +1399,7 @@ class PlaceDetailView(FichaRetiradaMixin, DetailView, BasePlacesMixin):
             ).only(
                 'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo'
             ).prefetch_related(
-                Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura')[:1], to_attr='cached_fotos')
+                Prefetch('fotos', queryset=Foto.objects.only('lugar_id', 'imagen', 'imagen_mediana', 'imagen_miniatura')[:1], to_attr='cached_fotos')
             ).order_by('-es_destacado', '-weighted_rating', '-rating')[:limit])
             
             cache.set(cache_key, result, 3600)
@@ -1472,7 +1478,7 @@ class PlaceReviewsView(FichaRetiradaMixin, DetailView):
     
     def get_queryset(self):
         return Places.objects.filter(tiene_fotos=True).prefetch_related(
-            Prefetch('fotos', queryset=Foto.objects.only('imagen', 'imagen_mediana', 'imagen_miniatura'), to_attr='cached_fotos')
+            Prefetch('fotos', queryset=Foto.objects.only('lugar_id', 'imagen', 'imagen_mediana', 'imagen_miniatura'), to_attr='cached_fotos')
         )
     
     def get_context_data(self, **kwargs):
@@ -3190,16 +3196,14 @@ def guia_detail(request, slug):
     
     # El staff ve los borradores para revisarlos (llevan noindex); el resto, solo las publicadas.
     solo_publicadas = {} if request.user.is_staff else {'publicado': True}
-    guia = get_object_or_404(
-        CuratedGuide.objects.prefetch_related(
-            'items__lugar__fotos',
-        ),
-        slug=slug,
-        **solo_publicadas
-    )
+    guia = get_object_or_404(CuratedGuide, slug=slug, **solo_publicadas)
     
-    # Un lugar cerrado o fusionado deja de mostrarse en la guía.
-    items = guia.items.filter(lugar__cerrado_permanente=False, lugar__fusionado_en__isnull=True).select_related('lugar').order_by('posicion')
+    # Un lugar cerrado o fusionado deja de mostrarse en la guía. Las fotos van con estas
+    # paradas: un prefetch en la guía no le sirve a esta consulta nueva.
+    items = list(
+        guia.items.filter(lugar__cerrado_permanente=False, lugar__fusionado_en__isnull=True)
+        .select_related('lugar').prefetch_related('lugar__fotos').order_by('posicion')
+    )
     
     # Datos de mapa para cada lugar con ubicación
     markers = []
@@ -3250,6 +3254,7 @@ def _categorias_que_hacer():
         'museos-y-cultura': (_('Museos y cultura'), _('Museos, teatros, galerías y casas de la cultura.')),
         'parques-y-naturaleza': (_('Parques y naturaleza'), _('Parques, cerros, ecoparques y planes al aire libre.')),
         'miradores': (_('Miradores'), _('Las mejores vistas del valle de Aburrá.')),
+        'tours-y-excursiones': (_('Tours y excursiones'), _('Agencias locales con buena reputación: Comuna 13, Guatapé, lancha, helicóptero y más.')),
     }
     return tuple((slug, *textos[slug]) for slug in QUE_HACER)
 
@@ -3291,8 +3296,8 @@ def que_hacer(request):
         'portada': destacados[0] if destacados else None,
         'titulo_pagina': _('Qué hacer en Medellín'),
         'descripcion_pagina': _(
-            'Los planes mejor valorados de Medellín y sus alrededores: %(n)s museos, parques, miradores y '
-            'lugares emblemáticos, con fotos, horarios y cómo llegar.'
+            'Los planes mejor valorados de Medellín y sus alrededores: %(n)s museos, parques, miradores, '
+            'lugares emblemáticos y tours, con fotos, horarios y cómo llegar.'
         ) % {'n': total},
     }
     return render(request, 'que_hacer/que_hacer.html', context)

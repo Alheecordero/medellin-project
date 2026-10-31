@@ -1,7 +1,7 @@
 """Crea como borradores las guías hechas con lugares de Qué hacer.
 
-Las paradas se eligieron a mano el 31 oct 2026 entre los lugares publicados con
-publicar_que_hacer. Quedan sin publicar y sin comentarios: el comentario de cada parada
+Las paradas se eligieron a mano el 31 oct 2026, en dos tandas de cuatro guías, entre los
+lugares publicados con publicar_que_hacer. Quedan sin publicar y sin comentarios: el comentario de cada parada
 es la opinión del local y la escribe quien publica. El staff las ve en su URL normal.
 
 La versión ampliada de Guatapé es una copia de la guía publicada con el Peñol y el pueblo
@@ -126,11 +126,119 @@ GUIAS = (
         ),
         "copiar_paradas_de": "un-dia-en-guatape",
     },
+    {
+        "slug": "que-hacer-en-medellin",
+        "titulo": "Qué hacer en Medellín",
+        "titulo_en": "Things to do in Medellín",
+        "descripcion": (
+            "Lo imprescindible de Medellín para una primera visita: el centro de Botero, la Comuna 13, "
+            "el metrocable a Arví, los museos que cuentan la ciudad y un día en Guatapé."
+        ),
+        "descripcion_en": (
+            "The essentials of Medellín for a first visit: Botero's downtown, Comuna 13, the cable car "
+            "to Arví, the museums that tell the city's story and a day in Guatapé."
+        ),
+        "categoria": "plan",
+        "tema": "dia",
+        "orden": 10,
+        "paradas": (
+            "plaza-botero",
+            "parque-de-los-pies-descalzos",
+            "tour-comuna-13-medellin",
+            "museo-casa-de-la-memoria",
+            "jardin-botanico-de-medellin",
+            "parque-explora",
+            "parque-arvi",
+            "museo-de-arte-moderno-de-medellin",
+            "museo-el-castillo",
+            "parque-de-las-esculturas-cerro-nutibara",
+            "estadio-de-futbol-atanasio-girardot",
+            "la-piedra-de-guatape-y-penol",
+        ),
+    },
+    {
+        "slug": "planes-con-ninos",
+        "titulo": "Planes con niños en Medellín",
+        "titulo_en": "Things to do with kids in Medellín",
+        "descripcion": (
+            "Ciencia, animales, agua y aventura: los planes mejor valorados de Medellín para ir con "
+            "niños, casi todos cerca de una estación del metro."
+        ),
+        "descripcion_en": (
+            "Science, animals, water and adventure: Medellín's best rated plans with kids, most of "
+            "them near a metro station."
+        ),
+        "categoria": "plan",
+        "tema": "dia",
+        "paradas": (
+            "parque-explora",
+            "planetario-de-medellin-jesus-emilio-ramirez",
+            "jardin-botanico-de-medellin",
+            "parque-de-los-deseos",
+            "parque-norte",
+            "museo-del-agua-epm",
+            "parques-del-rio",
+            "summit-adventure-park-medellin",
+            "flying-squirrel-sports-los-molinos-medellin",
+            "parque-arvi",
+        ),
+    },
+    {
+        "slug": "parques-y-naturaleza",
+        "titulo": "Parques y naturaleza cerca de Medellín",
+        "titulo_en": "Parks and nature near Medellín",
+        "descripcion": (
+            "Bosque, quebradas y cerros sin salir del valle: de Arví en metrocable a los cerros "
+            "tutelares de la ciudad."
+        ),
+        "descripcion_en": (
+            "Forest, streams and hills without leaving the valley: from Arví by cable car to the "
+            "city's guardian hills."
+        ),
+        "categoria": "plan",
+        "tema": "dia",
+        "paradas": (
+            "parque-arvi",
+            "chorro-clarin-parque-arvi",
+            "jardin-botanico-de-medellin",
+            "orquideorama-jardin-botanico",
+            "parque-natural-cerro-el-volador",
+            "cerro-de-las-tres-cruces-medellin",
+            "parque-ecoturistico-el-salado",
+            "jardin-circunvalar-cinturon-verde",
+            "parque-ecologico-los-salados-comfenalco-antioquia",
+        ),
+    },
+    {
+        "slug": "teatros-de-medellin",
+        "titulo": "Teatros de Medellín",
+        "titulo_en": "Theaters in Medellín",
+        "descripcion": (
+            "De los grandes escenarios del centro a las salas independientes: dónde ver teatro, "
+            "conciertos y ópera en Medellín."
+        ),
+        "descripcion_en": (
+            "From the big downtown stages to independent venues: where to see theater, concerts and "
+            "opera in Medellín."
+        ),
+        "categoria": "plan",
+        "tema": "noche",
+        "paradas": (
+            "teatro-pablo-tobon-uribe",
+            "teatro-metropolitano-jose-gutierrez-gomez",
+            "pequeno-teatro-de-medellin",
+            "museo-teatro-prado-el-aguila-descalza",
+            "teatro-matacandelas",
+            "teatro-universitario-camilo-torres",
+            "teatro-de-la-universidad-de-medellin",
+            "fundacion-casateatro-el-poblado",
+        ),
+    },
 )
 
 
 class Command(BaseCommand):
-    help = "Crea como borradores las guías de Comuna 13, museos, miradores y Guatapé ampliada."
+    help = "Crea como borradores las guías hechas con lugares de Qué hacer."
 
     def add_arguments(self, parser):
         parser.add_argument("--dry-run", action="store_true")

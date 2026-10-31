@@ -115,6 +115,9 @@
         <a href="{{ centro_comercial.get_absolute_url }}">{% blocktrans with centro=centro_comercial.nombre %}Está en {{ centro }}{% endblocktrans %}</a>
       </p>
     {% endif %}
+    {% if cerrado_temporal %}
+      <p class="place-sheet__note place-sheet__note--warn">{% trans "Cerrado temporalmente según Google Maps. Confirma antes de ir." %}</p>
+    {% endif %}
     {% for nota in notas_guia %}
       <p class="place-sheet__note">{% if nota.texto %}{{ nota.texto }} {% endif %}<a href="{{ nota.url }}">{% blocktrans with guia=nota.guia %}En la guía «{{ guia }}»{% endblocktrans %}</a></p>
     {% endfor %}
@@ -1676,6 +1679,13 @@ body.vibe-v4 .modal-backdrop.show { opacity: 0.92; }
   color: #3a4254;
   font-size: 1rem;
   line-height: 1.45;
+}
+.place-sheet__note--warn {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: #fff4e0;
+  color: #7a4b00;
+  font-size: 0.92rem;
 }
 .place-sheet__text {
   margin: 0.85rem 0 0;

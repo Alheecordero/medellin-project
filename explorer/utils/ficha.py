@@ -44,6 +44,37 @@ def rango_precios(secciones) -> tuple[int, int] | None:
     return (bajo, alto) if bajo < alto else None
 
 
+BOTELLA = re.compile(r"licor|botella|\d\s*ml\b|champa|whisk|vodka|tequila|\bron\b|vino|aguardiente|buchanan|old par", re.I)
+PRECIO_TOPE = 300_000  # un plato por encima de esto y muy lejos del resto de la carta es un error
+VECES_LA_MEDIANA = 20
+
+
+def quitar_precios_imposibles(secciones) -> int:
+    """Quita (solo en memoria) los precios que el partner escribió mal; devuelve cuántos.
+
+    "$0" o un plato a veinte veces la mediana de la carta y por encima del tope ("Bandeja
+    con carne" a $15.900.000, un tinto a $700.000) no se muestran ni van al rango ni al
+    schema. Las botellas de licor sí pueden valer eso.
+    """
+    platos = [plato for seccion in secciones for plato in seccion["platos"]]
+    # Con todos los precios: en una carta de empanadas a $1.900 la mediana es eso.
+    precios = sorted(p.price for p in platos if p.price)
+    mediana = precios[len(precios) // 2] if precios else 0
+    quitados = 0
+    for seccion in secciones:
+        for plato in seccion["platos"]:
+            cero = plato.price == 0 or plato.price_text.strip() in {"$0", "$ 0"}
+            lejos = (
+                mediana
+                and (plato.price or 0) > max(PRECIO_TOPE, VECES_LA_MEDIANA * mediana)
+                and not BOTELLA.search(f"{plato.name} {seccion['nombre']}")
+            )
+            if cero or lejos:
+                plato.price, plato.price_text = None, ""
+                quitados += 1
+    return quitados
+
+
 def _redondear(valor: float) -> int:
     return int(round(valor / 1000.0)) * 1000
 

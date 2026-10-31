@@ -120,6 +120,7 @@ PLACE_TYPE_CHOICES = (
     ("performing_arts_theater", "Teatro"),
     ("stadium", "Estadio"),
     ("tourist_attraction", "Atracción turística"),
+    ("tour_agency", "Agencia de tours"),
     ("otros", "Otros"),
 )
 # ────────────────────────────────────────────────────────────────
@@ -132,6 +133,7 @@ QUE_HACER = {
     "museos-y-cultura": ("museum", "art_gallery", "cultural_center", "performing_arts_theater"),
     "parques-y-naturaleza": ("park", "hiking_area", "botanical_garden", "amusement_park"),
     "miradores": ("observation_deck",),
+    "tours-y-excursiones": ("tour_agency",),
 }
 TIPOS_QUE_HACER = tuple(t for tipos in QUE_HACER.values() for t in tipos)
 
@@ -268,6 +270,7 @@ SCHEMA_ORG_TYPES = {
     "church": "Church",
     "stadium": "StadiumOrArena",
     "performing_arts_theater": "PerformingArtsTheater",
+    "tour_agency": "TravelAgency",
 }
 
 
@@ -611,6 +614,10 @@ class Foto(models.Model):
     imagen_miniatura = models.URLField(max_length=1000, null=True, blank=True)
     descripcion = models.CharField(max_length=255, blank=True, null=True)
     fecha_subida = models.DateTimeField(auto_now_add=True, null=True)
+
+    class Meta:
+        # Con orden fijo, fotos.first() usa el prefetch en vez de consultar una vez por lugar.
+        ordering = ["id"]
 
     def __str__(self):
         return self.imagen

@@ -194,3 +194,18 @@ producción en una copia aislada.
   pedido. Quedan en español los nombres de las secciones de carta, que vienen así de Rappi.
 - 19: cualquier filtro del listado (tipo, característica, cerca, búsqueda) lleva `noindex`;
   `robots.txt` bloquea `lat=` y `cerca=`; el enlace "Más … cerca" de la ficha va con `nofollow`.
+
+**Lote de media y precios (31 oct, sin desplegar).** Medido con el `Client` en una copia aislada
+contra la base de producción, comparando con el código desplegado.
+
+- 7: `Foto.Meta.ordering = ["id"]` (migración 0044, solo de estado) y `lugar_id` en todos los
+  `Prefetch` de fotos con `only()`: sin él Django lo pedía foto por foto. `/lugares/?tipo=bar`
+  pasa de 28 a 5 consultas; una ficha, de 23 a 15; una guía, de 18 a 10 (rooftops: de 29 a 8).
+  La guía usaba un prefetch que su propia consulta de paradas no aprovechaba.
+- 8: el sitemap de lugares ya no carga fotos (`prefetch_related(None)`).
+- 16: `quitar_precios_imposibles` esconde en la ficha los "$0" y los platos a más de veinte
+  veces la mediana de su carta y por encima de $300.000, salvo licores y botellas. Salen
+  también del rango y del schema. La base no se toca.
+- 17: comando `revisar_miniaturas` (con `--dry-run`): vacía la mediana o la miniatura que da 404
+  en R2 y la página usa el original. En una muestra de 3.000 variantes de fichas indexables, 352
+  rotas, todas con el original en 200.

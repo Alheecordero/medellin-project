@@ -68,6 +68,7 @@ _CULTURE = {
     "historical_place", "cultural_landmark", "monument", "cultural_center", "plaza",
     "observation_deck", "visitor_center", "church", "library", "amphitheatre",
     "performing_arts_theater", "concert_hall", "auditorium", "event_venue", "banquet_hall",
+    "tour_agency",
 }
 _LEISURE = {
     "movie_theater", "bowling_alley", "amusement_center", "amusement_park", "zoo",

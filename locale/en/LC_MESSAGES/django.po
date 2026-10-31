@@ -3615,8 +3615,24 @@ msgstr "What's next?"
 
 #: explorer/que_hacer
 #, python-format
-msgid "Los planes mejor valorados de Medellín y sus alrededores: %(n)s museos, parques, miradores y lugares emblemáticos, con fotos, horarios y cómo llegar."
-msgstr "The best rated things to do in and around Medellín: %(n)s museums, parks, viewpoints and landmarks, with photos, opening hours and directions."
+msgid "Los planes mejor valorados de Medellín y sus alrededores: %(n)s museos, parques, miradores, lugares emblemáticos y tours, con fotos, horarios y cómo llegar."
+msgstr "The best rated things to do in and around Medellín: %(n)s museums, parks, viewpoints, landmarks and tours, with photos, opening hours and directions."
+
+#: explorer/que_hacer
+msgid "Tours y excursiones"
+msgstr "Tours and excursions"
+
+#: explorer/que_hacer
+msgid "Agencias locales con buena reputación: Comuna 13, Guatapé, lancha, helicóptero y más."
+msgstr "Well reviewed local operators: Comuna 13, Guatapé, boat rides, helicopter and more."
+
+#: explorer/que_hacer
+msgid "Agencia de tours"
+msgstr "Tour operator"
+
+#: explorer/templates/lugares/places_detail.html
+msgid "Cerrado temporalmente según Google Maps. Confirma antes de ir."
+msgstr "Temporarily closed according to Google Maps. Check before you go."
 
 #: explorer/que_hacer
 msgid "Parque de diversiones"

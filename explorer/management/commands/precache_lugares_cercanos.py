@@ -44,7 +44,7 @@ class Command(BaseCommand):
                     ).only(
                         'id', 'nombre', 'slug', 'tipo', 'rating', 'es_destacado', 'es_exclusivo'
                     ).prefetch_related(
-                        Prefetch('fotos', queryset=Foto.objects.only('imagen')[:1], to_attr='cached_fotos')
+                        Prefetch('fotos', queryset=Foto.objects.only('lugar_id', 'imagen')[:1], to_attr='cached_fotos')
                     ).order_by('-rating')[:3])
                     
                     cache.set(cache_key, result, 3600)  # 1 hora

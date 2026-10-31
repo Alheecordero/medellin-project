@@ -49,7 +49,8 @@ class PlacesSitemap(Sitemap):
     limit = 5000  # Límite por página de sitemap para mejor rendimiento
 
     def items(self):
-        return Places.objects.indexables().only(
+        # Sin el prefetch de fotos del manager: el sitemap no las usa y son 5.000 lugares por página.
+        return Places.objects.indexables().prefetch_related(None).only(
             'slug', 'es_destacado', 'rating', 'id', 'fecha_actualizacion', 'contenido_actualizado'
         ).order_by("-es_destacado", "-rating", "-id")
 

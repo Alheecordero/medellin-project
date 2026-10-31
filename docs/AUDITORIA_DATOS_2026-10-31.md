@@ -135,3 +135,14 @@ Todas las fichas se crearon en 2025 salvo las 500 del lote de octubre de 2026.
   en "Más" y en Guías. La ficha de un museo o un parque enlaza a su categoría en vez del buscador.
 - Quedan para después: guías editoriales con este material (Comuna 13, museos, miradores) y el
   bloque de agencias de tours.
+
+**Segunda tanda (31 oct, sin desplegar).**
+- "Tours y excursiones", quinta categoría de Qué hacer (tipo `tour_agency`, schema
+  `TravelAgency`). Comando `publicar_tours`: 26 operadores elegidos a mano entre las 89 fichas de
+  "Agencia de…" del valle (fuera las que venden vuelos y paquetes), con rating 4,5+, 50+ reseñas
+  y 3+ fotos. Graffitour ya estaba publicado: solo cambia de tipo. Enlace desde Guías.
+- Cuatro borradores más en `crear_guias_que_hacer`: Qué hacer en Medellín (12 paradas), Planes
+  con niños (10), Parques y naturaleza (9) y Teatros (8).
+- `ampliar_guias_zona`: Envigado, Belén y Sabaneta suman su parque y su cultura delante de las
+  mesas (de 3–4 a 6–7 paradas), así que pasan el mínimo de 5 y vuelven al índice y al sitemap.
+- Aviso de "Cerrado temporalmente" en la ficha (2 fichas con fotos hoy).
