@@ -4,7 +4,7 @@ from datetime import datetime, timezone as dt_timezone
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 from django.db.models import Max, Q
-from explorer.models import CuratedGuide, Places, RegionOSM
+from explorer.models import CentroComercial, CuratedGuide, Places, RegionOSM
 
 # vivemedellin.net existe desde el 9 ago 2026: una fecha anterior no es creíble para Google.
 LANZAMIENTO = datetime(2026, 8, 9, tzinfo=dt_timezone.utc)
@@ -24,6 +24,7 @@ class StaticViewSitemap(Sitemap):
             "explorer:home",
             "explorer:lugares_list",
             "explorer:guias_index",
+            "explorer:centros_comerciales",
             "explorer:about_es",
             "explorer:privacy_policy",
             "explorer:terms",
@@ -130,6 +131,26 @@ class GuidesSitemapEN(GuidesSitemap):
         return f"/en/guides/{obj.slug}/"
 
 
+class CentrosComercialesSitemap(Sitemap):
+    """Centros comerciales con suficientes fichas indexables (ver CC_MIN_INDEXABLES)."""
+    changefreq = "weekly"
+    priority = 0.6
+
+    def items(self):
+        return CentroComercial.objects.indexables().only("slug", "actualizado").order_by("-lugares_indexables")
+
+    def location(self, obj):
+        return reverse("explorer:centro_comercial_detail", args=[obj.slug])
+
+    def lastmod(self, obj):
+        return _desde_lanzamiento(obj.actualizado)
+
+
+class CentrosComercialesSitemapEN(CentrosComercialesSitemap):
+    def location(self, obj):
+        return f"/en/guides/malls/{obj.slug}/"
+
+
 # ImagesSitemap eliminado - las imágenes ya están en las páginas de lugares
 # y causaba timeout al cargar demasiadas fotos
 
@@ -148,7 +169,7 @@ class StaticViewSitemapEN(Sitemap):
     priority = 1.0
 
     def items(self):
-        return ["/en/", "/en/places/", "/en/guides/", "/en/about-us/"]
+        return ["/en/", "/en/places/", "/en/guides/", "/en/guides/malls/", "/en/about-us/"]
 
     def location(self, item):
         return item

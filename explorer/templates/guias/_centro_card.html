@@ -1,0 +1,9 @@
+{% load i18n %}
+<a href="{{ centro.get_absolute_url }}" class="gx-mall">
+  <div class="gx-mall-img">
+    {% if centro.portada %}<img src="{{ centro.portada }}" alt="" loading="lazy">{% endif %}
+    <span class="gx-chip">{% blocktrans count n=centro.total_lugares %}{{ n }} lugar{% plural %}{{ n }} lugares{% endblocktrans %}</span>
+  </div>
+  <h3 class="gx-mall-name">{{ centro.nombre }}</h3>
+  {% if centro.zona and not sin_zona %}<p class="gx-mall-meta">{{ centro.zona.name }}</p>{% endif %}
+</a>

@@ -1,16 +1,10 @@
 {% load i18n %}
-<a href="{{ guia.get_absolute_url }}" class="guia-card">
-  <div class="guia-card-img">
-    {% if guia.portada %}
-      <img src="{{ guia.portada }}" alt="{{ guia.titulo_i18n }}" loading="lazy">
-    {% else %}
-      <div class="guia-card-placeholder"><i class="bi bi-bookmark-star"></i></div>
-    {% endif %}
-    <span class="guia-card-count">{{ guia.total_items }} {% trans "lugares" %}</span>
-  </div>
-  <div class="guia-card-body">
-    <h3 class="guia-card-title">{{ guia.titulo_i18n }}</h3>
-    <p class="guia-card-desc">{{ guia.descripcion_i18n|truncatechars:100 }}</p>
-    <span class="guia-card-cta">{% trans "Ver guía" %} <i class="bi bi-arrow-right ms-1"></i></span>
+<a href="{{ guia.get_absolute_url }}" class="gx-card{% if extra_class %} {{ extra_class }}{% endif %}">
+  {% if guia.portada %}<img src="{{ guia.portada }}" alt="" loading="lazy">{% endif %}
+  <div class="gx-card-body">
+    <span class="gx-chip">{% blocktrans count n=guia.total_items %}{{ n }} lugar{% plural %}{{ n }} lugares{% endblocktrans %}</span>
+    {% if guia.tema_label %}<span class="gx-chip gx-chip--ghost">{{ guia.tema_label }}</span>{% endif %}
+    <h3 class="gx-card-title">{{ guia.titulo_i18n }}</h3>
+    <p class="gx-card-desc">{{ guia.descripcion_i18n }}</p>
   </div>
 </a>

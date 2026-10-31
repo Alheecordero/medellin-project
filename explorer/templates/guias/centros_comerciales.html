@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
+{% block meta_description %}{{ descripcion_pagina }}{% endblock %}
+{% block og_title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
+{% block og_description %}{{ descripcion_pagina }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/guias.css' %}?v={{ STATIC_BUST }}">
+{% endblock %}
+
+{% block content %}
+<div class="gx">
+
+  <header class="gx-hero">
+    <ol class="gx-crumbs">
+      <li><a href="{% url 'explorer:guias_index' %}">{% trans "Guías" %}</a></li>
+      <li>{% trans "Centros comerciales" %}</li>
+    </ol>
+    <h1 class="gx-title">{{ titulo_pagina }}</h1>
+    <p class="gx-lead">{{ descripcion_pagina }}</p>
+    <ul class="gx-stats">
+      <li><strong>{{ centros|length }}</strong>{% trans "centros comerciales" %}</li>
+      <li><strong>{{ total_lugares }}</strong>{% trans "lugares dentro" %}</li>
+      <li><strong>{{ grupos|length }}</strong>{% trans "zonas" %}</li>
+    </ul>
+  </header>
+
+  <nav class="gx-nav" aria-label="{% trans 'Zonas' %}">
+    {% for zona, lista in grupos %}
+      <a class="gx-pill" href="#zona-{{ forloop.counter }}">{{ zona }} <small>{{ lista|length }}</small></a>
+    {% endfor %}
+  </nav>
+
+  {% for zona, lista in grupos %}
+  <section class="gx-block" id="zona-{{ forloop.counter }}">
+    <div class="gx-block-head">
+      <h2 class="gx-h2">{{ zona }}</h2>
+    </div>
+    <div class="gx-malls">
+      {% for centro in lista %}{% include "guias/_centro_card.html" with sin_zona=True %}{% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+
+</div>
+{% endblock %}

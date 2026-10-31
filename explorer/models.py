@@ -132,13 +132,19 @@ TIPOS_FUERA_DEL_BUSCADOR = (
 
 def _fuera_del_buscador():
     """Malls, UVAs y fichas que solo viven en una guía."""
+    from explorer.utils.place_classify import _CAFE, _FOOD, _NIGHT
+
+    # El nombre delata al mall ("Centro Comercial Oviedo"), pero también lo llevan los
+    # restaurantes de dentro ("Crepes & Waffles Centro Comercial Oviedo"): esos sí entran.
+    nombre_de_mall = (
+        Q(nombre__icontains="Centro Comercial") | Q(nombre__icontains="Parque Comercial")
+    ) & ~Q(tipo__in=_FOOD | _CAFE | _NIGHT)
     return (
         Q(solo_en_guia=True)
         | Q(tipo__in=TIPOS_FUERA_DEL_BUSCADOR)
         | Q(nombre__istartswith="UVA ")
         | Q(nombre__istartswith="UVA de")
-        | Q(nombre__icontains="Centro Comercial")
-        | Q(nombre__icontains="Parque Comercial")
+        | nombre_de_mall
     )
 
 
@@ -321,6 +327,10 @@ class Places(models.Model):
     )
 
     comuna_osm_id = models.BigIntegerField(null=True, blank=True, db_index=True)
+    centro_comercial = models.ForeignKey(
+        'CentroComercial', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='lugares', help_text="Lo asigna importar_centros_comerciales por el polígono de OSM",
+    )
 
     # Horarios y estado operativo
     abierto_ahora = models.BooleanField(null=True, blank=True)
@@ -1378,6 +1388,74 @@ class CuratedGuideItem(models.Model):
     @property
     def destacado_i18n(self):
         return self._get_translated(self.destacado, self.destacado_en)
+
+
+# ────────────────────────────────────────────────────────────────
+# Centros comerciales: contenedores de lugares, no recomendaciones
+# ────────────────────────────────────────────────────────────────
+
+# Con menos lugares con foto no se publica la página del centro comercial.
+CC_MIN_LUGARES = 8
+# Con menos fichas indexables la página existe pero lleva noindex y no va al sitemap.
+CC_MIN_INDEXABLES = 8
+
+
+class CentroComercialQuerySet(models.QuerySet):
+    def publicados(self):
+        return self.filter(publicado=True, total_lugares__gte=CC_MIN_LUGARES)
+
+    def indexables(self):
+        return self.publicados().filter(lugares_indexables__gte=CC_MIN_INDEXABLES)
+
+
+class CentroComercial(models.Model):
+    """Centro comercial con los lugares que caen dentro de su polígono de OSM.
+
+    Lo crea y actualiza importar_centros_comerciales; los contadores y la portada también.
+    """
+
+    nombre = models.CharField(max_length=120)
+    slug = models.SlugField(max_length=140, unique=True)
+    osm_ids = ArrayField(models.BigIntegerField(), help_text="Polígonos de OSM que lo forman (etapas)")
+    geom = gis_models.MultiPolygonField(srid=4326)
+    zona = models.ForeignKey(
+        RegionOSM, on_delete=models.SET_NULL, null=True, blank=True, related_name='centros_comerciales'
+    )
+    nota = models.TextField(blank=True, default='', help_text="Texto propio (opcional), en español")
+    nota_en = models.TextField(blank=True, default='', help_text="Texto propio (opcional), en inglés")
+    portada = models.URLField(max_length=1000, blank=True, default='')
+    total_lugares = models.PositiveIntegerField(default=0)
+    lugares_indexables = models.PositiveIntegerField(default=0)
+    publicado = models.BooleanField(default=True, help_text="Desmarcar para ocultarlo aunque tenga lugares")
+    actualizado = models.DateTimeField(auto_now=True)
+
+    objects = CentroComercialQuerySet.as_manager()
+
+    class Meta:
+        verbose_name = "Centro comercial"
+        verbose_name_plural = "Centros comerciales"
+        ordering = ['-lugares_indexables', '-total_lugares', 'nombre']
+
+    def __str__(self):
+        return self.nombre
+
+    def get_absolute_url(self):
+        return reverse('explorer:centro_comercial_detail', args=[self.slug])
+
+    @property
+    def nota_i18n(self):
+        lang = get_language() or 'es'
+        if lang.startswith('en') and self.nota_en:
+            return self.nota_en
+        return self.nota
+
+    @property
+    def es_publicado(self):
+        return self.publicado and self.total_lugares >= CC_MIN_LUGARES
+
+    @property
+    def es_indexable(self):
+        return self.es_publicado and self.lugares_indexables >= CC_MIN_INDEXABLES
 
 
 # ────────────────────────────────────────────────────────────────

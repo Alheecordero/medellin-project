@@ -27,7 +27,7 @@ from django.utils import timezone
 
 from explorer.management.commands.completar_fichas_maps import HORARIO_INSTANTANEO, atributos
 from explorer.management.commands.import_medellin_enrich import VALID_TIPOS, _weighted
-from explorer.models import Foto, GooglePlaceDetails, PendingPlace, Places, RegionOSM
+from explorer.models import CentroComercial, Foto, GooglePlaceDetails, PendingPlace, Places, RegionOSM
 
 FAMILIAS_TOP = {"food", "cafe_bakery", "nightlife"}
 FOTO_ORIGINAL = re.compile(r"/images/(?P<pid>[^/]+)/(?P<name>g[0-9a-f]+)\.webp$")
@@ -153,7 +153,15 @@ class Command(BaseCommand):
         return lugar
 
     def _asignar_comuna(self, lugar: Places) -> bool:
-        """Comuna de Medellín, municipio o corregimiento: cualquier zona de RegionOSM."""
+        """Comuna de Medellín, municipio o corregimiento: cualquier zona de RegionOSM.
+
+        También el centro comercial si cae dentro de uno; sus contadores se ponen al día
+        con importar_centros_comerciales.
+        """
+        centro = CentroComercial.objects.filter(geom__contains=lugar.ubicacion).only("id").first()
+        if centro is not None:
+            lugar.centro_comercial = centro
+            lugar.save(update_fields=["centro_comercial"])
         region = RegionOSM.objects.filter(geom_4326__contains=lugar.ubicacion).only("osm_id").first()
         if region is None:
             return False

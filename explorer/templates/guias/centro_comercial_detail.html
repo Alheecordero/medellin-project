@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
+{% block meta_description %}{{ descripcion_pagina|truncatechars:160 }}{% endblock %}
+{% block og_title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
+{% block og_description %}{{ descripcion_pagina|truncatechars:160 }}{% endblock %}
+{% block meta_robots %}{% if es_indexable %}index, follow, max-image-preview:large, max-snippet:-1{% else %}noindex, follow, max-image-preview:large{% endif %}{% endblock %}
+{% block og_image %}{% if centro.portada %}{{ centro.portada }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/guias.css' %}?v={{ STATIC_BUST }}">
+<script type="application/ld+json">{{ schema_json|safe }}</script>
+{% endblock %}
+
+{% block content %}
+<div class="gx">
+
+  <header class="gx-cover">
+    {% if centro.portada %}<img src="{{ centro.portada }}" alt="" fetchpriority="high">{% endif %}
+    <div class="gx-cover-body">
+      <ol class="gx-crumbs">
+        <li><a href="{% url 'explorer:guias_index' %}">{% trans "Guías" %}</a></li>
+        <li><a href="{% url 'explorer:centros_comerciales' %}">{% trans "Centros comerciales" %}</a></li>
+      </ol>
+      <p class="gx-kicker">{% trans "Centro comercial" %}{% if centro.zona %} · {{ centro.zona.name }}{% endif %}</p>
+      <h1 class="gx-title">{{ titulo_pagina }}</h1>
+    </div>
+  </header>
+
+  <div class="gx-intro">
+    <div>
+      <p class="gx-summary">{{ resumen_centro }}</p>
+      {% if centro.nota_i18n %}<p class="gx-note">{{ centro.nota_i18n|linebreaksbr }}</p>{% endif %}
+      <div class="gx-actions">
+        <a class="gx-btn" href="{{ maps_url }}" target="_blank" rel="noopener">{% trans "Cómo llegar" %} ↗</a>
+        {% if centro.zona and centro.zona.slug %}
+          <a class="gx-btn gx-btn--line" href="{% url 'explorer:lugares_por_comuna' centro.zona.slug %}">{% blocktrans with zona=centro.zona.name %}Más lugares en {{ zona }}{% endblocktrans %}</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="gx-map" id="cc-map" role="img" aria-label="{% blocktrans with centro=centro.nombre %}Mapa de {{ centro }}{% endblocktrans %}"></div>
+  </div>
+
+  {% if secciones|length > 1 %}
+  <nav class="gx-nav" aria-label="{% trans 'Secciones' %}" style="margin-top: 1.5rem;">
+    {% for seccion in secciones %}
+      <a class="gx-pill" href="#{{ seccion.clave }}">{{ seccion.titulo }} <small>{{ seccion.lugares|length }}</small></a>
+    {% endfor %}
+  </nav>
+  {% endif %}
+
+  {% for seccion in secciones %}
+  <section class="gx-section" id="{{ seccion.clave }}">
+    <h2 class="gx-h2">{{ seccion.titulo }} <small>{{ seccion.lugares|length }}</small></h2>
+    <div class="gx-places">
+      {% for lugar in seccion.lugares %}{% include "guias/_lugar_card.html" %}{% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+
+  {% if otros_centros %}
+  <section class="gx-block">
+    <div class="gx-block-head">
+      <h2 class="gx-h2">{% blocktrans with zona=centro.zona.name %}Otros centros comerciales en {{ zona }}{% endblocktrans %}</h2>
+      <a class="gx-more" href="{% url 'explorer:centros_comerciales' %}">{% trans "Ver todos" %} →</a>
+    </div>
+    <div class="gx-rail">
+      {% for centro in otros_centros %}{% include "guias/_centro_card.html" with sin_zona=True %}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{{ geom|json_script:"cc-geom" }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var el = document.getElementById('cc-map');
+  if (!el || !window.L) return;
+  var geom = JSON.parse(document.getElementById('cc-geom').textContent);
+  var map = L.map(el, { zoomControl: false, scrollWheelZoom: false, dragging: !L.Browser.mobile });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap', maxZoom: 19 }).addTo(map);
+  map.attributionControl.setPrefix(false);
+  var capa = L.geoJSON(geom, { style: { color: '#0b1220', weight: 2, fillColor: '#c8f54a', fillOpacity: 0.45 } }).addTo(map);
+  map.fitBounds(capa.getBounds(), { padding: [24, 24], maxZoom: 17 });
+});
+</script>
+{% endblock %}

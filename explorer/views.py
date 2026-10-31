@@ -20,7 +20,8 @@ from pgvector.django import CosineDistance
 from django.views import View
 from django.utils.translation import gettext as _, gettext_lazy as _lazy, ngettext, get_language
 from explorer.utils.horarios import filas_horario, opening_hours_spec
-from explorer.utils.ficha import citas_resenas, menu_schema, pesos, rango_precios, resumen, secciones_destacadas
+from explorer.utils.ficha import _lista, citas_resenas, menu_schema, pesos, rango_precios, resumen, secciones_destacadas
+from django.utils.formats import number_format
 from explorer.utils.media_urls import resolve_media_url
 from explorer.utils.types import get_localized_place_type, get_localized_place_type_from_code
 from django.conf import settings
@@ -33,7 +34,7 @@ import urllib.request
 import urllib.parse
 import os
 
-from .models import Places, Foto, RegionOSM, Tag, PLACE_TYPE_CHOICES
+from .models import Places, Foto, RegionOSM, Tag, PLACE_TYPE_CHOICES, TIPOS_FUERA_DEL_BUSCADOR
 
 logger = logging.getLogger(__name__)
 
@@ -1194,6 +1195,8 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
             menu = menu_schema(self.request.build_absolute_uri(self.request.path) + '#carta', secciones)
             context['menu_schema'] = json.dumps(menu, ensure_ascii=False).replace('</', '<\\/')
         context['price_range_schema'] = f"COP {rango[0]:,}–{rango[1]:,}".replace(',', '.') if rango else ''
+        centro = lugar.centro_comercial
+        context['centro_comercial'] = centro if centro is not None and centro.es_publicado else None
 
         return context
 
@@ -3079,6 +3082,7 @@ def newsletter_subscribe(request):
 # Guías Curadas
 # ────────────────────────────────────────────────────────────────────────
 
+CENTROS_EN_INDICE = 6
 TEMAS_GUIA = {'comer': _lazy('Comer'), 'noche': _lazy('Salir de noche'), 'dia': _lazy('De día')}
 ORDEN_TEMAS = ('comer', 'noche', 'dia', '')
 
@@ -3130,11 +3134,17 @@ def guias_index(request):
         })
     zonas.sort(key=lambda z: (-len(z['guias']), z['region'].name))
 
+    from .models import CentroComercial
+    centros = list(CentroComercial.objects.indexables().select_related('zona')[:CENTROS_EN_INDICE])
+    total_centros = CentroComercial.objects.publicados().count()
+
     context = {
         'guias': guias,
         'planes': planes,
         'zonas': zonas,
         'escapadas': escapadas,
+        'centros': centros,
+        'total_centros': total_centros,
         'titulo_pagina': _('Guías de Medellín'),
         'descripcion_pagina': _('Recomendaciones personales de un local. Los mejores lugares de Medellín organizados por zona, temática y experiencia.'),
     }
@@ -3190,4 +3200,149 @@ def guia_detail(request, slug):
         'descripcion_pagina': guia.descripcion,
     }
     return render(request, 'guias/guia_detail.html', context)
+
+
+# ────────────────────────────────────────────────────────────────────────
+# Centros comerciales
+# ────────────────────────────────────────────────────────────────────────
+
+COMIDA_RAPIDA = {
+    'fast_food_restaurant', 'hamburger_restaurant', 'pizza_restaurant', 'sandwich_shop',
+    'meal_takeaway', 'meal_delivery', 'food_court', 'food', 'food_delivery',
+}
+
+
+def _familias_centro():
+    """Secciones de la página de un centro comercial, en orden."""
+    from explorer.utils.place_classify import _CAFE, _FOOD, _NIGHT
+    return (
+        ('restaurantes', _('Restaurantes'), _FOOD - COMIDA_RAPIDA),
+        ('rapida', _('Comida rápida'), COMIDA_RAPIDA),
+        ('cafes', _('Cafés y postres'), _CAFE),
+        ('bares', _('Bares'), _NIGHT),
+    )
+
+
+@require_GET
+def centros_comerciales(request):
+    """Todos los centros comerciales publicados, agrupados por zona."""
+    from .models import CentroComercial
+
+    centros = list(CentroComercial.objects.publicados().select_related('zona'))
+    por_zona = {}
+    for centro in centros:
+        por_zona.setdefault(centro.zona.name if centro.zona else _('Otras zonas'), []).append(centro)
+    grupos = sorted(por_zona.items(), key=lambda kv: (-sum(c.total_lugares for c in kv[1]), kv[0]))
+
+    context = {
+        'centros': centros,
+        'grupos': grupos,
+        'total_lugares': sum(c.total_lugares for c in centros),
+        'titulo_pagina': _('Dónde comer en los centros comerciales de Medellín'),
+        'descripcion_pagina': _(
+            'Restaurantes, comida rápida, cafés y bares dentro de %(n)s centros comerciales de '
+            'Medellín y el Valle de Aburrá, con fotos, calificación y carta.'
+        ) % {'n': len(centros)},
+    }
+    return render(request, 'guias/centros_comerciales.html', context)
+
+
+@require_GET
+def centro_comercial_detail(request, slug):
+    """Los lugares de un centro comercial, por tipo."""
+    from .models import CentroComercial
+
+    centro = get_object_or_404(CentroComercial.objects.publicados().select_related('zona'), slug=slug)
+    lugares = _lugares_centro(Places.objects.filter(centro_comercial=centro))
+    otros = list(
+        CentroComercial.objects.publicados().filter(zona=centro.zona).exclude(pk=centro.pk)[:6]
+    ) if centro.zona_id else []
+    context = _contexto_centro(request, centro, lugares, otros)
+    return render(request, 'guias/centro_comercial_detail.html', context)
+
+
+def _lugares_centro(base):
+    """Lugares con foto de un centro comercial, sin malls ni tipos que no son para comer o salir."""
+    fotos = Prefetch(
+        'fotos',
+        queryset=Foto.objects.only('lugar_id', 'imagen', 'imagen_mediana', 'imagen_miniatura').order_by('id'),
+        to_attr='cached_fotos',
+    )
+    return list(
+        base.filter(tiene_fotos=True)
+        .exclude(tipo__in=TIPOS_EXCLUIDOS)
+        .exclude(tipo__in=TIPOS_FUERA_DEL_BUSCADOR)
+        .prefetch_related(None)
+        .prefetch_related(fotos)
+        .order_by('-es_destacado', '-weighted_rating', '-rating', 'nombre')
+    )
+
+
+def _contexto_centro(request, centro, lugares, otros):
+    secciones = []
+    usados = set()
+    for clave, titulo, tipos in _familias_centro():
+        grupo = [l for l in lugares if l.tipo in tipos and l.pk not in usados]
+        usados.update(l.pk for l in grupo)
+        if grupo:
+            secciones.append({'clave': clave, 'titulo': titulo, 'lugares': grupo})
+    resto = [l for l in lugares if l.pk not in usados]
+    if resto:
+        secciones.append({'clave': 'otros', 'titulo': _('Más lugares'), 'lugares': resto})
+
+    zona = centro.zona.name if centro.zona else 'Medellín'
+    cuantos = {
+        'restaurantes': lambda n: ngettext('%(n)s restaurante', '%(n)s restaurantes', n),
+        'rapida': lambda n: ngettext('%(n)s sitio de comida rápida', '%(n)s sitios de comida rápida', n),
+        'cafes': lambda n: ngettext('%(n)s café o pastelería', '%(n)s cafés y pastelerías', n),
+        'bares': lambda n: ngettext('%(n)s bar', '%(n)s bares', n),
+    }
+    partes = [
+        cuantos[sec['clave']](len(sec['lugares'])) % {'n': len(sec['lugares'])}
+        for sec in secciones if sec['clave'] in cuantos
+    ]
+    resumen_centro = _('%(n)s lugares para comer y tomar algo dentro de %(centro)s, en %(zona)s.') % {
+        'n': len(lugares), 'centro': centro.nombre, 'zona': zona,
+    }
+    if len(partes) > 1:
+        resumen_centro += ' ' + _('Hay %(lista)s.') % {'lista': _lista(partes)}
+    mejores = [l for l in lugares if l.rating and (l.total_reviews or 0) >= 50]
+    if mejores:
+        mejor = max(mejores, key=lambda l: (l.weighted_rating or 0))
+        resumen_centro += ' ' + _('El mejor valorado es %(lugar)s (%(rating)s).') % {
+            'lugar': mejor.nombre, 'rating': number_format(round(mejor.rating, 1), 1),
+        }
+
+    schema = {
+        '@context': 'https://schema.org',
+        '@type': 'ShoppingCenter',
+        'name': centro.nombre,
+        'url': request.build_absolute_uri(request.path),
+        'geo': {
+            '@type': 'GeoCoordinates',
+            'latitude': round(centro.geom.point_on_surface.y, 6),
+            'longitude': round(centro.geom.point_on_surface.x, 6),
+        },
+        'containsPlace': [
+            {'@type': lugar.schema_org_type, 'name': lugar.nombre,
+             'url': request.build_absolute_uri(lugar.get_absolute_url())}
+            for lugar in lugares[:40]
+        ],
+    }
+    if centro.zona:
+        schema['address'] = {'@type': 'PostalAddress', 'addressLocality': zona, 'addressCountry': 'CO'}
+
+    return {
+        'centro': centro,
+        'lugares': lugares,
+        'secciones': secciones,
+        'otros_centros': otros,
+        'resumen_centro': resumen_centro,
+        'es_indexable': centro.es_indexable,
+        'geom': json.loads(centro.geom.geojson),
+        'schema_json': json.dumps(schema, ensure_ascii=False).replace('</', '<\\/'),
+        'maps_url': 'https://www.google.com/maps/search/?' + urlencode({'api': 1, 'query': f'{centro.nombre} centro comercial {zona}'}),
+        'titulo_pagina': _('Dónde comer en %(centro)s') % {'centro': centro.nombre},
+        'descripcion_pagina': resumen_centro,
+    }
 

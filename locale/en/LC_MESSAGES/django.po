@@ -3289,6 +3289,163 @@ msgstr[1] "%(n)s guides"
 msgid "Todos los lugares de %(zona)s"
 msgstr "All places in %(zona)s"
 
+#: explorer/templates/guias/
+msgid "guías"
+msgstr "guides"
+
+#: explorer/templates/guias/
+msgid "zonas"
+msgstr "areas"
+
+#: explorer/templates/guias/
+msgid "centros comerciales"
+msgstr "malls"
+
+#: explorer/templates/guias/
+msgid "Centros comerciales"
+msgstr "Malls"
+
+#: explorer/templates/guias/
+msgid "Guía"
+msgstr "Guide"
+
+#: explorer/templates/guias/
+msgid "Nuevo"
+msgstr "New"
+
+#: explorer/templates/guias/
+msgid "Ya estás en el centro comercial y quieres comer bien: qué hay dentro, de restaurantes a cafés."
+msgstr "You're already at the mall and want to eat well: what's inside, from restaurants to cafés."
+
+#: explorer/
+#, python-format
+msgid "Ver %(n)s centro comercial"
+msgid_plural "Ver los %(n)s centros comerciales"
+msgstr[0] "See %(n)s mall"
+msgstr[1] "See all %(n)s malls"
+
+#: explorer/
+#, python-format
+msgid "%(n)s lugar"
+msgid_plural "%(n)s lugares"
+msgstr[0] "%(n)s place"
+msgstr[1] "%(n)s places"
+
+#: explorer/templates/guias/
+msgid "lugares dentro"
+msgstr "places inside"
+
+#: explorer/templates/guias/
+msgid "Centro comercial"
+msgstr "Mall"
+
+#: explorer/templates/guias/
+#, python-format
+msgid "Más lugares en %(zona)s"
+msgstr "More places in %(zona)s"
+
+#: explorer/templates/guias/
+#, python-format
+msgid "Mapa de %(centro)s"
+msgstr "Map of %(centro)s"
+
+#: explorer/templates/guias/
+msgid "Secciones"
+msgstr "Sections"
+
+#: explorer/templates/guias/
+#, python-format
+msgid "Otros centros comerciales en %(zona)s"
+msgstr "Other malls in %(zona)s"
+
+#: explorer/templates/guias/
+#, python-format
+msgid "Está en %(centro)s"
+msgstr "Inside %(centro)s"
+
+#: explorer/templates/guias/
+#, python-format
+msgid "Dónde comer en %(centro)s"
+msgstr "Where to eat in %(centro)s"
+
+#: explorer/templates/guias/
+msgid "Comida rápida"
+msgstr "Fast food"
+
+#: explorer/templates/guias/
+msgid "Cafés y postres"
+msgstr "Cafés and desserts"
+
+#: explorer/templates/guias/
+msgid "Más lugares"
+msgstr "More places"
+
+#: explorer/templates/guias/
+msgid "Otras zonas"
+msgstr "Other areas"
+
+#: explorer/templates/guias/
+msgid "Dónde comer en los centros comerciales de Medellín"
+msgstr "Where to eat in Medellín's malls"
+
+#: explorer/templates/guias/
+#, python-format
+msgid "Restaurantes, comida rápida, cafés y bares dentro de %(n)s centros comerciales de Medellín y el Valle de Aburrá, con fotos, calificación y carta."
+msgstr "Restaurants, fast food, cafés and bars inside %(n)s malls in Medellín and the Aburrá Valley, with photos, ratings and menus."
+
+#: explorer/
+#, python-format
+msgid "%(n)s restaurante"
+msgid_plural "%(n)s restaurantes"
+msgstr[0] "%(n)s restaurant"
+msgstr[1] "%(n)s restaurants"
+
+#: explorer/
+#, python-format
+msgid "%(n)s sitio de comida rápida"
+msgid_plural "%(n)s sitios de comida rápida"
+msgstr[0] "%(n)s fast food spot"
+msgstr[1] "%(n)s fast food spots"
+
+#: explorer/
+#, python-format
+msgid "%(n)s café o pastelería"
+msgid_plural "%(n)s cafés y pastelerías"
+msgstr[0] "%(n)s café or bakery"
+msgstr[1] "%(n)s cafés and bakeries"
+
+#: explorer/
+#, python-format
+msgid "%(n)s bar"
+msgid_plural "%(n)s bares"
+msgstr[0] "%(n)s bar"
+msgstr[1] "%(n)s bars"
+
+#: explorer/templates/guias/
+#, python-format
+msgid "%(n)s lugares para comer y tomar algo dentro de %(centro)s, en %(zona)s."
+msgstr "%(n)s places to eat and drink inside %(centro)s, in %(zona)s."
+
+#: explorer/templates/guias/
+#, python-format
+msgid "Hay %(lista)s."
+msgstr "There are %(lista)s."
+
+#: explorer/templates/guias/
+#, python-format
+msgid "El mejor valorado es %(lugar)s (%(rating)s)."
+msgstr "The top rated is %(lugar)s (%(rating)s)."
+
+#: explorer/templates/guias/
+msgctxt "url"
+msgid "guias/centros-comerciales/"
+msgstr "guides/malls/"
+
+#: explorer/templates/guias/
+msgctxt "url"
+msgid "guias/centros-comerciales/<slug:slug>/"
+msgstr "guides/malls/<slug:slug>/"
+
 #~ msgid "ViveMedellín - Tu Guía de la Ciudad"
 #~ msgstr "ViveMedellín - Your City Guide"
 

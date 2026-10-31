@@ -165,3 +165,22 @@ Probado en el servidor sin escribir en la base: la lógica de la migración sobr
 de las guías reales, y la plantilla del índice renderizada en español e inglés. La migración
 aplicada, la vista con sus consultas, el sitemap y el `noindex` de la ficha de guía solo se
 pueden comprobar al desplegar.
+
+**Fase 2 hecha en código (31 oct, sin desplegar).**
+- Modelo `CentroComercial` (migración 0041) y `Places.centro_comercial`. El comando
+  `importar_centros_comerciales` lee los polígonos `shop=mall` de OSM, une etapas (Mayorca I + II),
+  limpia nombres y asigna lugares: 30 centros con 8 lugares o más, 579 lugares asignados.
+  `publicar_pendientes_enriquecidos` asigna el centro a los lugares nuevos.
+- Páginas `/guias/centros-comerciales/` (por zona) y `/guias/centros-comerciales/<slug>/`
+  (`/en/guides/malls/…`): resumen con números, mapa del polígono, lugares por tipo, otros centros
+  de la zona y JSON-LD `ShoppingCenter`. Indexables los que tienen 8+ fichas indexables (14 hoy);
+  el resto, `noindex`. Sitemaps `malls` y `malls-en`.
+- La ficha de un lugar dice "Está en X" y enlaza al centro.
+- `/guias/` rediseñado con `static/css/guias.css`: tarjetas con foto, zonas con etiquetas de tema,
+  banda oscura de centros comerciales y escapada a lo ancho.
+- Arreglo de paso: el filtro que dejaba fuera del buscador los nombres con "Centro Comercial"
+  también sacaba restaurantes (Hatoviejo Viva Envigado, Crepes & Waffles Oviedo…). Ahora solo
+  aplica a lo que no es comida, café o noche.
+
+Sin notas escritas a mano todavía: la página usa el resumen automático. Los contadores se ponen
+al día volviendo a correr el importador.

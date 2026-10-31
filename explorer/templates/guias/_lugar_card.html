@@ -1,0 +1,11 @@
+{% load i18n form_tags i18n_extras %}
+{% with foto=lugar.get_primera_foto %}
+<a class="gx-place" href="{% url 'explorer:lugares_detail' lugar.slug %}">
+  <div class="gx-place-img">
+    {% if foto %}<img src="{{ foto.imagen_mediana|default:foto.imagen|media_url }}" alt="{{ lugar.nombre }}" loading="lazy">{% endif %}
+    {% if lugar.rating %}<span class="gx-chip">★ {{ lugar.rating|floatformat:1 }}</span>{% endif %}
+  </div>
+  <h3 class="gx-place-name">{{ lugar.nombre }}</h3>
+  <p class="gx-place-meta">{{ lugar|place_type_label }}{% if lugar.total_reviews %} · {{ lugar.total_reviews }} {% trans "reseñas" %}{% endif %}</p>
+</a>
+{% endwith %}

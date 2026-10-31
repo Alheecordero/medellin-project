@@ -109,6 +109,12 @@
         <a href="{% url 'explorer:lugares_por_comuna' lugar.comuna.slug %}">{{ lugar.comuna.name }}</a>
       </p>
     {% endif %}
+    {% if centro_comercial %}
+      <p class="place-sheet__address place-sheet__mall">
+        {% include "components/lucide_icon.html" with name="shopping-bag" size="16" %}
+        <a href="{{ centro_comercial.get_absolute_url }}">{% blocktrans with centro=centro_comercial.nombre %}Está en {{ centro }}{% endblocktrans %}</a>
+      </p>
+    {% endif %}
     {% for nota in notas_guia %}
       <p class="place-sheet__note">{% if nota.texto %}{{ nota.texto }} {% endif %}<a href="{{ nota.url }}">{% blocktrans with guia=nota.guia %}En la guía «{{ guia }}»{% endblocktrans %}</a></p>
     {% endfor %}
@@ -311,6 +317,9 @@
           {% endif %}
           {% if lugar.comuna %}
             <a class="place-explore__link" href="{% url 'explorer:lugares_por_comuna' lugar.comuna.slug %}">{% blocktrans with zona=lugar.comuna.name %}Lugares en {{ zona }}{% endblocktrans %}</a>
+          {% endif %}
+          {% if centro_comercial %}
+            <a class="place-explore__link" href="{{ centro_comercial.get_absolute_url }}">{% blocktrans with centro=centro_comercial.nombre %}Dónde comer en {{ centro }}{% endblocktrans %}</a>
           {% endif %}
           <a class="place-explore__link" href="{% url 'explorer:guias_index' %}">{% trans "Guías de Medellín" %}</a>
         {% endwith %}

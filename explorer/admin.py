@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription, CuratedGuide, CuratedGuideItem, PendingPlace, GooglePlaceId, GooglePlaceDetails, PlaceDiscoveryRun, PlaceDiscoveryTask, PlacePartnerMenu, PlacePartnerDish
+from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription, CentroComercial, CuratedGuide, CuratedGuideItem, PendingPlace, GooglePlaceId, GooglePlaceDetails, PlaceDiscoveryRun, PlaceDiscoveryTask, PlacePartnerMenu, PlacePartnerDish
 import json
 
 
@@ -293,6 +293,17 @@ class CuratedGuideItemInline(admin.TabularInline):
             img_html, lugar.nombre, rating, lugar.get_tipo_display() if lugar.tipo else ""
         )
     lugar_preview.short_description = "Vista previa"
+
+
+@admin.register(CentroComercial)
+class CentroComercialAdmin(gis_admin.GISModelAdmin):
+    list_display = ('nombre', 'zona', 'total_lugares', 'lugares_indexables', 'publicado', 'actualizado')
+    list_filter = ('publicado', 'zona')
+    list_editable = ('publicado',)
+    search_fields = ('nombre',)
+    readonly_fields = ('osm_ids', 'total_lugares', 'lugares_indexables', 'portada', 'actualizado')
+    fields = ('nombre', 'slug', 'zona', 'publicado', 'nota', 'nota_en', 'portada',
+              'total_lugares', 'lugares_indexables', 'osm_ids', 'geom', 'actualizado')
 
 
 @admin.register(CuratedGuide)

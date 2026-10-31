@@ -178,6 +178,14 @@
             <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
             <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/{{ guia.slug }}/" />
             <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
+          {% elif un == "centro_comercial_detail" and centro %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/centros-comerciales/{{ centro.slug }}/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/malls/{{ centro.slug }}/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/guias/centros-comerciales/{{ centro.slug }}/" />
+          {% elif un == "centros_comerciales" %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/centros-comerciales/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/malls/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/guias/centros-comerciales/" />
           {% elif un == "guias_index" %}
             <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/" />
             <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/" />
@@ -212,6 +220,14 @@
             <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
             <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/{{ guia.slug }}/" />
             <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/guias/{{ guia.slug }}/" />
+          {% elif un == "centro_comercial_detail" and centro %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/centros-comerciales/{{ centro.slug }}/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/malls/{{ centro.slug }}/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/guias/centros-comerciales/{{ centro.slug }}/" />
+          {% elif un == "centros_comerciales" %}
+            <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/centros-comerciales/" />
+            <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/malls/" />
+            <link rel="alternate" hreflang="x-default" href="{{ scheme }}://{{ host }}/guias/centros-comerciales/" />
           {% elif un == "guias_index" %}
             <link rel="alternate" hreflang="es" href="{{ scheme }}://{{ host }}/guias/" />
             <link rel="alternate" hreflang="en" href="{{ scheme }}://{{ host }}/en/guides/" />
