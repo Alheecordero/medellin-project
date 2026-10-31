@@ -181,3 +181,16 @@ pasar solo las IP de Cloudflare en ufw o usar `real_ip` de nginx con sus rangos.
 `vertex-express@vivemedellin.iam.gserviceaccount.com` de `vertex.json` ya no existe
 (`invalid_grant: account not found`). `/api/semantic-search/` da 500 y `/semantic-search/` sale
 sin resultados. Hace falta una clave nueva con permiso de Vertex AI.
+
+**Lote 3, arreglado en código (31 oct, sin desplegar).** Probado con el `Client` contra la base de
+producción en una copia aislada.
+
+- 9: `name`, `description`, `url` e `image` del JSON-LD con `escapejs`; el `ItemList` parsea con
+  `?q=a\` y con `"></script>`.
+- 10: el mapa de la guía lee los puntos de `json_script`, sin `|safe`.
+- 11: el mensaje de la API se escapa antes de ir al HTML en el listado y en la home.
+- 18: 17 traducciones nuevas ("Lugares en…", "Pedir en Rappi", "Abierto 24 horas", rasgos del
+  lugar, "esta zona", "En la guía «…»"…). Los rasgos y los días de la API salen en el idioma
+  pedido. Quedan en español los nombres de las secciones de carta, que vienen así de Rappi.
+- 19: cualquier filtro del listado (tipo, característica, cerca, búsqueda) lleva `noindex`;
+  `robots.txt` bloquea `lat=` y `cerca=`; el enlace "Más … cerca" de la ficha va con `nofollow`.

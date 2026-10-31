@@ -307,7 +307,7 @@
         {% with tipo_label=lugar|place_type_label %}
           {% if lugar.ubicacion %}
             {% with lat=lugar.ubicacion.y|unlocalize lng=lugar.ubicacion.x|unlocalize %}
-            <a class="place-explore__link" href="{% url 'explorer:lugares_list' %}?cerca=1&lat={{ lat }}&lng={{ lng }}&tipo={{ lugar.tipo }}">{% blocktrans with tipo=tipo_label %}Más {{ tipo }} cerca{% endblocktrans %}</a>
+            <a class="place-explore__link" rel="nofollow" href="{% url 'explorer:lugares_list' %}?cerca=1&lat={{ lat }}&lng={{ lng }}&tipo={{ lugar.tipo }}">{% blocktrans with tipo=tipo_label %}Más {{ tipo }} cerca{% endblocktrans %}</a>
             {% endwith %}
           {% endif %}
           {% if lugar.comuna %}

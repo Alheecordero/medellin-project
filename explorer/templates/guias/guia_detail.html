@@ -176,9 +176,10 @@
 {% block extra_js %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{{ markers|json_script:"guia-markers" }}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const markers = {{ markers_json|safe }};
+  const markers = JSON.parse(document.getElementById('guia-markers').textContent);
   if (!markers.length) return;
 
   const placePattern = "{% url 'explorer:lugares_detail' 'slugtoken' %}";

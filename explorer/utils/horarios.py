@@ -66,7 +66,7 @@ def filas_horario(texto: str | None) -> list[dict]:
         )
         filas[orden] = {
             "dia": _(DIAS[orden][1]),
-            "horas": _("Cerrado") if cerrado else horas,
+            "horas": _("Cerrado") if cerrado else _("Abierto 24 horas") if abierto_24 else horas,
             "schema_dia": DIAS[orden][2],
             "rangos": rangos,
         }

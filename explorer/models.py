@@ -13,7 +13,7 @@ from django.contrib.postgres.indexes import GistIndex
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils import timezone
-from django.utils.translation import get_language
+from django.utils.translation import get_language, gettext
 from django.core.validators import EmailValidator
 from pgvector.django import VectorField
 from django.contrib.postgres.fields import ArrayField
@@ -1462,6 +1462,10 @@ class CentroComercial(models.Model):
 # Cartas de Rappi / DiDi (un lugar, la carta más completa)
 # ────────────────────────────────────────────────────────────────
 
+# Fragmento de la URL → nombre de la app de pedidos.
+APPS_PEDIDO = (("rappi", "Rappi"), ("didi", "DiDi"), ("ifood", "iFood"), ("uber", "Uber Eats"))
+
+
 class PlacePartnerMenu(models.Model):
     """Carta de un partner, unida a un lugar que ya está en Places."""
 
@@ -1504,16 +1508,8 @@ class PlacePartnerMenu(models.Model):
                 continue
             seen.add(url)
             host = url.lower()
-            if "rappi" in host:
-                label = "Pedir en Rappi"
-            elif "didi" in host:
-                label = "Pedir en DiDi"
-            elif "ifood" in host:
-                label = "Pedir en iFood"
-            elif "uber" in host:
-                label = "Pedir en Uber Eats"
-            else:
-                label = "Pedir"
+            app = next((nombre for clave, nombre in APPS_PEDIDO if clave in host), None)
+            label = gettext("Pedir en %(app)s") % {"app": app} if app else gettext("Pedir")
             links.append({"label": label, "url": url})
         return links
 

@@ -50,7 +50,7 @@
   "url": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}",
   "mainEntityOfPage": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}",
   {% if lugar.descripcion %}"description": "{{ lugar.descripcion|truncatechars:160|escapejs }}",{% endif %}
-  {% if lugar.get_primera_foto %}"image": "{{ lugar.get_primera_foto.imagen_mediana|default:lugar.get_primera_foto.imagen|media_url|ensure_absolute_url:request }}",{% endif %}
+  {% if lugar.get_primera_foto %}"image": "{{ lugar.get_primera_foto.imagen_mediana|default:lugar.get_primera_foto.imagen|media_url|ensure_absolute_url:request|escapejs }}",{% endif %}
   {% if lugar.direccion %}"address": {
     "@type": "PostalAddress",
     "streetAddress": "{{ lugar.direccion|escapejs }}",
@@ -91,9 +91,9 @@
 {
   "@context": "https://schema.org",
   "@type": "ItemList",
-  "name": "{{ titulo_pagina|default:'Lugares en Medellín' }}",
-  "description": "{{ descripcion_pagina|default:'Los mejores lugares para visitar en Medellín' }}",
-  "url": "{{ request.build_absolute_uri }}",
+  "name": "{{ titulo_pagina|default:'Lugares en Medellín'|escapejs }}",
+  "description": "{{ descripcion_pagina|default:'Los mejores lugares para visitar en Medellín'|escapejs }}",
+  "url": "{{ request.build_absolute_uri|escapejs }}",
   "numberOfItems": {{ lugares|length|default:0 }},
   "itemListElement": [
     {% for lugar in lugares %}

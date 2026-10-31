@@ -3446,6 +3446,77 @@ msgctxt "url"
 msgid "guias/centros-comerciales/<slug:slug>/"
 msgstr "guides/malls/<slug:slug>/"
 
+#: explorer/
+msgid "Abierto 24 horas"
+msgstr "Open 24 hours"
+
+#: explorer/
+msgid "Acceso para sillas de ruedas"
+msgstr "Wheelchair accessible"
+
+#: explorer/
+msgid "Admite mascotas"
+msgstr "Pets allowed"
+
+#: explorer/
+msgid "Apto para niños"
+msgstr "Good for kids"
+
+#: explorer/
+msgid "Comuna no encontrada"
+msgstr "Area not found"
+
+#: explorer/
+#, python-format
+msgid "En la guía «%(guia)s»"
+msgstr "In the guide “%(guia)s”"
+
+#: explorer/
+msgid "Entrega a domicilio"
+msgstr "Delivery"
+
+#: explorer/
+msgid "Ir a la página"
+msgstr "Go to page"
+
+#: explorer/
+msgid "Lugares"
+msgstr "Places"
+
+#: explorer/
+#, python-format
+msgid "Lugares en %(zona)s"
+msgstr "Places in %(zona)s"
+
+#: explorer/
+msgid "Pedir"
+msgstr "Order"
+
+#: explorer/
+#, python-format
+msgid "Pedir en %(app)s"
+msgstr "Order on %(app)s"
+
+#: explorer/
+msgid "Servicio en mesa"
+msgstr "Table service"
+
+#: explorer/
+msgid "Tarjetas de crédito"
+msgstr "Credit cards"
+
+#: explorer/
+msgid "Terraza al aire libre"
+msgstr "Outdoor seating"
+
+#: explorer/
+msgid "Zona no encontrada"
+msgstr "Area not found"
+
+#: explorer/
+msgid "esta zona"
+msgstr "this area"
+
 #~ msgid "ViveMedellín - Tu Guía de la Ciudad"
 #~ msgstr "ViveMedellín - Your City Guide"
 

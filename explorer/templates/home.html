@@ -1277,9 +1277,13 @@ $(document).ready(function() {
         }
         
         // Subtítulo: usar mensaje del backend (ya viene traducido y formateado)
-        let subtitulo = data.mensaje || '';
+        // El mensaje de la API repite lo que puso el usuario: se escapa antes de ir a .html().
+        const mensajeSeguro = String(data.mensaje || '').replace(/[&<>"']/g, function(ch) {
+            return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+        });
+        let subtitulo = mensajeSeguro;
         if (totalReal === 0) {
-            subtitulo = `${data.mensaje}<br><small class="text-muted">${T_TRY_EXPANDING}</small>`;
+            subtitulo = `${mensajeSeguro}<br><small class="text-muted">${T_TRY_EXPANDING}</small>`;
         }
         
         // Construir badges con datos reales

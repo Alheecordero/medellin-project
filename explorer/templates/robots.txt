@@ -22,6 +22,9 @@ Disallow: /i18n/
 Disallow: /__debug__/
 Disallow: /local/
 Disallow: /static/admin/
+# "Cerca de mí": una URL por coordenada, infinitas y sin contenido propio.
+Disallow: /*lat=
+Disallow: /*cerca=
 
 # Estáticos OK
 Allow: /static/css/

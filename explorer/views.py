@@ -1088,6 +1088,9 @@ class PlacesListView(ListView):
         pagina_indexable = solo_paginacion and page_obj.number > 1
 
         context.update({
+            # Cualquier filtro (tipo, característica, cerca, búsqueda) va con noindex: el texto
+            # del usuario acaba en el <title> y las combinaciones no tienen fin.
+            "con_filtros": bool(filtros_query),
             "pagina_indexable": pagina_indexable,
             "pagina_query": f"?page={page_obj.number}" if pagina_indexable else "",
             "paginas_rastreables": (
@@ -1377,31 +1380,31 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         
         # Servicios
         if lugar.takeout:
-            caracteristicas.append({'icon': 'bi-bag', 'name': 'Para llevar'})
+            caracteristicas.append({'icon': 'bi-bag', 'name': _('Para llevar')})
         
         if lugar.delivery:
-            caracteristicas.append({'icon': 'bi-bicycle', 'name': 'Entrega a domicilio'})
+            caracteristicas.append({'icon': 'bi-bicycle', 'name': _('Entrega a domicilio')})
         
         if lugar.dine_in:
-            caracteristicas.append({'icon': 'bi-cup-hot', 'name': 'Servicio en mesa'})
+            caracteristicas.append({'icon': 'bi-cup-hot', 'name': _('Servicio en mesa')})
         
         # Pagos
         if lugar.accepts_credit_cards:
-            caracteristicas.append({'icon': 'bi-credit-card', 'name': 'Tarjetas de crédito'})
+            caracteristicas.append({'icon': 'bi-credit-card', 'name': _('Tarjetas de crédito')})
         
         # Accesibilidad
         if lugar.wheelchair_accessible_entrance:
-            caracteristicas.append({'icon': 'bi-universal-access', 'name': 'Acceso para sillas de ruedas'})
+            caracteristicas.append({'icon': 'bi-universal-access', 'name': _('Acceso para sillas de ruedas')})
         
         # Otros servicios
         if lugar.outdoor_seating:
-            caracteristicas.append({'icon': 'bi-tree', 'name': 'Terraza al aire libre'})
+            caracteristicas.append({'icon': 'bi-tree', 'name': _('Terraza al aire libre')})
         
         if lugar.good_for_children:
-            caracteristicas.append({'icon': 'bi-people', 'name': 'Apto para niños'})
+            caracteristicas.append({'icon': 'bi-people', 'name': _('Apto para niños')})
         
         if lugar.allows_dogs:
-            caracteristicas.append({'icon': 'bi-emoji-smile', 'name': 'Admite mascotas'})
+            caracteristicas.append({'icon': 'bi-emoji-smile', 'name': _('Admite mascotas')})
         
         return caracteristicas
     
@@ -1410,7 +1413,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         if not lugar.horario_json:
             return []
         
-        dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+        dias = [_('Lunes'), _('Martes'), _('Miércoles'), _('Jueves'), _('Viernes'), _('Sábado'), _('Domingo')]
         horarios = []
         
         try:
@@ -1426,7 +1429,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
                     else:
                         horarios.append({
                             'dia': dia,
-                            'horario': 'Cerrado'
+                            'horario': _('Cerrado')
                         })
         except (TypeError, KeyError):
             pass
@@ -2622,7 +2625,7 @@ def lugares_comuna_ajax(request, slug):
                 'url': reverse('explorer:lugares_detail', args=[lugar_comuna_item.slug]) if lugar_comuna_item.slug else None,
             })
         
-        return JsonResponse({'lugares': data, 'comuna_nombre': lugar.comuna.name if hasattr(lugar, 'comuna') and lugar.comuna else 'esta zona'})
+        return JsonResponse({'lugares': data, 'comuna_nombre': lugar.comuna.name if lugar.comuna else _('esta zona')})
     
     except Exception:
         logger.exception("Error en lugares relacionados")
@@ -3167,7 +3170,6 @@ def guia_detail(request, slug):
     items = guia.items.select_related('lugar').order_by('posicion')
     
     # Datos de mapa para cada lugar con ubicación
-    import json as _json
     markers = []
     for item in items:
         lugar = item.lugar
@@ -3195,7 +3197,7 @@ def guia_detail(request, slug):
         'guia': guia,
         'es_indexable': guia.es_indexable,
         'items': items,
-        'markers_json': _json.dumps(markers),
+        'markers': markers,
         'titulo_pagina': guia.titulo,
         'descripcion_pagina': guia.descripcion,
     }
