@@ -155,3 +155,15 @@ se indexan.
 - `index` solo en las fichas del sitemap; sitemap sin cerrados, < 3,5★ ni otros rubros.
 - ≥ 50 % del HTML anónimo servido desde caché de Cloudflare; TTFB < 0,3 s.
 - Guías y comunas conocidas por Google; ≥ 300 fichas indexadas.
+
+## Estado (31 oct 2026)
+
+- **P0 1–3 hechos** (`7bc6961f`): lista blanca de parámetros con 301, `noindex` en fichas no
+  indexables, `indexables()` más estricta (4.786 → 4.526 fichas en el sitemap).
+- **P1 5–8 hechos** (`a2bbfc0a`): enlaces ficha → guía, comuna y `/guias/`; HTML sin cookie
+  CSRF y estáticos versionados por commit; `lastmod` desde el 9 ago 2026 y solo la primera
+  foto cuenta; horario en el servidor con `openingHoursSpecification`; jsi18n desbloqueado.
+- **Cloudflare:** regla "HTML anónimo: 10 min en el borde" (sin sesión ni `csrftoken`, fuera
+  `/admin`, `/api`, `/i18n`, `/accounts`, `.xml`). TTFB en HIT: ~0,2–0,3 s (antes 0,7–1,1 s).
+- **Pendiente de decisión del dueño:** `vivemedellin.co` (P0 4) e indexación manual en GSC.
+- **Siguiente:** P2 (contenido único con carta, reseñas y atributos) y rate limiting de bots.
