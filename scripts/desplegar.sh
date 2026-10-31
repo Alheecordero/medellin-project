@@ -62,7 +62,7 @@ MIGRADO=false
 git reset -q --hard "$NEW"
 $PY manage.py check >/dev/null 2>&1 || volver "manage.py check falló"
 
-if $PY manage.py migrate --plan 2>/dev/null | grep -q '^  explorer\|^  [a-z_]*\.0'; then
+if $PY manage.py migrate --plan 2>/dev/null | grep -qE '^ *[a-z_]+\.[0-9]{4}_'; then
   echo "== migraciones pendientes:"; $PY manage.py migrate --plan 2>/dev/null | grep -v '^Planned'
   $PY manage.py migrate --noinput 2>&1 | grep -v "objects imported" | tail -5 || volver "migrate falló"
   MIGRADO=true
