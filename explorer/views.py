@@ -3188,12 +3188,14 @@ def guia_detail(request, slug):
     """Detalle de una guía curada con los lugares rankeados."""
     from .models import CuratedGuide
     
+    # El staff ve los borradores para revisarlos (llevan noindex); el resto, solo las publicadas.
+    solo_publicadas = {} if request.user.is_staff else {'publicado': True}
     guia = get_object_or_404(
         CuratedGuide.objects.prefetch_related(
             'items__lugar__fotos',
         ),
         slug=slug,
-        publicado=True
+        **solo_publicadas
     )
     
     # Un lugar cerrado o fusionado deja de mostrarse en la guía.

@@ -3682,6 +3682,14 @@ msgctxt "url"
 msgid "que-hacer/<slug:categoria>/"
 msgstr "things-to-do/<slug:categoria>/"
 
+#: explorer/templates/guias/guia_detail.html
+msgid "Borrador"
+msgstr "Draft"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Solo lo ve el staff. Publícala desde el admin cuando esté lista."
+msgstr "Only staff can see it. Publish it from the admin when it is ready."
+
 #~ msgid "ViveMedellín - Tu Guía de la Ciudad"
 #~ msgstr "ViveMedellín - Your City Guide"
 

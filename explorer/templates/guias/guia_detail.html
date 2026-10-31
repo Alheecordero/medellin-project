@@ -41,6 +41,7 @@
           <span><i class="bi bi-geo-alt-fill"></i> {{ guia.zona_display }}</span>
           <span><i class="bi bi-list-ol"></i> {{ items|length }} {% trans "lugares" %}</span>
         </div>
+        {% if not guia.publicado %}<p class="guia-intro" style="padding: .6rem .9rem; border-radius: 10px; background: #fff3cd; color: #664d03;"><strong>{% trans "Borrador" %}</strong> · {% trans "Solo lo ve el staff. Publícala desde el admin cuando esté lista." %}</p>{% endif %}
         <p class="guia-intro">{{ guia.descripcion_i18n }}</p>
         {% if guia.como_recorrer %}
           <p class="guia-intro">{{ guia.como_recorrer }}</p>
