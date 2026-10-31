@@ -10,6 +10,7 @@
 {% block meta_description %}{{ guia.descripcion_i18n|truncatechars:160 }}{% endblock %}
 {% block og_title %}{{ guia.titulo_i18n }} | ViveMedellín{% endblock %}
 {% block og_description %}{{ guia.descripcion_i18n|truncatechars:160 }}{% endblock %}
+{% block meta_robots %}{% if es_indexable %}index, follow, max-image-preview:large, max-snippet:-1{% else %}noindex, follow, max-image-preview:large{% endif %}{% endblock %}
 
 {% block og_image %}
 {% with cover=guia.get_cover_image %}

@@ -23,27 +23,75 @@
       </div>
 
       {% if guias %}
-        <div class="guias-grid">
-          {% for guia in guias %}
-          <a href="{{ guia.get_absolute_url }}" class="guia-card">
-            <div class="guia-card-img">
-              {% with cover=guia.get_cover_image %}
-              {% if cover %}
-                <img src="{{ cover }}" alt="{{ guia.titulo_i18n }}" loading="lazy">
-              {% else %}
-                <div class="guia-card-placeholder"><i class="bi bi-bookmark-star"></i></div>
-              {% endif %}
-              {% endwith %}
-              <span class="guia-card-count">{{ guia.total_items }} {% trans "lugares" %}</span>
-            </div>
-            <div class="guia-card-body">
-              <h3 class="guia-card-title">{{ guia.titulo_i18n }}</h3>
-              <p class="guia-card-desc">{{ guia.descripcion_i18n|truncatechars:100 }}</p>
-              <span class="guia-card-cta">{% trans "Ver guía" %} <i class="bi bi-arrow-right ms-1"></i></span>
-            </div>
-          </a>
-          {% endfor %}
-        </div>
+        <nav class="guias-nav" aria-label="{% trans 'Secciones de guías' %}">
+          {% if planes %}<a href="#por-plan">{% trans "Por plan" %}</a>{% endif %}
+          {% if zonas %}<a href="#por-zona">{% trans "Por zona" %}</a>{% endif %}
+          {% if escapadas %}<a href="#escapadas">{% trans "Escapadas" %}</a>{% endif %}
+        </nav>
+
+        {% if planes %}
+        <section class="guias-block" id="por-plan">
+          <div class="guias-block-head">
+            <h2 class="guias-block-title">{% trans "Por plan" %}</h2>
+            <p class="guias-block-lead">{% trans "Lo mejor de toda la ciudad para un plan concreto." %}</p>
+          </div>
+          <div class="guias-grid">
+            {% for guia in planes %}{% include "guias/_guia_card.html" %}{% endfor %}
+          </div>
+        </section>
+        {% endif %}
+
+        {% if zonas %}
+        <section class="guias-block" id="por-zona">
+          <div class="guias-block-head">
+            <h2 class="guias-block-title">{% trans "Por zona" %}</h2>
+            <p class="guias-block-lead">{% trans "Si ya sabes dónde vas a estar: dónde comer, salir y pasar el día en cada zona." %}</p>
+          </div>
+          <div class="guias-grid">
+            {% for zona in zonas %}
+            <article class="guia-card guia-zona">
+              <div class="guia-card-img">
+                {% if zona.portada %}
+                  <img src="{{ zona.portada }}" alt="{{ zona.region.name }}" loading="lazy">
+                {% else %}
+                  <div class="guia-card-placeholder"><i class="bi bi-geo-alt"></i></div>
+                {% endif %}
+                <span class="guia-card-count">{% blocktrans count n=zona.guias|length %}{{ n }} guía{% plural %}{{ n }} guías{% endblocktrans %}</span>
+              </div>
+              <div class="guia-card-body">
+                <h3 class="guia-card-title">{{ zona.region.name }}</h3>
+                <ul class="guia-zona-list">
+                  {% for guia in zona.guias %}
+                  <li>
+                    <a href="{{ guia.get_absolute_url }}">
+                      {% if guia.tema_label %}<span class="guia-zona-tema">{{ guia.tema_label }}</span>{% endif %}
+                      <span class="guia-zona-nombre">{{ guia.titulo_i18n }}</span>
+                      <span class="guia-zona-n">{{ guia.total_items }}</span>
+                    </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+                {% if zona.url_listado %}
+                <a class="guia-card-cta" href="{{ zona.url_listado }}">{% blocktrans with zona=zona.region.name %}Todos los lugares de {{ zona }}{% endblocktrans %} <i class="bi bi-arrow-right ms-1"></i></a>
+                {% endif %}
+              </div>
+            </article>
+            {% endfor %}
+          </div>
+        </section>
+        {% endif %}
+
+        {% if escapadas %}
+        <section class="guias-block" id="escapadas">
+          <div class="guias-block-head">
+            <h2 class="guias-block-title">{% trans "Escapadas" %}</h2>
+            <p class="guias-block-lead">{% trans "Un día fuera de Medellín." %}</p>
+          </div>
+          <div class="guias-grid">
+            {% for guia in escapadas %}{% include "guias/_guia_card.html" %}{% endfor %}
+          </div>
+        </section>
+        {% endif %}
       {% else %}
         <div class="text-center py-5">
           <i class="bi bi-bookmark-star display-3 guias-empty-icon"></i>
@@ -197,6 +245,82 @@
   width: fit-content;
   padding-bottom: 0.05rem;
 }
+
+.guias-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 2.5rem;
+}
+
+.guias-nav a {
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--v4-line, rgba(11, 18, 32, 0.12));
+  color: var(--v4-ink, #0b1220);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.guias-nav a:hover { border-color: var(--v4-ink, #0b1220); }
+
+.guias-block { margin: 0 0 3rem; scroll-margin-top: 5rem; }
+
+.guias-block-head { margin: 0 0 1.25rem; }
+
+.guias-block-title {
+  font-family: var(--v4-font-display, 'Bricolage Grotesque', system-ui, sans-serif);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--v4-ink, #0b1220);
+  margin: 0 0 0.25rem;
+}
+
+.guias-block-lead {
+  margin: 0;
+  color: var(--v4-muted, #6b7285);
+  font-size: 0.95rem;
+}
+
+.guia-zona:hover { transform: none; }
+
+.guia-zona-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  flex: 1;
+}
+
+.guia-zona-list li + li { border-top: 1px solid var(--v4-line, rgba(11, 18, 32, 0.08)); }
+
+.guia-zona-list a {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.55rem 0;
+  color: var(--v4-ink, #0b1220);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.guia-zona-list a:hover .guia-zona-nombre { text-decoration: underline; }
+
+.guia-zona-tema {
+  flex: none;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--v4-muted, #6b7285);
+  min-width: 5.5rem;
+}
+
+.guia-zona-nombre { flex: 1; font-weight: 600; }
+
+.guia-zona-n { flex: none; color: var(--v4-muted, #6b7285); font-size: 0.8rem; }
 
 @media (max-width: 576px) {
   .guias-title { font-size: 1.6rem; }

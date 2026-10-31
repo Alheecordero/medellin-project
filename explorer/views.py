@@ -18,7 +18,7 @@ import math
 import random
 from pgvector.django import CosineDistance
 from django.views import View
-from django.utils.translation import gettext as _, ngettext, get_language
+from django.utils.translation import gettext as _, gettext_lazy as _lazy, ngettext, get_language
 from explorer.utils.horarios import filas_horario, opening_hours_spec
 from explorer.utils.ficha import citas_resenas, menu_schema, pesos, rango_precios, resumen, secciones_destacadas
 from explorer.utils.media_urls import resolve_media_url
@@ -422,7 +422,7 @@ class HomeView(TemplateView):
     def _get_guias_home(self):
         from .models import CuratedGuide
         return list(
-            CuratedGuide.objects.filter(publicado=True)
+            CuratedGuide.objects.indexables()
             .select_related("zona")
             .order_by("orden", "-fecha_creacion")
         )
@@ -3079,25 +3079,62 @@ def newsletter_subscribe(request):
 # Guías Curadas
 # ────────────────────────────────────────────────────────────────────────
 
+TEMAS_GUIA = {'comer': _lazy('Comer'), 'noche': _lazy('Salir de noche'), 'dia': _lazy('De día')}
+ORDEN_TEMAS = ('comer', 'noche', 'dia', '')
+
+
+def _portada_guia(guia):
+    """Portada de la guía con lo que ya trajo el prefetch (sin consultas por tarjeta)."""
+    if guia.imagen_cover:
+        return guia.imagen_cover
+    for item in guia.items.all():
+        fotos = list(item.lugar.fotos.all())
+        if fotos:
+            foto = min(fotos, key=lambda f: f.pk)
+            return foto.imagen_mediana or foto.imagen
+        return None
+    return None
+
+
 @require_GET
 def guias_index(request):
-    """Índice de todas las guías curadas publicadas."""
-    from .models import CuratedGuide, GUIDE_CATEGORY_CHOICES
-    
-    guias = CuratedGuide.objects.filter(
-        publicado=True
-    ).prefetch_related('items__lugar__fotos').order_by('orden', '-fecha_creacion')
-    
-    # Agrupar por categoría
-    categorias = {}
-    for cat_code, cat_label in GUIDE_CATEGORY_CHOICES:
-        guias_cat = [g for g in guias if g.categoria == cat_code]
-        if guias_cat:
-            categorias[cat_label] = guias_cat
-    
+    """Índice de guías en bloques: por plan, por zona y escapadas."""
+    from .models import CuratedGuide, CuratedGuideItem
+
+    items = CuratedGuideItem.objects.select_related('lugar').prefetch_related('lugar__fotos').order_by('posicion')
+    guias = list(
+        CuratedGuide.objects.indexables()
+        .select_related('zona')
+        .prefetch_related(Prefetch('items', queryset=items))
+        .order_by('orden', '-fecha_creacion')
+    )
+    for guia in guias:
+        guia.portada = _portada_guia(guia)
+        guia.tema_label = TEMAS_GUIA.get(guia.tema, '')
+
+    planes = [g for g in guias if g.categoria == 'plan' or (g.categoria == 'zona' and g.zona is None)]
+    escapadas = [g for g in guias if g.categoria == 'escapada']
+    por_zona = {}
+    for guia in guias:
+        if guia.categoria == 'zona' and guia.zona is not None:
+            por_zona.setdefault(guia.zona, []).append(guia)
+    zonas = []
+    for region, guias_zona in por_zona.items():
+        guias_zona.sort(key=lambda g: (ORDEN_TEMAS.index(g.tema) if g.tema in ORDEN_TEMAS else 9, g.orden))
+        zonas.append({
+            'region': region,
+            'guias': guias_zona,
+            'portada': next((g.portada for g in guias_zona if g.portada), None),
+            'total_lugares': sum(g.total_items for g in guias_zona),
+            'url_listado': reverse('explorer:lugares_por_comuna', args=[region.slug]) if region.slug else None,
+        })
+    zonas.sort(key=lambda z: (-len(z['guias']), z['region'].name))
+
     context = {
         'guias': guias,
-        'categorias': categorias,
+        'planes': planes,
+        'zonas': zonas,
+        'escapadas': escapadas,
         'titulo_pagina': _('Guías de Medellín'),
         'descripcion_pagina': _('Recomendaciones personales de un local. Los mejores lugares de Medellín organizados por zona, temática y experiencia.'),
     }
@@ -3146,6 +3183,7 @@ def guia_detail(request, slug):
     
     context = {
         'guia': guia,
+        'es_indexable': guia.es_indexable,
         'items': items,
         'markers_json': _json.dumps(markers),
         'titulo_pagina': guia.titulo,

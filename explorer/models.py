@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.core.cache import cache
 from django.db import models
-from django.db.models import Index, Q
+from django.db.models import Count, Index, Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.postgres.indexes import GistIndex
@@ -1189,13 +1189,29 @@ class NewsletterSubscription(models.Model):
 # Guías Curadas ("Top 10" por el local)
 # ────────────────────────────────────────────────────────────────
 
+# Bloques del índice /guias/: un plan en toda la ciudad, una zona concreta o una salida fuera.
 GUIDE_CATEGORY_CHOICES = (
-    ('sector', 'Por Zona'),
-    ('audiencia', 'Por Audiencia'),
-    ('actividad', 'Por Actividad'),
-    ('daytrip', 'Excursión / Day Trip'),
-    ('gastronomia', 'Gastronomía'),
+    ('plan', 'Por plan'),
+    ('zona', 'Por zona'),
+    ('escapada', 'Escapada'),
 )
+GUIDE_THEME_CHOICES = (
+    ('comer', 'Comer'),
+    ('noche', 'Salir de noche'),
+    ('dia', 'De día'),
+)
+# Con menos lugares la guía sale del índice, de la home y del sitemap, y lleva noindex.
+# Las escapadas no: son el recorrido de un día y 4 paradas ya lo cubren.
+GUIA_MIN_LUGARES = 5
+
+
+class CuratedGuideQuerySet(models.QuerySet):
+    def indexables(self):
+        return (
+            self.filter(publicado=True)
+            .annotate(n_lugares=Count('items'))
+            .filter(Q(n_lugares__gte=GUIA_MIN_LUGARES) | Q(categoria='escapada'))
+        )
 
 
 class CuratedGuide(models.Model):
@@ -1216,7 +1232,11 @@ class CuratedGuide(models.Model):
         help_text="URL de imagen de portada (opcional). Si vacío, usa la foto del lugar #1"
     )
     categoria = models.CharField(
-        max_length=30, choices=GUIDE_CATEGORY_CHOICES, default='sector', db_index=True
+        max_length=30, choices=GUIDE_CATEGORY_CHOICES, default='plan', db_index=True
+    )
+    tema = models.CharField(
+        max_length=20, choices=GUIDE_THEME_CHOICES, blank=True, default='',
+        help_text="Qué plan cubre (opcional). Ordena y rotula las guías dentro de su zona",
     )
     zona = models.ForeignKey(
         RegionOSM, on_delete=models.SET_NULL, null=True, blank=True,
@@ -1227,6 +1247,8 @@ class CuratedGuide(models.Model):
     
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    objects = CuratedGuideQuerySet.as_manager()
 
     class Meta:
         verbose_name = "Guía Curada"
@@ -1284,7 +1306,12 @@ class CuratedGuide(models.Model):
 
     @property
     def total_items(self):
-        return self.items.count()
+        n_lugares = getattr(self, 'n_lugares', None)
+        return n_lugares if n_lugares is not None else self.items.count()
+
+    @property
+    def es_indexable(self):
+        return self.publicado and (self.categoria == 'escapada' or self.total_items >= GUIA_MIN_LUGARES)
 
 
 class CuratedGuideItem(models.Model):

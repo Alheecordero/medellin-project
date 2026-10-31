@@ -19,6 +19,8 @@ from django.db import transaction
 from explorer.models import CuratedGuide, CuratedGuideItem, GooglePlaceDetails, PendingPlace, Places
 
 CATEGORIES = {code for code, _label in CuratedGuide._meta.get_field("categoria").choices}
+# Borradores con las categorías de antes de la migración 0040.
+CATEGORIAS_ANTIGUAS = {"sector": "zona", "daytrip": "escapada", "gastronomia": "plan", "actividad": "plan", "audiencia": "plan"}
 
 
 class Command(BaseCommand):
@@ -39,9 +41,9 @@ class Command(BaseCommand):
         payload = json.loads(path.read_text(encoding="utf-8"))
         linked = missing = 0
         for guide in payload.get("guias") or []:
-            categoria = guide.get("categoria") or "sector"
+            categoria = CATEGORIAS_ANTIGUAS.get(guide.get("categoria"), guide.get("categoria"))
             if categoria not in CATEGORIES:
-                categoria = "sector"
+                categoria = "zona"
             stops = guide.get("paradas") or []
             ready = []
             absent = []

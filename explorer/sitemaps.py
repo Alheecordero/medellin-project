@@ -109,7 +109,7 @@ class GuidesSitemap(Sitemap):
     priority = 0.8
 
     def items(self):
-        return CuratedGuide.objects.filter(publicado=True).only(
+        return CuratedGuide.objects.indexables().only(
             "slug", "fecha_actualizacion"
         ).order_by("-fecha_actualizacion")
 

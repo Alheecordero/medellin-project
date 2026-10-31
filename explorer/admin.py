@@ -297,8 +297,8 @@ class CuratedGuideItemInline(admin.TabularInline):
 
 @admin.register(CuratedGuide)
 class CuratedGuideAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'categoria', 'items_count', 'publicado', 'orden', 'fecha_actualizacion')
-    list_filter = ('publicado', 'categoria')
+    list_display = ('titulo', 'categoria', 'tema', 'zona', 'items_count', 'publicado', 'orden', 'fecha_actualizacion')
+    list_filter = ('publicado', 'categoria', 'tema')
     search_fields = ('titulo', 'descripcion')
     prepopulated_fields = {'slug': ('titulo',)}
     list_editable = ('orden', 'publicado')
@@ -314,7 +314,7 @@ class CuratedGuideAdmin(admin.ModelAdmin):
             'description': 'Traducciones al inglés. Si se dejan vacíos, se muestra el español.',
         }),
         ('Clasificación', {
-            'fields': ('categoria', 'zona', 'orden', 'publicado')
+            'fields': ('categoria', 'tema', 'zona', 'orden', 'publicado')
         }),
     )
 
