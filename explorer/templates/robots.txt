@@ -30,4 +30,16 @@ Allow: /static/img/
 
 # Google ignora Crawl-delay; no lo usamos.
 
+# PerplexityBot: solo las páginas en español y sin parámetros.
+# Un grupo propio anula el de *, así que repite las rutas internas.
+User-agent: PerplexityBot
+Disallow: /en/
+Disallow: /*?
+Disallow: /admin/
+Disallow: /api/
+Disallow: /i18n/
+Disallow: /__debug__/
+Disallow: /local/
+Disallow: /static/admin/
+
 Sitemap: https://vivemedellin.net/sitemap.xml
