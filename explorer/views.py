@@ -1116,7 +1116,28 @@ class PlacesListView(ListView):
 
 
 
-class PlaceDetailView(DetailView, BasePlacesMixin):
+class FichaRetiradaMixin:
+    """Fichas que el manager ya no ve: un duplicado redirige a la que quedó, un cerrado da 410."""
+
+    def get(self, request, *args, **kwargs):
+        try:
+            return super().get(request, *args, **kwargs)
+        except Http404:
+            retirada = Places._base_manager.filter(slug=kwargs.get('slug'), tiene_fotos=True).first()
+            if retirada is None:
+                raise
+        destino = retirada
+        for _salto in range(5):  # una cadena de fusiones termina en una ficha viva
+            if destino.fusionado_en_id is None:
+                break
+            destino = Places._base_manager.get(pk=destino.fusionado_en_id)
+        if destino.pk != retirada.pk and not destino.cerrado_permanente and destino.slug:
+            return HttpResponsePermanentRedirect(reverse(request.resolver_match.view_name, kwargs={'slug': destino.slug}))
+        region = RegionOSM.objects.filter(osm_id=retirada.comuna_osm_id).first() if retirada.comuna_osm_id else None
+        return render(request, 'lugares/cerrado.html', {'lugar': retirada, 'region': region}, status=410)
+
+
+class PlaceDetailView(FichaRetiradaMixin, DetailView, BasePlacesMixin):
     """Vista detallada de un lugar con información completa y recomendaciones."""
     template_name = "lugares/places_detail.html"
     slug_field = "slug"
@@ -1437,7 +1458,7 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         return horarios
 
 
-class PlaceReviewsView(DetailView):
+class PlaceReviewsView(FichaRetiradaMixin, DetailView):
     """Vista para mostrar y gestionar reseñas de un lugar."""
     model = Places
     template_name = "lugares/reviews_lugar.html"
@@ -3108,7 +3129,10 @@ def guias_index(request):
     """Índice de guías en bloques: por plan, por zona y escapadas."""
     from .models import CuratedGuide, CuratedGuideItem
 
-    items = CuratedGuideItem.objects.select_related('lugar').prefetch_related('lugar__fotos').order_by('posicion')
+    items = (
+        CuratedGuideItem.objects.filter(lugar__cerrado_permanente=False, lugar__fusionado_en__isnull=True)
+        .select_related('lugar').prefetch_related('lugar__fotos').order_by('posicion')
+    )
     guias = list(
         CuratedGuide.objects.indexables()
         .select_related('zona')
@@ -3167,7 +3191,8 @@ def guia_detail(request, slug):
         publicado=True
     )
     
-    items = guia.items.select_related('lugar').order_by('posicion')
+    # Un lugar cerrado o fusionado deja de mostrarse en la guía.
+    items = guia.items.filter(lugar__cerrado_permanente=False, lugar__fusionado_en__isnull=True).select_related('lugar').order_by('posicion')
     
     # Datos de mapa para cada lugar con ubicación
     markers = []

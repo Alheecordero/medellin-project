@@ -3517,6 +3517,20 @@ msgstr "Area not found"
 msgid "esta zona"
 msgstr "this area"
 
+#: explorer/templates/lugares/cerrado.html
+#, python-format
+msgid "%(nombre)s cerró"
+msgstr "%(nombre)s has closed"
+
+#: explorer/templates/lugares/cerrado.html
+#, python-format
+msgid "%(nombre)s cerró de forma permanente."
+msgstr "%(nombre)s has closed permanently."
+
+#: explorer/templates/lugares/cerrado.html
+msgid "Según Google Maps, este lugar cerró de forma permanente. Te dejamos opciones cerca."
+msgstr "According to Google Maps, this place has closed permanently. Here are some options nearby."
+
 #~ msgid "ViveMedellín - Tu Guía de la Ciudad"
 #~ msgstr "ViveMedellín - Your City Guide"
 

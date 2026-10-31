@@ -145,7 +145,7 @@ class Command(BaseCommand):
             dist_m = punto_place_3857.distance(punto_3857)
             distancias.append(dist_m)
 
-            if Places.objects.filter(place_id=place_id).exists():
+            if Places._base_manager.filter(place_id=place_id).exists():
                 continue
 
             tipos_lugar = detalles.get("types", [])

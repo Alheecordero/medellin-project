@@ -72,7 +72,8 @@ class Command(BaseCommand):
                 )
                 SELECT m.osm_id, m.name, ST_AsText(m.g), array_agg(pl.id)
                 FROM m JOIN explorer_places pl
-                  ON pl.tiene_fotos AND ST_Contains(m.g, pl.ubicacion::geometry)
+                  ON pl.tiene_fotos AND pl.fusionado_en_id IS NULL AND NOT pl.cerrado_permanente
+                 AND ST_Contains(m.g, pl.ubicacion::geometry)
                 GROUP BY m.osm_id, m.name, m.g
                 """,
                 list(VALLE),

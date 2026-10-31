@@ -34,6 +34,7 @@ from explorer.models import (
     PendingPlace,
     Places,
 )
+from explorer.management.commands.completar_fichas_maps import HORARIO_INSTANTANEO
 from explorer.utils.media_urls import resolve_media_url
 from explorer.utils.place_classify import classify_place
 
@@ -370,7 +371,7 @@ class Command(BaseCommand):
         if dry_run:
             return {
                 "status": "excluded" if excluded else ("ok" if ok else "empty"),
-                "public": Places.objects.filter(place_id=place_id).exists(),
+                "public": Places._base_manager.filter(place_id=place_id).exists(),
                 "fotos": 0,
                 "slug": "",
             }
@@ -404,7 +405,7 @@ class Command(BaseCommand):
                 foto_urls=foto_urls,
                 saved_at=str(doc.get("saved_at") or ""),
             )
-            place = Places.objects.filter(place_id=place_id).first()
+            place = Places._base_manager.filter(place_id=place_id).first()
             if place and ok and not excluded:
                 change = self._refresh_place(
                     place,
@@ -646,7 +647,12 @@ class Command(BaseCommand):
         if item["price"] and not _text_same(place.precio, item["price"]):
             place.precio = item["price"]
             campos.append("precio")
-        if item["hours_text"] and not _text_same(place.horario_texto, item["hours_text"]):
+        # "Abierto · Cierra a las 9 p.m." es el estado del momento, no un horario semanal.
+        if (
+            item["hours_text"]
+            and not HORARIO_INSTANTANEO.match(item["hours_text"])
+            and not _text_same(place.horario_texto, item["hours_text"])
+        ):
             place.horario_texto = item["hours_text"]
             campos.append("horario")
         if item["hours_json"] is not None and not _json_same(place.horario_json, item["hours_json"]):

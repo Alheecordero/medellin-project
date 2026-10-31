@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% blocktrans with nombre=lugar.nombre %}{{ nombre }} cerró{% endblocktrans %} | ViveMedellín{% endblock %}
+{% block meta_description %}{% blocktrans with nombre=lugar.nombre %}{{ nombre }} cerró de forma permanente.{% endblocktrans %}{% endblock %}
+{% block meta_robots %}noindex, follow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/guias.css' %}?v={{ STATIC_BUST }}">
+{% endblock %}
+
+{% block content %}
+<div class="gx">
+  <header class="gx-hero">
+    <p class="gx-kicker">{% trans "Cerrado" %}</p>
+    <h1 class="gx-title">{% blocktrans with nombre=lugar.nombre %}{{ nombre }} cerró{% endblocktrans %}</h1>
+    <p class="gx-lead">{% trans "Según Google Maps, este lugar cerró de forma permanente. Te dejamos opciones cerca." %}</p>
+    <div class="gx-actions">
+      {% if region and region.slug %}
+        <a class="gx-btn" href="{% url 'explorer:lugares_por_comuna' region.slug %}">{% blocktrans with zona=region.name %}Lugares en {{ zona }}{% endblocktrans %}</a>
+      {% endif %}
+      <a class="gx-btn gx-btn--line" href="{% url 'explorer:lugares_list' %}">{% trans "Ver todos los lugares" %}</a>
+    </div>
+  </header>
+</div>
+{% endblock %}

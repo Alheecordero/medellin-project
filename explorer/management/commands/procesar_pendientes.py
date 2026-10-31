@@ -129,7 +129,7 @@ class Command(BaseCommand):
         # Pre-check: place_ids que ya existen en Places (por si se agregaron manualmente)
         pending_pids = list(pendientes.values_list('place_id', flat=True))
         already_in_db = set(
-            Places.objects.filter(place_id__in=pending_pids).values_list('place_id', flat=True)
+            Places._base_manager.filter(place_id__in=pending_pids).values_list('place_id', flat=True)
         )
         if already_in_db:
             self.stdout.write(f"   ⚠️ {len(already_in_db)} ya existen en Places, se marcarán como procesados")

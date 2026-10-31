@@ -27,6 +27,11 @@ class FotoInline(admin.TabularInline):
 @admin.register(Places)
 class PlacesAdmin(gis_admin.GISModelAdmin):
     """Configuración del admin para el modelo Places."""
+
+    def get_queryset(self, request):
+        # El admin ve también los duplicados fusionados y los cerrados.
+        return Places._base_manager.all()
+
     gis_widget_kwargs = {
         'attrs': {
             'default_zoom': 12,
@@ -36,7 +41,7 @@ class PlacesAdmin(gis_admin.GISModelAdmin):
     }
     list_display = ('nombre', 'tipo', 'google_match_status', 'direccion', 'rating', 'total_reviews', 'comuna', 'es_destacado', 'es_exclusivo', 'tiene_fotos_icon', 'get_tags')
     search_fields = ('nombre', 'direccion', 'tags__name', 'place_id')
-    list_filter = ('tipo', 'google_match_status', 'comuna_osm_id', 'es_destacado', 'es_exclusivo', 'tiene_fotos', 'solo_en_guia')
+    list_filter = ('tipo', 'google_match_status', 'comuna_osm_id', 'es_destacado', 'es_exclusivo', 'tiene_fotos', 'solo_en_guia', 'cerrado_permanente')
     prepopulated_fields = {'slug': ('nombre',)}
     readonly_fields = ('fecha_creacion', 'fecha_actualizacion', 'tiene_fotos')
     fieldsets = (

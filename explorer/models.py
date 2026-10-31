@@ -188,8 +188,17 @@ class PlacesQuerySet(models.QuerySet):
 
 
 class PlacesManager(models.Manager):
+    """Fichas vivas: sin duplicados fusionados ni cerrados para siempre.
+
+    Para verlas todas (admin, importadores que deciden si crear): Places._base_manager.
+    """
+
     def get_queryset(self):
-        return PlacesQuerySet(self.model, using=self._db).with_fotos()
+        return (
+            PlacesQuerySet(self.model, using=self._db)
+            .filter(fusionado_en__isnull=True, cerrado_permanente=False)
+            .with_fotos()
+        )
 
     def indexables(self):
         return self.get_queryset().indexables()
@@ -330,6 +339,14 @@ class Places(models.Model):
     centro_comercial = models.ForeignKey(
         'CentroComercial', on_delete=models.SET_NULL, null=True, blank=True,
         related_name='lugares', help_text="Lo asigna importar_centros_comerciales por el polígono de OSM",
+    )
+    fusionado_en = models.ForeignKey(
+        'self', on_delete=models.SET_NULL, null=True, blank=True, related_name='fusionados',
+        help_text="Duplicado de otra ficha: su URL redirige (301) a esa. Lo pone limpiar_fichas",
+    )
+    cerrado_permanente = models.BooleanField(
+        default=False, db_index=True,
+        help_text="Cerrado para siempre según Maps: sale del sitio y su URL da 410. Lo pone limpiar_fichas",
     )
 
     # Horarios y estado operativo
@@ -1219,7 +1236,7 @@ class CuratedGuideQuerySet(models.QuerySet):
     def indexables(self):
         return (
             self.filter(publicado=True)
-            .annotate(n_lugares=Count('items'))
+            .annotate(n_lugares=Count('items', filter=Q(items__lugar__cerrado_permanente=False, items__lugar__fusionado_en__isnull=True)))
             .filter(Q(n_lugares__gte=GUIA_MIN_LUGARES) | Q(categoria='escapada'))
         )
 
