@@ -21,13 +21,13 @@ from pathlib import Path
 
 from django.contrib.gis.geos import Polygon
 from django.core.management.base import BaseCommand, CommandError
-from django.db import connection, transaction
+from django.db import transaction
 from django.db.models import F
 from django.utils import timezone
 
-from explorer.management.commands.asignar_comunas import Command as AsignarComunas
+from explorer.management.commands.completar_fichas_maps import HORARIO_INSTANTANEO, atributos
 from explorer.management.commands.import_medellin_enrich import VALID_TIPOS, _weighted
-from explorer.models import Foto, GooglePlaceDetails, PendingPlace, Places
+from explorer.models import Foto, GooglePlaceDetails, PendingPlace, Places, RegionOSM
 
 FAMILIAS_TOP = {"food", "cafe_bakery", "nightlife"}
 FOTO_ORIGINAL = re.compile(r"/images/(?P<pid>[^/]+)/(?P<name>g[0-9a-f]+)\.webp$")
@@ -131,7 +131,7 @@ class Command(BaseCommand):
             rating=det.rating,
             total_reviews=det.user_rating_count,
             weighted_rating=_weighted(det.rating, det.user_rating_count),
-            horario_texto=det.hours_text or None,
+            horario_texto=None if HORARIO_INSTANTANEO.match(det.hours_text or "") else det.hours_text or None,
             sitio_web=det.website_uri or None,
             telefono=(det.phone or "")[:50] or None,
             google_maps_uri=det.google_maps_uri or None,
@@ -139,6 +139,7 @@ class Command(BaseCommand):
             types=det.types or None,
             tiene_fotos=True,
             imagenes_optimizadas=True,
+            **atributos(det.amenities),
         )
         for imagen in fotos:
             mediana, miniatura = _variantes(imagen)
@@ -152,19 +153,10 @@ class Command(BaseCommand):
         return lugar
 
     def _asignar_comuna(self, lugar: Places) -> bool:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT osm_id FROM planet_osm_polygon
-                WHERE osm_id = ANY(%s)
-                AND ST_Contains(way, ST_Transform(ST_GeomFromText(%s, 4326), 3857))
-                LIMIT 1
-                """,
-                [AsignarComunas.OSM_IDS_MEDELLIN, lugar.ubicacion.wkt],
-            )
-            fila = cursor.fetchone()
-        if not fila:
+        """Comuna de Medellín, municipio o corregimiento: cualquier zona de RegionOSM."""
+        region = RegionOSM.objects.filter(geom_4326__contains=lugar.ubicacion).only("osm_id").first()
+        if region is None:
             return False
-        lugar.comuna_osm_id = fila[0]
+        lugar.comuna_osm_id = region.osm_id
         lugar.save(update_fields=["comuna_osm_id"])
         return True

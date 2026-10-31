@@ -1,3 +1,4 @@
+from collections import Counter
 from datetime import datetime, timezone as dt_timezone
 
 from django.contrib.sitemaps import Sitemap
@@ -77,8 +78,15 @@ class ComunasSitemap(Sitemap):
     changefreq = "weekly"
     priority = 0.7
 
+    # Una zona con dos o tres fichas es una página delgada: existe, pero no la promovemos.
+    MIN_FICHAS = 5
+
     def items(self):
-        return RegionOSM.objects.exclude(
+        conteo = Counter(
+            Places.objects.indexables().exclude(comuna_osm_id__isnull=True).values_list("comuna_osm_id", flat=True)
+        )
+        zonas = [osm_id for osm_id, n in conteo.items() if n >= self.MIN_FICHAS]
+        return RegionOSM.objects.filter(osm_id__in=zonas).exclude(
             slug__isnull=True
         ).exclude(
             slug=""

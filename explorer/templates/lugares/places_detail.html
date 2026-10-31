@@ -20,7 +20,7 @@
 
 {% block meta_robots %}{% if es_indexable %}index, follow, max-image-preview:large, max-snippet:-1{% else %}noindex, follow, max-image-preview:large{% endif %}{% endblock %}
 
-{% block meta_description %}{% firstof lugar.descripcion lugar.summary as descripcion_seo %}{{ lugar.nombre }}{% if lugar.rating %}, {{ lugar.rating|floatformat:1 }}/5{% endif %} - {{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if descripcion_seo %} {{ descripcion_seo|truncatechars:110 }}{% elif lugar.direccion %} {{ lugar.direccion|direccion_corta|truncatechars:80 }}{% endif %}{% endblock %}
+{% block meta_description %}{% firstof lugar.descripcion lugar.summary as descripcion_seo %}{{ lugar.nombre }}{% if lugar.rating %}, {{ lugar.rating|floatformat:1 }}/5{% endif %} - {{ lugar|place_type_label }} {% trans "en" %} {% if lugar.comuna %}{{ lugar.comuna.name }}, {% endif %}Medellín.{% if descripcion_seo %} {{ descripcion_seo|truncatechars:110 }}{% elif resumen_lugar %} {{ resumen_lugar|truncatechars:110 }}{% elif lugar.direccion %} {{ lugar.direccion|direccion_corta|truncatechars:80 }}{% endif %}{% endblock %}
 
 {% block meta_keywords %}
 {{ lugar.nombre }}, {{ lugar|place_type_label }} Medellín, {{ lugar|place_type_label }} {% if lugar.comuna %}{{ lugar.comuna.name }}{% endif %}, {% trans "mejores" %} {{ lugar|place_type_label|lower }}s Medellín{% if lugar.outdoor_seating %}, {% trans "terraza" %}{% endif %}{% if lugar.live_music %}, {% trans "música en vivo" %}{% endif %}{% if lugar.delivery %}, delivery{% endif %}
@@ -93,6 +93,9 @@
       {% if lugar.precio %}
         <span aria-hidden="true">·</span>
         <span>{{ lugar.precio|format_price_range }}</span>
+      {% elif carta_rango %}
+        <span aria-hidden="true">·</span>
+        <a href="#carta">{{ carta_rango }}</a>
       {% endif %}
     </p>
     {% if lugar.direccion %}
@@ -109,6 +112,9 @@
     {% for nota in notas_guia %}
       <p class="place-sheet__note">{% if nota.texto %}{{ nota.texto }} {% endif %}<a href="{{ nota.url }}">{% blocktrans with guia=nota.guia %}En la guía «{{ guia }}»{% endblocktrans %}</a></p>
     {% endfor %}
+    {% if resumen_lugar %}
+      <p class="place-sheet__text place-sheet__summary">{{ resumen_lugar }}</p>
+    {% endif %}
 
     {% if lugar.get_fotos|length > 1 %}
       <h2 class="place-sheet__heading">{% trans "Destacados" %}</h2>
@@ -195,7 +201,7 @@
     </div>
 
     {% if carta %}
-      <h2 class="place-sheet__heading">{% trans "Carta" %}</h2>
+      <h2 class="place-sheet__heading" id="carta">{% trans "Carta" %}{% if carta_rango %} <small class="place-menu__range">{{ carta_rango }}</small>{% endif %}</h2>
       <div class="place-menu">
         {% if carta.enlaces_pedido %}
           <div class="place-menu__links">
@@ -260,6 +266,15 @@
       </div>
     {% endif %}
 
+    {% if citas_resenas %}
+      <h2 class="place-sheet__heading">{% trans "Lo que dicen en Google" %}</h2>
+      {% for cita in citas_resenas %}
+        <figure class="place-sheet__quote">
+          <blockquote{% if cita.idioma %} lang="{{ cita.idioma }}"{% endif %}>{{ cita.texto }}</blockquote>
+          <figcaption>{{ cita.rating }}/5{% if cita.fecha %} · {{ cita.fecha }}{% endif %}</figcaption>
+        </figure>
+      {% endfor %}
+    {% endif %}
     {% if lugar.reviews %}
       <a class="place-sheet__reviews" href="{% url 'explorer:reviews_lugar' lugar.slug %}">{% trans "Ver reseñas" %}</a>
     {% endif %}
@@ -1656,6 +1671,16 @@ body.vibe-v4 .modal-backdrop.show { opacity: 0.92; }
   font-size: 0.92rem;
   line-height: 1.45;
 }
+.place-sheet__quote {
+  margin: 0.6rem 0 0;
+  padding: 0.6rem 0.8rem;
+  border-left: 3px solid #e2e6ee;
+  background: #f7f8fb;
+  border-radius: 0 8px 8px 0;
+}
+.place-sheet__quote blockquote { margin: 0; color: #3a4254; font-size: 0.92rem; line-height: 1.45; }
+.place-sheet__quote figcaption { margin-top: 0.3rem; color: #6b7385; font-size: 0.78rem; }
+.place-menu__range { font-size: 0.8rem; font-weight: 500; color: #6b7385; }
 .place-sheet__chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .place-sheet .feature-chip--accent {
   background: #fff1f2;

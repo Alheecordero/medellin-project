@@ -18,6 +18,7 @@ from pgvector.django import CosineDistance
 from django.views import View
 from django.utils.translation import gettext as _, ngettext, get_language
 from explorer.utils.horarios import filas_horario, opening_hours_spec
+from explorer.utils.ficha import citas_resenas, menu_schema, pesos, rango_precios, resumen, secciones_destacadas
 from explorer.utils.media_urls import resolve_media_url
 from explorer.utils.types import get_localized_place_type, get_localized_place_type_from_code
 from django.conf import settings
@@ -1155,7 +1156,24 @@ class PlaceDetailView(DetailView, BasePlacesMixin):
         context['adsense_allowed'] = adsense_allowed_for_place(lugar)
         context['notas_guia'] = self._notas_guia(lugar)
         context['carta'], context['carta_secciones'] = self._carta(lugar)
-        
+
+        # Contenido propio: rango de la carta, resumen con los datos y citas de reseñas.
+        secciones = context['carta_secciones']
+        rango = rango_precios(secciones)
+        context['carta_rango'] = f"{pesos(rango[0])} – {pesos(rango[1])}" if rango else ''
+        context['resumen_lugar'] = resumen(
+            lugar,
+            total_platos=sum(len(s['platos']) for s in secciones),
+            secciones=secciones_destacadas(secciones),
+            rango=rango,
+            horario_filas=context['horario_filas'],
+        )
+        context['citas_resenas'] = citas_resenas(lugar.reviews)
+        if context['carta']:
+            menu = menu_schema(self.request.build_absolute_uri(self.request.path) + '#carta', secciones)
+            context['menu_schema'] = json.dumps(menu, ensure_ascii=False).replace('</', '<\\/')
+        context['price_range_schema'] = f"COP {rango[0]:,}–{rango[1]:,}".replace(',', '.') if rango else ''
+
         return context
 
     def _carta(self, lugar):

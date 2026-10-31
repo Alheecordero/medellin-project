@@ -166,4 +166,15 @@ se indexan.
 - **Cloudflare:** regla "HTML anónimo: 10 min en el borde" (sin sesión ni `csrftoken`, fuera
   `/admin`, `/api`, `/i18n`, `/accounts`, `.xml`). TTFB en HIT: ~0,2–0,3 s (antes 0,7–1,1 s).
 - **Pendiente de decisión del dueño:** `vivemedellin.co` (P0 4) e indexación manual en GSC.
-- **Siguiente:** P2 (contenido único con carta, reseñas y atributos) y rate limiting de bots.
+- **P2 9–13 listos para desplegar:** resumen por ficha hecho con carta, atributos y horario
+  (también en la meta description); rango de precios desde la carta (cuartiles, sin bebidas ni
+  combos) en la ficha y en `priceRange`; `hasMenu` con hasta 40 platos; dos citas de reseñas
+  de 4★ o más sin nombre del autor. `completar_fichas_maps` copia atributos de Maps donde Places
+  no tiene valor (4.344 fichas) y borra 428 horarios de un instante ("Abierto · Cierra a las…").
+  `importar_regiones_extra` añade Bello, El Retiro, Marinilla, El Carmen y los corregimientos
+  Santa Elena, San Antonio de Prado, San Cristóbal y Altavista. El sitemap de zonas solo lista
+  las que tienen ≥ 5 fichas indexables.
+- **No se hizo en P2 12:** las reseñas de Maps de las 500 nuevas vienen sin nota, con el autor
+  pegado y duplicadas, y el horario es solo el estado del momento. No hay horario semanal que
+  copiar sin volver a scrapear.
+- **Siguiente:** P2 14 (guías más largas), P3 15–16 y rate limiting de bots.

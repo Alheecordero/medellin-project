@@ -71,7 +71,8 @@
     "worstRating": "1",
     "reviewCount": {{ lugar.total_reviews }}
   },{% endif %}
-  {% if lugar.precio %}"priceRange": "{{ lugar.precio|format_price_range|escapejs }}",{% endif %}
+  {% if price_range_schema %}"priceRange": "{{ price_range_schema|escapejs }}",{% elif lugar.precio %}"priceRange": "{{ lugar.precio|format_price_range|escapejs }}",{% endif %}
+  {% if menu_schema %}"hasMenu": {{ menu_schema|safe }},{% endif %}
   {% if horario_schema %}"openingHoursSpecification": {{ horario_schema|safe }},{% endif %}
   "currenciesAccepted": "COP",
   "paymentAccepted": "{% if lugar.accepts_credit_cards %}Credit Card, {% endif %}Cash",

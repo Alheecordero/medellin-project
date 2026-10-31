@@ -3154,6 +3154,89 @@ msgstr "Couldn't save that. Try again."
 msgid "Suscribirme"
 msgstr "Subscribe"
 
+msgid "y"
+msgstr "and"
+
+#, python-format
+msgid "Su carta tiene %(n)s platos; la mitad cuesta entre %(bajo)s y %(alto)s."
+msgstr "The menu has %(n)s dishes; half of them cost between %(bajo)s and %(alto)s COP."
+
+#, python-format
+msgid "Su carta tiene %(n)s platos."
+msgstr "The menu has %(n)s dishes."
+
+#, python-format
+msgid "Destacan %(secciones)s."
+msgstr "Highlights include %(secciones)s."
+
+msgid "desayuno"
+msgstr "breakfast"
+
+msgid "brunch"
+msgstr "brunch"
+
+msgid "almuerzo"
+msgstr "lunch"
+
+msgid "cena"
+msgstr "dinner"
+
+#, python-format
+msgid "Sirve %(comidas)s."
+msgstr "It serves %(comidas)s."
+
+msgid "café"
+msgstr "coffee"
+
+msgid "cerveza"
+msgstr "beer"
+
+msgid "vino"
+msgstr "wine"
+
+msgid "cócteles"
+msgstr "cocktails"
+
+#, python-format
+msgid "Para tomar hay %(bebidas)s."
+msgstr "To drink there is %(bebidas)s."
+
+msgid "ambiente pet friendly"
+msgstr "a pet-friendly vibe"
+
+msgid "espacio para grupos"
+msgstr "room for groups"
+
+msgid "plan para ir con niños"
+msgstr "a good plan with kids"
+
+#, python-format
+msgid "Además: %(rasgos)s."
+msgstr "Also: %(rasgos)s."
+
+msgid "domicilio"
+msgstr "delivery"
+
+msgid "para llevar"
+msgstr "takeout"
+
+#, python-format
+msgid "Hay servicio de %(servicio)s."
+msgstr "It offers %(servicio)s."
+
+msgid "Abre todos los días."
+msgstr "Open every day."
+
+#, python-format
+msgid "Abre %(n)s días a la semana."
+msgstr "Open %(n)s days a week."
+
+msgid "Lo que dicen en Google"
+msgstr "What people say on Google"
+
+msgid "Carta"
+msgstr "Menu"
+
 #~ msgid "ViveMedellín - Tu Guía de la Ciudad"
 #~ msgstr "ViveMedellín - Your City Guide"
 
