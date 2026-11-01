@@ -37,8 +37,12 @@ anterior. Lo único que se cambió está en "Cambios aplicados hoy".
 Robots, sitemaps, canónicos y `hreflang` (es, en, x-default, recíprocos) están correctos.
 Todas las páginas tienen título, descripción, Open Graph y Twitter Card. Las fichas tienen
 `BreadcrumbList`, horario estructurado y `Menu` con platos en 220 de 426. La foto principal
-tiene `preload` y no es lazy. El `noindex` coincide con el sitemap. Googlebot pasa la
-protección de Cloudflare (26 visitas a HTML entre las 06:45 y las 07:02).
+tiene `preload` y no es lazy. El `noindex` coincide con el sitemap. Cloudflare no registra ningún desafío ni bloqueo a
+Googlebot. Entre las 07:00 y las 07:15 (hora de España), con todas las reglas activas, pasaron
+con 200 OAI-SearchBot (48), Applebot (22) y Bingbot (10).
+
+El log de nginx mezcla los sitios del servidor, así que los conteos por bot de esta auditoría
+se confirmaron en las analíticas de Cloudflare de la zona.
 
 ## Hallazgos priorizados
 
@@ -118,9 +122,9 @@ protección de Cloudflare (26 visitas a HTML entre las 06:45 y las 07:02).
 |---|---|---|
 | Google AI Overviews / AI Mode | Estar indexado (Googlebot) | Pasa, pero casi nada indexado |
 | Gemini (app) | `Google-Extended` | Bloqueado en el robots.txt de Cloudflare (decisión del dueño) |
-| ChatGPT search | OAI-SearchBot + índice de Bing | Pasan |
-| Perplexity | PerplexityBot | 373.408 peticiones en 14 días; ahora pasa |
-| Claude | Claude-SearchBot | Bloqueado entre las 06:45 y el ajuste de hoy; ahora pasa |
+| ChatGPT search | OAI-SearchBot + índice de Bing | Pasan: 508 peticiones con 200 en 6 h |
+| Perplexity | PerplexityBot | 373.408 peticiones en 14 días, sobre todo en la trampa de paginación corregida el 31 oct; 0 en las últimas 6 h |
+| Claude | Claude-SearchBot | 0 visitas en las últimas 6 h; sin bloqueo registrado |
 
 Qué hace que una IA cite una página: datos que nadie más tiene, dichos de forma directa y
 verificable. ViveMedellín tiene uno: **72.410 platos con precio de 2.008 cartas**.
@@ -143,8 +147,9 @@ verificable. ViveMedellín tiene uno: **72.410 platos con precio de 2.008 cartas
   - verificación a todas las visitas, con excepciones para la API, los estáticos, los sitemaps y
     las vistas previas de WhatsApp y redes;
   - robots.txt gestionado con `ai-train=no`;
-  - `ai_bots_protection` en `only_on_ad_pages`. Estuvo en `block` unos minutos y cortó a
-    Claude-SearchBot.
+  - `ai_bots_protection` en `only_on_ad_pages`, igual que menuradar. Estuvo en `block` unos
+    20 minutos. Hoy solo bloquea crawlers de entrenamiento: Reflectionbot, PetalBot y
+    Amazonbot.
 
 ## Qué tiene que hacer el dueño
 
