@@ -170,6 +170,13 @@ def _fuera_del_buscador():
     )
 
 
+# Fichas sin carta que mandamos a Google. Con 4,0 y 50 reseñas eran 4.800 por idioma armadas
+# con datos de Maps, y Google las dejó en "Rastreada: actualmente sin indexar" (oct 2026). Solo
+# los lugares más reseñados; el resto sigue publicado con noindex.
+INDEX_RATING_MIN = 4.3
+INDEX_RESENAS_MIN = 300
+
+
 class PlacesQuerySet(models.QuerySet):
     """QuerySet con extensiones comunes para Places."""
 
@@ -184,16 +191,16 @@ class PlacesQuerySet(models.QuerySet):
         """Fichas que mandamos a Google (sitemap).
 
         Con fotos y algo que Maps no tiene: carta (solo comida, café o noche y sin
-        rating malo), rating ≥ 4 con ≥ 50 reseñas, o un lugar en una guía publicada
-        (malls y UVAs entran solo por la guía). Los de Qué hacer, con rating ≥ 4 y
-        ≥ 50 reseñas. Nunca los cerrados para siempre.
+        rating malo), un lugar muy reseñado (INDEX_RATING_MIN con INDEX_RESENAS_MIN), o
+        un lugar en una guía publicada (malls y UVAs entran solo por la guía). Los de
+        Qué hacer, con rating ≥ 4 y ≥ 50 reseñas. Nunca los cerrados para siempre.
         """
         from explorer.utils.place_classify import _CAFE, _FOOD, _NIGHT
 
         con_carta = Q(carta__isnull=False, tipo__in=_FOOD | _CAFE | _NIGHT) & (
             Q(rating__isnull=True) | Q(rating__gte=3.5)
         )
-        calidad = con_carta | Q(rating__gte=4.0, total_reviews__gte=50)
+        calidad = con_carta | Q(rating__gte=INDEX_RATING_MIN, total_reviews__gte=INDEX_RESENAS_MIN)
         en_guia = Q(en_guias__guia__publicado=True)
         que_hacer = Q(tipo__in=TIPOS_QUE_HACER, rating__gte=4.0, total_reviews__gte=50)
         # Maps no rellena business_status en el scrape: el cierre viene en la categoría.
