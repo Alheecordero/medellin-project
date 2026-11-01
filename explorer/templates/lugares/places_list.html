@@ -1360,6 +1360,7 @@ $(document).ready(function() {
         ad: '{% trans "Publicidad" %}'
     };
 
+{% if adsense_allowed %}
     // Slots AdSense para mantener anuncios también en resultados AJAX
     const ADS = {
         client: '{{ settings.ADSENSE_CLIENT|default:"" }}',
@@ -1401,6 +1402,12 @@ $(document).ready(function() {
             }, 1800);
         });
     }
+{% else %}
+    // AdSense apagado (ADSENSE_ENABLED): los llamados quedan, sin anuncios.
+    const ADS = {};
+    function renderAdBlock() { return ''; }
+    function hydrateAds() {}
+{% endif %}
     
     // Parsear características iniciales desde URL
     const urlParams = new URLSearchParams(window.location.search);

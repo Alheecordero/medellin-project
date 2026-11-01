@@ -364,6 +364,7 @@ const CURRENT_LANG = CURRENT_LANG_RAW.slice(0, 2); // 'es' | 'en'
 const gettext = (window.gettext) ? window.gettext : (s => s);
 // Fallbacks para pluralización/interpolación si por algún motivo jsi18n no cargó (evita que el JS se rompa en EN)
 const ngettext = (window.ngettext) ? window.ngettext : ((singular, plural, count) => (Number(count) === 1 ? singular : plural));
+{% if adsense_allowed %}
 // Slots AdSense (mismos puntos que places_list: top móvil, mid desktop, bottom)
 const ADS = {
     client: '{{ settings.ADSENSE_CLIENT|default:"" }}',
@@ -403,6 +404,12 @@ function hydrateAds($scope) {
         }, 1800);
     });
 }
+{% else %}
+// AdSense apagado (ADSENSE_ENABLED): los llamados quedan, sin anuncios.
+const ADS = {};
+function renderAdBlock() { return ''; }
+function hydrateAds() {}
+{% endif %}
 
 const interpolate = (window.interpolate) ? window.interpolate : ((fmt, obj) => {
     try {
