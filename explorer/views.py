@@ -65,11 +65,15 @@ def adsense_allowed_for_place(lugar):
     """
     Habilita anuncios solo cuando el lugar no es sensible para AdSense.
     """
+    if not getattr(settings, "ADSENSE_ENABLED", False):
+        return False
     return not bool(getattr(lugar, "is_sensitive_for_ads", False))
 
 
 def adsense_allowed_for_search_query(query):
     """Desactiva anuncios si la consulta coincide con palabras sensibles."""
+    if not getattr(settings, "ADSENSE_ENABLED", False):
+        return False
     if not query:
         return True
     q = query.strip().lower()

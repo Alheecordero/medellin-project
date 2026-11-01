@@ -249,6 +249,9 @@ GOOGLE_API_KEY=env('GOOGLE_API_KEY')
 GOOGLE_ANALYTICS_ID = env('GOOGLE_ANALYTICS_ID', default=None)
 
 # Google AdSense (manual/fijo)
+# Apagado hasta que AdSense apruebe el sitio: sin esto no se carga adsbygoogle.js ni se pinta
+# ningún bloque. Para encender: ADSENSE_ENABLED=True en .env + restart.
+ADSENSE_ENABLED = env.bool('ADSENSE_ENABLED', default=False)
 # Puedes dejar slots vacíos para no renderizar ese bloque en templates.
 ADSENSE_CLIENT = env('ADSENSE_CLIENT', default='ca-pub-3335839352613150')
 ADSENSE_SLOT_HOME = env('ADSENSE_SLOT_HOME', default='1720527039')
