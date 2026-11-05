@@ -9,15 +9,15 @@
 {% block global_ad %}{% endblock %}
 {% block meta_robots %}{% if pagina_indexable %}index, follow, max-image-preview:large, max-snippet:-1{% elif con_filtros or busqueda_actual or request.GET.page %}noindex, follow, max-image-preview:large{% else %}index, follow, max-image-preview:large, max-snippet:-1{% endif %}{% endblock %}
 
-{% block title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
+{% block title %}{{ titulo_pagina }}{% if pagina_indexable %} · {% blocktrans with n=page_obj.number %}Página {{ n }}{% endblocktrans %}{% endif %} | ViveMedellín{% endblock %}
 
-{% block meta_description %}{{ descripcion_pagina }} {% trans "Ratings de Google, horarios actualizados y ubicación exacta. Filtra por tipo, zona y características." %}{% endblock %}
+{% block meta_description %}{{ descripcion_pagina }}{% if pagina_indexable %} · {% blocktrans with n=page_obj.number %}Página {{ n }}{% endblocktrans %}{% endif %}. {% trans "Cartas con precios, horarios y ubicación. Filtra por tipo, zona y características." %}{% endblock %}
 
 {% block meta_keywords %}{% if tipo_actual %}{{ tipo_actual_label }} Medellín, {% trans "mejores" %} {{ tipo_actual_label|lower }} Medellín, {% endif %}{% if region_actual %}{{ region_actual.name }} Medellín, {% trans "lugares" %} {{ region_actual.name }}, {% endif %}{% trans "bares" %} Medellín, {% trans "restaurantes" %} Medellín, {% trans "vida nocturna" %} Medellín{% endblock %}
 
-{% block og_title %}{{ titulo_pagina }} | ViveMedellín{% endblock %}
+{% block og_title %}{{ titulo_pagina }}{% if pagina_indexable %} · {% blocktrans with n=page_obj.number %}Página {{ n }}{% endblocktrans %}{% endif %} | ViveMedellín{% endblock %}
 
-{% block og_description %}{{ descripcion_pagina }} {% trans "Encuentra lugares con ratings reales y horarios actualizados." %}{% endblock %}
+{% block og_description %}{{ descripcion_pagina }}. {% trans "Cartas con precios, horarios y ubicación. Filtra por tipo, zona y características." %}{% endblock %}
 
 {% block og_image %}
   {{ '/static/img/og-image.jpg'|ensure_absolute_url:request }}

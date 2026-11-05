@@ -18,7 +18,7 @@
 <div class="gx">
 
   <header class="gx-cover">
-    {% if centro.portada %}<img src="{{ centro.portada }}" alt="" fetchpriority="high">{% endif %}
+    {% if centro.portada %}<img src="{{ centro.portada }}" alt="{{ centro.nombre }}" fetchpriority="high">{% endif %}
     <div class="gx-cover-body">
       <ol class="gx-crumbs">
         <li><a href="{% url 'explorer:guias_index' %}">{% trans "Guías" %}</a></li>

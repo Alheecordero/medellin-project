@@ -1,6 +1,6 @@
 {% load i18n %}
 <a href="{{ guia.get_absolute_url }}" class="gx-card{% if extra_class %} {{ extra_class }}{% endif %}">
-  {% if guia.portada %}<img src="{{ guia.portada }}" alt="" loading="lazy">{% endif %}
+  {% if guia.portada %}<img src="{{ guia.portada }}" alt="{{ guia.titulo_i18n }}" loading="lazy">{% endif %}
   <div class="gx-card-body">
     <span class="gx-chip">{% blocktrans count n=guia.total_items %}{{ n }} lugar{% plural %}{{ n }} lugares{% endblocktrans %}</span>
     {% if guia.tema_label %}<span class="gx-chip gx-chip--ghost">{{ guia.tema_label }}</span>{% endif %}

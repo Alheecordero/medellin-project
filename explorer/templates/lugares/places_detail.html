@@ -229,7 +229,7 @@
               {% for plato in seccion.platos %}
                 <li class="place-menu__item{% if plato.image_url %} place-menu__item--photo{% endif %}{% if not plato.is_available %} place-menu__item--off{% endif %}">
                   {% if plato.image_url %}
-                    <img src="{{ plato.image_url }}" alt="" loading="lazy" width="64" height="64">
+                    <img src="{{ plato.image_url }}" alt="{{ plato.name }}" loading="lazy" width="64" height="64">
                   {% endif %}
                   <div>
                     <p class="place-menu__name">{{ plato.name }}</p>

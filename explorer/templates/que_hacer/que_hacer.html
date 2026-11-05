@@ -17,7 +17,7 @@
 <div class="gx">
 
   <header class="gx-cover">
-    {% with foto=portada.get_primera_foto %}{% if foto %}<img src="{{ foto.imagen_mediana|default:foto.imagen }}" alt="" fetchpriority="high">{% endif %}{% endwith %}
+    {% with foto=portada.get_primera_foto %}{% if foto %}<img src="{{ foto.imagen_mediana|default:foto.imagen }}" alt="{{ portada.nombre }}" fetchpriority="high">{% endif %}{% endwith %}
     <div class="gx-cover-body">
       <p class="gx-kicker">ViveMedellín · {% trans "Qué hacer" %}</p>
       <h1 class="gx-title">{{ titulo_pagina }}</h1>

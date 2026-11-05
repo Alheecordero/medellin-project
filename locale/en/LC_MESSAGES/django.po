@@ -920,12 +920,13 @@ msgstr "ViveMedellín | Bars, Restaurants & Nightlife in Medellín"
 
 #: explorer/templates/home.html:7
 msgid ""
-"Tu guía local de Medellín: miles de bares, restaurantes, rooftops y "
-"discotecas con ratings de Google. Explora El Poblado, Laureles, Envigado y "
-"más."
+"Tu guía local de Medellín: bares, restaurantes, rooftops y planes, con "
+"cartas y precios, guías por zona y qué hacer. Explora El Poblado, Laureles, "
+"Envigado y más."
 msgstr ""
-"Your local guide to Medellín: thousands of bars, restaurants, rooftops and "
-"clubs with Google ratings. Explore El Poblado, Laureles, Envigado and more."
+"Your local guide to Medellín: bars, restaurants, rooftops and things to do, "
+"with menus and prices and guides by area. Explore El Poblado, Laureles, "
+"Envigado and more."
 
 #: explorer/templates/home.html:9
 msgid ""
@@ -943,11 +944,11 @@ msgstr "ViveMedellín | The Best Bars & Restaurants in Medellín"
 
 #: explorer/templates/home.html:13
 msgid ""
-"Descubre miles de lugares en Medellín: bares, restaurantes, rooftops y "
-"discotecas. Ratings de Google, horarios y ubicación exacta."
+"Descubre Medellín: bares, restaurantes, rooftops y planes, con cartas y "
+"precios, horarios y guías por zona."
 msgstr ""
-"Discover thousands of places in Medellín: bars, restaurants, rooftops and "
-"clubs. Google ratings, schedules and exact location."
+"Discover Medellín: bars, restaurants, rooftops and things to do, with menus "
+"and prices, opening hours and guides by area."
 
 #: explorer/templates/home.html:16
 msgid "Vista panorámica de Medellín - ViveMedellín"
@@ -3705,6 +3706,18 @@ msgstr "Draft"
 #: explorer/templates/guias/guia_detail.html
 msgid "Solo lo ve el staff. Publícala desde el admin cuando esté lista."
 msgstr "Only staff can see it. Publish it from the admin when it is ready."
+
+
+#: explorer/templates/lugares/places_list.html:12
+#, python-format
+msgid "Página %(n)s"
+msgstr "Page %(n)s"
+
+#: explorer/templates/lugares/places_list.html:14
+msgid ""
+"Cartas con precios, horarios y ubicación. Filtra por tipo, zona y "
+"características."
+msgstr "Menus with prices, opening hours and location. Filter by type, area and features."
 
 #~ msgid "ViveMedellín - Tu Guía de la Ciudad"
 #~ msgstr "ViveMedellín - Your City Guide"

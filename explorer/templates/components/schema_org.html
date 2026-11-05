@@ -64,20 +64,13 @@
     "longitude": {{ lugar.ubicacion.x|unlocalize }}
   },{% endif %}
   {% if lugar.telefono %}"telephone": "{{ lugar.telefono|escapejs }}",{% endif %}
-  {% if lugar.rating and lugar.total_reviews %}"aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": {{ lugar.rating|unlocalize }},
-    "bestRating": "5",
-    "worstRating": "1",
-    "reviewCount": {{ lugar.total_reviews }}
-  },{% endif %}
+  {# Sin aggregateRating: la nota y las reseñas son de Google Maps, y Google no admite marcar valoraciones de otro sitio. #}
   {% if price_range_schema %}"priceRange": "{{ price_range_schema|escapejs }}",{% elif lugar.precio %}"priceRange": "{{ lugar.precio|format_price_range|escapejs }}",{% endif %}
   {% if menu_schema %}"hasMenu": {{ menu_schema|safe }},{% endif %}
   {% if horario_schema %}"openingHoursSpecification": {{ horario_schema|safe }},{% endif %}
   "currenciesAccepted": "COP",
   "paymentAccepted": "{% if lugar.accepts_credit_cards %}Credit Card, {% endif %}Cash",
   {% if lugar.serves_cocktails or lugar.serves_wine or lugar.serves_beer %}"servesCuisine": "{% if lugar.serves_cocktails %}Cocktails{% endif %}{% if lugar.serves_wine %}, Wine{% endif %}{% if lugar.serves_beer %}, Beer{% endif %}",{% endif %}
-  "isAccessibleForFree": true,
   {% if lugar.wheelchair_accessible_entrance %}"accessibilityFeature": "wheelchairAccessible",{% endif %}
   {% if lugar.allows_dogs %}"amenityFeature": {"@type": "LocationFeatureSpecification", "name": "Pet Friendly", "value": true},{% endif %}
   "sameAs": [{% if lugar.sitio_web %}"{{ lugar.sitio_web|escapejs }}"{% if lugar.google_maps_uri %},{% endif %}{% endif %}{% if lugar.google_maps_uri %}"{{ lugar.google_maps_uri|escapejs }}"{% endif %}]
@@ -103,14 +96,7 @@
       "item": {
         "@type": "{{ lugar.schema_org_type }}",
         "name": "{{ lugar.nombre|escapejs }}",
-        "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'explorer:lugares_detail' lugar.slug %}"{% if lugar.rating %},
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": {{ lugar.rating|unlocalize }},
-          "bestRating": "5",
-          "worstRating": "1"{% if lugar.total_reviews %},
-          "reviewCount": {{ lugar.total_reviews }}{% endif %}
-        }{% endif %}
+        "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'explorer:lugares_detail' lugar.slug %}"
       }
     }{% if not forloop.last %},{% endif %}
     {% endfor %}

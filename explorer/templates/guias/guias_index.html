@@ -64,7 +64,7 @@
       {% for zona in zonas %}
       <article class="gx-zone">
         <div class="gx-zone-head">
-          {% if zona.portada %}<img src="{{ zona.portada }}" alt="" loading="lazy">{% endif %}
+          {% if zona.portada %}<img src="{{ zona.portada }}" alt="{{ zona.region.name }}" loading="lazy">{% endif %}
           <h3 class="gx-zone-name">{{ zona.region.name }}</h3>
         </div>
         <ul class="gx-zone-list">
