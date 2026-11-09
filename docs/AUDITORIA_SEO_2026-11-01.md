@@ -170,3 +170,18 @@ verificable. ViveMedellín tiene uno: **72.410 platos con precio de 2.008 cartas
 - 0 `aggregateRating` con valoraciones de terceros; sin acciones manuales.
 - `/lugares/`, `/guias/`, `/que-hacer/` y ≥ 20 páginas de categoría conocidas por Google.
 - ≥ 300 fichas indexadas e impresiones diarias por encima de las de septiembre (~20).
+
+## Estado (9 nov 2026)
+
+- **Lote de la semana 1 desplegado** (`7e488efe`):
+  - sin `aggregateRating` ni `isAccessibleForFree` en el JSON-LD;
+  - número de página en el título y la descripción del listado;
+  - descripciones del listado y del home sin "ratings de Google";
+  - `alt` en platos, tarjetas y portadas.
+- **Guías renombradas** (los slugs no cambian): Sabaneta, Envigado y Belén pasan a "…: dónde comer y
+  qué hacer"; "Rooftops en Medellín con vista al valle"; "El Centro de Medellín de día".
+- **nginx:** el bloque de `vivemedellin` incluye `cloudflare-real-ip.conf`. Copia del archivo
+  anterior en `/root/vivemedellin.nginx.bak-*`.
+- **Cloudflare (5 nov):** la verificación a todas las visitas se cambió por una dirigida. Solo
+  desafía URLs con `lat=` o `cerca=`, Chrome 10x–13x y peticiones sin `Accept-Language`.
+- **Siguiente:** semana 2 (páginas de categoría y categoría × zona, IndexNow).
