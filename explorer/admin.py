@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.contrib.gis import admin as gis_admin
 from django.db.models import Q
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription, CentroComercial, CuratedGuide, CuratedGuideItem, PendingPlace, GooglePlaceId, GooglePlaceDetails, PlaceDiscoveryRun, PlaceDiscoveryTask, PlacePartnerMenu, PlacePartnerDish
+from .models import Places, Foto, ZonaCubierta, RegionOSM, Initialgrid, TaggedPlace, NewsletterSubscription, CentroComercial, CuratedGuide, CuratedGuideItem, UbicacionEnCentro, PendingPlace, GooglePlaceId, GooglePlaceDetails, PlaceDiscoveryRun, PlaceDiscoveryTask, PlacePartnerMenu, PlacePartnerDish
 import json
 
 
@@ -272,11 +272,21 @@ class NewsletterSubscriptionAdmin(admin.ModelAdmin):
 # Guías Curadas
 # ────────────────────────────────────────────────────────────────
 
-class CuratedGuideItemInline(admin.TabularInline):
+class CuratedGuideItemInline(admin.StackedInline):
     model = CuratedGuideItem
-    extra = 1
+    extra = 0
     autocomplete_fields = ['lugar']
-    fields = ('posicion', 'lugar', 'lugar_preview', 'destacado', 'destacado_en', 'comentario', 'comentario_en', 'como_llegar', 'advertencia')
+    fields = (
+        ('posicion', 'lugar', 'lugar_preview'),
+        ('comentario', 'comentario_en'),
+        ('diferencia', 'diferencia_en'),
+        ('ocasion', 'ocasion_en', 'destacado', 'destacado_en'),
+        ('como_llegar', 'como_llegar_en'),
+        ('advertencia', 'advertencia_en'),
+        ('presupuesto', 'fuente_url', 'verificado_en'),
+        'fuera_de_zona_motivo',
+        'notas_editoriales',
+    )
     readonly_fields = ('lugar_preview',)
     ordering = ('posicion',)
 
@@ -311,31 +321,57 @@ class CentroComercialAdmin(gis_admin.GISModelAdmin):
               'total_lugares', 'lugares_indexables', 'osm_ids', 'geom', 'actualizado')
 
 
+@admin.register(UbicacionEnCentro)
+class UbicacionEnCentroAdmin(admin.ModelAdmin):
+    list_display = ('lugar', 'piso', 'local', 'verificado_en')
+    list_filter = ('verificado_en',)
+    search_fields = ('lugar__nombre',)
+    autocomplete_fields = ['lugar']
+
+
 @admin.register(CuratedGuide)
 class CuratedGuideAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'categoria', 'tema', 'zona', 'items_count', 'publicado', 'orden', 'fecha_actualizacion')
-    list_filter = ('publicado', 'categoria', 'tema')
+    list_display = ('titulo', 'categoria', 'formato', 'zona', 'items_count', 'publicado', 'revisado_en', 'orden')
+    list_filter = ('publicado', 'categoria', 'formato', 'tema')
     search_fields = ('titulo', 'descripcion')
     prepopulated_fields = {'slug': ('titulo',)}
     list_editable = ('orden', 'publicado')
+    filter_horizontal = ('relacionadas',)
+    readonly_fields = ('avisos_revision',)
     inlines = [CuratedGuideItemInline]
 
     fieldsets = (
+        ('Revisión editorial', {
+            'fields': ('avisos_revision', ('autor', 'revisado_en')),
+            'description': 'Avisos de `revisar_guias`. Poner fecha solo tras revisar de verdad: con fecha, '
+                           'los importadores ya no tocan el texto y la frase de cada parada pasa a su ficha.',
+        }),
         ('Español', {
-            'fields': ('titulo', 'slug', 'descripcion', 'como_recorrer', 'imagen_cover')
+            'fields': ('titulo', 'slug', 'descripcion', 'para_quien', 'criterio', 'como_recorrer', 'consejos', 'imagen_cover')
         }),
         ('English Translation', {
             'classes': ('collapse',),
-            'fields': ('titulo_en', 'descripcion_en'),
+            'fields': ('titulo_en', 'descripcion_en', 'para_quien_en', 'criterio_en', 'como_recorrer_en', 'consejos_en'),
             'description': 'Traducciones al inglés. Si se dejan vacíos, se muestra el español.',
         }),
         ('Clasificación', {
-            'fields': ('categoria', 'tema', 'zona', 'orden', 'publicado')
+            'fields': ('formato', 'categoria', 'tema', 'zona', 'relacionadas', 'orden', 'publicado')
         }),
     )
 
+    def avisos_revision(self, obj):
+        from .utils.guias import revisar_guia
+
+        if not obj or not obj.pk:
+            return "—"
+        avisos = revisar_guia(obj)
+        if not avisos:
+            return format_html('<span style="color:green;">Sin avisos</span>')
+        return format_html_join('', '<div style="margin-bottom:4px;">{}</div>', ((str(a),) for a in avisos))
+    avisos_revision.short_description = "Avisos"
+
     def items_count(self, obj):
-        count = obj.items.count()
+        count = obj.total_items
         if count == 0:
             return format_html('<span style="color:red;">0 lugares</span>')
         return format_html('<span style="color:green;">{} lugares</span>', count)

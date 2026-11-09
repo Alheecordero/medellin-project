@@ -69,6 +69,9 @@ class Command(BaseCommand):
             if guia is None:
                 self.stdout.write(f"no existe: {slug}")
                 continue
+            if guia.revisado_en:
+                self.stdout.write(f"{slug}: revisada el {guia.revisado_en}, no se toca")
+                continue
             ya = set(guia.items.values_list("lugar__slug", flat=True))
             lugares = {p.slug: p for p in Places.objects.filter(slug__in=[s for s, _c, _e in paradas]).prefetch_related(None)}
             nuevas = [(lugares[s], c, e) for s, c, e in paradas if s in lugares and s not in ya]

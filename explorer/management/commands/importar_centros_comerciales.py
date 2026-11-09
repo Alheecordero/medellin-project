@@ -106,13 +106,15 @@ class Command(BaseCommand):
                 geom = _multi(geom)
                 ids = [i for i in grupo["lugares"] if asignado[i] == nombre]
                 n_idx = len(indexables.intersection(ids))
+                # Lo que muestra la página del centro (sin peluquerías ni parqueaderos), no todo lo asignado.
+                n_visibles = Places.objects.filter(pk__in=ids).de_centro_comercial().count()
                 zona = (
                     RegionOSM.objects.filter(geom_4326__contains=geom.point_on_surface)
                     .order_by("way_area").first()
                 )
                 portada = self._portada(ids)
                 self.stdout.write(
-                    f"{nombre:28} {len(ids):3} lugares, {n_idx:3} indexables, "
+                    f"{nombre:28} {len(ids):3} lugares ({n_visibles} visibles), {n_idx:3} indexables, "
                     f"{zona.name if zona else '-':18} ← {', '.join(sorted(grupo['nombres']))}"
                 )
                 if dry:
@@ -126,7 +128,7 @@ class Command(BaseCommand):
                 centro.geom = geom
                 centro.zona = zona
                 centro.portada = portada
-                centro.total_lugares = len(ids)
+                centro.total_lugares = n_visibles
                 centro.lugares_indexables = n_idx
                 centro.save()
                 vistos.append(centro.pk)

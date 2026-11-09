@@ -34,7 +34,7 @@ PLACE_TYPE_MSGIDS = [
     _("Restaurante de postres"),
     _("Cafetería clásica"),
     _("Consultorio médico"),
-    _("Cafetería de perros"),
+    _("Café con perros"),
     _("Lugar de eventos"),
     _("Restaurante de comida rápida"),
     _("Restaurante gourmet"),

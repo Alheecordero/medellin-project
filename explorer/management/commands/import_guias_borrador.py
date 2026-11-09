@@ -17,6 +17,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from explorer.models import CuratedGuide, CuratedGuideItem, GooglePlaceDetails, PendingPlace, Places
+from explorer.utils.guias import CAMPOS_TEXTO_GUIA, CAMPOS_TEXTO_PARADA, campos_importables
 
 CATEGORIES = {code for code, _label in CuratedGuide._meta.get_field("categoria").choices}
 # Borradores con las categorías de antes de la migración 0040.
@@ -71,37 +72,49 @@ class Command(BaseCommand):
             if options["dry_run"] or not ready:
                 continue
             with transaction.atomic():
-                guia, created = CuratedGuide.objects.update_or_create(
-                    slug=guide.get("slug") or "",
-                    defaults={
-                        "titulo": (guide.get("titulo") or "")[:200],
-                        "descripcion": guide.get("descripcion") or "",
-                        "como_recorrer": guide.get("como_recorrer") or "",
-                        "categoria": categoria,
-                        "orden": guide.get("orden") or 0,
-                    },
-                )
-                if created:
-                    guia.publicado = False
-                    guia.save(update_fields=["publicado"])
+                # Una guía o parada con revisión editorial conserva su texto: el JSON es el borrador.
+                slug = guide.get("slug") or ""
+                datos = {
+                    "titulo": (guide.get("titulo") or "")[:200],
+                    "descripcion": guide.get("descripcion") or "",
+                    "como_recorrer": guide.get("como_recorrer") or "",
+                    "categoria": categoria,
+                    "orden": guide.get("orden") or 0,
+                }
+                guia = CuratedGuide.objects.filter(slug=slug).first()
+                if guia is None:
+                    guia = CuratedGuide.objects.create(slug=slug, publicado=False, **datos)
+                else:
+                    _actualizar(guia, campos_importables(guia, datos, CAMPOS_TEXTO_GUIA))
                 for stop, lugar in ready:
                     if not _es_comida(lugar.tipo) and not lugar.solo_en_guia:
                         Places.objects.filter(pk=lugar.pk).update(solo_en_guia=True)
-                    CuratedGuideItem.objects.update_or_create(
-                        guia=guia,
-                        lugar=lugar,
-                        defaults={
-                            "posicion": stop.get("posicion") or 1,
-                            "comentario": stop.get("por_que") or "",
-                            "destacado": (stop.get("destacado") or "")[:50],
-                            "como_llegar": (stop.get("como_llegar") or "")[:300],
-                            "advertencia": (stop.get("advertencia") or "")[:300],
-                        },
-                    )
+                    datos = {
+                        "posicion": stop.get("posicion") or 1,
+                        "comentario": stop.get("por_que") or "",
+                        "destacado": (stop.get("destacado") or "")[:50],
+                        "como_llegar": (stop.get("como_llegar") or "")[:300],
+                        "advertencia": (stop.get("advertencia") or "")[:300],
+                    }
+                    item = CuratedGuideItem.objects.filter(guia=guia, lugar=lugar).first()
+                    if item is None:
+                        CuratedGuideItem.objects.create(guia=guia, lugar=lugar, **datos)
+                    elif guia.revisado_en:
+                        continue
+                    else:
+                        _actualizar(item, campos_importables(item, datos, CAMPOS_TEXTO_PARADA))
         mode = "revisión" if options["dry_run"] else "listas"
         self.stdout.write(
             self.style.SUCCESS(f"{mode}: {linked} paradas con ficha, {missing} todavía fuera.")
         )
+
+
+def _actualizar(objeto, cambios):
+    for campo, valor in cambios.items():
+        setattr(objeto, campo, valor)
+    if cambios:
+        extra = ["fecha_actualizacion"] if hasattr(objeto, "fecha_actualizacion") else []
+        objeto.save(update_fields=[*cambios, *extra])
 
 
 _COMIDA = {

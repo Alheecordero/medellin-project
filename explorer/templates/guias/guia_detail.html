@@ -26,51 +26,98 @@
 <section class="guia-section">
   <div class="container py-4">
 
-    <!-- Article -->
     <article class="guia-article">
 
-      <!-- Mapa interactivo con los lugares de la guía -->
-      <div class="guia-map-container">
-        <div id="guia-map"></div>
-      </div>
-
-      <!-- Header -->
       <header class="guia-header">
         <h1 class="guia-title">{{ guia.titulo_i18n }}</h1>
         <div class="guia-meta">
           <span><i class="bi bi-geo-alt-fill"></i> {{ guia.zona_display }}</span>
-          <span><i class="bi bi-list-ol"></i> {{ items|length }} {% trans "lugares" %}</span>
+          <span><i class="bi bi-list-ul"></i> {% blocktrans count n=items|length %}{{ n }} lugar{% plural %}{{ n }} lugares{% endblocktrans %}</span>
+          {% if guia.formato == 'ruta' %}<span><i class="bi bi-signpost-split"></i> {% trans "Recorrido" %}</span>{% elif guia.formato == 'ranking' %}<span><i class="bi bi-sort-numeric-down"></i> {% trans "Ranking" %}</span>{% endif %}
         </div>
-        {% if not guia.publicado %}<p class="guia-intro" style="padding: .6rem .9rem; border-radius: 10px; background: #fff3cd; color: #664d03;"><strong>{% trans "Borrador" %}</strong> · {% trans "Solo lo ve el staff. Publícala desde el admin cuando esté lista." %}</p>{% endif %}
+        {% if not guia.publicado %}<p class="guia-intro guia-draft"><strong>{% trans "Borrador" %}</strong> · {% trans "Solo lo ve el staff. Publícala desde el admin cuando esté lista." %}</p>{% endif %}
         <p class="guia-intro">{{ guia.descripcion_i18n }}</p>
-        {% if guia.como_recorrer %}
-          <p class="guia-intro">{{ guia.como_recorrer }}</p>
+        {% if guia.para_quien_i18n %}<p class="guia-intro">{{ guia.para_quien_i18n }}</p>{% endif %}
+        {% if guia.revisado_en %}
+        <p class="guia-byline">
+          {% if guia.autor %}{% blocktrans with autor=guia.autor %}Revisada por {{ autor }}{% endblocktrans %} · {% endif %}<time datetime="{{ guia.revisado_en|date:'Y-m-d' }}">{% blocktrans with fecha=guia.revisado_en|date:"j M Y" %}revisión editorial del {{ fecha }}{% endblocktrans %}</time>
+        </p>
         {% endif %}
       </header>
 
-      <!-- Lugares -->
-      {% for item in items %}
-      <div class="guia-entry">
+      {% if guia.criterio_i18n %}
+      <section class="guia-block" aria-labelledby="guia-criterio">
+        <h2 class="guia-h2" id="guia-criterio">{% trans "Cómo elegimos" %}</h2>
+        <p class="guia-entry-text">{{ guia.criterio_i18n }}</p>
+        {% if not guia.numerada %}<p class="guia-note">{% trans "Es una selección: el orden no es un ranking." %}</p>{% endif %}
+      </section>
+      {% endif %}
 
-        <!-- Carousel de fotos -->
+      {% if comparativa %}
+      <section class="guia-block" aria-labelledby="guia-comparativa">
+        <h2 class="guia-h2" id="guia-comparativa">{% trans "De un vistazo" %}</h2>
+        <div class="guia-compare-wrap">
+          <table class="guia-compare">
+            <thead>
+              <tr>
+                <th scope="col">{% trans "Lugar" %}</th>
+                <th scope="col">{% trans "Zona" %}</th>
+                {% if col_ocasion %}<th scope="col">{% trans "Ideal para" %}</th>{% endif %}
+                {% if col_presupuesto %}<th scope="col">{% trans "Presupuesto" %}</th>{% endif %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+              <tr>
+                <th scope="row"><a href="#lugar-{{ item.lugar.slug }}">{% if item.numero %}{{ item.numero }}. {% endif %}{{ item.lugar.nombre }}</a></th>
+                <td data-label="{% trans 'Zona' %}"{% if not item.lugar.comuna %} class="is-empty"{% endif %}>{{ item.lugar.comuna.name|default:"—" }}</td>
+                {% if col_ocasion %}<td data-label="{% trans 'Ideal para' %}"{% if not item.ocasion_i18n %} class="is-empty"{% endif %}>{{ item.ocasion_i18n|default:"—" }}</td>{% endif %}
+                {% if col_presupuesto %}<td data-label="{% trans 'Presupuesto' %}"{% if not item.presupuesto_mostrado %} class="is-empty"{% endif %}>{{ item.presupuesto_mostrado|default:"—" }}</td>{% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      {% endif %}
+
+      {% if guia.formato == 'ruta' and guia.como_recorrer_i18n %}
+      <section class="guia-block" aria-labelledby="guia-ruta">
+        <h2 class="guia-h2" id="guia-ruta">{% trans "Cómo hacer el recorrido" %}</h2>
+        <p class="guia-entry-text">{{ guia.como_recorrer_i18n }}</p>
+      </section>
+      {% elif guia.como_recorrer_i18n %}
+      <p class="guia-intro guia-intro--left">{{ guia.como_recorrer_i18n }}</p>
+      {% endif %}
+
+      {% if markers %}
+      <section class="guia-block" aria-label="{% trans 'Mapa de la guía' %}">
+        <div class="guia-map-container"><div id="guia-map" data-lazy-map></div></div>
+      </section>
+      {% endif %}
+
+      {% if guia.numerada %}<ol class="guia-list">{% else %}<ul class="guia-list">{% endif %}
+      {% for item in items %}
+      <li class="guia-entry" id="lugar-{{ item.lugar.slug }}">
+
         <div class="guia-entry-img">
           {% with fotos=item.lugar.get_fotos %}
           {% if fotos %}
-          <div id="carousel-{{ item.posicion }}" class="carousel slide" data-bs-ride="false">
+          <div id="carousel-{{ forloop.counter }}" class="carousel slide" data-bs-ride="false">
             <div class="carousel-inner">
               {% for foto in fotos %}
               <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                <a href="{% url 'explorer:lugares_detail' item.lugar.slug %}">
+                <a href="{% url 'explorer:lugares_detail' item.lugar.slug %}" tabindex="-1">
                   <img src="{{ foto.imagen_mediana|default:foto.imagen|media_url }}" alt="{{ item.lugar.nombre }}" loading="lazy">
                 </a>
               </div>
               {% endfor %}
             </div>
             {% if fotos|length > 1 %}
-            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ item.posicion }}" data-bs-slide="prev">
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ forloop.counter }}" data-bs-slide="prev" aria-label="{% trans 'Foto anterior' %}">
               <span class="carousel-control-prev-icon"></span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ item.posicion }}" data-bs-slide="next">
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ forloop.counter }}" data-bs-slide="next" aria-label="{% trans 'Foto siguiente' %}">
               <span class="carousel-control-next-icon"></span>
             </button>
             <div class="guia-photo-count"><i class="bi bi-images me-1"></i>{{ fotos|length }}</div>
@@ -80,31 +127,27 @@
           <div class="guia-entry-placeholder"><i class="bi bi-image"></i></div>
           {% endif %}
           {% endwith %}
-          <span class="guia-entry-number">#{{ item.posicion }}</span>
-          {% if item.lugar.rating %}
-          <span class="guia-entry-rating"><i class="bi bi-star-fill"></i> {{ item.lugar.rating|floatformat:1 }}</span>
-          {% endif %}
+          {% if item.numero %}<span class="guia-entry-number" aria-hidden="true">{{ item.numero }}</span>{% endif %}
         </div>
 
-        <!-- Contenido -->
         <div class="guia-entry-body">
           <div class="guia-entry-top">
-            <a href="{% url 'explorer:lugares_detail' item.lugar.slug %}" class="guia-entry-name">{{ item.lugar.nombre }}</a>
-          {% if item.destacado_i18n %}
-          <span class="guia-entry-badge">{{ item.destacado_i18n }}</span>
-          {% endif %}
+            <h2 class="guia-entry-h"><a href="{% url 'explorer:lugares_detail' item.lugar.slug %}" class="guia-entry-name">{% if guia.formato == 'ruta' %}<span class="visually-hidden">{% blocktrans with n=item.numero %}Parada {{ n }}:{% endblocktrans %} </span>{% elif item.numero %}<span class="visually-hidden">{{ item.numero }}. </span>{% endif %}{{ item.lugar.nombre }}</a></h2>
+            {% if item.destacado_i18n %}<span class="guia-entry-badge">{{ item.destacado_i18n }}</span>{% endif %}
           </div>
 
-          <span class="guia-entry-type">{{ item.lugar|place_type_label }}{% if item.lugar.comuna %} · {{ item.lugar.comuna.name }}{% endif %}</span>
+          <span class="guia-entry-type">{{ item.lugar|place_type_label }}{% if item.lugar.comuna %} · {{ item.lugar.comuna.name }}{% endif %}{% if item.lugar.rating %} · <span title="{% trans 'Calificación en Google Maps' %}">★ {{ item.lugar.rating|floatformat:1 }} {% trans "en Google" %}</span>{% endif %}</span>
 
-          {% if item.comentario_i18n %}
-          <p class="guia-entry-text">{{ item.comentario_i18n }}</p>
-          {% endif %}
-          {% if item.como_llegar %}
-          <p class="guia-entry-text">{{ item.como_llegar }}</p>
-          {% endif %}
-          {% if item.advertencia %}
-          <p class="guia-entry-text">{{ item.advertencia }}</p>
+          {% if item.comentario_i18n %}<p class="guia-entry-text">{{ item.comentario_i18n }}</p>{% endif %}
+
+          {% if item.diferencia_i18n or item.ocasion_i18n or item.advertencia_publica or item.como_llegar_i18n or item.presupuesto_mostrado %}
+          <dl class="guia-facts">
+            {% if item.diferencia_i18n %}<div><dt>{% trans "Qué lo diferencia" %}</dt><dd>{{ item.diferencia_i18n }}</dd></div>{% endif %}
+            {% if item.ocasion_i18n %}<div><dt>{% trans "Ideal para" %}</dt><dd>{{ item.ocasion_i18n }}</dd></div>{% endif %}
+            {% if item.presupuesto_mostrado %}<div><dt>{% trans "Presupuesto" %}</dt><dd>{{ item.presupuesto_mostrado }}</dd></div>{% endif %}
+            {% if item.advertencia_publica %}<div><dt>{% trans "Antes de ir" %}</dt><dd>{{ item.advertencia_publica }}{% if item.fuente_url %} <a href="{{ item.fuente_url }}" rel="nofollow noopener" target="_blank">{% blocktrans with fecha=item.verificado_en|date:"M Y" %}fuente, {{ fecha }}{% endblocktrans %}</a>{% endif %}</dd></div>{% endif %}
+            {% if item.como_llegar_i18n %}<div><dt>{% trans "Cómo llegar" %}</dt><dd>{{ item.como_llegar_i18n }}</dd></div>{% endif %}
+          </dl>
           {% endif %}
 
           <a href="{% url 'explorer:lugares_detail' item.lugar.slug %}" class="guia-entry-cta">
@@ -112,11 +155,31 @@
           </a>
         </div>
 
-      </div>
+      </li>
       {% endfor %}
+      {% if guia.numerada %}</ol>{% else %}</ul>{% endif %}
 
-      <!-- CTA final -->
+      {% if guia.consejos_lista %}
+      <section class="guia-block" aria-labelledby="guia-consejos">
+        <h2 class="guia-h2" id="guia-consejos">{% trans "Consejos prácticos" %}</h2>
+        <ul class="guia-tips">{% for consejo in guia.consejos_lista %}<li>{{ consejo }}</li>{% endfor %}</ul>
+      </section>
+      {% endif %}
+
+      {% if relacionadas %}
+      <section class="guia-block" aria-labelledby="guia-relacionadas">
+        <h2 class="guia-h2" id="guia-relacionadas">{% trans "Sigue con" %}</h2>
+        <ul class="guia-related">
+          {% for otra in relacionadas %}<li><a href="{{ otra.get_absolute_url }}">{{ otra.titulo_i18n }}</a> <span>{{ otra.zona_display }}</span></li>{% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
       <footer class="guia-footer">
+        <p class="guia-report">
+          {% trans "¿Algo cambió: cerró, se mudó, otro horario?" %}
+          <a href="mailto:info@vivemedellin.net?subject={% filter urlencode %}{% blocktrans with guia=guia.titulo_i18n %}Corrección en la guía «{{ guia }}»{% endblocktrans %}{% endfilter %}&amp;body={{ request.build_absolute_uri|urlencode }}">{% trans "Avísanos" %}</a>
+        </p>
         <a href="{% url 'explorer:guias_index' %}" class="btn guia-footer__btn rounded-pill px-4">
           <i class="bi bi-bookmark-star me-1"></i>{% trans "Más Guías" %}
         </a>
@@ -141,9 +204,9 @@
       "description": "{{ guia.descripcion_i18n|truncatechars:300|escapejs }}",
       "inLanguage": "{{ LANGUAGE_CODE }}",
       "datePublished": "{{ guia.fecha_creacion|date:'c' }}",
-      "dateModified": "{{ guia.fecha_actualizacion|date:'c' }}",
+      {% if guia.revisado_en %}"dateModified": "{{ guia.revisado_en|date:'Y-m-d' }}",{% endif %}
       {% with cover=guia.get_cover_image %}{% if cover %}"image": "{{ cover|media_url|ensure_absolute_url:request }}",{% endif %}{% endwith %}
-      "author": {"@type": "Organization", "name": "ViveMedellín", "url": "{{ base_url }}/"},
+      "author": {% if guia.autor %}{"@type": "Person", "name": "{{ guia.autor|escapejs }}"}{% else %}{"@type": "Organization", "name": "ViveMedellín", "url": "{{ base_url }}/"}{% endif %},
       "publisher": {
         "@type": "Organization",
         "name": "ViveMedellín",
@@ -157,7 +220,7 @@
       "@id": "{{ page_url }}#lugares",
       "name": "{{ guia.titulo_i18n|escapejs }}",
       "numberOfItems": {{ items|length }},
-      "itemListOrder": "https://schema.org/ItemListOrderAscending",
+      "itemListOrder": "{% if guia.numerada %}https://schema.org/ItemListOrderAscending{% else %}https://schema.org/ItemListUnordered{% endif %}",
       "itemListElement": [
         {% for item in items %}{
           "@type": "ListItem",
@@ -175,88 +238,81 @@
 {% endblock %}
 
 {% block extra_js %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 {{ markers|json_script:"guia-markers" }}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+// Leaflet (~150 KB) solo se descarga cuando el mapa está por entrar en pantalla.
+(function () {
+  const el = document.getElementById('guia-map');
+  if (!el) return;
   const markers = JSON.parse(document.getElementById('guia-markers').textContent);
   if (!markers.length) return;
-
   const placePattern = "{% url 'explorer:lugares_detail' 'slugtoken' %}";
 
   function esc(value) {
-    return String(value == null ? '' : value).replace(/[&<>"']/g, function(ch) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
       return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
     });
   }
 
-  const pinHtml = '<svg viewBox="0 0 32 42" width="32" height="42" aria-hidden="true"><path d="M16 41s12-13.2 12-22A12 12 0 1 0 4 19c0 8.8 12 22 12 22z" fill="#0b1220"/><circle cx="16" cy="18" r="5.2" fill="#c8f54a"/></svg>';
-
-  const map = L.map('guia-map', {
-    zoomControl: false,
-    scrollWheelZoom: false,
-  });
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap',
-    maxZoom: 19,
-  }).addTo(map);
-  map.attributionControl.setPrefix(false);
-  L.control.zoom({ position: 'topright' }).addTo(map);
-
-  const bounds = [];
-  markers.forEach(function(m) {
-    const marker = L.marker([m.lat, m.lng], {
-      icon: L.divIcon({
-        className: 'guia-pin',
-        html: pinHtml,
-        iconSize: [32, 42],
-        iconAnchor: [16, 40],
-        popupAnchor: [0, -36],
-      }),
-      title: m.nombre,
-      zIndexOffset: 100,
-    }).addTo(map);
-    bounds.push([m.lat, m.lng]);
-
-    const ratingHtml = m.rating
-      ? '<span class="gp-rating"><i class="bi bi-star-fill"></i> ' + Number(m.rating).toFixed(1) + '</span>'
-      : '';
-    const imgHtml = m.imagen
-      ? '<img src="' + esc(m.imagen) + '" alt="" class="gp-img">'
-      : '';
-    marker.bindPopup(
-      '<a href="' + placePattern.replace('slugtoken', encodeURIComponent(m.slug)) + '" class="guia-popup">' +
-        imgHtml +
-        '<div class="gp-body">' +
-          '<strong class="gp-name">' + esc(m.nombre) + '</strong>' +
-          ratingHtml +
-        '</div>' +
-      '</a>',
-      { className: 'guia-popup-wrapper', minWidth: 200, maxWidth: 260, autoPanPadding: [16, 16] }
-    );
-  });
-
-  const lats = bounds.map(function(p) { return p[0]; });
-  const lngs = bounds.map(function(p) { return p[1]; });
-  const spread = Math.max(
-    Math.max.apply(null, lats) - Math.min.apply(null, lats),
-    Math.max.apply(null, lngs) - Math.min.apply(null, lngs)
-  );
-  const maxZoom = spread > 0.15 ? 13 : spread > 0.04 ? 15 : 17;
-
-  if (bounds.length > 1) {
-    map.fitBounds(bounds, { paddingTopLeft: [48, 64], paddingBottomRight: [48, 28], maxZoom: maxZoom });
-  } else {
-    map.setView(bounds[0], 17);
+  function cargar(done) {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(css);
+    const js = document.createElement('script');
+    js.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    js.onload = done;
+    document.head.appendChild(js);
   }
 
-  map.on('click', function() { map.scrollWheelZoom.enable(); });
-  map.on('mouseout', function() { map.scrollWheelZoom.disable(); });
-  window.addEventListener('resize', function() { map.invalidateSize(); });
-  setTimeout(function() { map.invalidateSize(); }, 150);
-});
+  function pin(numero) {
+    const label = numero ? '<text x="16" y="22" text-anchor="middle" font-size="11" font-weight="800" fill="#0b1220">' + numero + '</text>' : '';
+    const dot = numero ? '<circle cx="16" cy="18" r="8" fill="#c8f54a"/>' : '<circle cx="16" cy="18" r="5.2" fill="#c8f54a"/>';
+    return '<svg viewBox="0 0 32 42" width="32" height="42" aria-hidden="true"><path d="M16 41s12-13.2 12-22A12 12 0 1 0 4 19c0 8.8 12 22 12 22z" fill="#0b1220"/>' + dot + label + '</svg>';
+  }
+
+  function pintar() {
+    const map = L.map(el, { zoomControl: false, scrollWheelZoom: false });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap', maxZoom: 19 }).addTo(map);
+    map.attributionControl.setPrefix(false);
+    L.control.zoom({ position: 'topright' }).addTo(map);
+
+    const bounds = markers.map(function (m) {
+      L.marker([m.lat, m.lng], {
+        icon: L.divIcon({ className: 'guia-pin', html: pin(m.numero), iconSize: [32, 42], iconAnchor: [16, 40], popupAnchor: [0, -36] }),
+        title: m.nombre,
+      }).addTo(map).bindPopup(
+        '<a href="' + placePattern.replace('slugtoken', encodeURIComponent(m.slug)) + '" class="guia-popup">' +
+          (m.imagen ? '<img src="' + esc(m.imagen) + '" alt="" class="gp-img">' : '') +
+          '<div class="gp-body"><strong class="gp-name">' + (m.numero ? m.numero + '. ' : '') + esc(m.nombre) + '</strong></div>' +
+        '</a>',
+        { className: 'guia-popup-wrapper', minWidth: 200, maxWidth: 260, autoPanPadding: [16, 16] }
+      );
+      return [m.lat, m.lng];
+    });
+
+    const lats = bounds.map(function (p) { return p[0]; });
+    const lngs = bounds.map(function (p) { return p[1]; });
+    const spread = Math.max(Math.max.apply(null, lats) - Math.min.apply(null, lats), Math.max.apply(null, lngs) - Math.min.apply(null, lngs));
+    const maxZoom = spread > 0.15 ? 13 : spread > 0.04 ? 15 : 17;
+    if (bounds.length > 1) {
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: maxZoom });
+    } else {
+      map.setView(bounds[0], 17);
+    }
+    map.on('click', function () { map.scrollWheelZoom.enable(); });
+    map.on('mouseout', function () { map.scrollWheelZoom.disable(); });
+  }
+
+  if (!('IntersectionObserver' in window)) { cargar(pintar); return; }
+  const io = new IntersectionObserver(function (entries) {
+    if (entries.some(function (e) { return e.isIntersecting; })) {
+      io.disconnect();
+      cargar(pintar);
+    }
+  }, { rootMargin: '300px' });
+  io.observe(el);
+})();
 </script>
 {% endblock %}
 
@@ -612,6 +668,51 @@ document.addEventListener('DOMContentLoaded', function() {
   background: var(--v4-ink, #0b1220);
   color: var(--v4-lime, #c8f54a);
   border-color: var(--v4-ink, #0b1220);
+}
+
+/* Bloques editoriales */
+.guia-draft { padding: .6rem .9rem; border-radius: 10px; background: #fff3cd; color: #664d03; }
+.guia-intro + .guia-intro { margin-top: .75rem; }
+.guia-byline { font-size: .85rem; color: var(--v4-muted, #6b7285); margin: 1rem 0 0; }
+.guia-intro--left { text-align: left; margin-bottom: 2rem; }
+.guia-block { margin: 0 0 2.25rem; }
+.guia-h2 {
+  font-family: var(--v4-font-display, 'Bricolage Grotesque', system-ui, sans-serif);
+  font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em;
+  color: var(--v4-ink, #0b1220); margin: 0 0 .75rem;
+}
+.guia-note { font-size: .85rem; color: var(--v4-muted, #6b7285); margin: 0; }
+.guia-compare-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--v4-line, rgba(11,18,32,.08)); border-radius: 14px; }
+.guia-compare { width: 100%; border-collapse: collapse; font-size: .9rem; min-width: 480px; }
+.guia-compare th, .guia-compare td { padding: .6rem .75rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--v4-line, rgba(11,18,32,.08)); }
+.guia-compare thead th { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: var(--v4-muted, #6b7285); background: var(--v4-paper-2, #f6f1e7); }
+.guia-compare tbody tr:last-child th, .guia-compare tbody tr:last-child td { border-bottom: 0; }
+.guia-compare a { color: var(--v4-ink, #0b1220); font-weight: 700; text-decoration: none; }
+.guia-list { list-style: none; padding: 0; margin: 0; }
+.guia-entry-h { margin: 0; font-size: inherit; }
+.guia-facts { display: grid; gap: .5rem; margin: 0 0 1rem; }
+.guia-facts div { display: grid; grid-template-columns: 9rem 1fr; gap: .75rem; }
+.guia-facts dt { font-size: .8rem; font-weight: 700; color: var(--v4-muted, #6b7285); text-transform: uppercase; letter-spacing: .03em; padding-top: .15rem; }
+.guia-facts dd { margin: 0; color: #3a4254; line-height: 1.6; }
+.guia-tips { padding-left: 1.2rem; margin: 0; color: #3a4254; line-height: 1.7; }
+.guia-related { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
+.guia-related a { font-weight: 700; color: var(--v4-ink, #0b1220); border-bottom: 2px solid var(--v4-lime, #c8f54a); text-decoration: none; }
+.guia-related span { font-size: .85rem; color: var(--v4-muted, #6b7285); margin-left: .35rem; }
+.guia-report { width: 100%; margin: 0 0 .5rem; font-size: .9rem; color: var(--v4-muted, #6b7285); }
+.guia-report a { color: var(--v4-ink, #0b1220); font-weight: 700; }
+#guia-map { height: clamp(320px, 50vh, 460px); }
+@media (max-width: 576px) {
+  .guia-facts div { grid-template-columns: 1fr; gap: .1rem; }
+  .guia-h2 { font-size: 1.1rem; }
+  /* En el móvil cada lugar de la comparativa es una fila apilada: sin desplazamiento lateral. */
+  .guia-compare { min-width: 0; }
+  .guia-compare thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .guia-compare tr { display: block; padding: .65rem .75rem; border-bottom: 1px solid var(--v4-line, rgba(11,18,32,.08)); }
+  .guia-compare tbody tr:last-child { border-bottom: 0; }
+  .guia-compare th, .guia-compare td { display: block; padding: 0; border: 0; }
+  .guia-compare td { color: #3a4254; font-size: .85rem; }
+  .guia-compare td.is-empty { display: none; }
+  .guia-compare td[data-label]::before { content: attr(data-label) ": "; font-weight: 700; color: var(--v4-muted, #6b7285); }
 }
 
 /* ─── Responsive ─── */

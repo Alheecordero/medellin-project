@@ -140,7 +140,7 @@ msgid "Consultorio médico"
 msgstr "Doctor's office"
 
 #: explorer/i18n_catalog.py:37
-msgid "Cafetería de perros"
+msgid "Café con perros"
 msgstr "Dog café"
 
 #: explorer/i18n_catalog.py:38
@@ -3718,6 +3718,122 @@ msgid ""
 "Cartas con precios, horarios y ubicación. Filtra por tipo, zona y "
 "características."
 msgstr "Menus with prices, opening hours and location. Filter by type, area and features."
+
+
+# Guías: estructura editorial (nov 2026)
+#: explorer/templates/guias/guia_detail.html
+msgid "Recorrido"
+msgstr "Route"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Ranking"
+msgstr "Ranking"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Cómo elegimos"
+msgstr "How we chose"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Es una selección: el orden no es un ranking."
+msgstr "This is a selection: the order is not a ranking."
+
+#: explorer/templates/guias/guia_detail.html
+msgid "De un vistazo"
+msgstr "At a glance"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Lugar"
+msgstr "Place"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Zona"
+msgstr "Area"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Ideal para"
+msgstr "Good for"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Presupuesto"
+msgstr "Budget"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Cómo hacer el recorrido"
+msgstr "How to do the route"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Mapa de la guía"
+msgstr "Guide map"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Foto anterior"
+msgstr "Previous photo"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Foto siguiente"
+msgstr "Next photo"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Calificación en Google Maps"
+msgstr "Google Maps rating"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "en Google"
+msgstr "on Google"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Qué lo diferencia"
+msgstr "What sets it apart"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Antes de ir"
+msgstr "Before you go"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Consejos prácticos"
+msgstr "Practical tips"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Sigue con"
+msgstr "Keep going"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "¿Algo cambió: cerró, se mudó, otro horario?"
+msgstr "Something changed: closed, moved, new hours?"
+
+#: explorer/templates/guias/guia_detail.html
+msgid "Avísanos"
+msgstr "Let us know"
+
+#: explorer/templates/guias/guia_detail.html
+#, python-format
+msgid "Revisada por %(autor)s"
+msgstr "Reviewed by %(autor)s"
+
+#: explorer/templates/guias/guia_detail.html
+#, python-format
+msgid "revisión editorial del %(fecha)s"
+msgstr "editorial review on %(fecha)s"
+
+#: explorer/templates/guias/guia_detail.html
+#, python-format
+msgid "Parada %(n)s:"
+msgstr "Stop %(n)s:"
+
+#: explorer/templates/guias/guia_detail.html
+#, python-format
+msgid "fuente, %(fecha)s"
+msgstr "source, %(fecha)s"
+
+#: explorer/templates/guias/guia_detail.html
+#, python-format
+msgid "Corrección en la guía «%(guia)s»"
+msgstr "Correction to the guide “%(guia)s”"
+
+#: explorer/views.py
+#, python-format
+msgid "%(bajo)s – %(alto)s según la carta en %(app)s"
+msgstr "%(bajo)s – %(alto)s per the menu on %(app)s"
 
 #~ msgid "ViveMedellín - Tu Guía de la Ciudad"
 #~ msgstr "ViveMedellín - Your City Guide"

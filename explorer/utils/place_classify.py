@@ -206,16 +206,23 @@ def _bootstrap_labels() -> None:
 
 _bootstrap_labels()
 
+# Tipos de nicho que el barrido de descubrimiento pega a restaurantes comunes (La Matriarca
+# salió "Cafetería de perros"). Solo valen si los da la categoría de Maps; entre scan_types
+# pierden contra restaurante, bar o café.
+TIPOS_NICHO = {"dog_cafe", "cat_cafe", "internet_cafe"}
+_NICHO = TIPOS_NICHO
+
 # Prioridad al elegir entre varios scan_types (más específico primero)
 _PRIORITY = (
     list(_FOOD - {"restaurant", "food"})
-    + list(_CAFE)
+    + list(_CAFE - _NICHO)
     + list(_NIGHT - {"bar"})
     + list(_LODGING)
     + list(_CULTURE)
     + list(_LEISURE)
     + list(_SERVICES)
     + ["restaurant", "bar", "cafe", "food"]
+    + sorted(_NICHO)
 )
 _PRIORITY_INDEX = {t: i for i, t in enumerate(_PRIORITY)}
 

@@ -57,7 +57,7 @@ PLACE_TYPE_CHOICES = (
     ("dessert_restaurant", "Restaurante de postres"),
     ("diner", "Cafetería clásica"),
     ("doctor", "Consultorio médico"),
-    ("dog_cafe", "Cafetería de perros"),
+    ("dog_cafe", "Café con perros"),
     ("event_venue", "Lugar de eventos"),
     ("fast_food_restaurant", "Restaurante de comida rápida"),
     ("fine_dining_restaurant", "Restaurante gourmet"),
@@ -152,6 +152,34 @@ TIPOS_FUERA_DEL_BUSCADOR = TIPOS_QUE_HACER + (
 )
 
 
+# Tipos que no son para comer, salir ni pasear: fuera de listados y de centros comerciales.
+TIPOS_EXCLUIDOS = [
+    # Belleza/Personal
+    'barber_shop', 'beautician', 'beauty_salon', 'wellness_center', 'spa',
+    # Automotriz
+    'car_wash', 'parking',
+    # Salud
+    'doctor', 'health',
+    # Educación
+    'school', 'childrens_camp',
+    # Servicios domésticos
+    'laundry', 'real_estate_agency',
+    # Solo servicio (sin local físico)
+    'catering_service', 'food_delivery',
+    # Otros no relevantes
+    'internet_cafe', 'playground', 'auditorium', 'barbecue_area',
+]
+
+
+def lugar_de_centro(prefijo=''):
+    """Un lugar que cuenta en su centro comercial. Con `prefijo='lugares__'` sirve para contar desde el centro."""
+    return Q(**{
+        f'{prefijo}tiene_fotos': True,
+        f'{prefijo}fusionado_en__isnull': True,
+        f'{prefijo}cerrado_permanente': False,
+    }) & ~Q(**{f'{prefijo}tipo__in': TIPOS_EXCLUIDOS}) & ~Q(**{f'{prefijo}tipo__in': TIPOS_FUERA_DEL_BUSCADOR})
+
+
 def _fuera_del_buscador():
     """Malls, UVAs y fichas que solo viven en una guía."""
     from explorer.utils.place_classify import _CAFE, _FOOD, _NIGHT
@@ -182,6 +210,10 @@ class PlacesQuerySet(models.QuerySet):
 
     def with_fotos(self):
         return self.prefetch_related("fotos")
+
+    def de_centro_comercial(self):
+        """Lo que se lista y se cuenta en un centro comercial: el índice, la página y el importador."""
+        return self.filter(lugar_de_centro())
 
     def para_buscador(self):
         """El buscador principal: sin malls, UVAs ni fichas que solo viven en una guía."""
@@ -1274,12 +1306,36 @@ GUIDE_THEME_CHOICES = (
 # Las escapadas no: son el recorrido de un día y 4 paradas ya lo cubren.
 GUIA_MIN_LUGARES = 5
 
+# Cómo se lee la lista: alternativas sin orden, un ranking o un recorrido con paradas.
+# Solo el ranking y la ruta llevan número.
+GUIDE_FORMAT_CHOICES = (
+    ('seleccion', 'Selección de alternativas'),
+    ('ranking', 'Ranking'),
+    ('ruta', 'Recorrido'),
+)
+
+
+def parada_visible(prefijo=''):
+    """Las paradas que se muestran: la ficha existe (con fotos), no está cerrada ni fusionada.
+
+    Es el mismo criterio para la página, el índice, el sitemap y la nota en la ficha;
+    con `prefijo='items__'` sirve para contar desde la guía.
+    """
+    return Q(**{
+        f'{prefijo}lugar__cerrado_permanente': False,
+        f'{prefijo}lugar__fusionado_en__isnull': True,
+        f'{prefijo}lugar__tiene_fotos': True,
+    })
+
 
 class CuratedGuideQuerySet(models.QuerySet):
+    def con_total_visible(self):
+        return self.annotate(n_lugares=Count('items', filter=parada_visible('items__')))
+
     def indexables(self):
         return (
             self.filter(publicado=True)
-            .annotate(n_lugares=Count('items', filter=Q(items__lugar__cerrado_permanente=False, items__lugar__fusionado_en__isnull=True)))
+            .con_total_visible()
             .filter(Q(n_lugares__gte=GUIA_MIN_LUGARES) | Q(categoria='escapada'))
         )
 
@@ -1314,7 +1370,30 @@ class CuratedGuide(models.Model):
     )
     publicado = models.BooleanField(default=False, db_index=True, help_text="Solo las guías publicadas aparecen en el sitio")
     orden = models.IntegerField(default=0, help_text="Orden en el índice de guías (menor = primero)")
-    
+
+    # Contenido editorial. Lo vacío no se muestra: nada de relleno.
+    formato = models.CharField(
+        max_length=12, choices=GUIDE_FORMAT_CHOICES, default='seleccion',
+        help_text="Selección: alternativas sin orden, sin números. Ranking: de mejor a peor. Recorrido: paradas en orden",
+    )
+    como_recorrer_en = models.TextField(blank=True, default="", help_text="How to do the route, in English")
+    para_quien = models.TextField(blank=True, default="", help_text="Para quién es la guía y cómo usarla (2–3 frases)")
+    para_quien_en = models.TextField(blank=True, default="")
+    criterio = models.TextField(blank=True, default="", help_text="Cómo se eligieron los lugares")
+    criterio_en = models.TextField(blank=True, default="")
+    consejos = models.TextField(blank=True, default="", help_text="Consejos prácticos verificados, uno por línea")
+    consejos_en = models.TextField(blank=True, default="")
+    autor = models.CharField(max_length=120, blank=True, default="", help_text="Quién revisó la guía (nombre real)")
+    revisado_en = models.DateField(
+        null=True, blank=True,
+        help_text="Fecha de la última revisión editorial. No cambia con las sincronizaciones de datos. "
+                  "Con fecha, los importadores ya no tocan el texto de la guía ni de sus paradas",
+    )
+    relacionadas = models.ManyToManyField(
+        'self', symmetrical=False, blank=True, related_name='+',
+        help_text="Dos o tres guías para seguir. Vacío = se eligen por tema y zona",
+    )
+
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
 
@@ -1343,6 +1422,30 @@ class CuratedGuide(models.Model):
     @property
     def descripcion_i18n(self):
         return self._get_translated(self.descripcion, self.descripcion_en)
+
+    @property
+    def como_recorrer_i18n(self):
+        return self._get_translated(self.como_recorrer, self.como_recorrer_en)
+
+    @property
+    def para_quien_i18n(self):
+        return self._get_translated(self.para_quien, self.para_quien_en)
+
+    @property
+    def criterio_i18n(self):
+        return self._get_translated(self.criterio, self.criterio_en)
+
+    @property
+    def consejos_lista(self):
+        texto = self._get_translated(self.consejos, self.consejos_en)
+        return [linea.strip(" -•\t") for linea in texto.splitlines() if linea.strip(" -•\t")]
+
+    @property
+    def numerada(self):
+        return self.formato in ('ranking', 'ruta')
+
+    def items_visibles(self):
+        return self.items.filter(parada_visible()).select_related('lugar').order_by('posicion')
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -1376,8 +1479,9 @@ class CuratedGuide(models.Model):
 
     @property
     def total_items(self):
+        """Paradas que se ven en la página: el mismo criterio para el índice, el sitemap y la guía."""
         n_lugares = getattr(self, 'n_lugares', None)
-        return n_lugares if n_lugares is not None else self.items.count()
+        return n_lugares if n_lugares is not None else self.items.filter(parada_visible()).count()
 
     @property
     def es_indexable(self):
@@ -1425,6 +1529,27 @@ class CuratedGuideItem(models.Model):
         max_length=50, blank=True,
         help_text="Badge in English: 'My favorite', 'Best terrace'"
     )
+    como_llegar_en = models.CharField(max_length=300, blank=True, default="")
+    advertencia_en = models.CharField(max_length=300, blank=True, default="")
+    diferencia = models.CharField(max_length=300, blank=True, default="", help_text="Qué lo diferencia de las otras paradas")
+    diferencia_en = models.CharField(max_length=300, blank=True, default="")
+    ocasion = models.CharField(max_length=120, blank=True, default="", help_text="Ideal para: 'bailar salsa', 'el atardecer'")
+    ocasion_en = models.CharField(max_length=120, blank=True, default="")
+    presupuesto = models.CharField(
+        max_length=80, blank=True, default="",
+        help_text="Solo con fuente y fecha de verificación. Si falta, se usa el rango de la carta",
+    )
+    fuente_url = models.URLField(max_length=500, blank=True, default="", help_text="Fuente oficial de los datos que cambian (precios, horarios, avisos)")
+    verificado_en = models.DateField(
+        null=True, blank=True,
+        help_text="Cuándo se verificaron presupuesto y avisos en la fuente. Sin fecha no se publican. "
+                  "Con fecha, los importadores no tocan esta parada",
+    )
+    fuera_de_zona_motivo = models.CharField(
+        max_length=200, blank=True, default="",
+        help_text="Si el lugar no está en la zona de la guía, por qué va igual. Sin motivo, la revisión lo marca",
+    )
+    notas_editoriales = models.TextField(blank=True, default="", help_text="Qué falta verificar. No se publica")
 
     class Meta:
         verbose_name = "Lugar en Guía"
@@ -1449,6 +1574,27 @@ class CuratedGuideItem(models.Model):
     def destacado_i18n(self):
         return self._get_translated(self.destacado, self.destacado_en)
 
+    @property
+    def como_llegar_i18n(self):
+        return self._get_translated(self.como_llegar, self.como_llegar_en)
+
+    @property
+    def diferencia_i18n(self):
+        return self._get_translated(self.diferencia, self.diferencia_en)
+
+    @property
+    def ocasion_i18n(self):
+        return self._get_translated(self.ocasion, self.ocasion_en)
+
+    @property
+    def advertencia_publica(self):
+        """El aviso cambia con el tiempo: solo sale con fecha de verificación."""
+        return self._get_translated(self.advertencia, self.advertencia_en) if self.verificado_en else ''
+
+    @property
+    def presupuesto_publico(self):
+        return self.presupuesto if self.verificado_en else ''
+
 
 # ────────────────────────────────────────────────────────────────
 # Centros comerciales: contenedores de lugares, no recomendaciones
@@ -1461,6 +1607,10 @@ CC_MIN_INDEXABLES = 8
 
 
 class CentroComercialQuerySet(models.QuerySet):
+    def con_total_visible(self):
+        """Cuenta en vivo con el mismo criterio que la página del centro (lugar_de_centro)."""
+        return self.annotate(n_visibles=Count('lugares', filter=lugar_de_centro('lugares__')))
+
     def publicados(self):
         return self.filter(publicado=True, total_lugares__gte=CC_MIN_LUGARES)
 
@@ -1510,12 +1660,43 @@ class CentroComercial(models.Model):
         return self.nota
 
     @property
+    def total_visible(self):
+        """Los lugares que muestra su página. total_lugares es la foto del último import."""
+        n = getattr(self, 'n_visibles', None)
+        return n if n is not None else self.lugares.filter(lugar_de_centro()).count()
+
+    @property
     def es_publicado(self):
         return self.publicado and self.total_lugares >= CC_MIN_LUGARES
 
     @property
     def es_indexable(self):
         return self.es_publicado and self.lugares_indexables >= CC_MIN_INDEXABLES
+
+
+class UbicacionEnCentro(models.Model):
+    """Dónde está un local dentro de su centro comercial. Solo se publica verificado.
+
+    Va aparte de Places: casi ninguna ficha lo tiene y así no se toca la tabla grande.
+    """
+
+    lugar = models.OneToOneField(Places, on_delete=models.CASCADE, related_name='ubicacion_en_centro')
+    piso = models.CharField(max_length=20, blank=True, default="", help_text="'1', 'Plazoleta de comidas', 'Sótano'")
+    local = models.CharField(max_length=20, blank=True, default="", help_text="Número de local")
+    referencia = models.CharField(max_length=200, blank=True, default="", help_text="Ubicación interna: 'junto a la entrada de Cra. 25'")
+    fuente_url = models.URLField(max_length=500, blank=True, default="", help_text="Directorio oficial del centro comercial o del local")
+    verificado_en = models.DateField(null=True, blank=True, help_text="Sin fecha no se publica")
+
+    class Meta:
+        verbose_name = "Ubicación en centro comercial"
+        verbose_name_plural = "Ubicaciones en centros comerciales"
+
+    def __str__(self):
+        return f"{self.lugar.nombre}: piso {self.piso or '-'}, local {self.local or '-'}"
+
+    @property
+    def publicable(self):
+        return bool(self.verificado_en and (self.piso or self.local or self.referencia))
 
 
 # ────────────────────────────────────────────────────────────────

@@ -34,7 +34,7 @@ import urllib.request
 import urllib.parse
 import os
 
-from .models import Places, Foto, GooglePlaceDetails, RegionOSM, Tag, PLACE_TYPE_CHOICES, QUE_HACER, TIPOS_FUERA_DEL_BUSCADOR, TIPOS_QUE_HACER
+from .models import Places, Foto, GooglePlaceDetails, RegionOSM, Tag, PLACE_TYPE_CHOICES, QUE_HACER, TIPOS_EXCLUIDOS, TIPOS_FUERA_DEL_BUSCADOR, TIPOS_QUE_HACER
 
 logger = logging.getLogger(__name__)
 
@@ -43,22 +43,7 @@ logger = logging.getLogger(__name__)
 # Tipos de lugares a EXCLUIR de listados públicos
 # (no son relevantes para gastronomía/entretenimiento)
 # ────────────────────────────────────────────────────────────────────────
-TIPOS_EXCLUIDOS = [
-    # Belleza/Personal
-    'barber_shop', 'beautician', 'beauty_salon', 'wellness_center', 'spa',
-    # Automotriz
-    'car_wash', 'parking',
-    # Salud
-    'doctor', 'health',
-    # Educación
-    'school', 'childrens_camp',
-    # Servicios domésticos
-    'laundry', 'real_estate_agency',
-    # Solo servicio (sin local físico)
-    'catering_service', 'food_delivery',
-    # Otros no relevantes
-    'internet_cafe', 'playground', 'auditorium', 'barbecue_area',
-]
+# Vive en models: también cuenta los lugares de los centros comerciales.
 
 
 def adsense_allowed_for_place(lugar):
@@ -1261,9 +1246,10 @@ class PlaceDetailView(FichaRetiradaMixin, DetailView, BasePlacesMixin):
         return carta, secciones
 
     def _notas_guia(self, lugar):
-        """Guías publicadas que incluyen este lugar, con su frase y el enlace.
+        """Guías publicadas que incluyen este lugar, con el enlace y, si la guía está revisada, su frase.
 
-        Google llega a las guías desde las fichas: el enlace va en HTML.
+        Google llega a las guías desde las fichas: el enlace va en HTML. La frase solo viaja a la
+        ficha cuando un editor revisó la guía; si no, un error de la guía se repetiría aquí.
         """
         from .models import CuratedGuideItem
 
@@ -1279,8 +1265,9 @@ class PlaceDetailView(FichaRetiradaMixin, DetailView, BasePlacesMixin):
             if item.guia_id in vistas:
                 continue
             vistas.add(item.guia_id)
+            revisada = bool(item.guia.revisado_en)
             notas.append({
-                'texto': (item.comentario_i18n or '').strip(),
+                'texto': (item.comentario_i18n or '').strip() if revisada else '',
                 'guia': item.guia.titulo_i18n,
                 'url': item.guia.get_absolute_url(),
             })
@@ -3153,10 +3140,10 @@ def _portada_guia(guia):
 @require_GET
 def guias_index(request):
     """Índice de guías en bloques: por plan, por zona y escapadas."""
-    from .models import CuratedGuide, CuratedGuideItem
+    from .models import CuratedGuide, CuratedGuideItem, parada_visible
 
     items = (
-        CuratedGuideItem.objects.filter(lugar__cerrado_permanente=False, lugar__fusionado_en__isnull=True)
+        CuratedGuideItem.objects.filter(parada_visible())
         .select_related('lugar').prefetch_related('lugar__fotos').order_by('posicion')
     )
     guias = list(
@@ -3188,7 +3175,7 @@ def guias_index(request):
     zonas.sort(key=lambda z: (-len(z['guias']), z['region'].name))
 
     from .models import CentroComercial
-    centros = list(CentroComercial.objects.indexables().select_related('zona')[:CENTROS_EN_INDICE])
+    centros = list(CentroComercial.objects.indexables().con_total_visible().select_related('zona')[:CENTROS_EN_INDICE])
     total_centros = CentroComercial.objects.publicados().count()
 
     context = {
@@ -3206,53 +3193,90 @@ def guias_index(request):
 
 @require_GET
 def guia_detail(request, slug):
-    """Detalle de una guía curada con los lugares rankeados."""
+    """Una guía: para quién es, criterio, comparativa, paradas, mapa y consejos.
+
+    Lo que no tiene dato no sale. La numeración es continua sobre las paradas visibles y solo
+    aparece si la guía es un ranking o un recorrido.
+    """
     from .models import CuratedGuide
-    
+    from .utils.guias import numerar
+
     # El staff ve los borradores para revisarlos (llevan noindex); el resto, solo las publicadas.
     solo_publicadas = {} if request.user.is_staff else {'publicado': True}
-    guia = get_object_or_404(CuratedGuide, slug=slug, **solo_publicadas)
-    
-    # Un lugar cerrado o fusionado deja de mostrarse en la guía. Las fotos van con estas
-    # paradas: un prefetch en la guía no le sirve a esta consulta nueva.
-    items = list(
-        guia.items.filter(lugar__cerrado_permanente=False, lugar__fusionado_en__isnull=True)
-        .select_related('lugar').prefetch_related('lugar__fotos').order_by('posicion')
-    )
-    
-    # Datos de mapa para cada lugar con ubicación
+    guia = get_object_or_404(CuratedGuide.objects.select_related('zona'), slug=slug, **solo_publicadas)
+
+    # Las fotos van con estas paradas: un prefetch en la guía no le sirve a esta consulta nueva.
+    items = numerar(list(guia.items_visibles().prefetch_related('lugar__fotos')), guia.formato)
+    rangos = _rangos_carta([item.lugar_id for item in items])
+    for item in items:
+        item.presupuesto_mostrado = item.presupuesto_publico or rangos.get(item.lugar_id, '')
+
     markers = []
     for item in items:
         lugar = item.lugar
         if lugar.ubicacion:
             foto = lugar.get_primera_foto()
-            img_url = ''
-            if foto:
-                img_url = resolve_media_url(
-                    getattr(foto, 'imagen_miniatura', None)
-                    or getattr(foto, 'imagen_mediana', None)
-                    or foto.imagen
-                    or ''
-                ) or ''
+            imagen = resolve_media_url(
+                getattr(foto, 'imagen_miniatura', None) or getattr(foto, 'imagen_mediana', None) or foto.imagen or ''
+            ) if foto else ''
             markers.append({
                 'lat': lugar.ubicacion.y,
                 'lng': lugar.ubicacion.x,
                 'nombre': lugar.nombre,
                 'slug': lugar.slug,
-                'posicion': item.posicion,
-                'rating': float(lugar.rating) if lugar.rating else None,
-                'imagen': str(img_url),
+                'numero': item.numero,
+                'imagen': str(imagen or ''),
             })
-    
+
     context = {
         'guia': guia,
         'es_indexable': guia.es_indexable,
         'items': items,
         'markers': markers,
+        # La comparativa solo aporta si dice algo más que el nombre y la zona.
+        'comparativa': len(items) >= 3 and any(i.ocasion_i18n or i.presupuesto_mostrado for i in items),
+        'col_ocasion': any(i.ocasion_i18n for i in items),
+        'col_presupuesto': any(i.presupuesto_mostrado for i in items),
+        'relacionadas': _guias_relacionadas(guia),
         'titulo_pagina': guia.titulo,
         'descripcion_pagina': guia.descripcion,
     }
     return render(request, 'guias/guia_detail.html', context)
+
+
+def _rangos_carta(lugar_ids):
+    """Rango de precios de la carta de cada lugar (la mitad de los platos), en una consulta."""
+    from .models import PlacePartnerMenu
+
+    rangos = {}
+    for carta in PlacePartnerMenu.objects.filter(lugar_id__in=lugar_ids).prefetch_related('platos'):
+        secciones, actual = [], None
+        for plato in carta.platos.all():
+            if actual is None or actual['nombre'] != (plato.section or ''):
+                actual = {'nombre': plato.section or '', 'platos': []}
+                secciones.append(actual)
+            actual['platos'].append(plato)
+        quitar_precios_imposibles(secciones)
+        rango = rango_precios(secciones)
+        if rango:
+            rangos[carta.lugar_id] = _('%(bajo)s – %(alto)s según la carta en %(app)s') % {
+                'bajo': pesos(rango[0]), 'alto': pesos(rango[1]), 'app': carta.get_platform_display(),
+            }
+    return rangos
+
+
+def _guias_relacionadas(guia, limite=3):
+    """Las que eligió el editor; si no hay, las de la misma zona y luego las del mismo tema."""
+    from .models import CuratedGuide
+
+    elegidas = list(guia.relacionadas.indexables()[:limite])
+    if elegidas:
+        return elegidas
+    candidatas = CuratedGuide.objects.indexables().exclude(pk=guia.pk)
+    elegidas = list(candidatas.filter(zona=guia.zona)[:limite]) if guia.zona_id else []
+    if guia.tema and len(elegidas) < limite:
+        elegidas += candidatas.filter(tema=guia.tema).exclude(pk__in=[g.pk for g in elegidas])[:limite - len(elegidas)]
+    return elegidas
 
 
 # ────────────────────────────────────────────────────────────────────────
@@ -3372,16 +3396,16 @@ def centros_comerciales(request):
     """Todos los centros comerciales publicados, agrupados por zona."""
     from .models import CentroComercial
 
-    centros = list(CentroComercial.objects.publicados().select_related('zona'))
+    centros = list(CentroComercial.objects.publicados().con_total_visible().select_related('zona'))
     por_zona = {}
     for centro in centros:
         por_zona.setdefault(centro.zona.name if centro.zona else _('Otras zonas'), []).append(centro)
-    grupos = sorted(por_zona.items(), key=lambda kv: (-sum(c.total_lugares for c in kv[1]), kv[0]))
+    grupos = sorted(por_zona.items(), key=lambda kv: (-sum(c.total_visible for c in kv[1]), kv[0]))
 
     context = {
         'centros': centros,
         'grupos': grupos,
-        'total_lugares': sum(c.total_lugares for c in centros),
+        'total_lugares': sum(c.total_visible for c in centros),
         'titulo_pagina': _('Dónde comer en los centros comerciales de Medellín'),
         'descripcion_pagina': _(
             'Restaurantes, comida rápida, cafés y bares dentro de %(n)s centros comerciales de '
@@ -3399,7 +3423,7 @@ def centro_comercial_detail(request, slug):
     centro = get_object_or_404(CentroComercial.objects.publicados().select_related('zona'), slug=slug)
     lugares = _lugares_centro(Places.objects.filter(centro_comercial=centro))
     otros = list(
-        CentroComercial.objects.publicados().filter(zona=centro.zona).exclude(pk=centro.pk)[:6]
+        CentroComercial.objects.publicados().con_total_visible().filter(zona=centro.zona).exclude(pk=centro.pk)[:6]
     ) if centro.zona_id else []
     context = _contexto_centro(request, centro, lugares, otros)
     return render(request, 'guias/centro_comercial_detail.html', context)
@@ -3413,9 +3437,7 @@ def _lugares_centro(base):
         to_attr='cached_fotos',
     )
     return list(
-        base.filter(tiene_fotos=True)
-        .exclude(tipo__in=TIPOS_EXCLUIDOS)
-        .exclude(tipo__in=TIPOS_FUERA_DEL_BUSCADOR)
+        base.de_centro_comercial()
         .prefetch_related(None)
         .prefetch_related(fotos)
         .order_by('-es_destacado', '-weighted_rating', '-rating', 'nombre')
